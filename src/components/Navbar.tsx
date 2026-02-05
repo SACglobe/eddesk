@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, Layout, Settings, Rocket, Menu, X, MessageSquare, ChevronDown, Monitor, Sparkles } from 'lucide-react';
@@ -57,11 +55,17 @@ export const Navbar: React.FC = () => {
             className="flex items-center space-x-2 cursor-pointer group"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
-            <div className="bg-indigo-600 p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300 shadow-lg shadow-indigo-600/20">
-              <GraduationCap className="text-white w-6 h-6" />
+            <div className="bg-indigo-600 p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300 shadow-lg shadow-indigo-600/20 flex items-center justify-center">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
+                <path d="M4 6C4 4.89543 4.89543 4 6 4H18C19.1046 4 20 4.89543 20 6V16C20 17.1046 19.1046 18 18 18H6C4.89543 18 4 17.1046 4 16V6Z" fill="white" fillOpacity="0.2" />
+                <path d="M7 7H17V9H7V7Z" fill="white" />
+                <path d="M7 11H17V13H7V11Z" fill="white" />
+                <path d="M7 15H13V17H7V15Z" fill="white" />
+                <path d="M2 20H22V22H2V20Z" fill="white" fillOpacity="0.4" />
+              </svg>
             </div>
             <span className="font-display font-black text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-              EduCanvas
+              EdDesk
             </span>
           </div>
 

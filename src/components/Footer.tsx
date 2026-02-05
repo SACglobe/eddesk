@@ -30,10 +30,16 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-20 mb-24">
           <div className="lg:col-span-4">
             <div className="flex items-center space-x-3 mb-8 cursor-pointer group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-              <div className="bg-indigo-600 p-2.5 rounded-2xl group-hover:rotate-12 transition-transform">
-                <GraduationCap className="text-white w-7 h-7" />
+              <div className="bg-indigo-600 p-2.5 rounded-2xl group-hover:rotate-12 transition-transform flex items-center justify-center">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
+                  <path d="M4 6C4 4.89543 4.89543 4 6 4H18C19.1046 4 20 4.89543 20 6V16C20 17.1046 19.1046 18 18 18H6C4.89543 18 4 17.1046 4 16V6Z" fill="white" fillOpacity="0.2" />
+                  <path d="M7 7H17V9H7V7Z" fill="white" />
+                  <path d="M7 11H17V13H7V11Z" fill="white" />
+                  <path d="M7 15H13V17H7V15Z" fill="white" />
+                  <path d="M2 20H22V22H2V20Z" fill="white" fillOpacity="0.4" />
+                </svg>
               </div>
-              <span className="font-display font-black text-3xl text-white">EduCanvas</span>
+              <span className="font-display font-black text-3xl text-white">EdDesk</span>
             </div>
             <p className="text-slate-400 text-lg leading-relaxed mb-10 max-w-sm">
               The world's most sophisticated digital infrastructure for modern educational institutions. Elevating excellence, one school at a time.
@@ -86,7 +92,7 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="pt-16 border-t border-white/5 flex flex-col lg:flex-row justify-between items-center text-slate-500 text-sm space-y-8 lg:space-y-0">
-          <div className="font-bold tracking-tight">© 2024 EduCanvas Systems Inc. Crafted for Excellence.</div>
+          <div className="font-bold tracking-tight">© 2024 EdDesk Systems Inc. Crafted for Excellence.</div>
           <div className="flex items-center space-x-10 font-bold uppercase tracking-widest text-[10px]">
             <FooterLink>Privacy Protocols</FooterLink>
             <FooterLink>Legal Terms</FooterLink>

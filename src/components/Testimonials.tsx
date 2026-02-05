@@ -7,7 +7,7 @@ import { Quote, Star } from 'lucide-react';
 
 const testimonials = [
   {
-    quote: "EduCanvas transformed our online presence in a matter of weeks. The enrollment process is now 40% faster and parents love the new portal.",
+    quote: "EdDesk transformed our online presence in a matter of weeks. The enrollment process is now 40% faster and parents love the new portal.",
     author: "Dr. Sarah Jenkins",
     role: "Principal, Oakwood Academy",
     school: "Oakwood Academy",

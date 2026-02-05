@@ -21,9 +21,9 @@ export default function Home() {
     const [showScrollTop, setShowScrollTop] = useState(false);
 
     const templates = [
-        { id: 0, name: "Lumina International", theme: 'modern', color: "bg-blue-600" },
-        { id: 1, name: "Heritage Foundation", theme: 'classic', color: "bg-amber-700" },
-        { id: 2, name: "Cybernetics High", theme: 'tech', color: "bg-emerald-500" }
+        { id: 0, name: "modern", theme: 'modern', color: "bg-blue-600" },
+        { id: 1, name: "classic", theme: 'classic', color: "bg-amber-700" },
+        { id: 2, name: "premium", theme: 'tech', color: "bg-emerald-500" }
     ];
 
     const currentTemplate = activeTemplate !== null ? templates[activeTemplate] : null;
@@ -176,7 +176,7 @@ export default function Home() {
                                 <motion.div
                                     layout
                                     className={`transition-all duration-700 shadow-[0_0_100px_rgba(0,0,0,0.5)] border border-slate-800 overflow-hidden ${demoView === 'desktop' ? 'w-full max-w-[1280px] min-h-[90%]' :
-                                            demoView === 'tablet' ? 'w-[768px] min-h-[90%]' : 'w-[375px] min-h-[90%]'
+                                        demoView === 'tablet' ? 'w-[768px] min-h-[90%]' : 'w-[375px] min-h-[90%]'
                                         } bg-white rounded-t-2xl mb-12 relative`}
                                 >
                                     <div id="preview-scroll-area" className="w-full h-full overflow-y-auto">

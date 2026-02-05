@@ -21,8 +21,8 @@ const crimsonPro = Crimson_Pro({
 });
 
 export const metadata: Metadata = {
-    title: "EduCanvas | Revolutionizing School Management",
-    description: "Revolutionizing School Management with EduCanvas",
+    title: "EdDesk | Revolutionizing School Management",
+    description: "Revolutionizing School Management with EdDesk",
 };
 
 export default function RootLayout({

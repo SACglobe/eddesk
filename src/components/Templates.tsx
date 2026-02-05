@@ -11,18 +11,19 @@ interface TemplatesProps {
 const templateList = [
   {
     id: 0,
-    name: "Lumina International",
+    name: "modern",
     category: "Modern Academy",
     description: "Sleek, fast, and minimalist. Designed for high-performance international institutions focused on innovation.",
     features: ["Dynamic Event Calendar", "Academic Directory", "Media Galleries"],
     image: "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&q=80&w=1200",
     color: "from-blue-600 to-indigo-600",
     accent: "text-blue-400",
-    glow: "shadow-blue-500/40"
+    glow: "shadow-blue-500/40",
+    externalLink: "https://modern.eddesk.in"
   },
   {
     id: 1,
-    name: "Heritage Foundation",
+    name: "classic",
     category: "Classical Institution",
     description: "Elegance and prestige. Perfect for schools with a storied history and emphasis on traditional values.",
     features: ["Alumni Ecosystem", "Heritage Archive", "Virtual Campus Tour"],
@@ -30,18 +31,20 @@ const templateList = [
     color: "from-amber-600 to-orange-600",
     accent: "text-amber-400",
     glow: "shadow-amber-500/40",
-    hasSpecialFeature: true
+    hasSpecialFeature: true,
+    externalLink: "https://classic.eddesk.in"
   },
   {
     id: 2,
-    name: "Cybernetics High",
+    name: "premium",
     category: "STEM & Innovation",
     description: "Futuristic and data-centric. Built for coding academies and technology-focused innovation hubs.",
     features: ["Student Dashboards", "LMS Native", "Tech Portfolio Builder"],
     image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=1200",
     color: "from-emerald-600 to-teal-600",
     accent: "text-emerald-400",
-    glow: "shadow-emerald-500/40"
+    glow: "shadow-emerald-500/40",
+    externalLink: "https://premium.eddesk.in"
   }
 ];
 
@@ -115,7 +118,7 @@ export const Templates: React.FC<TemplatesProps> = ({ onSelectTemplate }) => {
                   shadow-[0_15px_40px_-10px_rgba(0,0,0,0.5)] 
                   group-hover:shadow-[0_80px_120px_-20px_rgba(0,0,0,0.8)] 
                   group-hover:${temp.glow}`}
-                onClick={() => onSelectTemplate(temp.id)}
+                onClick={() => window.open(temp.externalLink, '_blank')}
               >
                 <img
                   src={temp.image}
@@ -181,12 +184,13 @@ export const Templates: React.FC<TemplatesProps> = ({ onSelectTemplate }) => {
 
                 <div className="flex space-x-4">
                   <button
-                    onClick={() => onSelectTemplate(temp.id)}
+                    onClick={() => window.open(temp.externalLink, '_blank')}
                     className="flex-1 py-5 bg-slate-900 border border-slate-800 hover:border-indigo-500/50 hover:bg-indigo-600 text-white rounded-2xl font-black text-base transition-all active:scale-95 shadow-xl"
                   >
                     Preview Design
                   </button>
                   <button
+                    onClick={() => window.open(temp.externalLink, '_blank')}
                     className="w-16 h-16 flex items-center justify-center border border-slate-800 hover:border-slate-600 rounded-2xl text-slate-500 hover:text-white transition-all bg-slate-950"
                     title="External Details"
                   >

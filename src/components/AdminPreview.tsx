@@ -41,6 +41,7 @@ export const AdminPreview: React.FC = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => window.open("https://admin.eddesk.in", '_blank')}
               className="group bg-white text-slate-950 px-10 py-5 rounded-full font-bold shadow-2xl shadow-white/5 flex items-center space-x-3"
             >
               <span>Explore Admin Panel</span>
