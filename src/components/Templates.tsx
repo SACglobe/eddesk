@@ -50,7 +50,7 @@ const templateList = [
 
 export const Templates: React.FC<TemplatesProps> = ({ onSelectTemplate }) => {
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    // Fallback to a high-quality placeholder service if Unsplash fails
+
     e.currentTarget.src = 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&q=80&w=1200';
   };
 
