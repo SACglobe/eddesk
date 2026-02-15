@@ -1,6 +1,6 @@
 import { SchoolContentV1 } from '../../../school-content.schema';
 
-export type SchoolContent = SchoolContentV1 & {
+export type SchoolContent = Omit<{
     meta: {
         motto?: string;
     };
@@ -64,4 +64,4 @@ export type SchoolContent = SchoolContentV1 & {
             required: boolean;
         }[];
     };
-};
+}, 'infrastructure'> & SchoolContentV1;

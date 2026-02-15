@@ -14,15 +14,23 @@ export const demoSchoolData: SchoolContent = {
         logoUrl: "https://cdn-icons-png.flaticon.com/512/2602/2602414.png"
     },
     contact: {
-        address: "123 Academic Lane, Heritage District, City - 600001",
-        phone: "+91 44 2345 6789",
-        email: "info@staugustine.edu.in",
-        googleMapLink: ""
+        address: "123 Education Lane, Academic District, Portland, OR 97201",
+        phone: "+1 (503) 555-0123",
+        email: "contact@staugustine.edu",
+        googleMapLink: "",
+        hours: "08:30 AM - 04:30 PM",
+        location: "Portland, USA"
     },
+    socialLinks: [
+        { platform: 'facebook', url: 'https://facebook.com/staugustines' },
+        { platform: 'instagram', url: 'https://instagram.com/staugustines' }
+    ],
     visionMission: {
         vision: "To be a leading educational institution that empowers students with knowledge, skills, and values to excel in a globalized world while staying rooted in our cultural heritage.",
         mission: "To provide quality education that fosters critical thinking, creativity, and social responsibility in a safe and supportive learning environment."
     },
+    vision: "To be a leading educational institution that empowers students with knowledge, skills, and values to excel in a globalized world while staying rooted in our cultural heritage.",
+    mission: "To provide quality education that fosters critical thinking, creativity, and social responsibility in a safe and supportive learning environment.",
     principal: {
         name: "Dr. Robert P. Henderson",
         message: "Welcome to St. Augustine. Education is not merely about accumulating facts but about the training of the mind to think. At our school, we prioritize the holistic development of every student, ensuring they are prepared for the challenges of the future with a solid foundation of ethics and discipline. We invite you to join our legacy of excellence.",
@@ -124,11 +132,28 @@ export const demoSchoolData: SchoolContent = {
             { title: "Holiday Notice", description: "School will remain closed on Jan 26th for Republic Day.", publishDate: "2024-01-20" }
         ]
     },
-    infrastructure: {
-        labs: ["Physics Lab", "Chemistry Lab", "Biology Lab", "Computer Science Lab"],
-        classrooms: ["Smart Classrooms", "AV Room", "Audio-Visual Hall"],
-        playground: ["Main Athletic Field", "Indoor Badminton Court", "Basketball Court"]
+    activities: {
+        academic: [{ title: "Academic Excellence", description: "Focused on core mastery.", image: "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=2071" }],
+        clubs: [{ title: "Hobby Clubs", description: "Exploring diverse interests.", image: "https://images.unsplash.com/photo-1544652478-6653e09f18a2?q=80&w=2070" }],
+        sports: [{ title: "Athletic Programs", description: "Physical fitness and teamwork.", image: "https://images.unsplash.com/photo-1511629091441-ee46146481b6?q=80&w=2070" }],
+        extraCurricular: [],
+        arts: [],
+        leadership: []
     },
+    principalMessage: {
+        name: "Dr. Robert Sterling",
+        text: "Welcome to our institution of excellence.",
+        image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1000"
+    },
+    boardMessage: {
+        title: "Message from the Board",
+        text: "We are committed to the future of our students."
+    },
+    infrastructure: [
+        { name: "Science Labs", description: "Advanced labs for Physics, Chemistry, and Biology.", image: "https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=2086" },
+        { name: "Smart Classrooms", description: "Digitally enabled learning spaces.", image: "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=2071" },
+        { name: "Athletic Field", description: "Our main playground and sports arena.", image: "https://images.unsplash.com/photo-1511629091441-ee46146481b6?q=80&w=2070" }
+    ],
     faculty: {
         teachers: [
             { name: "Mrs. Sarah James", subject: "Senior Faculty - Mathematics", photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1000&auto=format&fit=crop" },
