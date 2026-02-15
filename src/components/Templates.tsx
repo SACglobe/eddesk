@@ -112,7 +112,7 @@ export const Templates: React.FC<TemplatesProps> = ({ onSelectTemplate }) => {
               transition={{ duration: 0.8, delay: temp.id * 0.15, ease: [0.16, 1, 0.3, 1] }}
               className="group flex flex-col h-full"
             >
-              {/* Preview Box with Intensified Hover Shadows */}
+
               <div
                 className={`relative aspect-[16/12] rounded-[3.5rem] overflow-hidden mb-10 transition-all duration-700 border border-white/10 group-hover:border-indigo-500/50 cursor-pointer 
                   shadow-[0_15px_40px_-10px_rgba(0,0,0,0.5)] 
