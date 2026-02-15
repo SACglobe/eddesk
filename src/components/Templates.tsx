@@ -19,7 +19,7 @@ const templateList = [
     color: "from-blue-600 to-indigo-600",
     accent: "text-blue-400",
     glow: "shadow-blue-500/40",
-    externalLink: "https://modern.eddesk.in"
+    externalLink: "demo/template_modern"
   },
   {
     id: 1,
@@ -32,7 +32,7 @@ const templateList = [
     accent: "text-amber-400",
     glow: "shadow-amber-500/40",
     hasSpecialFeature: true,
-    externalLink: "https://classic.eddesk.in"
+    externalLink: "demo/template_classic"
   },
   {
     id: 2,
@@ -44,7 +44,7 @@ const templateList = [
     color: "from-emerald-600 to-teal-600",
     accent: "text-emerald-400",
     glow: "shadow-emerald-500/40",
-    externalLink: "https://premium.eddesk.in"
+    externalLink: "demo/template_premium"
   }
 ];
 

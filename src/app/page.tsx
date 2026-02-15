@@ -10,7 +10,6 @@ import { Templates } from '@/components/Templates';
 import { AdminPreview } from '@/components/AdminPreview';
 import { Testimonials } from '@/components/Testimonials';
 import { Footer } from '@/components/Footer';
-import { TemplateRenderer } from '@/components/TemplateRenderer';
 import { Monitor, Smartphone, Tablet, X as CloseIcon, ChevronLeft, ChevronUp } from 'lucide-react';
 
 export default function Home() {
@@ -180,13 +179,7 @@ export default function Home() {
                                         } bg-white rounded-t-2xl mb-12 relative`}
                                 >
                                     <div id="preview-scroll-area" className="w-full h-full overflow-y-auto">
-                                        <TemplateRenderer
-                                            templateId={activeTemplate}
-                                            page={demoPage}
-                                            postId={selectedPostId}
-                                            onNavigate={handleNavigate}
-                                            onSelectPost={handleSelectPost}
-                                        />
+
                                     </div>
                                 </motion.div>
                             </div>

@@ -1,0 +1,97 @@
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+  --primary: #1e3a8a;
+  /* Blue 900 */
+  --accent: #fbbf24;
+  /* Amber 400 */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+::selection {
+  background-color: var(--accent);
+  color: var(--primary);
+}
+
+/* Local utilities to replace missing Tailwind theme extensions */
+.bg-primary {
+  background-color: var(--primary);
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+.bg-accent {
+  background-color: var(--accent);
+}
+
+.text-accent {
+  color: var(--accent);
+}
+
+.border-accent {
+  border-color: var(--accent);
+}
+
+.bg-primary-dark {
+  background-color: #1a2e5a;
+}
+
+.hover\:bg-accent:hover {
+  background-color: var(--accent);
+}
+
+.hover\:text-primary:hover {
+  color: var(--primary);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Custom animations from original project */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+.achievement-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.achievement-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

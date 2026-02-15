@@ -1,0 +1,36 @@
+name: Guardrails
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  guardrails:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install deps
+        run: npm ci || npm install
+
+      - name: Collect changed files
+        run: node scripts/guardrails/changed-files.js
+
+      - name: Enforce template boundaries
+        run: node scripts/guardrails/template-boundaries.js
+
+      - name: Validate template structure
+        run: node scripts/guardrails/validate-template-structure.js
+
+      - name: Validate defaults.json schema
+        run: node scripts/guardrails/validate-defaults-schema.js
+
+      - name: Enforce registry append-only
+        run: node scripts/guardrails/registry-append-only.js

@@ -1,0 +1,81 @@
+High-Level Data Model
+
+users
+schools (tenants)
+school_domains
+school_content (JSON)
+school_media
+templates (registry)
+school_template_history
+
+
+TABLE DEFINITIONS (FINAL v1)
+1. users
+create table users (
+  id uuid primary key references auth.users(id),
+  name text,
+  email text,
+  created_at timestamptz default now()
+);
+
+
+2. schools
+create table schools (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  type text check (type in ('demo', 'live')) not null,
+  active boolean default true,
+  created_at timestamptz default now()
+);
+
+3. school_domains
+create table school_domains (
+  id uuid primary key default gen_random_uuid(),
+  school_id uuid references schools(id) on delete cascade,
+  domain text unique not null,
+  is_primary boolean default true,
+  created_at timestamptz default now()
+);
+
+
+4. templates
+create table templates (
+  id text primary key,        -- template1, template2
+  name text,
+  version integer default 1,
+  active boolean default true,
+  created_at timestamptz default now()
+);
+
+5. school_template_history
+create table school_template_history (
+  id uuid primary key default gen_random_uuid(),
+  school_id uuid references schools(id) on delete cascade,
+  template_id text references templates(id),
+  activated_at timestamptz default now(),
+  deactivated_at timestamptz
+);
+
+6. school_content
+create table school_content (
+  school_id uuid primary key references schools(id) on delete cascade,
+  schema_version text not null default 'v1',
+  content jsonb not null,
+  updated_at timestamptz default now()
+);
+
+7. school_media
+create table school_media (
+  id uuid primary key default gen_random_uuid(),
+  school_id uuid references schools(id) on delete cascade,
+  file_path text not null,
+  type text check (type in ('image', 'document')),
+  created_at timestamptz default now()
+);
+
+
+WHERE THIS MAPS IN CODE ?
+lib/
+ ├── tenant/resolveTenant.ts   → school_domains → school_id
+ ├── template/loadTemplate.ts  → school_template_history
+ └── content/loadSchoolData.ts → school_content

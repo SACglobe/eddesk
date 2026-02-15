@@ -1,0 +1,53 @@
+/* src/templates/template_premium/app/globals.css */
+
+:root {
+  --background: #FCFCFA;
+  --foreground: #0F172A;
+  --signature-navy: #0F172A;
+  --signature-gold: #D4AF37;
+  --signature-ivory: #FCFCFA;
+  --font-inter: 'Inter', sans-serif;
+  --font-playfair: 'Playfair Display', serif;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+}
+
+.fade-in {
+  animation: fadeIn 1s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #D4AF37;
+}
+
+.ticker-mask {
+  mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+}
+
+.pause-on-hover:hover .animate-marquee {
+  animation-play-state: paused;
+}

@@ -1,0 +1,88 @@
+FINAL PROJECT STRUCTURE:
+
+src/
+├── app/
+│   ├── (marketing)/
+│   │   └── page.tsx
+│   │
+│   ├── demo/
+│   │   └── [templateSlug]/
+│   │       └── [[...path]]/
+│   │           └── page.tsx
+│   │
+│   ├── site/
+│   │   └── [[...path]]/
+│   │       └── page.tsx
+│   │
+│   ├── api/
+│   │   ├── tenant/
+│   │   │   └── resolve.ts
+│   │   │
+│   │   ├── content/
+│   │   │   ├── get-school-data.ts
+│   │   │   └── save-school-data.ts
+│   │   │
+│   │   ├── template/
+│   │   │   └── switch-template.ts
+│   │   │
+│   │   ├── upload/
+│   │   │   └── image.ts
+│   │   │
+│   │   └── cron/
+│   │       ├── reset-demo.ts
+│   │       └── reminders.ts
+│   │
+│   └── layout.tsx
+│
+├── templates/
+│   ├── template1/
+│   │   ├── renderer.tsx
+│   │   ├── routes.ts
+│   │   ├── schema.ts
+│   │   ├── components/
+│   │   ├── styles/
+│   │   │   └── scoped.module.css
+│   │   └── defaults.json
+│   │
+│   ├── template2/
+│   └── template3/
+│
+├── template-shared/
+│   └── logic/
+│       ├── resolvePage.ts
+│       └── mapSchoolData.ts
+│
+├── lib/
+│   ├── tenant/
+│   │   ├── resolveTenant.ts
+│   │   └── types.ts
+│   │
+│   ├── template/
+│   │   ├── registry.ts
+│   │   ├── loadTemplate.ts
+│   │   └── validateSchema.ts
+│   │
+│   ├── supabase/
+│   │   └── client.ts
+│   │
+│   └── constants.ts
+│
+├── styles/
+│   └── globals.css
+│
+├── middleware.ts
+│
+├── agents/
+├── skills/
+└── workflows/
+
+
+Runtime Flow (Authoritative):
+Request
+ → middleware detects domain or demo
+ → resolve tenant (school or demo)
+ → get template_id
+ → load template renderer
+ → load school JSON data
+ → SSR render page
+
