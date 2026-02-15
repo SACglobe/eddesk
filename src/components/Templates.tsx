@@ -56,7 +56,7 @@ export const Templates: React.FC<TemplatesProps> = ({ onSelectTemplate }) => {
 
   return (
     <section id="templates" className="py-32 bg-slate-950 relative overflow-hidden">
-      {/* Background radial light */}
+
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(79,70,229,0.05)_0%,transparent_70%)] pointer-events-none"></div>
 
       <div className="container mx-auto px-6 relative z-10">
