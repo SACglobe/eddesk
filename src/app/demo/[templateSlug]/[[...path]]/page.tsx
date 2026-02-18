@@ -1,42 +1,32 @@
-
 "use client";
-import React, { useEffect, useState } from 'react';
-import { notFound, useParams } from 'next/navigation';
-import { TEMPLATE_REGISTRY } from '@/templates/registry';
+
+import React, { use } from 'react';
+import { notFound } from 'next/navigation';
+import { templateRegistry } from '@/lib/template/registry';
 import { demoSchoolData } from '@/lib/constants/demo-data';
 
-export default function TemplateDemoPage() {
-    const params = useParams();
-    const [Renderer, setRenderer] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
+export default function TemplateDemoPage({
+    params,
+}: {
+    params: Promise<{ templateSlug: string; path?: string[] }>
+}) {
+    const { templateSlug, path: pathSegments } = use(params);
 
-    const slug = typeof params.templateSlug === 'string' ? params.templateSlug : params.templateSlug?.[0];
-    const pathSegments = params.path as string[] || [];
-    const currentPath = '/' + pathSegments.join('/');
+    const slug = templateSlug;
+    const path = '/' + (pathSegments?.join('/') ?? '');
 
-    useEffect(() => {
-        if (slug && TEMPLATE_REGISTRY[slug as keyof typeof TEMPLATE_REGISTRY]) {
-            TEMPLATE_REGISTRY[slug as keyof typeof TEMPLATE_REGISTRY]().then((mod: any) => {
-                setRenderer(() => mod.Renderer);
-                setLoading(false);
-            }).catch(() => {
-                setLoading(false);
-            });
-        } else {
-            setLoading(false);
-        }
-    }, [slug]);
+    const template = templateRegistry[slug];
 
-    if (loading) return <div>Loading Template...</div>;
-
-    if (!slug || !Renderer) {
+    if (!template) {
         return notFound();
     }
+
+    const { Renderer } = template;
 
     return (
         <Renderer
             data={demoSchoolData}
-            path={currentPath}
+            path={path}
         />
     );
 }

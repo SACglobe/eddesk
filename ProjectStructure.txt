@@ -1,88 +1,23 @@
-FINAL PROJECT STRUCTURE:
-
 src/
 ├── app/
-│   ├── (marketing)/
-│   │   └── page.tsx
-│   │
-│   ├── demo/
-│   │   └── [templateSlug]/
-│   │       └── [[...path]]/
-│   │           └── page.tsx
-│   │
-│   ├── site/
-│   │   └── [[...path]]/
-│   │       └── page.tsx
-│   │
-│   ├── api/
-│   │   ├── tenant/
-│   │   │   └── resolve.ts
-│   │   │
-│   │   ├── content/
-│   │   │   ├── get-school-data.ts
-│   │   │   └── save-school-data.ts
-│   │   │
-│   │   ├── template/
-│   │   │   └── switch-template.ts
-│   │   │
-│   │   ├── upload/
-│   │   │   └── image.ts
-│   │   │
-│   │   └── cron/
-│   │       ├── reset-demo.ts
-│   │       └── reminders.ts
-│   │
-│   └── layout.tsx
+│   ├── page.tsx                     # EdDesk marketing site
+│   ├── demo/[template]/[[...path]]  # Demo routing (already done)
+│   ├── tenant/[[...path]]           # School domain routing (SSR)
 │
-├── templates/
-│   ├── template1/
-│   │   ├── renderer.tsx
-│   │   ├── routes.ts
-│   │   ├── schema.ts
-│   │   ├── components/
-│   │   ├── styles/
-│   │   │   └── scoped.module.css
-│   │   └── defaults.json
-│   │
-│   ├── template2/
-│   └── template3/
+├── core/
+│   ├── router/                      # domain & rewrite logic
+│   ├── viewmodels/                  # MVVM business logic
+│   ├── models/                      # DB POJOs
+│   ├── services/                    # API / DB calls
+│   ├── seo/                         # dynamic SEO builders
+│   └── constants/                   # table & column refs
 │
-├── template-shared/
-│   └── logic/
-│       ├── resolvePage.ts
-│       └── mapSchoolData.ts
+├── templates/                       # VIEW ONLY
+│   ├── template_classic/
+│   ├── template_modern/
+│   └── template_premium/
 │
-├── lib/
-│   ├── tenant/
-│   │   ├── resolveTenant.ts
-│   │   └── types.ts
-│   │
-│   ├── template/
-│   │   ├── registry.ts
-│   │   ├── loadTemplate.ts
-│   │   └── validateSchema.ts
-│   │
-│   ├── supabase/
-│   │   └── client.ts
-│   │
-│   └── constants.ts
-│
-├── styles/
-│   └── globals.css
-│
-├── middleware.ts
-│
-├── agents/
-├── skills/
-└── workflows/
-
-
-Runtime Flow (Authoritative):
-Request
- → middleware detects domain or demo
- → resolve tenant (school or demo)
- → get template_id
- → load template renderer
- → load school JSON data
- → SSR render page
-
+└── guardrails/
+    ├── design.md
+    ├── data.md
+    └── routing.md
