@@ -1,23 +1,180 @@
-src/
-├── app/
-│   ├── page.tsx                     # EdDesk marketing site
-│   ├── demo/[template]/[[...path]]  # Demo routing (already done)
-│   ├── tenant/[[...path]]           # School domain routing (SSR)
+eddesk/
 │
-├── core/
-│   ├── router/                      # domain & rewrite logic
-│   ├── viewmodels/                  # MVVM business logic
-│   ├── models/                      # DB POJOs
-│   ├── services/                    # API / DB calls
-│   ├── seo/                         # dynamic SEO builders
-│   └── constants/                   # table & column refs
+├── .env.local
+│   └── Environment variables (API base URL, flags like USE_LOCAL_DATA)
 │
-├── templates/                       # VIEW ONLY
-│   ├── template_classic/
-│   ├── template_modern/
-│   └── template_premium/
+├── next.config.js
+│   └── Next.js configuration (rewrites, headers, etc.)
 │
-└── guardrails/
-    ├── design.md
-    ├── data.md
-    └── routing.md
+├── package.json
+│   └── Project dependencies and scripts
+│
+├── README.md
+│   └── High-level project documentation
+│
+├── guardrails/
+│   ├── guardrails.md
+│   │   └── Global non-negotiable rules (templates, SSR, MVVM)
+│   │
+│   ├── guardrails-api.md
+│   │   └── Rules for API calls (when, where, how)
+│   │
+│   ├── workflow.md
+│   │   └── Step-by-step execution order for agents
+│   │
+│   ├── workflow-api.md
+│   │   └── Execution flow specifically for API handling
+│   │
+│   └── skills/
+│       ├── domain-resolution.md
+│       │   └── Skill: resolve domain → marketing / demo / tenant
+│       │
+│       ├── tenant-routing.md
+│       │   └── Skill: rewrite tenant domain to selected template
+│       │
+│       ├── tenant-api-fetch.md
+│       │   └── Skill: fetch tenant data using domain + template
+│       │
+│       ├── home-viewmodel.md
+│       │   └── Skill: aggregate homepage data (MVVM)
+│       │
+│       ├── hero-data-mapping.md
+│       │   └── Skill: map hero data (image/video) for templates
+│       │
+│       └── seo-viewmodel.md
+│           └── Skill: generate SEO metadata & JSON-LD
+│
+├── scripts/
+│   ├── guardrails/
+│   │   └── validate-template-import.js
+│   │       └── Import-time checks to ensure templates are untouched
+│   │
+│   └── visual-diff/
+│       ├── extract-dom.js
+│       ├── normalize-dom.js
+│       └── compare-dom.js
+│       └── Pixel/DOM comparison to enforce 0 design compromise
+│
+├── src/
+│   ├── app/
+│   │   ├── layout.tsx
+│   │   │   └── Root layout for the app (providers, global shells)
+│   │   │
+│   │   ├── page.tsx
+│   │   │   └── Marketing website (localhost, eddesk.in)
+│   │   │
+│   │   ├── demo/
+│   │   │   └── [templateId]/
+│   │   │       └── [[...path]]/
+│   │   │           └── page.tsx
+│   │   │               └── Demo template SSR entry (allowed only on
+│   │   │                   localhost & eddesk.in)
+│   │   │
+│   │   ├── tenant/
+│   │   │   └── [[...path]]/
+│   │   │       └── page.tsx
+│   │   │           └── Tenant SSR entry:
+│   │   │               - resolve domain
+│   │   │               - fetch data
+│   │   │               - pass to ViewModels
+│   │   │               - render template
+│   │   │
+│   │   └── providers/
+│   │       └── TenantProvider.tsx
+│   │           └── Read-only context provider for tenant data
+│   │
+│   ├── core/
+│   │   ├── router/
+│   │   │   └── domainResolver.ts
+│   │   │       └── SSR-only domain classification logic
+│   │   │
+│   │   ├── constants/
+│   │   │   ├── constants.js
+│   │   │   │   └── System-wide enums (API status, popup types, template IDs)
+│   │   │   │
+│   │   │   ├── reference.js
+│   │   │   │   └── Database table & column name references (POJO-style)
+│   │   │   │
+│   │   │   ├── api.js
+│   │   │   │   └── API endpoint paths (base URL from env)
+│   │   │   │
+│   │   │   └── templates.js
+│   │   │       └── Template registry / metadata
+│   │   │
+│   │   ├── data/
+│   │   │   ├── local/
+│   │   │   │   └── tenant.data.js
+│   │   │   │       └── SINGLE local dummy data source (API-like shape)
+│   │   │   │
+│   │   │   └── index.js
+│   │   │       └── Data source switch:
+│   │   │           local data vs API vs future DB
+│   │   │
+│   │   ├── services/
+│   │   │   ├── tenantApi.service.ts
+│   │   │   │   └── Server-side API calls to eddesk.in/tenant/get
+│   │   │   │
+│   │   │   └── logger.service.ts
+│   │   │       └── Centralized logging utility
+│   │   │
+│   │   ├── viewmodels/
+│   │   │   ├── tenant.viewmodel.ts
+│   │   │   │   └── Normalize tenant API/local data
+│   │   │   │
+│   │   │   ├── home.viewmodel.ts
+│   │   │   │   └── Prepare homepage data for templates
+│   │   │   │
+│   │   │   └── hero.viewmodel.ts
+│   │   │       └── Hero-specific business logic (image vs video, ordering)
+│   │   │
+│   │   ├── models/
+│   │   │   ├── tenant.model.ts
+│   │   │   ├── hero.model.ts
+│   │   │   └── section.model.ts
+│   │   │   └── Type definitions / POJOs only
+│   │   │
+│   │   ├── business/
+│   │   │   ├── validators.ts
+│   │   │   │   └── Reusable value checks (empty, required, valid)
+│   │   │   │
+│   │   │   ├── formatters.ts
+│   │   │   │   └── String & value formatting helpers
+│   │   │   │
+│   │   │   ├── media.ts
+│   │   │   │   └── Image vs video detection, media helpers
+│   │   │   │
+│   │   │   └── urls.ts
+│   │   │       └── Domain & URL normalization utilities
+│   │   │
+│   │   └── utils/
+│   │       ├── safeGet.ts
+│   │       └── isDefined.ts
+│   │       └── Small generic helper utilities
+│   │
+│   ├── components/
+│   │   ├── system/
+│   │   │   ├── SystemPopup.tsx
+│   │   │   ├── SystemPopupProvider.tsx
+│   │   │   └── SystemLoader.tsx
+│   │   │   └── Global system UI (errors, empty states, loading)
+│   │   │
+│   │   └── shells/
+│   │       └── MarketingShell.tsx
+│   │       └── Layout wrapper for marketing site
+│   │
+│   ├── templates/
+│   │   ├── template_classic/
+│   │   │   └── (UNCHANGED template files)
+│   │   │
+│   │   ├── template_modern/
+│   │   │   └── (UNCHANGED template files)
+│   │   │
+│   │   └── template_premium/
+│   │       └── (UNCHANGED template files)
+│   │
+│   └── styles/
+│       ├── marketing.css
+│       │   └── Marketing website styles
+│       │
+│       └── system.css
+│           └── Styles for system popups & loaders only

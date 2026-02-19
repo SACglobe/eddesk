@@ -1,0 +1,169 @@
+My Database:
+Table: schools
+Columns:
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+name TEXT NOT NULL,
+slug TEXT UNIQUE,                 -- for internal reference
+custom_domain TEXT UNIQUE,        -- abcschool.com ( eddesk.in for                        demo )
+logo_url TEXT,
+email TEXT,
+phone TEXT,
+address TEXT,
+city TEXT,
+state TEXT,
+country TEXT,
+postal_code TEXT,
+plan_type TEXT CHECK (plan_type IN ('basic','pro','premium')),
+subscription_status TEXT,
+is_active BOOLEAN DEFAULT true,
+created_at TIMESTAMP DEFAULT now(),
+updated_at TIMESTAMP DEFAULT now()
+Template_id - template_classic / template_modern / template_premium
+expiration_date
+Paymentgateway_url
+
+
+table: homepage_sections
+Columns:
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
+section_key TEXT,  -- hero, stats, achievements, principal, faculty, sports, etc.
+is_enabled BOOLEAN DEFAULT true,
+display_order INT,
+settings JSONB,    -- section-specific config
+created_at TIMESTAMP DEFAULT now()
+
+table: hero_media
+Columns:
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
+media_type TEXT CHECK (media_type IN ('image','video')),
+media_url TEXT,
+headline TEXT,
+subheadline TEXT,
+primary_button_text TEXT,
+primary_button_url TEXT,
+secondary_button_text TEXT,
+secondary_button_url TEXT,
+display_order INT,
+is_active BOOLEAN DEFAULT true
+
+table: ANNOUNCEMENTS
+Columns:
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+school_id UUID REFERENCES schools(id),
+title TEXT,
+message TEXT,
+priority INT DEFAULT 1,
+expires_at TIMESTAMP,
+is_active BOOLEAN DEFAULT true
+
+
+table: ACADEMIC_RESULTS
+Columns:
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+school_id UUID REFERENCES schools(id),
+year INT,
+pass_percentage NUMERIC(5,2),
+distinctions INT,
+first_class INT,
+legacy_quote TEXT
+
+
+table: ACHIEVEMENTS 
+Columns:
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+school_id UUID REFERENCES schools(id),
+year INT,
+category TEXT,
+title TEXT,
+description TEXT,
+achievement_type TEXT CHECK (
+  achievement_type IN ('academic','sports','recognition')
+),
+display_order INT
+
+
+table: PERSONNEL 
+Columns:
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+school_id UUID REFERENCES schools(id),
+name TEXT,
+designation TEXT,
+bio TEXT,
+photo_url TEXT,
+person_type TEXT CHECK (
+  person_type IN ('principal','faculty','board','leadership')
+),
+display_order INT,
+is_featured BOOLEAN DEFAULT false
+
+
+tale: CAMPUS_STATISTICS
+Columns:
+EY DEFAULT gen_random_uuid(),
+school_id UUID REFERENCES schools(id),
+label TEXT,
+value TEXT,
+icon TEXT,
+display_order INT
+
+table: Facility_categories 
+Columns:
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+school_id UUID REFERENCES schools(id),
+name TEXT,
+icon TEXT,
+display_order INT
+
+table: facilities
+Columns:
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+school_id UUID REFERENCES schools(id),
+category_id UUID REFERENCES facility_categories(id),
+name TEXT,
+description TEXT
+category_name
+
+table: MEDIA_LIBRARY
+Columns:
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+school_id UUID REFERENCES schools(id),
+media_type TEXT CHECK (media_type IN ('image','video')),
+category TEXT,
+url TEXT,
+caption TEXT,
+is_featured BOOLEAN DEFAULT false,
+created_at TIMESTAMP DEFAULT now()
+
+table: EVENTS
+Columns:
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+school_id UUID REFERENCES schools(id),
+event_date DATE,
+start_time TIME,
+end_time TIME,
+title TEXT,
+category TEXT,
+description TEXT,
+location TEXT,
+is_featured BOOLEAN DEFAULT false
+
+
+table: admission_steps
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+school_id UUID REFERENCES schools(id),
+step_number INT,
+title TEXT,
+description TEXT
+Getting the admission details ( Name, Mobile number, Parent name, etc,. )
+status - pending
+
+
+table:school_identity
+Columns:
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+school_id UUID REFERENCES schools(id),
+vision TEXT,
+mission TEXT,
+motto TEXT
