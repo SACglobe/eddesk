@@ -52,7 +52,7 @@ export const Renderer = ({ data, path }: { data: any, path: string }) => {
 
         switch (normalizedPath) {
             case '/':
-                return <Home />;
+                return <Home data={data} />;
             case '/about':
                 return <About />;
             case '/academics':
@@ -72,7 +72,7 @@ export const Renderer = ({ data, path }: { data: any, path: string }) => {
             case '/portrait':
                 return <Portrait />;
             default:
-                return <Home />;
+                return <Home data={data} />;
         }
     };
 

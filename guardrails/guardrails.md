@@ -66,7 +66,7 @@ If any single check fails, the task is INVALID.
 
 - [ ] No table names are hardcoded
 - [ ] No column names are hardcoded
-- [ ] All table/column names come from core/constants/db.ts
+- [ ] All table/column names come from src/lib/constants/reference.js
 - [ ] Templates do NOT import services
 - [ ] Templates do NOT access the database directly
 

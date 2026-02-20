@@ -313,3 +313,104 @@ export function buildTenantViewModel(data: TenantApiDataItem[]): TenantViewModel
         })),
     };
 }
+
+/**
+ * Transforms a structured LOCAL_TENANT_DATA object into a normalized TenantViewModel.
+ * All field access uses reference.js constants — no hardcoded strings.
+ */
+export function buildTenantViewModelFromLocal(data: any): TenantViewModel {
+    const school = data.school || {};
+    const identity = data.school_identity || {};
+
+    return {
+        school: {
+            name: str(school[COL_SCHOOLS_NAME]),
+            logoUrl: str(school[COL_SCHOOLS_LOGO_URL]),
+            email: str(school[COL_SCHOOLS_EMAIL]),
+            phone: str(school[COL_SCHOOLS_PHONE]),
+            address: str(school[COL_SCHOOLS_ADDRESS]),
+            city: str(school[COL_SCHOOLS_CITY]),
+            state: str(school[COL_SCHOOLS_STATE]),
+            country: str(school[COL_SCHOOLS_COUNTRY]),
+            templateId: str(school[COL_SCHOOLS_TEMPLATE_ID]),
+            paymentGatewayUrl: str(school[COL_SCHOOLS_PAYMENTGATEWAY_URL]),
+        },
+        identity: {
+            vision: str(identity[COL_SCHOOL_IDENTITY_VISION]),
+            mission: str(identity[COL_SCHOOL_IDENTITY_MISSION]),
+            motto: str(identity[COL_SCHOOL_IDENTITY_MOTTO]),
+        },
+        heroMedia: (data.hero_media || []).map((r: any) => ({
+            mediaType: str(r[COL_HERO_MEDIA_TYPE]),
+            mediaUrl: str(r[COL_HERO_MEDIA_URL]),
+            headline: str(r[COL_HERO_MEDIA_HEADLINE]),
+            subheadline: str(r[COL_HERO_MEDIA_SUBHEADLINE]),
+            primaryButtonText: str(r[COL_HERO_MEDIA_PRIMARY_BUTTON_TEXT]),
+            primaryButtonUrl: str(r[COL_HERO_MEDIA_PRIMARY_BUTTON_URL]),
+            secondaryButtonText: str(r[COL_HERO_MEDIA_SECONDARY_BUTTON_TEXT]),
+            secondaryButtonUrl: str(r[COL_HERO_MEDIA_SECONDARY_BUTTON_URL]),
+            displayOrder: num(r[COL_HERO_MEDIA_DISPLAY_ORDER]),
+            isActive: bool(r[COL_HERO_MEDIA_IS_ACTIVE]),
+        })),
+        announcements: (data.announcements || []).map((r: any) => ({
+            title: str(r[COL_ANNOUNCEMENTS_TITLE]),
+            message: str(r[COL_ANNOUNCEMENTS_MESSAGE]),
+            isActive: bool(r[COL_ANNOUNCEMENTS_IS_ACTIVE]),
+            expiresAt: str(r[COL_ANNOUNCEMENTS_EXPIRES_AT]),
+        })),
+        academicResults: (data.academic_results || []).map((r: any) => ({
+            year: num(r[COL_ACADEMIC_RESULTS_YEAR]),
+            passPercentage: num(r[COL_ACADEMIC_RESULTS_PASS_PERCENTAGE]),
+            distinctions: num(r[COL_ACADEMIC_RESULTS_DISTINCTIONS]),
+            firstClass: num(r[COL_ACADEMIC_RESULTS_FIRST_CLASS]),
+            legacyQuote: str(r[COL_ACADEMIC_RESULTS_LEGACY_QUOTE]),
+        })),
+        achievements: (data.achievements || []).map((r: any) => ({
+            title: str(r[COL_ACHIEVEMENTS_TITLE]),
+            description: str(r[COL_ACHIEVEMENTS_DESCRIPTION]),
+            year: num(r[COL_ACHIEVEMENTS_YEAR]),
+            category: str(r[COL_ACHIEVEMENTS_CATEGORY]),
+            type: str(r[COL_ACHIEVEMENTS_TYPE]),
+            displayOrder: num(r[COL_ACHIEVEMENTS_DISPLAY_ORDER]),
+        })),
+        personnel: (data.personnel || []).map((r: any) => ({
+            name: str(r[COL_PERSONNEL_NAME]),
+            designation: str(r[COL_PERSONNEL_DESIGNATION]),
+            bio: str(r[COL_PERSONNEL_BIO]),
+            photoUrl: str(r[COL_PERSONNEL_PHOTO_URL]),
+            personType: str(r[COL_PERSONNEL_TYPE]),
+            isFeatured: bool(r[COL_PERSONNEL_IS_FEATURED]),
+        })),
+        statistics: (data.campus_statistics || []).map((r: any) => ({
+            label: str(r[COL_CAMPUS_STATISTICS_LABEL]),
+            value: str(r[COL_CAMPUS_STATISTICS_VALUE]),
+            icon: str(r[COL_CAMPUS_STATISTICS_ICON]),
+            displayOrder: num(r[COL_CAMPUS_STATISTICS_DISPLAY_ORDER]),
+        })),
+        mediaLibrary: (data.media_library || []).map((r: any) => ({
+            url: str(r[COL_MEDIA_LIBRARY_URL]),
+            category: str(r[COL_MEDIA_LIBRARY_CATEGORY]),
+            caption: str(r[COL_MEDIA_LIBRARY_CAPTION]),
+            isFeatured: bool(r[COL_MEDIA_LIBRARY_IS_FEATURED]),
+        })),
+        events: (data.events || []).map((r: any) => ({
+            title: str(r[COL_EVENTS_TITLE]),
+            date: str(r[COL_EVENTS_DATE]),
+            description: str(r[COL_EVENTS_DESCRIPTION]),
+            location: str(r[COL_EVENTS_LOCATION]),
+            category: str(r[COL_EVENTS_CATEGORY]),
+            isFeatured: bool(r[COL_EVENTS_IS_FEATURED]),
+        })),
+        admissionSteps: (data.admission_steps || []).map((r: any) => ({
+            stepNumber: num(r[COL_ADMISSION_STEPS_NUMBER]),
+            title: str(r[COL_ADMISSION_STEPS_TITLE]),
+            description: str(r[COL_ADMISSION_STEPS_DESCRIPTION]),
+        })),
+        homepageSections: (data.sections || []).map((r: any) => ({
+            sectionKey: str(r[COL_HOMEPAGE_SECTIONS_SECTION_KEY]),
+            isEnabled: bool(r[COL_HOMEPAGE_SECTIONS_IS_ENABLED]),
+            displayOrder: num(r[COL_HOMEPAGE_SECTIONS_DISPLAY_ORDER]),
+            settings: (r[COL_HOMEPAGE_SECTIONS_SETTINGS] as Record<string, unknown>) ?? {},
+        })),
+    };
+}

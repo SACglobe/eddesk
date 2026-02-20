@@ -3,16 +3,26 @@ import React, { useState, useEffect } from 'react';
 import { MOCK_DATA } from '../constants/mockData';
 import Link from 'next/link';
 
-const HomeScreen = () => {
+const HomeScreen = ({ data }) => {
     const { SCHOOL_PROFILE, LEADERSHIP, STATISTICS, ACHIEVEMENTS, INFRASTRUCTURE, FACULTY } = MOCK_DATA;
     const [currentSlide, setCurrentSlide] = useState(0);
     const [galleryIndex, setGalleryIndex] = useState(0);
 
-    const heroImages = [
-        "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=2071&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=2132&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1511629091441-ee46146481b6?q=80&w=2070&auto=format&fit=crop"
-    ];
+    const heroSlides = (data?.heroMedia ?? [])
+        .filter(s => s.isActive)
+        .sort((a, b) => a.displayOrder - b.displayOrder);
+
+    if (heroSlides.length === 0) {
+        heroSlides.push({
+            headline: '',
+            subheadline: '',
+            mediaUrl: '',
+            primaryButtonText: '',
+            primaryButtonUrl: '',
+            secondaryButtonText: '',
+            secondaryButtonUrl: ''
+        });
+    }
 
     const recentAchievements = ACHIEVEMENTS.school_achievements.slice(0, 3);
 
@@ -22,7 +32,7 @@ const HomeScreen = () => {
 
     useEffect(() => {
         const heroTimer = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % heroImages.length);
+            setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
         }, 5000);
 
         const galleryTimer = setInterval(() => {
@@ -33,7 +43,7 @@ const HomeScreen = () => {
             clearInterval(heroTimer);
             clearInterval(galleryTimer);
         };
-    }, [totalGalleryImages, heroImages.length]);
+    }, [totalGalleryImages, heroSlides.length]);
 
     // Compute the 4 images that should be visible starting from galleryIndex
     const getVisibleImages = () => {
@@ -50,30 +60,34 @@ const HomeScreen = () => {
         <div className="fade-in">
             {/* 1. Full Screen Image Slider */}
             <section className="relative h-[85vh] w-full overflow-hidden bg-emerald-950">
-                {heroImages.map((img, idx) => (
+                {heroSlides.map((slide, idx) => (
                     <div
                         key={idx}
                         className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === currentSlide ? 'opacity-100 scale-105' : 'opacity-0 scale-100'}`}
                         style={{ transition: 'opacity 1s ease-in-out, transform 10s linear' }}
                     >
                         <div className="absolute inset-0 bg-emerald-950/40 z-10" />
-                        <img src={img} alt={`Slide ${idx + 1}`} className="w-full h-full object-cover" />
+                        {slide.mediaUrl && <img src={slide.mediaUrl} alt={`Slide ${idx + 1}`} className="w-full h-full object-cover" />}
                     </div>
                 ))}
 
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4">
-                    <span className="text-white text-xs md:text-sm font-bold uppercase tracking-[0.5em] mb-6 animate-fade-up">Est. 1952 • Legacy of Excellence</span>
+                    <span className="text-white text-xs md:text-sm font-bold uppercase tracking-[0.5em] mb-6 animate-fade-up">{heroSlides[currentSlide]?.subheadline}</span>
                     <h1 className="text-4xl md:text-7xl font-bold text-white mb-8 serif tracking-tight leading-tight max-w-5xl animate-fade-up-delayed">
-                        The Foundation of <br /> Greatness Begins Here
+                        {heroSlides[currentSlide]?.headline}
                     </h1>
                     <div className="flex gap-4 animate-fade-up-extra">
-                        <Link href="/admission" className="px-8 py-3 bg-white text-emerald-900 text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-50 transition-all shadow-xl inline-block">Admissions 2024</Link>
-                        <Link href="/about" className="px-8 py-3 bg-transparent border border-white text-white text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all inline-block">Know more</Link>
+                        {heroSlides[currentSlide]?.primaryButtonText && (
+                            <Link href={heroSlides[currentSlide]?.primaryButtonUrl || '#'} className="px-8 py-3 bg-white text-emerald-900 text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-50 transition-all shadow-xl inline-block">{heroSlides[currentSlide].primaryButtonText}</Link>
+                        )}
+                        {heroSlides[currentSlide]?.secondaryButtonText && (
+                            <Link href={heroSlides[currentSlide]?.secondaryButtonUrl || '#'} className="px-8 py-3 bg-transparent border border-white text-white text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all inline-block">{heroSlides[currentSlide].secondaryButtonText}</Link>
+                        )}
                     </div>
                 </div>
 
                 <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-2">
-                    {heroImages.map((_, idx) => (
+                    {heroSlides.map((_, idx) => (
                         <button
                             key={idx}
                             onClick={() => setCurrentSlide(idx)}

@@ -3,33 +3,36 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-const slides = [
-    {
-        image: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&q=80&w=1920',
-        title: 'A Tradition of Excellence',
-        description: 'Providing world-class education for over 25 years.'
-    },
-    {
-        image: 'https://images.unsplash.com/photo-1599586120429-48281b6f0ece?auto=format&fit=crop&q=80&w=1920',
-        title: 'Inspiring Future Leaders',
-        description: 'Nurturing creativity and innovation in every student.'
-    },
-    {
-        image: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=1920',
-        title: 'Modern Campus Facilities',
-        description: 'Learning environments designed for the 21st century.'
-    }
-];
+export interface HeroSlide {
+    mediaType: string;
+    mediaUrl: string;
+    headline: string;
+    subheadline: string;
+    primaryButtonText: string;
+    primaryButtonUrl: string;
+    secondaryButtonText: string;
+    secondaryButtonUrl: string;
+    isActive: boolean;
+    displayOrder: number;
+}
+export interface HeroSliderProps { slides: HeroSlide[] }
 
-const HeroSlider: React.FC = () => {
+const HeroSlider: React.FC<HeroSliderProps> = ({ slides: rawSlides }) => {
+    const slides = rawSlides
+        .filter(s => s.isActive)
+        .sort((a, b) => a.displayOrder - b.displayOrder);
+
     const [current, setCurrent] = useState(0);
 
     useEffect(() => {
+        if (slides.length === 0) return;
         const timer = setInterval(() => {
             setCurrent((prev) => (prev + 1) % slides.length);
         }, 6000);
         return () => clearInterval(timer);
-    }, []);
+    }, [slides.length]);
+
+    if (slides.length === 0) return null;
 
     return (
         <div className="relative h-screen w-full overflow-hidden">
@@ -39,26 +42,39 @@ const HeroSlider: React.FC = () => {
                     className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === current ? 'opacity-100 z-10' : 'opacity-0 z-0'
                         }`}
                 >
-                    <div
-                        className={`absolute inset-0 bg-cover bg-center transition-transform duration-[8000ms] ease-out ${index === current ? 'scale-110' : 'scale-100'
-                            }`}
-                        style={{ backgroundImage: `url(${slide.image})` }}
-                    />
+                    {slide.mediaType === 'video' ? (
+                        <video
+                            src={slide.mediaUrl}
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            className="absolute inset-0 w-full h-full object-cover"
+                        />
+                    ) : (
+                        <div
+                            className={`absolute inset-0 bg-cover bg-center transition-transform duration-[8000ms] ease-out ${index === current ? 'scale-110' : 'scale-100'
+                                }`}
+                            style={{ backgroundImage: `url(${slide.mediaUrl})` }}
+                        />
+                    )}
                     <div className="absolute inset-0 bg-black/40" />
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
                         <h1 className="text-white text-4xl md:text-8xl font-bold mb-6 drop-shadow-lg transform transition-all duration-1000 translate-y-0 opacity-100 font-playfair">
-                            {slide.title}
+                            {slide.headline}
                         </h1>
                         <p className="text-accent text-xl md:text-3xl font-medium mb-12 max-w-2xl drop-shadow-md opacity-90">
-                            {slide.description}
+                            {slide.subheadline}
                         </p>
                         <div className="flex flex-col sm:flex-row gap-6">
-                            <Link href="/infrastructure" className="bg-accent text-primary px-10 py-4 rounded-full font-black uppercase tracking-widest text-sm hover:bg-white transition-all shadow-2xl">
-                                Explore Campus
+                            <Link href={slide.primaryButtonUrl || '/infrastructure'} className="bg-accent text-primary px-10 py-4 rounded-full font-black uppercase tracking-widest text-sm hover:bg-white transition-all shadow-2xl">
+                                {slide.primaryButtonText || 'Explore'}
                             </Link>
-                            <Link href="/admissions" className="border-2 border-white/50 backdrop-blur-sm text-white px-10 py-4 rounded-full font-black uppercase tracking-widest text-sm hover:bg-white hover:text-primary transition-all shadow-2xl">
-                                Apply Now
-                            </Link>
+                            {slide.secondaryButtonText && (
+                                <Link href={slide.secondaryButtonUrl || '/admissions'} className="border-2 border-white/50 backdrop-blur-sm text-white px-10 py-4 rounded-full font-black uppercase tracking-widest text-sm hover:bg-white hover:text-primary transition-all shadow-2xl">
+                                    {slide.secondaryButtonText}
+                                </Link>
+                            )}
                         </div>
                     </div>
                 </div>

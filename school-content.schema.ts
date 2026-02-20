@@ -8,9 +8,7 @@ export type SchoolContentV1 = {
   branding: {
     logoUrl?: string
     faviconUrl?: string
-    primaryColor: string
-    secondaryColor: string
-    textColor: string
+
   }
 
   contact: {

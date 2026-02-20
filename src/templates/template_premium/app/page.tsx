@@ -5,8 +5,20 @@ import { schoolData } from '../data';
 import { SectionHeader, Card, Button, StatCounter, TestimonialSlider, useIntersectionObserver } from '../components/Shared';
 import Link from 'next/link';
 import LayoutWrapper from '../components/LayoutWrapper';
+import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 
-const Hero: React.FC = () => {
+interface HeroSlide {
+  mediaType: string;
+  mediaUrl: string;
+  headline: string;
+  subheadline: string;
+  primaryButtonText: string;
+  primaryButtonUrl: string;
+  secondaryButtonText: string;
+  secondaryButtonUrl: string;
+}
+
+const Hero: React.FC<{ heroSlide: HeroSlide | null }> = ({ heroSlide }) => {
   const [isFilmOpen, setIsFilmOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -19,20 +31,28 @@ const Hero: React.FC = () => {
   return (
     <section className="h-screen relative overflow-hidden bg-signature-navy">
       <div className="absolute inset-0 z-0">
-        <video
-          ref={videoRef}
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="w-full h-full object-cover scale-110"
-          poster="https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?auto=format&fit=crop&q=80&w=2000"
-        >
-          <source
-            src="https://assets.mixkit.co/videos/preview/mixkit-university-building-with-a-large-fountain-in-front-4354-large.mp4"
-            type="video/mp4"
+        {heroSlide?.mediaType === 'video' ? (
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover scale-110"
+            poster="https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?auto=format&fit=crop&q=80&w=2000"
+          >
+            <source
+              src={heroSlide?.mediaUrl ?? "https://assets.mixkit.co/videos/preview/mixkit-university-building-with-a-large-fountain-in-front-4354-large.mp4"}
+              type="video/mp4"
+            />
+          </video>
+        ) : (
+          <img
+            src={heroSlide?.mediaUrl ?? "https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?auto=format&fit=crop&q=80&w=2000"}
+            alt="Hero background"
+            className="w-full h-full object-cover scale-110"
           />
-        </video>
+        )}
         <div className="absolute inset-0 bg-gradient-to-b from-signature-navy/80 via-signature-navy/40 to-signature-navy z-[1]"></div>
       </div>
 
@@ -41,34 +61,40 @@ const Hero: React.FC = () => {
           <div className="mb-10 flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-10 duration-1000">
             <div className="w-px h-24 bg-gradient-to-b from-transparent to-signature-gold/60"></div>
             <p className="text-signature-gold uppercase tracking-[0.8em] text-[10px] md:text-xs font-bold">
-              ESTABLISHED MCMLXXXVIII
+              {heroSlide?.subheadline ?? 'ESTABLISHED MCMLXXXVIII'}
             </p>
           </div>
 
           <h1 className="text-white text-7xl md:text-[10rem] font-serif leading-[0.9] mb-12 tracking-tighter animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
-            The Art of <br />
-            <span className="italic text-signature-gold block mt-4">Mastery.</span>
+            {heroSlide?.headline ?? (
+              <>
+                The Art of <br />
+                <span className="italic text-signature-gold block mt-4">Mastery.</span>
+              </>
+            )}
           </h1>
 
           <div className="flex flex-col sm:flex-row gap-12 justify-center items-center mt-12 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-500">
-            <Link href="/admissions">
-              <Button variant="gold">Institutional Prospectus</Button>
+            <Link href={heroSlide?.primaryButtonUrl ?? '/admissions'}>
+              <Button variant="gold">{heroSlide?.primaryButtonText ?? 'Institutional Prospectus'}</Button>
             </Link>
 
-            <button
-              onClick={() => setIsFilmOpen(true)}
-              className="group flex items-center gap-6 text-white/80 hover:text-white transition-all"
-            >
-              <div className="w-16 h-16 rounded-full border border-white/20 flex items-center justify-center group-hover:border-signature-gold group-hover:bg-signature-gold/10 transition-all duration-700">
-                <svg className="w-5 h-5 fill-current translate-x-0.5" viewBox="0 0 24 24">
-                  <path d="M3 22V2l18 10L3 22z" />
-                </svg>
-              </div>
-              <div className="text-left">
-                <span className="block text-[10px] uppercase tracking-[0.4em] font-bold text-signature-gold">View Film</span>
-                <span className="block text-sm font-serif italic text-white/40 group-hover:text-white/80 transition-colors">The Sterling Story</span>
-              </div>
-            </button>
+            {heroSlide?.secondaryButtonText && (
+              <button
+                onClick={() => setIsFilmOpen(true)}
+                className="group flex items-center gap-6 text-white/80 hover:text-white transition-all"
+              >
+                <div className="w-16 h-16 rounded-full border border-white/20 flex items-center justify-center group-hover:border-signature-gold group-hover:bg-signature-gold/10 transition-all duration-700">
+                  <svg className="w-5 h-5 fill-current translate-x-0.5" viewBox="0 0 24 24">
+                    <path d="M3 22V2l18 10L3 22z" />
+                  </svg>
+                </div>
+                <div className="text-left">
+                  <span className="block text-[10px] uppercase tracking-[0.4em] font-bold text-signature-gold">{heroSlide.secondaryButtonText}</span>
+                  <span className="block text-sm font-serif italic text-white/40 group-hover:text-white/80 transition-colors">The Sterling Story</span>
+                </div>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -78,7 +104,7 @@ const Hero: React.FC = () => {
           <div className="absolute inset-0 bg-signature-navy/95 backdrop-blur-2xl" onClick={() => setIsFilmOpen(false)}></div>
           <div className="relative w-full max-w-6xl aspect-video bg-black z-[105] shadow-2xl border border-white/5">
             <video autoPlay controls className="w-full h-full">
-              <source src="https://assets.mixkit.co/videos/preview/mixkit-university-building-with-a-large-fountain-in-front-4354-large.mp4" type="video/mp4" />
+              <source src={heroSlide?.secondaryButtonUrl ?? heroSlide?.mediaUrl ?? "https://assets.mixkit.co/videos/preview/mixkit-university-building-with-a-large-fountain-in-front-4354-large.mp4"} type="video/mp4" />
             </video>
             <button
               onClick={() => setIsFilmOpen(false)}
@@ -400,9 +426,9 @@ const UpcomingEvents: React.FC = () => {
 
         <div className={`mt-24 text-center transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <Link href="/events">
-            <button className="px-12 py-5 border border-white/20 text-white text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-white hover:text-signature-navy transition-all duration-500">
+            <span className="inline-block px-12 py-5 border border-white/20 text-white text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-white hover:text-signature-navy transition-all duration-500">
               View Full Calendar
-            </button>
+            </span>
           </Link>
         </div>
       </div>
@@ -410,13 +436,17 @@ const UpcomingEvents: React.FC = () => {
   );
 };
 
-export default function Home() {
+export default function Home({ data }: { data: TenantViewModel }) {
   const { containerRef: introRef, isVisible: introVisible } = useIntersectionObserver({ threshold: 0.1 });
+
+  const heroSlide = (data?.heroMedia ?? [])
+    .filter(s => s.isActive)
+    .sort((a, b) => a.displayOrder - b.displayOrder)[0] ?? null;
 
   return (
     <LayoutWrapper>
       <div className="fade-in bg-signature-ivory">
-        <Hero />
+        <Hero heroSlide={heroSlide} />
 
         <InstitutionalStats />
 
@@ -477,14 +507,14 @@ export default function Home() {
             <h2 className="text-6xl md:text-8xl font-serif mb-16 leading-tight">Start your <br /><span className="italic">Signature Journey.</span></h2>
             <div className="flex flex-col sm:flex-row gap-8 justify-center">
               <Link href="/admissions">
-                <button className="px-16 py-6 bg-white text-signature-navy text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-signature-navy hover:text-white transition-all duration-500 shadow-2xl">
+                <span className="inline-block px-16 py-6 bg-white text-signature-navy text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-signature-navy hover:text-white transition-all duration-500 shadow-2xl">
                   Begin Application
-                </button>
+                </span>
               </Link>
               <Link href="/contact">
-                <button className="px-16 py-6 border border-white/40 text-white text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-white hover:text-signature-navy transition-all duration-500">
+                <span className="inline-block px-16 py-6 border border-white/40 text-white text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-white hover:text-signature-navy transition-all duration-500">
                   Request Prospectus
-                </button>
+                </span>
               </Link>
             </div>
           </div>

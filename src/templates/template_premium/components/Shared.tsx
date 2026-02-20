@@ -57,10 +57,10 @@ export const Button: React.FC<{ children: React.ReactNode; variant?: 'primary' |
     };
 
     return (
-        <button className={`${baseClasses} ${variants[variant]}`}>
+        <span className={`inline-block text-center ${baseClasses} ${variants[variant]}`}>
             <span className="relative z-10">{children}</span>
             <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
-        </button>
+        </span>
     );
 };
 

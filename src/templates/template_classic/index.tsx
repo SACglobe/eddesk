@@ -38,7 +38,7 @@ export const Renderer = ({ data, path }: { data: any, path: string }) => {
 
         switch (normalizedPath) {
             case '/':
-                return <HomeScreen />;
+                return <HomeScreen data={data} />;
             case '/about':
                 return <AboutScreen />;
             case '/admission':
@@ -50,7 +50,7 @@ export const Renderer = ({ data, path }: { data: any, path: string }) => {
             case '/events':
                 return <BroadcastScreen />;
             default:
-                return <HomeScreen />;
+                return <HomeScreen data={data} />;
         }
     };
 

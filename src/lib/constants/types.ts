@@ -1,6 +1,18 @@
 import { SchoolContentV1 } from '../../../school-content.schema';
 
 export type SchoolContent = Omit<{
+    hero_media: {
+        media_type: string;
+        media_url: string;
+        headline: string;
+        subheadline: string;
+        primary_button_text: string;
+        primary_button_url: string;
+        secondary_button_text: string;
+        secondary_button_url: string;
+        display_order: number;
+        is_active: boolean;
+    }[];
     meta: {
         motto?: string;
     };

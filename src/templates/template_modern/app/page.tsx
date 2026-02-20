@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import HeroSlider from '../components/HeroSlider';
 import { SCHOOL_NAME, STATS, ACTIVITIES, UPCOMING_EVENTS, ANNOUNCEMENTS } from '../constants';
 import Link from 'next/link';
+import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 
 const highlightImages = [
     "school/image/campus1.png",
@@ -141,9 +142,9 @@ const AnimatedNumber: React.FC<{ value: number; suffix?: string; duration?: numb
     }, [hasStarted, value, duration]);
 
     return <span ref={elementRef}>{count}{suffix}</span>;
-};
+}
 
-const Home: React.FC = () => {
+export default function Home({ data }: { data: TenantViewModel }) {
     const broadcastNews = ANNOUNCEMENTS.slice(0, 3);
 
     const parseStat = (val: string) => {
@@ -154,7 +155,7 @@ const Home: React.FC = () => {
 
     return (
         <div className="space-y-24 pb-24">
-            <HeroSlider />
+            <HeroSlider slides={data?.heroMedia ?? []} />
 
             {/* Broadcast Ticker */}
             <section className="sticky top-20 z-40 flex items-center h-12 overflow-hidden bg-accent shadow-[0_4px_20px_rgba(0,0,0,0.1)] border-y border-yellow-500/20">
@@ -560,6 +561,4 @@ const Home: React.FC = () => {
             </section>
         </div>
     );
-};
-
-export default Home;
+}
