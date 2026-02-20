@@ -146,6 +146,7 @@ const AnimatedNumber: React.FC<{ value: number; suffix?: string; duration?: numb
 
 export default function Home({ data }: { data: TenantViewModel }) {
     const broadcastNews = ANNOUNCEMENTS.slice(0, 3);
+    const principal = data?.personnel?.find(p => p.personType === 'principal') ?? null;
 
     const parseStat = (val: string) => {
         const num = parseInt(val.replace(/[^0-9]/g, '')) || 0;
@@ -293,7 +294,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                 <div className="relative order-2 lg:order-1">
                     <div className="absolute inset-0 bg-accent rounded-[3rem] rotate-3 translate-x-4 translate-y-4"></div>
                     <img
-                        src="school/image/principal.png"
+                        src={principal?.photoUrl ?? "school/image/principal.png"}
                         alt="Principal"
                         className="rounded-[3rem] shadow-2xl relative z-10 w-full object-cover aspect-[4/5]"
                     />
@@ -308,11 +309,11 @@ export default function Home({ data }: { data: TenantViewModel }) {
                     </div>
                     <h2 className="text-4xl md:text-6xl font-bold text-primary leading-[1.1]">Leading with Vision & Integrity</h2>
                     <p className="text-gray-600 text-lg md:text-xl leading-relaxed">
-                        Welcome to {SCHOOL_NAME}. Our institution stands as a testament to the power of dedicated education. We believe that every child is a unique universe of potential, waiting to be explored and guided towards excellence.
+                        "{principal?.bio ?? ''}"
                     </p>
                     <div className="pt-4 border-t-2 border-gray-100">
-                        <p className="font-bold text-primary text-2xl mb-1">Priya</p>
-                        <p className="text-yellow-600 font-bold uppercase tracking-widest text-sm">Principal, EdDesk</p>
+                        <p className="font-bold text-primary text-2xl mb-1">{principal?.name ?? ''}</p>
+                        <p className="text-yellow-600 font-bold uppercase tracking-widest text-sm">{principal?.designation ?? 'Principal'}</p>
                         <Link href="/about" className="mt-8 bg-primary text-white px-8 py-4 rounded-2xl font-bold hover:bg-accent hover:text-primary transition-all flex items-center gap-3 group">
                             Read More
                             <span className="group-hover:translate-x-2 transition-transform">→</span>

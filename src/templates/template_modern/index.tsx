@@ -63,7 +63,7 @@ export const Renderer = ({ data, path }: { data: any, path: string }) => {
             case '/faculty':
                 return <Faculty />;
             default:
-                return <Home />;
+                return <Home data={data} />;
         }
     };
 

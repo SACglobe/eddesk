@@ -443,6 +443,8 @@ export default function Home({ data }: { data: TenantViewModel }) {
     .filter(s => s.isActive)
     .sort((a, b) => a.displayOrder - b.displayOrder)[0] ?? null;
 
+  const principal = data?.personnel?.find(p => p.personType === 'principal') ?? null;
+
   return (
     <LayoutWrapper>
       <div className="fade-in bg-signature-ivory">
@@ -454,21 +456,21 @@ export default function Home({ data }: { data: TenantViewModel }) {
           <div className={`lg:col-span-7 transition-all duration-1000 ${introVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
             <SectionHeader title="A Message from the Principal" subtitle="Academic Leadership" />
             <p className="text-4xl md:text-5xl font-serif italic text-signature-navy mb-12 leading-[1.2] tracking-tight">
-              "{schoolData.principalMessage.text}"
+              "{principal?.bio ?? ''}"
             </p>
             <div className="flex items-center gap-8">
-              <img src={schoolData.principalMessage.image} className="w-24 h-24 rounded-full object-cover grayscale border-2 border-signature-gold/20" alt="Principal" />
+              <img src={principal?.photoUrl ?? ''} className="w-24 h-24 rounded-full object-cover grayscale border-2 border-signature-gold/20" alt="Principal" />
               <div>
-                <h4 className="font-bold text-2xl tracking-tight">{schoolData.principalMessage.name}</h4>
+                <h4 className="font-bold text-2xl tracking-tight">{principal?.name ?? ''}</h4>
                 <p className="text-[11px] uppercase tracking-[0.4em] text-signature-gold font-bold">The Academy Principal</p>
               </div>
             </div>
           </div>
           <div className={`lg:col-span-5 bg-signature-navy p-16 md:p-24 text-white relative transition-all duration-1000 delay-300 ${introVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'}`}>
             <div className="absolute top-0 right-0 w-32 h-32 bg-signature-gold/10"></div>
-            <SectionHeader title={schoolData.boardMessage.title} subtitle="Institutional Governance" light />
+            <SectionHeader title="The Legacy of Excellence" subtitle="Institutional Governance" light />
             <p className="text-white/50 leading-loose mb-12 font-light text-xl">
-              {schoolData.boardMessage.text}
+              For over three decades, Sterling has stood as a beacon of intellectual rigor. Our governance is committed to maintaining the highest standards of stewardship and visionary growth.
             </p>
             <Link href="/about">
               <Button variant="outline">Governance Archive</Button>

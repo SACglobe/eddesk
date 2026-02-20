@@ -4,9 +4,11 @@ import { MOCK_DATA } from '../constants/mockData';
 import Link from 'next/link';
 
 const HomeScreen = ({ data }) => {
-    const { SCHOOL_PROFILE, LEADERSHIP, STATISTICS, ACHIEVEMENTS, INFRASTRUCTURE, FACULTY } = MOCK_DATA;
+    const { SCHOOL_PROFILE, STATISTICS, ACHIEVEMENTS, INFRASTRUCTURE, FACULTY } = MOCK_DATA;
     const [currentSlide, setCurrentSlide] = useState(0);
     const [galleryIndex, setGalleryIndex] = useState(0);
+
+    const principal = data?.personnel?.find(p => p.personType === 'principal') ?? null;
 
     const heroSlides = (data?.heroMedia ?? [])
         .filter(s => s.isActive)
@@ -176,8 +178,8 @@ const HomeScreen = ({ data }) => {
                             <div className="absolute -top-10 -left-10 w-full h-full bg-slate-50 border border-slate-100 -z-10 translate-x-4 translate-y-4"></div>
                             <div className="relative group">
                                 <img
-                                    src={LEADERSHIP.principal_image}
-                                    alt={LEADERSHIP.principal_name}
+                                    src={principal?.photoUrl ?? ''}
+                                    alt={principal?.name ?? 'Principal'}
                                     className="w-full aspect-[4/5] lg:aspect-auto lg:h-[650px] object-cover shadow-2xl transition-all duration-1000 group-hover:scale-[1.02]"
                                 />
                                 <div className="absolute bottom-10 left-10 p-8 bg-emerald-900 text-white shadow-2xl hidden lg:block border-l-4 border-emerald-400">
@@ -200,12 +202,12 @@ const HomeScreen = ({ data }) => {
 
                                 <div className="relative">
                                     <p className="text-lg md:text-xl text-slate-700 italic leading-relaxed serif mb-12 relative z-10">
-                                        "{LEADERSHIP.principal_message}"
+                                        "{principal?.bio ?? ''}"
                                     </p>
                                     <div className="pt-10 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-6">
                                         <div>
-                                            <p className="text-2xl font-bold text-slate-900 serif tracking-wide uppercase">{LEADERSHIP.principal_name}</p>
-                                            <p className="text-[10px] text-emerald-600 uppercase tracking-[0.3em] font-bold mt-2">Principal & Chief Administrator</p>
+                                            <p className="text-2xl font-bold text-slate-900 serif tracking-wide uppercase">{principal?.name ?? ''}</p>
+                                            <p className="text-[10px] text-emerald-600 uppercase tracking-[0.3em] font-bold mt-2">{principal?.designation ?? 'Principal'}</p>
                                         </div>
                                         <div className="flex gap-4">
                                             <Link href="/about" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-emerald-900 transition-colors py-2 border-b border-transparent hover:border-emerald-900">Read Full Address →</Link>
