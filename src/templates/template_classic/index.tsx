@@ -90,10 +90,12 @@ export const Renderer = ({ data, path }: { data: any, path: string }) => {
 
     return (
         <div className="classic-template-wrapper">
-            <Header />
-            {announcementsEnabled && activeAnnouncements.length > 0 && (
-                <BroadcastTicker announcements={activeAnnouncements} />
-            )}
+            <div className="sticky top-0 z-50">
+                <Header />
+                {announcementsEnabled && activeAnnouncements.length > 0 && (
+                    <BroadcastTicker announcements={activeAnnouncements} />
+                )}
+            </div>
             <main>
                 {renderScreen()}
             </main>
