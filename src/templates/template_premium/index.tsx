@@ -52,7 +52,7 @@ export const Renderer = ({ data, path }: { data: any, path: string }) => {
 
         switch (normalizedPath) {
             case '/':
-                return <Home data={data} />;
+                return <Home data={data} statsEnabled={statsEnabled} statistics={statistics} />;
             case '/about':
                 return <About />;
             case '/academics':
@@ -72,13 +72,30 @@ export const Renderer = ({ data, path }: { data: any, path: string }) => {
             case '/portrait':
                 return <Portrait />;
             default:
-                return <Home data={data} />;
+                return <Home data={data} statsEnabled={statsEnabled} statistics={statistics} />;
         }
     };
 
+    const announcementsEnabled = (data?.homepageSections ?? [])
+        .find((s: any) => s.sectionKey === 'announcements')
+        ?.isEnabled ?? true;
+    const now = new Date();
+    const activeAnnouncements = announcementsEnabled
+        ? (data?.announcements ?? []).filter((a: any) =>
+            a.isActive &&
+            (a.expiresAt == null || new Date(a.expiresAt) > now)
+        )
+        : [];
+
+    const statsEnabled = (data?.homepageSections ?? [])
+        .find((s: any) => s.sectionKey === 'stats')
+        ?.isEnabled ?? true;
+    const statistics = (data?.statistics ?? [])
+        .sort((a, b) => a.displayOrder - b.displayOrder);
+
     return (
         <div className="premium-template-wrapper antialiased bg-white min-h-screen flex flex-col">
-            <Header />
+            <Header announcements={activeAnnouncements} />
             <main className="flex-grow">
                 {renderScreen()}
             </main>

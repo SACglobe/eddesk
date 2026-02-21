@@ -102,11 +102,11 @@ export const LOCAL_TENANT_DATA = {
 
   // ── announcements ──────────────────────────────────────────────────
   announcements: [
-    { id: 'a-01', school_id: 'demo-school-001', title: 'Admissions Open for 2025–26', message: 'Applications now open for Nursery to Grade 12. Limited seats. Apply before March 31.', priority: 1, expires_at: '2025-03-31T23:59:59Z', is_active: true },
-    { id: 'a-02', school_id: 'demo-school-001', title: 'Annual Sports Day – Feb 22', message: 'Parents cordially invited. Gates open 8:30 AM. Prize distribution at 12:00 PM.', priority: 2, expires_at: '2025-02-23T23:59:59Z', is_active: true },
-    { id: 'a-03', school_id: 'demo-school-001', title: 'Board Exam Timetable Released', message: 'Class 10 & 12 board exam schedule published. Download from the student portal.', priority: 3, expires_at: '2025-04-30T23:59:59Z', is_active: true },
-    { id: 'a-04', school_id: 'demo-school-001', title: 'Parent–Teacher Meeting – March 8', message: 'Quarterly PTM for all classes. Mandatory attendance. Individual 10-min slots pre-booked.', priority: 4, expires_at: '2025-03-09T23:59:59Z', is_active: true },
-    { id: 'a-05', school_id: 'demo-school-001', title: 'School Holiday – Pongal', message: 'School will remain closed January 14–16 for Pongal. Classes resume January 17.', priority: 5, expires_at: '2025-01-17T00:00:00Z', is_active: false },
+    { id: 'a-01', school_id: 'demo-school-001', title: 'Admissions Open for 2026–27', message: 'Applications now open for Nursery to Grade 12. Limited seats. Apply before March 31.', priority: 1, expires_at: '2026-03-31T23:59:59Z', is_active: true },
+    { id: 'a-02', school_id: 'demo-school-001', title: 'Annual Sports Day – Feb 22', message: 'Parents cordially invited. Gates open 8:30 AM. Prize distribution at 12:00 PM.', priority: 2, expires_at: '2026-02-23T23:59:59Z', is_active: true },
+    { id: 'a-03', school_id: 'demo-school-001', title: 'Board Exam Timetable Released', message: 'Class 10 & 12 board exam schedule published. Download from the student portal.', priority: 3, expires_at: '2026-04-30T23:59:59Z', is_active: true },
+    { id: 'a-04', school_id: 'demo-school-001', title: 'Parent–Teacher Meeting – March 8', message: 'Quarterly PTM for all classes. Mandatory attendance. Individual 10-min slots pre-booked.', priority: 4, expires_at: '2026-03-09T23:59:59Z', is_active: true },
+    { id: 'a-05', school_id: 'demo-school-001', title: 'School Holiday – Pongal', message: 'School will remain closed January 14–16 for Pongal. Classes resume January 17.', priority: 5, expires_at: '2026-01-17T00:00:00Z', is_active: false },
   ],
 
   // ── academic_results ───────────────────────────────────────────────
@@ -135,17 +135,17 @@ export const LOCAL_TENANT_DATA = {
       id: 'p-01', school_id: 'demo-school-001',
       name: 'Dr. Meenakshi Raghavan', designation: 'Principal',
       bio: 'Dr. Raghavan brings 28 years of education leadership. PhD in Educational Psychology, University of Madras. Her vision: every child is a unique learner deserving a personalised path.',
-      photo_url: '/demo/principal.jpg', person_type: 'principal', display_order: 1, is_featured: true,
+      photo_url: '/school/image/principal.png', person_type: 'principal', display_order: 1, is_featured: true,
     },
     // Faculty
-    { id: 'p-02', school_id: 'demo-school-001', name: 'Mr. Suresh Kumar', designation: 'Head of Sciences', bio: 'M.Sc Physics. 15 years teaching experience. Makes complex concepts simple.', photo_url: '/demo/faculty-1.jpg', person_type: 'faculty', display_order: 1, is_featured: true },
-    { id: 'p-03', school_id: 'demo-school-001', name: 'Ms. Ananya Krishnan', designation: 'Head of Mathematics', bio: 'B.Tech + M.Ed. Coached 3 national-level Math Olympiad winners in 5 years.', photo_url: '/demo/faculty-2.jpg', person_type: 'faculty', display_order: 2, is_featured: true },
-    { id: 'p-04', school_id: 'demo-school-001', name: 'Mr. Rajiv Nair', designation: 'Physical Education Director', bio: 'Former national-level basketball player. Certified sports coach, 12 years school sports management.', photo_url: '/demo/faculty-3.jpg', person_type: 'faculty', display_order: 3, is_featured: true },
-    { id: 'p-05', school_id: 'demo-school-001', name: 'Ms. Divya Balaji', designation: 'Head of Languages', bio: 'MA English Literature. 10 years experience. Passionate about creative writing and debate.', photo_url: '/demo/faculty-4.jpg', person_type: 'faculty', display_order: 4, is_featured: false },
-    { id: 'p-06', school_id: 'demo-school-001', name: 'Mr. Karthik Subramanian', designation: 'Head of Computer Science', bio: 'B.E. Computer Science. Certified Google Educator. Leads the school\'s robotics and coding club.', photo_url: '/demo/faculty-5.jpg', person_type: 'faculty', display_order: 5, is_featured: false },
-    { id: 'p-07', school_id: 'demo-school-001', name: 'Ms. Preethi Nambiar', designation: 'Head of Arts', bio: 'MFA in Fine Arts. 8 years guiding students in visual and performing arts.', photo_url: '/demo/faculty-6.jpg', person_type: 'faculty', display_order: 6, is_featured: false },
+    { id: 'p-02', school_id: 'demo-school-001', name: 'Mr. Suresh Kumar', designation: 'Head of Sciences', bio: 'M.Sc Physics. 15 years teaching experience. Makes complex concepts simple.', photo_url: '/school/image/teacher1.png', person_type: 'faculty', display_order: 1, is_featured: true },
+    { id: 'p-03', school_id: 'demo-school-001', name: 'Ms. Ananya Krishnan', designation: 'Head of Mathematics', bio: 'B.Tech + M.Ed. Coached 3 national-level Math Olympiad winners in 5 years.', photo_url: '/school/image/teacher2.png', person_type: 'faculty', display_order: 2, is_featured: true },
+    { id: 'p-04', school_id: 'demo-school-001', name: 'Mr. Rajiv Nair', designation: 'Physical Education Director', bio: 'Former national-level basketball player. Certified sports coach, 12 years school sports management.', photo_url: '/school/image/teacher3.png', person_type: 'faculty', display_order: 3, is_featured: true },
+    { id: 'p-05', school_id: 'demo-school-001', name: 'Ms. Divya Balaji', designation: 'Head of Languages', bio: 'MA English Literature. 10 years experience. Passionate about creative writing and debate.', photo_url: '/school/image/teacher1.png', person_type: 'faculty', display_order: 4, is_featured: false },
+    { id: 'p-06', school_id: 'demo-school-001', name: 'Mr. Karthik Subramanian', designation: 'Head of Computer Science', bio: 'B.E. Computer Science. Certified Google Educator. Leads the school\'s robotics and coding club.', photo_url: '/school/image/teacher2.png', person_type: 'faculty', display_order: 5, is_featured: false },
+    { id: 'p-07', school_id: 'demo-school-001', name: 'Ms. Preethi Nambiar', designation: 'Head of Arts', bio: 'MFA in Fine Arts. 8 years guiding students in visual and performing arts.', photo_url: '/school/image/teacher3.png', person_type: 'faculty', display_order: 6, is_featured: false },
     // Board
-    { id: 'p-08', school_id: 'demo-school-001', name: 'Mr. Venkatesh Iyer', designation: 'Chairman, Board of Trustees', bio: 'Founder of Sunrise Group of Institutions. 30+ years in education philanthropy.', photo_url: '/demo/board-1.jpg', person_type: 'board', display_order: 1, is_featured: false },
+    { id: 'p-08', school_id: 'demo-school-001', name: 'Mr. Venkatesh Iyer', designation: 'Chairman, Board of Trustees', bio: 'Founder of Sunrise Group of Institutions. 30+ years in education philanthropy.', photo_url: '/school/image/teacher1.png', person_type: 'board', display_order: 1, is_featured: false },
   ],
 
   // ── campus_statistics ──────────────────────────────────────────────

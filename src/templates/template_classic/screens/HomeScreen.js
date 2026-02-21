@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { MOCK_DATA } from '../constants/mockData';
 import Link from 'next/link';
 
-const HomeScreen = ({ data }) => {
-    const { SCHOOL_PROFILE, STATISTICS, ACHIEVEMENTS, INFRASTRUCTURE, FACULTY } = MOCK_DATA;
+const HomeScreen = ({ data, statsEnabled, statistics, facultyEnabled, faculty }) => {
+    const { SCHOOL_PROFILE, STATISTICS_LEGACY, ACHIEVEMENTS, INFRASTRUCTURE } = MOCK_DATA;
     const [currentSlide, setCurrentSlide] = useState(0);
     const [galleryIndex, setGalleryIndex] = useState(0);
 
@@ -28,7 +28,7 @@ const HomeScreen = ({ data }) => {
 
     const recentAchievements = ACHIEVEMENTS.school_achievements.slice(0, 3);
 
-    // Gallery Carousel Logic
+
     const displayCount = 4;
     const totalGalleryImages = INFRASTRUCTURE.campus_images.length;
 
@@ -176,11 +176,11 @@ const HomeScreen = ({ data }) => {
                     <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-0">
                         <div className="w-full lg:w-1/2 relative">
                             <div className="absolute -top-10 -left-10 w-full h-full bg-slate-50 border border-slate-100 -z-10 translate-x-4 translate-y-4"></div>
-                            <div className="relative group">
+                            <div className="relative group overflow-hidden">
                                 <img
                                     src={principal?.photoUrl ?? ''}
                                     alt={principal?.name ?? 'Principal'}
-                                    className="w-full aspect-[4/5] lg:aspect-auto lg:h-[650px] object-cover shadow-2xl transition-all duration-1000 group-hover:scale-[1.02]"
+                                    className="w-full aspect-[4/5] lg:aspect-auto lg:h-[650px] object-cover object-top shadow-2xl transition-all duration-1000 group-hover:scale-[1.02]"
                                 />
                                 <div className="absolute bottom-10 left-10 p-8 bg-emerald-900 text-white shadow-2xl hidden lg:block border-l-4 border-emerald-400">
                                     <div className="text-xs uppercase font-bold tracking-[0.3em] mb-1">Academic Head</div>
@@ -221,69 +221,66 @@ const HomeScreen = ({ data }) => {
             </section>
 
             {/* 4. Statistics Counter Section */}
-            <section className="py-20 bg-emerald-900 text-white relative z-20 shadow-2xl">
-                <div className="max-w-[1600px] mx-auto px-2 md:px-6">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
-                        {STATISTICS.map((stat, idx) => (
-                            <div key={idx} className="text-center group">
-                                <div className="text-4xl md:text-6xl font-bold mb-2 serif text-emerald-50 group-hover:scale-110 transition-transform inline-block">
-                                    {stat.value}<span className="text-emerald-400">+</span>
+            {statsEnabled && statistics.length > 0 && (
+                <section className="py-20 bg-emerald-900 text-white relative z-20 shadow-2xl">
+                    <div className="max-w-[1600px] mx-auto px-2 md:px-6">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
+                            {statistics.map((stat, idx) => (
+                                <div key={idx} className="text-center group">
+                                    <div className="text-4xl md:text-6xl font-bold mb-2 serif text-emerald-50 group-hover:scale-110 transition-transform inline-block">
+                                        {stat.value}
+                                    </div>
+                                    <div className="text-[10px] text-emerald-200 uppercase tracking-[0.3em] font-bold border-t border-emerald-800 pt-4 mt-2">
+                                        {stat.label}
+                                    </div>
                                 </div>
-                                <div className="text-[10px] text-emerald-200 uppercase tracking-[0.3em] font-bold border-t border-emerald-800 pt-4 mt-2">
-                                    {stat.label}
-                                </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            )}
 
             {/* 5. Our Distinguished Educators */}
-            <section className="py-24 bg-white">
-                <div className="max-w-[1600px] mx-auto px-2 md:px-6">
-                    <div className="text-center mb-16">
-                        <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.4em] block mb-4">Intellectual Capital</span>
-                        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Our Distinguished Educators</h2>
-                        <div className="h-1 w-20 bg-emerald-900 mx-auto mt-6"></div>
-                    </div>
+            {facultyEnabled && faculty.length > 0 && (
+                <section className="py-24 bg-white">
+                    <div className="max-w-[1600px] mx-auto px-2 md:px-6">
+                        <div className="text-center mb-16">
+                            <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.4em] block mb-4">Intellectual Capital</span>
+                            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Our Distinguished Educators</h2>
+                            <div className="h-1 w-20 bg-emerald-900 mx-auto mt-6"></div>
+                        </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
-                        {FACULTY.teachers.map((teacher, idx) => (
-                            <div key={idx} className="flex flex-col items-center group">
-                                <div className="relative mb-6">
-                                    <div className="w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-white shadow-xl group-hover:border-emerald-500 transition-all duration-500 group-hover:scale-105">
-                                        <img
-                                            src={teacher.photo}
-                                            alt={teacher.name}
-                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:rotate-3"
-                                        />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+                            {faculty.map((teacher, idx) => (
+                                <div key={idx} className="flex flex-col items-center group">
+                                    <div className="relative mb-6">
+                                        <div className="w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-white shadow-xl group-hover:border-emerald-500 transition-all duration-500 group-hover:scale-105">
+                                            <img
+                                                src={teacher.photoUrl ?? ''}
+                                                alt={teacher.name ?? ''}
+                                                className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:rotate-3"
+                                            />
+                                        </div>
+                                        <div className="absolute inset-0 rounded-full border border-emerald-900/10 scale-110 -z-10"></div>
                                     </div>
-                                    <div className="absolute inset-0 rounded-full border border-emerald-900/10 scale-110 -z-10"></div>
-                                </div>
 
-                                <div className="text-center">
-                                    <h4 className="text-xl font-bold text-slate-900 serif mb-2 group-hover:text-emerald-900 transition-colors">
-                                        {teacher.name}
-                                    </h4>
-                                    <div className="h-[1px] w-8 bg-emerald-200 mx-auto mb-3 group-hover:w-16 transition-all duration-500"></div>
-                                    <p className="text-[10px] text-emerald-600 uppercase tracking-[0.2em] font-bold leading-tight">
-                                        {teacher.subject}
-                                    </p>
+                                    <div className="text-center">
+                                        <h4 className="text-xl font-bold text-slate-900 serif mb-2 group-hover:text-emerald-900 transition-colors">
+                                            {teacher.name}
+                                        </h4>
+                                        <div className="h-[1px] w-8 bg-emerald-200 mx-auto mb-3 group-hover:w-16 transition-all duration-500"></div>
+                                        <p className="text-[10px] text-emerald-600 uppercase tracking-[0.2em] font-bold leading-tight">
+                                            {teacher.designation}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
 
-                    <div className="text-center mt-20">
-                        <Link
-                            href="/faculty"
-                            className="px-10 py-4 border-2 border-emerald-900 text-emerald-900 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-emerald-900 hover:text-white transition-all inline-block"
-                        >
-                            Meet Entire Faculty
-                        </Link>
+
                     </div>
-                </div>
-            </section>
+                </section>
+            )}
 
             {/* 6. Sports Activities and Achievements Section (HORIZONTAL SCROLL) */}
             <section className="py-24 bg-emerald-50/30 border-t border-slate-100">

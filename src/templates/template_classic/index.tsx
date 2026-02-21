@@ -38,7 +38,13 @@ export const Renderer = ({ data, path }: { data: any, path: string }) => {
 
         switch (normalizedPath) {
             case '/':
-                return <HomeScreen data={data} />;
+                return <HomeScreen
+                    data={data}
+                    statsEnabled={statsEnabled}
+                    statistics={statistics}
+                    facultyEnabled={facultyEnabled}
+                    faculty={faculty}
+                />;
             case '/about':
                 return <AboutScreen />;
             case '/admission':
@@ -50,14 +56,44 @@ export const Renderer = ({ data, path }: { data: any, path: string }) => {
             case '/events':
                 return <BroadcastScreen />;
             default:
-                return <HomeScreen data={data} />;
+                return <HomeScreen
+                    data={data}
+                    statsEnabled={statsEnabled}
+                    statistics={statistics}
+                    facultyEnabled={facultyEnabled}
+                    faculty={faculty}
+                />;
         }
     };
+
+    const announcementsEnabled = (data?.homepageSections ?? [])
+        .find((s: any) => s.sectionKey === 'announcements')
+        ?.isEnabled ?? true;
+    const now = new Date();
+    const activeAnnouncements = (data?.announcements ?? []).filter((a: any) =>
+        a.isActive &&
+        (a.expiresAt == null || new Date(a.expiresAt) > now)
+    );
+
+    const statsEnabled = (data?.homepageSections ?? [])
+        .find((s: any) => s.sectionKey === 'stats')
+        ?.isEnabled ?? true;
+    const statistics = (data?.statistics ?? [])
+        .sort((a, b) => a.displayOrder - b.displayOrder);
+
+    const facultySection = (data?.homepageSections ?? [])
+        .find((s: any) => s.sectionKey === 'faculty');
+    const facultyEnabled = facultySection?.isEnabled ?? true;
+    const faculty = (data?.personnel ?? [])
+        .filter((p: any) => p.personType === 'faculty')
+        .sort((a: any, b: any) => a.displayOrder - b.displayOrder);
 
     return (
         <div className="classic-template-wrapper">
             <Header />
-            <BroadcastTicker />
+            {announcementsEnabled && activeAnnouncements.length > 0 && (
+                <BroadcastTicker announcements={activeAnnouncements} />
+            )}
             <main>
                 {renderScreen()}
             </main>

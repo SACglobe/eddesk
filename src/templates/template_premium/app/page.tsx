@@ -209,49 +209,67 @@ const InstitutionalStats: React.FC = () => {
   );
 };
 
-const SchoolDashboard: React.FC = () => {
+interface DashboardProps {
+  statistics: Array<{ label: string; value: string; icon: string; displayOrder: number }>;
+  statsEnabled: boolean;
+}
+
+const SchoolDashboard: React.FC<DashboardProps> = ({ statistics, statsEnabled }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
 
-  const stats = [
-    {
-      label: "Successful Alumni", value: "8,500+", icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 14l9-5-9-5-9 5 9 5z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-        </svg>
-      )
-    },
-    {
-      label: "Expert Faculty", value: "150+", icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-      )
-    },
-    {
-      label: "Campus Acres", value: "25", icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-        </svg>
-      )
-    },
-    {
-      label: "Student Ratio", value: "15:1", icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
-      )
-    },
-  ];
+  const SVG_ICON_MAP: Record<string, React.ReactNode> = {
+    users: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 14l9-5-9-5-9 5 9 5z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+      </svg>
+    ),
+    graduation: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 14l9-5-9-5-9 5 9 5z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+      </svg>
+    ),
+    calendar: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    ),
+    map: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+      </svg>
+    ),
+    trophy: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138" />
+      </svg>
+    ),
+    network: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+    ),
+  };
+
+  const DEFAULT_SVG = (
+    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+    </svg>
+  );
+
+  const getSvgIcon = (name: string) => SVG_ICON_MAP[name] ?? DEFAULT_SVG;
+
+  if (!statsEnabled || statistics.length === 0) return null;
 
   return (
     <section ref={containerRef} className="bg-[#F0F7FF] py-24 px-8 border-b border-signature-navy/5">
       <div className="max-w-[1400px] mx-auto">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-0">
-          {stats.map((stat, i) => (
+          {statistics.map((stat, i) => (
             <div key={i} className={`flex flex-col items-center text-center px-12 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'} delay-${i * 150} lg:border-r last:border-0 border-signature-navy/10`}>
               <div className="text-signature-gold mb-6 opacity-60 group-hover:opacity-100 transition-opacity">
-                {stat.icon}
+                {getSvgIcon(stat.icon)}
               </div>
               <div className="text-5xl md:text-6xl font-serif text-signature-navy mb-4 tracking-tighter">
                 {stat.value}
@@ -267,28 +285,25 @@ const SchoolDashboard: React.FC = () => {
   );
 };
 
-const FacultyHighlights: React.FC = () => {
+interface FacultyMember {
+  name: string;
+  designation: string;
+  photoUrl: string;
+  bio: string;
+  displayOrder: number;
+  isFeatured: boolean;
+}
+
+interface FacultyHighlightsProps {
+  faculty: FacultyMember[];
+  facultyEnabled: boolean;
+}
+
+const FacultyHighlights: React.FC<FacultyHighlightsProps> = ({ faculty, facultyEnabled }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
-  const educators = [
-    {
-      name: "Dr. Alistair Thorne",
-      role: "Head of Humanities",
-      image: "school/image/teacher1.png",
-      bio: "Former fellow at the Royal Society of Arts with a focus on classical philosophy and epistemology."
-    },
-    {
-      name: "Dr. Sofia Moretti",
-      role: "Dean of Sciences",
-      image: "school/image/teacher2.png",
-      bio: "Leading research in molecular biology and sustainable ecological systems in partnership with global labs."
-    },
-    {
-      name: "Sir Richard Vane",
-      role: "Director of Arts",
-      image: "school/image/teacher3.png",
-      bio: "World-renowned curator and advocate for interdisciplinary visual expression and historic preservation."
-    }
-  ];
+
+  if (!facultyEnabled || faculty.length === 0) return null;
+
 
   return (
     <section ref={containerRef} className="py-48 px-8 bg-white border-b border-signature-navy/5 overflow-hidden">
@@ -303,25 +318,21 @@ const FacultyHighlights: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
-          {educators.map((edu, i) => (
+          {faculty.map((edu, i) => (
             <div key={i} className={`group transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`} style={{ transitionDelay: `${i * 200}ms` }}>
               <div className="relative aspect-[4/5] overflow-hidden mb-8">
-                <img src={edu.image} alt={edu.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
+                <img src={edu.photoUrl ?? ''} alt={edu.name ?? ''} className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
                 <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-signature-gold/30"></div>
               </div>
-              <span className="text-[10px] uppercase tracking-[0.4em] text-signature-gold font-bold mb-4 block">{edu.role}</span>
-              <h3 className="text-3xl font-serif mb-6 group-hover:text-signature-gold transition-colors">{edu.name}</h3>
-              <p className="text-gray-500 font-light leading-relaxed mb-8">{edu.bio}</p>
+              <span className="text-[10px] uppercase tracking-[0.4em] text-signature-gold font-bold mb-4 block">{edu.designation ?? ''}</span>
+              <h3 className="text-3xl font-serif mb-6 group-hover:text-signature-gold transition-colors">{edu.name ?? ''}</h3>
+              <p className="text-gray-500 font-light leading-relaxed mb-8">{edu.bio ?? ''}</p>
               <div className="w-8 h-px bg-signature-navy/20 group-hover:w-16 group-hover:bg-signature-gold transition-all duration-700"></div>
             </div>
           ))}
         </div>
 
-        <div className="mt-32 text-center">
-          <Link href="/faculty">
-            <Button variant="outline">Meet Entire Faculty</Button>
-          </Link>
-        </div>
+
       </div>
     </section>
   );
@@ -436,7 +447,11 @@ const UpcomingEvents: React.FC = () => {
   );
 };
 
-export default function Home({ data }: { data: TenantViewModel }) {
+export default function Home({ data, statsEnabled, statistics }: {
+  data: TenantViewModel;
+  statsEnabled: boolean;
+  statistics: any[];
+}) {
   const { containerRef: introRef, isVisible: introVisible } = useIntersectionObserver({ threshold: 0.1 });
 
   const heroSlide = (data?.heroMedia ?? [])
@@ -444,6 +459,13 @@ export default function Home({ data }: { data: TenantViewModel }) {
     .sort((a, b) => a.displayOrder - b.displayOrder)[0] ?? null;
 
   const principal = data?.personnel?.find(p => p.personType === 'principal') ?? null;
+
+  const facultySection = (data?.homepageSections ?? [])
+    .find(s => s.sectionKey === 'faculty');
+  const facultyEnabled = facultySection?.isEnabled ?? true;
+  const faculty = (data?.personnel as any[] ?? [])
+    .filter(p => p.personType === 'faculty')
+    .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
   return (
     <LayoutWrapper>
@@ -459,7 +481,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
               "{principal?.bio ?? ''}"
             </p>
             <div className="flex items-center gap-8">
-              <img src={principal?.photoUrl ?? ''} className="w-24 h-24 rounded-full object-cover grayscale border-2 border-signature-gold/20" alt="Principal" />
+              <img src={principal?.photoUrl ?? ''} className="w-24 h-24 rounded-full object-cover object-top grayscale border-2 border-signature-gold/20" alt="Principal" />
               <div>
                 <h4 className="font-bold text-2xl tracking-tight">{principal?.name ?? ''}</h4>
                 <p className="text-[11px] uppercase tracking-[0.4em] text-signature-gold font-bold">The Academy Principal</p>
@@ -478,9 +500,10 @@ export default function Home({ data }: { data: TenantViewModel }) {
           </div>
         </section>
 
-        <SchoolDashboard />
+        <SchoolDashboard statistics={statistics} statsEnabled={statsEnabled} />
 
-        <FacultyHighlights />
+        <FacultyHighlights faculty={faculty as any} facultyEnabled={facultyEnabled} />
+
 
         <AthleticExcellence />
 

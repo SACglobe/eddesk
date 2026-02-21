@@ -5,8 +5,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { schoolData } from '../data';
 
-const BroadcastBar: React.FC = () => {
-    const announcements = [...schoolData.broadcast, ...schoolData.broadcast];
+interface BroadcastBarProps { announcements: Array<{ title: string; message: string }> }
+const BroadcastBar: React.FC<BroadcastBarProps> = ({ announcements: items }) => {
+    if (items.length === 0) return null;
+    const announcements = [...items, ...items];
 
     return (
         <div className="w-full flex justify-center py-0 animate-in fade-in duration-1000 slide-in-from-top-4">
@@ -18,14 +20,12 @@ const BroadcastBar: React.FC = () => {
                     {announcements.map((item, i) => (
                         <div key={i} className="inline-flex items-center px-12">
                             <span className="text-signature-gold mx-8 text-[8px] select-none opacity-40 group-hover:opacity-80 transition-opacity">✦</span>
-                            {item.type === 'announcement' && (
-                                <span className="mr-4 px-2.5 py-0.5 text-[8px] font-bold tracking-[0.25em] uppercase rounded-full bg-signature-gold/20 text-signature-gold border border-signature-gold/30">
-                                    Notice
-                                </span>
-                            )}
+                            <span className="mr-4 px-2.5 py-0.5 text-[8px] font-bold tracking-[0.25em] uppercase rounded-full bg-signature-gold/20 text-signature-gold border border-signature-gold/30">
+                                Notice
+                            </span>
                             <span className="text-white/90 font-sans text-[11px] tracking-[0.12em] font-medium flex items-center gap-2">
                                 <span className="text-signature-gold font-bold uppercase text-[9px] tracking-[0.2em]">{item.title}</span>
-                                <span className="opacity-70 group-hover:opacity-100 transition-opacity duration-500">{item.content}</span>
+                                <span className="opacity-70 group-hover:opacity-100 transition-opacity duration-500">{item.message}</span>
                             </span>
                         </div>
                     ))}
@@ -35,7 +35,8 @@ const BroadcastBar: React.FC = () => {
     );
 };
 
-const Header: React.FC = () => {
+interface HeaderProps { announcements: Array<{ title: string; message: string; isActive: boolean; expiresAt: string | null }> }
+const Header: React.FC<HeaderProps> = ({ announcements }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isMoreOpen, setIsMoreOpen] = useState(false);
@@ -145,7 +146,7 @@ const Header: React.FC = () => {
                     </div>
 
                     <div className={`hidden lg:block w-full transition-all duration-700 ${isScrolled ? 'mt-4' : 'mt-10'}`}>
-                        <BroadcastBar />
+                        <BroadcastBar announcements={announcements} />
                     </div>
                 </div>
 
@@ -167,7 +168,7 @@ const Header: React.FC = () => {
             </header>
             <div className={`transition-all duration-700 bg-signature-navy ${isScrolled ? 'h-[145px]' : 'h-[210px]'}`}></div>
             <div className="lg:hidden bg-signature-navy pb-4">
-                <BroadcastBar />
+                <BroadcastBar announcements={announcements} />
             </div>
         </>
     );
