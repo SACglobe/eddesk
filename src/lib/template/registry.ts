@@ -1,5 +1,4 @@
-
-import { SchoolContent } from '../constants/types';
+import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import dynamic from 'next/dynamic';
 import { ComponentType } from 'react';
 
@@ -7,7 +6,7 @@ export interface TemplateConfig {
     id: string;
     name: string;
     // Renderer accepts data and optional path
-    Renderer: ComponentType<{ data: SchoolContent; path?: string }>;
+    Renderer: ComponentType<{ data: TenantViewModel; path?: string }>;
     routes: string[];
 }
 

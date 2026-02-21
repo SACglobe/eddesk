@@ -14,9 +14,11 @@ import Portrait from './app/portrait/page';
 import { Header, Footer } from './components/Navigation';
 import './app/globals.css';
 
+import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
+
 export * from './template.config';
 
-export const Renderer = ({ data, path }: { data: any, path: string }) => {
+export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string }) => {
     const router = useRouter();
 
     // Inject fonts

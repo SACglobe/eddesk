@@ -16,9 +16,11 @@ import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import './app/globals.css';
 
+import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
+
 export * from './template.config';
 
-export const Renderer = ({ data, path }: { data: any, path: string }) => {
+export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string }) => {
     const router = useRouter();
 
     // Intercept navigation to absolute paths within the template

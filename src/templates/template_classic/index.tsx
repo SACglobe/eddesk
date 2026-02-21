@@ -15,7 +15,7 @@ import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 
 export * from './template.config';
 
-export const Renderer = ({ data, path }: { data: TenantViewModel, path: string }) => {
+export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string }) => {
     const router = useRouter();
 
     // Intercept navigation to absolute paths within the template
@@ -69,8 +69,10 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path: string }
 
     return (
         <div className="classic-template-wrapper">
-            <Header />
-            <BroadcastTicker announcements={activeAnnouncements} />
+            <div className="sticky top-0 z-[100] bg-white">
+                <Header />
+                <BroadcastTicker announcements={activeAnnouncements} />
+            </div>
             <main>
                 {renderScreen()}
             </main>
