@@ -11,9 +11,11 @@ import Footer from './components/Footer';
 import BroadcastTicker from './components/BroadcastTicker';
 import './app/globals.css';
 
+import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
+
 export * from './template.config';
 
-export const Renderer = ({ data, path }: { data: any, path: string }) => {
+export const Renderer = ({ data, path }: { data: TenantViewModel, path: string }) => {
     const router = useRouter();
 
     // Intercept navigation to absolute paths within the template
@@ -38,35 +40,19 @@ export const Renderer = ({ data, path }: { data: any, path: string }) => {
 
         switch (normalizedPath) {
             case '/':
-                return <HomeScreen
-                    data={data}
-                    statsEnabled={statsEnabled}
-                    statistics={statistics}
-                    facultyEnabled={facultyEnabled}
-                    faculty={faculty}
-                    achievementsEnabled={achievementsEnabled}
-                    sportsAchievements={sportsAchievements}
-                />;
+                return <HomeScreen data={data} />;
             case '/about':
-                return <AboutScreen />;
+                return <AboutScreen data={data} />;
             case '/admission':
             case '/admissions':
-                return <AdmissionScreen />;
+                return <AdmissionScreen data={data} />;
             case '/contact':
-                return <ContactScreen />;
+                return <ContactScreen data={data} />;
+            case '/notices':
             case '/broadcast':
-            case '/events':
-                return <BroadcastScreen />;
+                return <BroadcastScreen data={data} />;
             default:
-                return <HomeScreen
-                    data={data}
-                    statsEnabled={statsEnabled}
-                    statistics={statistics}
-                    facultyEnabled={facultyEnabled}
-                    faculty={faculty}
-                    achievementsEnabled={achievementsEnabled}
-                    sportsAchievements={sportsAchievements}
-                />;
+                return <HomeScreen data={data} />;
         }
     };
 
@@ -74,39 +60,17 @@ export const Renderer = ({ data, path }: { data: any, path: string }) => {
         .find((s: any) => s.sectionKey === 'announcements')
         ?.isEnabled ?? true;
     const now = new Date();
-    const activeAnnouncements = (data?.announcements ?? []).filter((a: any) =>
-        a.isActive &&
-        (a.expiresAt == null || new Date(a.expiresAt) > now)
-    );
-
-    const statsEnabled = (data?.homepageSections ?? [])
-        .find((s: any) => s.sectionKey === 'stats')
-        ?.isEnabled ?? true;
-    const statistics = (data?.statistics ?? [])
-        .sort((a, b) => a.displayOrder - b.displayOrder);
-
-    const achievementsEnabled = (data?.homepageSections ?? [])
-        .find((s: any) => s.sectionKey === 'achievements')
-        ?.isEnabled ?? true;
-    const sportsAchievements = (data?.achievements ?? [])
-        .filter((a: any) => a.achievementType === 'sports')
-        .sort((a: any, b: any) => a.displayOrder - b.displayOrder);
-
-    const facultySection = (data?.homepageSections ?? [])
-        .find((s: any) => s.sectionKey === 'faculty');
-    const facultyEnabled = facultySection?.isEnabled ?? true;
-    const faculty = (data?.personnel ?? [])
-        .filter((p: any) => p.personType === 'faculty')
-        .sort((a: any, b: any) => a.displayOrder - b.displayOrder);
+    const activeAnnouncements = announcementsEnabled
+        ? (data?.announcements ?? []).filter((a: any) =>
+            a.isActive &&
+            (a.expiresAt == null || new Date(a.expiresAt) > now)
+        )
+        : [];
 
     return (
         <div className="classic-template-wrapper">
-            <div className="sticky top-0 z-50">
-                <Header />
-                {announcementsEnabled && activeAnnouncements.length > 0 && (
-                    <BroadcastTicker announcements={activeAnnouncements} />
-                )}
-            </div>
+            <Header />
+            <BroadcastTicker announcements={activeAnnouncements} />
             <main>
                 {renderScreen()}
             </main>

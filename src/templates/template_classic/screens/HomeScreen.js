@@ -1,10 +1,8 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { MOCK_DATA } from '../constants/mockData';
 import Link from 'next/link';
 
-const HomeScreen = ({ data, statsEnabled, statistics, facultyEnabled, faculty, achievementsEnabled, sportsAchievements }) => {
-    const { SCHOOL_PROFILE, STATISTICS_LEGACY, ACHIEVEMENTS, INFRASTRUCTURE } = MOCK_DATA;
+const HomeScreen = ({ data }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [galleryIndex, setGalleryIndex] = useState(0);
 
@@ -26,11 +24,43 @@ const HomeScreen = ({ data, statsEnabled, statistics, facultyEnabled, faculty, a
         });
     }
 
-    const recentAchievements = ACHIEVEMENTS.school_achievements.slice(0, 3);
+    // Latest Academic Results
+    const latestResults = data?.academicResults?.[0] || {
+        year: '2023',
+        passPercentage: 100,
+        distinctions: 84,
+        firstClass: 96
+    };
 
+    // Filter institutional/academic achievements
+    const recentAchievements = (data?.achievements ?? [])
+        .filter(a => a.achievementType === 'academic' || a.achievementType === 'recognition')
+        .slice(0, 3);
+
+
+    const statisticsList = (data?.statistics ?? [])
+        .sort((a, b) => a.displayOrder - b.displayOrder);
+
+    const allFaculty = (data?.personnel ?? [])
+        .filter(p => p.personType === 'faculty');
+
+    const sportsAchievements = (data?.achievements ?? [])
+        .filter(a => a.achievementType === 'sports')
+        .slice(0, 6);
+
+    const groupedFacilities = (data?.facilities ?? []).reduce((acc, facility) => {
+        const category = facility.categoryName || 'Common Facilities';
+        if (!acc[category]) acc[category] = [];
+        acc[category].push(facility.name);
+        return acc;
+    }, {});
+
+    const campusGallery = (data?.mediaLibrary ?? [])
+        .filter(m => m.isFeatured || m.category === 'campus')
+        .map(m => m.url);
 
     const displayCount = 4;
-    const totalGalleryImages = INFRASTRUCTURE.campus_images.length;
+    const totalGalleryImages = campusGallery.length || 1;
 
     useEffect(() => {
         const heroTimer = setInterval(() => {
@@ -38,7 +68,9 @@ const HomeScreen = ({ data, statsEnabled, statistics, facultyEnabled, faculty, a
         }, 5000);
 
         const galleryTimer = setInterval(() => {
-            setGalleryIndex((prev) => (prev + 1) % totalGalleryImages);
+            if (totalGalleryImages > 1) {
+                setGalleryIndex((prev) => (prev + 1) % totalGalleryImages);
+            }
         }, 3000);
 
         return () => {
@@ -50,8 +82,9 @@ const HomeScreen = ({ data, statsEnabled, statistics, facultyEnabled, faculty, a
     // Compute the 4 images that should be visible starting from galleryIndex
     const getVisibleImages = () => {
         const visible = [];
+        if (campusGallery.length === 0) return [];
         for (let i = 0; i < displayCount; i++) {
-            visible.push(INFRASTRUCTURE.campus_images[(galleryIndex + i) % totalGalleryImages]);
+            visible.push(campusGallery[(galleryIndex + i) % totalGalleryImages]);
         }
         return visible;
     };
@@ -113,26 +146,26 @@ const HomeScreen = ({ data, statsEnabled, statistics, facultyEnabled, faculty, a
                             <div>
                                 <div className="flex items-center gap-3 mb-6">
                                     <div className="w-8 h-[1px] bg-emerald-400"></div>
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-300">Board Results 2023</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-300">Board Results {latestResults.year}</span>
                                 </div>
                                 <h3 className="text-2xl font-bold serif mb-6">Academic Merit Summary</h3>
                                 <div className="space-y-6">
                                     <div className="flex justify-between items-end border-b border-emerald-800 pb-2">
                                         <span className="text-xs uppercase text-emerald-300 font-bold">Pass Percentage</span>
-                                        <span className="text-xl font-bold serif text-white">100%</span>
+                                        <span className="text-xl font-bold serif text-white">{latestResults.passPercentage}%</span>
                                     </div>
                                     <div className="flex justify-between items-end border-b border-emerald-800 pb-2">
                                         <span className="text-xs uppercase text-emerald-300 font-bold">Distinctions</span>
-                                        <span className="text-xl font-bold serif text-white">84%</span>
+                                        <span className="text-xl font-bold serif text-white">{latestResults.distinctions}%</span>
                                     </div>
                                     <div className="flex justify-between items-end border-b border-emerald-800 pb-2">
                                         <span className="text-xs uppercase text-emerald-300 font-bold">First Class</span>
-                                        <span className="text-xl font-bold serif text-white">96%</span>
+                                        <span className="text-xl font-bold serif text-white">{latestResults.firstClass}%</span>
                                     </div>
                                 </div>
                             </div>
                             <p className="mt-8 text-[10px] text-emerald-400 uppercase tracking-widest leading-relaxed">
-                                Consistently maintaining a legacy of academic excellence for over 15 consecutive years.
+                                {latestResults.legacyQuote || "Consistently maintaining a legacy of academic excellence for over 15 consecutive years."}
                             </p>
                         </div>
 
@@ -176,11 +209,11 @@ const HomeScreen = ({ data, statsEnabled, statistics, facultyEnabled, faculty, a
                     <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-0">
                         <div className="w-full lg:w-1/2 relative">
                             <div className="absolute -top-10 -left-10 w-full h-full bg-slate-50 border border-slate-100 -z-10 translate-x-4 translate-y-4"></div>
-                            <div className="relative group overflow-hidden">
+                            <div className="relative group">
                                 <img
                                     src={principal?.photoUrl ?? ''}
                                     alt={principal?.name ?? 'Principal'}
-                                    className="w-full aspect-[4/5] lg:aspect-auto lg:h-[650px] object-cover object-top shadow-2xl transition-all duration-1000 group-hover:scale-[1.02]"
+                                    className="w-full aspect-[4/5] lg:aspect-auto lg:h-[650px] object-cover shadow-2xl transition-all duration-1000 group-hover:scale-[1.02]"
                                 />
                                 <div className="absolute bottom-10 left-10 p-8 bg-emerald-900 text-white shadow-2xl hidden lg:block border-l-4 border-emerald-400">
                                     <div className="text-xs uppercase font-bold tracking-[0.3em] mb-1">Academic Head</div>
@@ -221,130 +254,120 @@ const HomeScreen = ({ data, statsEnabled, statistics, facultyEnabled, faculty, a
             </section>
 
             {/* 4. Statistics Counter Section */}
-            {statsEnabled && statistics.length > 0 && (
-                <section className="py-20 bg-emerald-900 text-white relative z-20 shadow-2xl">
-                    <div className="max-w-[1600px] mx-auto px-2 md:px-6">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
-                            {statistics.map((stat, idx) => (
-                                <div key={idx} className="text-center group">
-                                    <div className="text-4xl md:text-6xl font-bold mb-2 serif text-emerald-50 group-hover:scale-110 transition-transform inline-block">
-                                        {stat.value}
-                                    </div>
-                                    <div className="text-[10px] text-emerald-200 uppercase tracking-[0.3em] font-bold border-t border-emerald-800 pt-4 mt-2">
-                                        {stat.label}
-                                    </div>
+            <section className="py-20 bg-emerald-900 text-white relative z-20 shadow-2xl">
+                <div className="max-w-[1600px] mx-auto px-2 md:px-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
+                        {statisticsList.map((stat, idx) => (
+                            <div key={idx} className="text-center group">
+                                <div className="text-4xl md:text-6xl font-bold mb-2 serif text-emerald-50 group-hover:scale-110 transition-transform inline-block">
+                                    {stat.value}
                                 </div>
-                            ))}
-                        </div>
+                                <div className="text-[10px] text-emerald-200 uppercase tracking-[0.3em] font-bold border-t border-emerald-800 pt-4 mt-2">
+                                    {stat.label}
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                </section>
-            )}
+                </div>
+            </section>
 
             {/* 5. Our Distinguished Educators */}
-            {facultyEnabled && faculty.length > 0 && (
-                <section className="py-24 bg-white">
-                    <div className="max-w-[1600px] mx-auto px-2 md:px-6">
-                        <div className="text-center mb-16">
-                            <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.4em] block mb-4">Intellectual Capital</span>
-                            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Our Distinguished Educators</h2>
-                            <div className="h-1 w-20 bg-emerald-900 mx-auto mt-6"></div>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
-                            {faculty.map((teacher, idx) => (
-                                <div key={idx} className="flex flex-col items-center group">
-                                    <div className="relative mb-6">
-                                        <div className="w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-white shadow-xl group-hover:border-emerald-500 transition-all duration-500 group-hover:scale-105">
-                                            <img
-                                                src={teacher.photoUrl ?? ''}
-                                                alt={teacher.name ?? ''}
-                                                className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:rotate-3"
-                                            />
-                                        </div>
-                                        <div className="absolute inset-0 rounded-full border border-emerald-900/10 scale-110 -z-10"></div>
-                                    </div>
-
-                                    <div className="text-center">
-                                        <h4 className="text-xl font-bold text-slate-900 serif mb-2 group-hover:text-emerald-900 transition-colors">
-                                            {teacher.name}
-                                        </h4>
-                                        <div className="h-[1px] w-8 bg-emerald-200 mx-auto mb-3 group-hover:w-16 transition-all duration-500"></div>
-                                        <p className="text-[10px] text-emerald-600 uppercase tracking-[0.2em] font-bold leading-tight">
-                                            {teacher.designation}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-
+            <section className="py-24 bg-white">
+                <div className="max-w-[1600px] mx-auto px-2 md:px-6">
+                    <div className="text-center mb-16">
+                        <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.4em] block mb-4">Intellectual Capital</span>
+                        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Our Distinguished Educators</h2>
+                        <div className="h-1 w-20 bg-emerald-900 mx-auto mt-6"></div>
                     </div>
-                </section>
-            )}
 
-            {achievementsEnabled && sportsAchievements.length > 0 && (
-                <section className="py-24 bg-emerald-50/30 border-t border-slate-100">
-                    <div className="max-w-[1600px] mx-auto px-2 md:px-6">
-                        <div className="flex flex-col md:flex-row justify-between items-end mb-12">
-                            <div className="text-left">
-                                <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.4em] block mb-4">Athletic Excellence</span>
-                                <h2 className="text-3xl md:text-4xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Sports & Physical Achievements</h2>
-                                <div className="h-1 w-20 bg-emerald-900 mt-6"></div>
-                            </div>
-                            <div className="hidden md:flex items-center gap-3 text-slate-400">
-                                <span className="text-[10px] uppercase font-bold tracking-widest">Swipe horizontally</span>
-                                <div className="w-12 h-px bg-slate-300"></div>
-                            </div>
-                        </div>
-
-                        <div className="flex gap-8 overflow-x-auto pb-12 pt-4 no-scrollbar snap-x snap-mandatory">
-                            {sportsAchievements.map((item, idx) => (
-                                <div
-                                    key={idx}
-                                    className="min-w-[300px] md:min-w-[400px] bg-white border border-slate-100 shadow-md snap-start group/card hover:shadow-2xl transition-all duration-500 flex flex-col"
-                                >
-                                    <div className="relative h-60 overflow-hidden">
-                                        {item.photoUrl ? (
-                                            <img
-                                                src={item.photoUrl}
-                                                alt={item.title}
-                                                className="w-full h-full object-cover object-center transition-transform duration-1000 group-hover/card:scale-110"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center bg-emerald-50">
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 text-emerald-300"
-                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1">
-                                                    <path strokeLinecap="round" strokeLinejoin="round"
-                                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    <path strokeLinecap="round" strokeLinejoin="round"
-                                                        d="M8 21h8m-4-4v4M7 7H4a2 2 0 00-2 2v1a4 4 0 004 4h.5
-                                                        M17 7h3a2 2 0 012 2v1a4 4 0 01-4 4h-.5
-                                                        M7 7V5a5 5 0 0110 0v2M7 7h10" />
-                                                </svg>
-                                            </div>
-                                        )}
-                                        <div className="absolute top-4 right-4 bg-emerald-900 text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest shadow-lg">
-                                            {item.year}
-                                        </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+                        {allFaculty.map((teacher, idx) => (
+                            <div key={idx} className="flex flex-col items-center group">
+                                <div className="relative mb-6">
+                                    <div className="w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-white shadow-xl group-hover:border-emerald-500 transition-all duration-500 group-hover:scale-105">
+                                        <img
+                                            src={teacher.photoUrl}
+                                            alt={teacher.name}
+                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:rotate-3"
+                                        />
                                     </div>
-                                    <div className="p-8 flex-grow border-t-4 border-emerald-900">
-                                        <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.2em] block mb-3">
-                                            {item.category}
-                                        </span>
-                                        <h3 className="text-xl font-bold text-slate-900 serif leading-tight mb-4 group-hover/card:text-emerald-900 transition-colors">
-                                            {item.title}
-                                        </h3>
-                                        <div className="pt-6 border-t border-slate-50 flex items-center justify-between">
-                                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Honorary Mention</span>
-                                            <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                                        </div>
-                                    </div>
+                                    <div className="absolute inset-0 rounded-full border border-emerald-900/10 scale-110 -z-10"></div>
                                 </div>
-                            ))}
+
+                                <div className="text-center">
+                                    <h4 className="text-xl font-bold text-slate-900 serif mb-2 group-hover:text-emerald-900 transition-colors">
+                                        {teacher.name}
+                                    </h4>
+                                    <div className="h-[1px] w-8 bg-emerald-200 mx-auto mb-3 group-hover:w-16 transition-all duration-500"></div>
+                                    <p className="text-[10px] text-emerald-600 uppercase tracking-[0.2em] font-bold leading-tight">
+                                        {teacher.designation}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                </div>
+            </section>
+
+            {/* 6. Sports Activities and Achievements Section (HORIZONTAL SCROLL) */}
+            <section className="py-24 bg-emerald-50/30 border-t border-slate-100">
+                <div className="max-w-[1600px] mx-auto px-2 md:px-6">
+                    <div className="flex flex-col md:flex-row justify-between items-end mb-12">
+                        <div className="text-left">
+                            <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.4em] block mb-4">Athletic Excellence</span>
+                            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Sports & Physical Achievements</h2>
+                            <div className="h-1 w-20 bg-emerald-900 mt-6"></div>
+                        </div>
+                        <div className="hidden md:flex items-center gap-3 text-slate-400">
+                            <span className="text-[10px] uppercase font-bold tracking-widest">Swipe horizontally</span>
+                            <div className="w-12 h-px bg-slate-300"></div>
                         </div>
                     </div>
-                </section>
-            )}
+
+                    <div className="flex gap-8 overflow-x-auto pb-12 pt-4 no-scrollbar snap-x snap-mandatory">
+                        {sportsAchievements.map((item, idx) => (
+                            <div
+                                key={idx}
+                                className="min-w-[300px] md:min-w-[400px] bg-white border border-slate-100 shadow-md snap-start group/card hover:shadow-2xl transition-all duration-500 flex flex-col"
+                            >
+                                <div className="relative h-60 overflow-hidden">
+                                    {item.photoUrl && (
+                                        <img
+                                            src={item.photoUrl}
+                                            alt={item.title}
+                                            className="w-full h-full object-cover transition-transform duration-1000 group-hover/card:scale-110"
+                                        />
+                                    )}
+                                    {!item.photoUrl && (
+                                        <div className="w-full h-full bg-emerald-50 flex items-center justify-center">
+                                            <span className="text-emerald-200 font-bold serif text-4xl">{item.year}</span>
+                                        </div>
+                                    )}
+                                    <div className="absolute top-4 right-4 bg-emerald-900 text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest shadow-lg">
+                                        {item.year}
+                                    </div>
+                                </div>
+                                <div className="p-8 flex-grow border-t-4 border-emerald-900">
+                                    <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.2em] block mb-3">
+                                        {item.category}
+                                    </span>
+                                    <h3 className="text-xl font-bold text-slate-900 serif leading-tight mb-4 group-hover/card:text-emerald-900 transition-colors">
+                                        {item.title}
+                                    </h3>
+                                    <p className="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-2">
+                                        {item.description}
+                                    </p>
+                                    <div className="pt-6 border-t border-slate-50 flex items-center justify-between">
+                                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{item.achievementType}</span>
+                                        <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
 
             {/* 7. Campus Highlights (Infrastructure Grid) */}
             <section className="py-24 bg-slate-50">
@@ -356,37 +379,19 @@ const HomeScreen = ({ data, statsEnabled, statistics, facultyEnabled, faculty, a
                         </div>
                         <p className="text-slate-500 text-sm max-w-md mt-4 md:mt-0 italic">State-of-the-art facilities designed for academic rigor and holistic development.</p>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-slate-200 border border-slate-200">
-                        <div className="p-10 bg-white hover:bg-emerald-50 transition-colors">
-                            <h3 className="font-bold text-lg mb-4 serif uppercase text-emerald-900">Laboratories</h3>
-                            <ul className="space-y-3">
-                                {INFRASTRUCTURE.labs.map(item => (
-                                    <li key={item} className="text-sm text-slate-600 flex items-center gap-2">
-                                        <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full"></span> {item}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div className="p-10 bg-white hover:bg-emerald-50 transition-colors">
-                            <h3 className="font-bold text-lg mb-4 serif uppercase text-emerald-900">Academic Areas</h3>
-                            <ul className="space-y-3">
-                                {INFRASTRUCTURE.classrooms.map(item => (
-                                    <li key={item} className="text-sm text-slate-600 flex items-center gap-2">
-                                        <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full"></span> {item}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div className="p-10 bg-white hover:bg-emerald-50 transition-colors">
-                            <h3 className="font-bold text-lg mb-4 serif uppercase text-emerald-900">Physical Fitness</h3>
-                            <ul className="space-y-3">
-                                {INFRASTRUCTURE.playground.map(item => (
-                                    <li key={item} className="text-sm text-slate-600 flex items-center gap-2">
-                                        <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full"></span> {item}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 border border-slate-200">
+                        {Object.entries(groupedFacilities).map(([category, items]) => (
+                            <div key={category} className="p-10 bg-white hover:bg-emerald-50 transition-colors">
+                                <h3 className="font-bold text-lg mb-4 serif uppercase text-emerald-900">{category}</h3>
+                                <ul className="space-y-3">
+                                    {items.map(item => (
+                                        <li key={item} className="text-sm text-slate-600 flex items-center gap-2">
+                                            <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full"></span> {item}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>

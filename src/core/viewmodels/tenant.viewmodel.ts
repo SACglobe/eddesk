@@ -90,6 +90,10 @@ import {
     COL_HOMEPAGE_SECTIONS_IS_ENABLED,
     COL_HOMEPAGE_SECTIONS_DISPLAY_ORDER,
     COL_HOMEPAGE_SECTIONS_SETTINGS,
+    COL_MEDIA_LIBRARY_TYPE,
+    COL_FACILITIES_NAME,
+    COL_FACILITIES_DESCRIPTION,
+    COL_FACILITIES_CATEGORY_NAME,
 } from '@/lib/constants/reference';
 
 // ─── Normalized Output Type ───────────────────────────────────────────────────
@@ -162,6 +166,7 @@ export interface TenantViewModel {
     }>;
     mediaLibrary: Array<{
         url: string;
+        mediaType: string;
         category: string;
         caption: string;
         isFeatured: boolean;
@@ -184,6 +189,11 @@ export interface TenantViewModel {
         isEnabled: boolean;
         displayOrder: number;
         settings: Record<string, unknown>;
+    }>;
+    facilities: Array<{
+        name: string;
+        description: string;
+        categoryName: string;
     }>;
 }
 
@@ -219,6 +229,7 @@ export function buildTenantViewModel(data: TenantApiDataItem[]): TenantViewModel
     const eventRows = data.map(d => d[TABLE_EVENTS]).filter(Boolean) as Record<string, unknown>[];
     const admissionRows = data.map(d => d[TABLE_ADMISSION_STEPS]).filter(Boolean) as Record<string, unknown>[];
     const sectionRows = data.map(d => d[TABLE_HOMEPAGE_SECTIONS]).filter(Boolean) as Record<string, unknown>[];
+    const facilityRows = data.map(d => d[TABLE_FACILITIES]).filter(Boolean) as Record<string, unknown>[];
 
     const school = schoolRows[0] ?? {};
     const identity = identityRows[0] ?? {};
@@ -291,6 +302,7 @@ export function buildTenantViewModel(data: TenantApiDataItem[]): TenantViewModel
         })),
         mediaLibrary: mediaRows.map(r => ({
             url: str(r[COL_MEDIA_LIBRARY_URL]),
+            mediaType: str(r[COL_MEDIA_LIBRARY_TYPE]),
             category: str(r[COL_MEDIA_LIBRARY_CATEGORY]),
             caption: str(r[COL_MEDIA_LIBRARY_CAPTION]),
             isFeatured: bool(r[COL_MEDIA_LIBRARY_IS_FEATURED]),
@@ -313,6 +325,11 @@ export function buildTenantViewModel(data: TenantApiDataItem[]): TenantViewModel
             isEnabled: bool(r[COL_HOMEPAGE_SECTIONS_IS_ENABLED]),
             displayOrder: num(r[COL_HOMEPAGE_SECTIONS_DISPLAY_ORDER]),
             settings: (r[COL_HOMEPAGE_SECTIONS_SETTINGS] as Record<string, unknown>) ?? {},
+        })),
+        facilities: facilityRows.map(r => ({
+            name: str(r[COL_FACILITIES_NAME]),
+            description: str(r[COL_FACILITIES_DESCRIPTION]),
+            categoryName: str(r[COL_FACILITIES_CATEGORY_NAME]),
         })),
     };
 }
@@ -393,6 +410,7 @@ export function buildTenantViewModelFromLocal(data: any): TenantViewModel {
         })),
         mediaLibrary: (data.media_library || []).map((r: any) => ({
             url: str(r[COL_MEDIA_LIBRARY_URL]),
+            mediaType: str(r[COL_MEDIA_LIBRARY_TYPE]),
             category: str(r[COL_MEDIA_LIBRARY_CATEGORY]),
             caption: str(r[COL_MEDIA_LIBRARY_CAPTION]),
             isFeatured: bool(r[COL_MEDIA_LIBRARY_IS_FEATURED]),
@@ -415,6 +433,11 @@ export function buildTenantViewModelFromLocal(data: any): TenantViewModel {
             isEnabled: bool(r[COL_HOMEPAGE_SECTIONS_IS_ENABLED]),
             displayOrder: num(r[COL_HOMEPAGE_SECTIONS_DISPLAY_ORDER]),
             settings: (r[COL_HOMEPAGE_SECTIONS_SETTINGS] as Record<string, unknown>) ?? {},
+        })),
+        facilities: (data.facilities || []).map((r: any) => ({
+            name: str(r[COL_FACILITIES_NAME]),
+            description: str(r[COL_FACILITIES_DESCRIPTION]),
+            categoryName: str(r[COL_FACILITIES_CATEGORY_NAME]),
         })),
     };
 }

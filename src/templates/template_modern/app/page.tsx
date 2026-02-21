@@ -6,37 +6,13 @@ import { SCHOOL_NAME, ACTIVITIES, UPCOMING_EVENTS } from '../constants';
 import Link from 'next/link';
 import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 
-const highlightImages = [
-    "school/image/campus1.png",
-    "school/image/campus2.png",
-    "school/image/campus3.png",
-    "school/image/campus4.png"
-];
 
 
 
 
 
-const infrastructureData = [
-    {
-        category: "Laboratories",
-        icon: "🔬",
-        items: ["Physics Lab", "Chemistry Lab", "Biology Lab", "Computer Science Lab"],
-        color: "bg-primary"
-    },
-    {
-        category: "Academic Areas",
-        icon: "🏢",
-        items: ["Smart Classrooms", "AV Room", "Audio-Visual Hall"],
-        color: "bg-accent"
-    },
-    {
-        category: "Physical Fitness",
-        icon: "⚽",
-        items: ["Main Athletic Field", "Indoor Badminton Court", "Basketball Court"],
-        color: "bg-blue-600"
-    }
-];
+
+
 
 const AnimatedNumber: React.FC<{ value: number; suffix?: string; duration?: number }> = ({ value, suffix = "", duration = 1500 }) => {
     const [count, setCount] = useState(0);
@@ -131,12 +107,51 @@ export default function Home({ data }: { data: TenantViewModel }) {
         .sort((a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
     const achievementsEnabled = (data?.homepageSections ?? [])
-        .find(s => s.sectionKey === 'achievements')
+        .find(s => s.sectionKey === 'achievements' || s.sectionKey === 'sports')
         ?.isEnabled ?? true;
     const sportsAchievements = (data?.achievements ?? [])
-        .filter(a => a.achievementType === 'sports')
+        .filter(a => a.achievementType?.toLowerCase().trim() === 'sports')
         .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
-    //
+
+    const facilitiesEnabled = (data?.homepageSections ?? [])
+        .find(s => s.sectionKey === 'facilities')
+        ?.isEnabled ?? true;
+
+    const grouped = (data?.facilities ?? []).reduce((acc: any, f: any) => {
+        const key = f.categoryName;
+        if (!acc[key]) acc[key] = { categoryName: key, items: [] };
+        acc[key].items.push(f);
+        return acc;
+    }, {});
+    const facilityGroups = Object.values(grouped) as any[];
+
+    const FACILITY_ICON_MAP: Record<string, { icon: string; color: string }> = {
+        'Academics': { icon: '🔬', color: 'bg-primary' },
+        'Sports': { icon: '⚽', color: 'bg-blue-600' },
+        'Arts': { icon: '🎨', color: 'bg-accent' },
+        'Technology': { icon: '💻', color: 'bg-primary' },
+        'Wellness': { icon: '🏥', color: 'bg-blue-600' },
+    };
+    const getFacilityMeta = (cat: string) =>
+        FACILITY_ICON_MAP[cat] ?? { icon: '🏫', color: 'bg-primary' };
+
+    const gallerySection = (data?.homepageSections ?? [])
+        .find(s => s.sectionKey === 'gallery');
+    const galleryEnabled = gallerySection?.isEnabled ?? true;
+    const galleryItems = (data?.mediaLibrary ?? [])
+        .filter(m => m.category === 'campus' && m.isFeatured);
+
+    const academicSection = (data?.homepageSections ?? [])
+        .find(s => s.sectionKey === 'academic_results');
+    const academicResultsEnabled = academicSection?.isEnabled ?? true;
+    const academicResults = [...(data?.academicResults ?? [])]
+        .sort((a, b) => b.year - a.year);
+    const latestAcademicResult = academicResults[0] ?? null;
+
+    const recentAchievements = (data?.achievements ?? [])
+        .filter(a => a.achievementType?.toLowerCase().trim() !== 'sports')
+        .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+        .slice(0, 2);
     return (
         <div className="space-y-24 pb-24">
             <HeroSlider slides={data?.heroMedia ?? []} />
@@ -169,110 +184,105 @@ export default function Home({ data }: { data: TenantViewModel }) {
                 </section>
             )}
 
-            {/* Institutional Merit & Honors Section */}
-            <section className="max-w-7xl mx-auto px-6 py-8">
-                <div className="grid lg:grid-cols-12 gap-16 lg:gap-24">
-                    <div className="lg:col-span-5 flex flex-col justify-between py-4 space-y-12">
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-4">
-                                <div className="h-px w-8 bg-yellow-500"></div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-primary/40">Institutional Merit</span>
-                            </div>
-                            <h2 className="text-4xl md:text-5xl font-bold text-blue-950 leading-tight">Honors & Academic Results</h2>
-                            <div className="space-y-1">
-                                <h3 className="text-xl font-medium text-primary">Board Results 2023</h3>
-                                <p className="text-xs text-gray-400 font-medium uppercase tracking-widest">Academic Merit Summary</p>
-                            </div>
-                        </div>
+            {(academicResultsEnabled && latestAcademicResult) || (achievementsEnabled && recentAchievements.length > 0) ? (
+                <section className="max-w-7xl mx-auto px-6 py-8 text-left">
+                    <div className="grid lg:grid-cols-12 gap-16 lg:gap-24">
+                        {academicResultsEnabled && latestAcademicResult && (
+                            <div className="lg:col-span-5 flex flex-col justify-between py-4 space-y-12">
+                                <div className="space-y-6">
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-px w-8 bg-yellow-500"></div>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-primary/40">Institutional Merit</span>
+                                    </div>
+                                    <h2 className="text-4xl md:text-5xl font-bold text-blue-950 leading-tight">Honors & Academic Results</h2>
+                                    <div className="space-y-1">
+                                        <h3 className="text-xl font-medium text-primary">Board Results {latestAcademicResult.year}</h3>
+                                        <p className="text-xs text-gray-400 font-medium uppercase tracking-widest">Academic Merit Summary</p>
+                                    </div>
+                                </div>
 
-                        <div className="grid grid-cols-1 gap-6 py-8 border-y border-gray-100">
-                            <div className="flex items-center justify-between group">
-                                <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">Pass Percentage</p>
-                                <div className="flex items-center gap-6">
-                                    <div className="h-px w-12 bg-gray-100 group-hover:w-24 transition-all duration-500"></div>
-                                    <p className="text-4xl font-light text-primary">
-                                        <AnimatedNumber value={100} suffix="%" />
-                                    </p>
+                                <div className="grid grid-cols-1 gap-6 py-8 border-y border-gray-100">
+                                    <div className="flex items-center justify-between group">
+                                        <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">Pass Percentage</p>
+                                        <div className="flex items-center gap-6">
+                                            <div className="h-px w-12 bg-gray-100 group-hover:w-24 transition-all duration-500"></div>
+                                            <p className="text-4xl font-light text-primary">
+                                                <AnimatedNumber value={latestAcademicResult.passPercentage} suffix="%" />
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between group">
+                                        <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">Distinctions</p>
+                                        <div className="flex items-center gap-6">
+                                            <div className="h-px w-12 bg-gray-100 group-hover:w-24 transition-all duration-500"></div>
+                                            <p className="text-4xl font-light text-yellow-600">
+                                                <AnimatedNumber value={latestAcademicResult.distinctions} suffix="%" />
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between group">
+                                        <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">First Class</p>
+                                        <div className="flex items-center gap-6">
+                                            <div className="h-px w-12 bg-gray-100 group-hover:w-24 transition-all duration-500"></div>
+                                            <p className="text-4xl font-light text-gray-950">
+                                                <AnimatedNumber value={latestAcademicResult.firstClass} suffix="%" />
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="flex items-center justify-between group">
-                                <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">Distinctions</p>
-                                <div className="flex items-center gap-6">
-                                    <div className="h-px w-12 bg-gray-100 group-hover:w-24 transition-all duration-500"></div>
-                                    <p className="text-4xl font-light text-yellow-600">
-                                        <AnimatedNumber value={84} suffix="%" />
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-center justify-between group">
-                                <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">First Class</p>
-                                <div className="flex items-center gap-6">
-                                    <div className="h-px w-12 bg-gray-100 group-hover:w-24 transition-all duration-500"></div>
-                                    <p className="text-4xl font-light text-gray-950">
-                                        <AnimatedNumber value={96} suffix="%" />
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div className="relative p-8 rounded-3xl bg-blue-50/30 border border-blue-50">
-                            <span className="absolute -top-4 left-6 text-6xl text-blue-100 font-serif leading-none">“</span>
-                            <p className="text-gray-500 leading-relaxed font-medium italic relative z-10">
-                                Consistently maintaining a legacy of academic excellence for over 15 consecutive years.
-                            </p>
-                        </div>
+                                <div className="relative p-8 rounded-3xl bg-blue-50/30 border border-blue-50">
+                                    <span className="absolute -top-4 left-6 text-6xl text-blue-100 font-serif leading-none">“</span>
+                                    <p className="text-gray-500 leading-relaxed font-medium italic relative z-10">
+                                        {latestAcademicResult.legacyQuote || "Consistently maintaining a legacy of academic excellence."}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
+                        {achievementsEnabled && recentAchievements.length > 0 && (
+                            <div className="lg:col-span-7 flex flex-col space-y-12 lg:pl-16 lg:border-l border-gray-100">
+                                <div className="space-y-6">
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-px w-8 bg-primary"></div>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-primary/40">Institutional Recognition</span>
+                                    </div>
+                                    <h2 className="text-4xl md:text-5xl font-bold text-blue-950 leading-tight">Achievements & Glories</h2>
+                                </div>
+
+                                <div className="space-y-10">
+                                    {recentAchievements.map((achievement, i) => (
+                                        <div key={i} className="group relative grid grid-cols-[80px_1fr] gap-8 p-8 hover:bg-white rounded-[2rem] transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 border border-transparent hover:border-gray-50">
+                                            <div className={`flex flex-col items-center justify-center border-r border-gray-100 transition-colors ${i === 0 ? 'group-hover:border-accent-hover' : 'group-hover:border-blue-200'}`}>
+                                                <span className="text-[10px] font-black text-yellow-600 mb-1 tracking-widest uppercase">Year</span>
+                                                <span className={`text-3xl font-black tracking-tighter ${i === 0 ? 'text-primary' : 'text-primary/40'}`}>
+                                                    <AnimatedNumber value={achievement.year} duration={1000} />
+                                                </span>
+                                            </div>
+                                            <div className="space-y-3">
+                                                <div className="inline-block px-3 py-1 bg-yellow-50 text-yellow-700 rounded-lg text-[9px] font-black uppercase tracking-widest">
+                                                    {achievement.category || "Institutional Recognition"}
+                                                </div>
+                                                <h4 className="text-2xl font-bold text-blue-950">{achievement.title}</h4>
+                                                <p className="text-gray-400 text-sm leading-relaxed">{achievement.description}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    <div className="pt-6">
+                                        <Link href="/about" className="flex items-center gap-6 group">
+                                            <span className="bg-blue-950 text-white w-12 h-12 flex items-center justify-center rounded-full group-hover:bg-accent group-hover:text-blue-950 transition-all duration-500 shadow-lg">
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                                            </span>
+                                            <span className="text-primary font-bold uppercase tracking-[0.4em] text-[10px] border-b border-transparent group-hover:border-accent transition-all pb-1">Know more about our heritage</span>
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
-
-                    <div className="lg:col-span-7 flex flex-col space-y-12 lg:pl-16 lg:border-l border-gray-100">
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-4">
-                                <div className="h-px w-8 bg-primary"></div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-primary/40">Institutional Recognition</span>
-                            </div>
-                            <h2 className="text-4xl md:text-5xl font-bold text-blue-950 leading-tight">Achievements & Glories</h2>
-                        </div>
-
-                        <div className="space-y-10">
-                            <div className="group relative grid grid-cols-[80px_1fr] gap-8 p-8 hover:bg-white rounded-[2rem] transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 border border-transparent hover:border-gray-50">
-                                <div className="flex flex-col items-center justify-center border-r border-gray-100 group-hover:border-accent-hover transition-colors">
-                                    <span className="text-[10px] font-black text-yellow-600 mb-1 tracking-widest">YEAR</span>
-                                    <span className="text-3xl font-black text-primary tracking-tighter">
-                                        <AnimatedNumber value={2023} duration={1000} />
-                                    </span>
-                                </div>
-                                <div className="space-y-3">
-                                    <div className="inline-block px-3 py-1 bg-yellow-50 text-yellow-700 rounded-lg text-[9px] font-black uppercase tracking-widest">State Recognition</div>
-                                    <h4 className="text-2xl font-bold text-blue-950">Best Disciplined School Award</h4>
-                                    <p className="text-gray-400 text-sm leading-relaxed">Awarded by the State Education Board for excellence in maintaining institutional decorum and student conduct.</p>
-                                </div>
-                            </div>
-
-                            <div className="group relative grid grid-cols-[80px_1fr] gap-8 p-8 hover:bg-white rounded-[2rem] transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 border border-transparent hover:border-gray-50">
-                                <div className="flex flex-col items-center justify-center border-r border-gray-100 group-hover:border-blue-200 transition-colors">
-                                    <span className="text-[10px] font-black text-primary/40 mb-1 tracking-widest">YEAR</span>
-                                    <span className="text-3xl font-black text-primary/40 tracking-tighter">
-                                        <AnimatedNumber value={2022} duration={1000} />
-                                    </span>
-                                </div>
-                                <div className="space-y-3">
-                                    <div className="inline-block px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-[9px] font-black uppercase tracking-widest">Board Milestone</div>
-                                    <h4 className="text-2xl font-bold text-blue-950">Academic Excellence Trophy</h4>
-                                    <p className="text-gray-400 text-sm leading-relaxed">Recognized for achieving 100% pass rate in State Board examinations for 15 consecutive years.</p>
-                                </div>
-                            </div>
-
-                            <div className="pt-6">
-                                <Link href="/about" className="flex items-center gap-6 group">
-                                    <span className="bg-blue-950 text-white w-12 h-12 flex items-center justify-center rounded-full group-hover:bg-accent group-hover:text-blue-950 transition-all duration-500 shadow-lg">
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                                    </span>
-                                    <span className="text-primary font-bold uppercase tracking-[0.4em] text-[10px] border-b border-transparent group-hover:border-accent transition-all pb-1">Know more about our heritage</span>
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                </section>
+            ) : null}
 
             {/* Message from Our Principal */}
             <section className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-16 items-center">
@@ -454,78 +464,111 @@ export default function Home({ data }: { data: TenantViewModel }) {
             )}
 
             {/* Campus highlights Section */}
-            <section className="max-w-7xl mx-auto px-4 py-24">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
-                    <div className="space-y-4">
-                        <div className="inline-block px-4 py-1.5 bg-blue-50 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.3em]">
-                            Campus highlights
-                        </div>
-                        <h2 className="text-4xl md:text-5xl font-bold text-blue-950 leading-tight max-w-2xl">
-                            Infrastructure
-                        </h2>
-                    </div>
-                </div>
-
-                <div className="grid lg:grid-cols-3 gap-12">
-                    {infrastructureData.map((zone, i) => (
-                        <div key={i} className="group flex flex-col">
-                            <div className="bg-white p-10 md:p-14 rounded-[3rem] border border-gray-100 shadow-xl group-hover:border-primary/10 group-hover:-translate-y-2 transition-all flex-1 flex flex-col text-left">
-                                <div className="mb-10">
-                                    <div className={`w-20 h-20 ${zone.color} text-white rounded-[1.75rem] flex items-center justify-center text-4xl shadow-2xl mb-8 transform group-hover:scale-110 transition-transform duration-500`}>
-                                        {zone.icon}
-                                    </div>
-                                    <h3 className="text-3xl font-bold text-blue-950 tracking-tight mb-2">{zone.category}</h3>
-                                    <div className="w-12 h-1 bg-accent rounded-full group-hover:w-20 transition-all duration-500"></div>
-                                </div>
-
-                                <ul className="space-y-6">
-                                    {zone.items.map((item, idx) => (
-                                        <li key={idx} className="flex items-center gap-4 group/item">
-                                            <div className={`w-2.5 h-2.5 rounded-full ${i % 2 === 0 ? 'bg-primary' : 'bg-accent'} group-hover/item:scale-125 transition-transform`}></div>
-                                            <span className="text-gray-600 font-bold text-lg group-hover/item:text-primary transition-colors">{item}</span>
-                                        </li>
-                                    ))}
-                                </ul>
+            {facilitiesEnabled && facilityGroups.length > 0 && (
+                <section className="max-w-7xl mx-auto px-4 py-24">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
+                        <div className="space-y-4">
+                            <div className="inline-block px-4 py-1.5 bg-blue-50 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.3em]">
+                                Campus highlights
                             </div>
+                            <h2 className="text-4xl md:text-5xl font-bold text-blue-950 leading-tight max-w-2xl">
+                                Infrastructure
+                            </h2>
                         </div>
-                    ))}
-                </div>
-                <div className="mt-16 text-center">
-                    <Link
-                        href="/infrastructure"
-                        className="bg-primary text-white px-10 py-4 rounded-2xl font-bold hover:bg-accent hover:text-primary transition-all shadow-xl group inline-flex items-center gap-4"
-                    >
-                        Tour Campus Facilities
-                        <span className="group-hover:translate-x-2 transition-transform">→</span>
-                    </Link>
-                </div>
-            </section>
+                    </div>
+
+                    <div className="grid lg:grid-cols-3 gap-12">
+                        {facilityGroups.map((group, i) => {
+                            const { icon, color } = getFacilityMeta(group.categoryName);
+                            return (
+                                <div key={i} className="group flex flex-col">
+                                    <div className="bg-white p-10 md:p-14 rounded-[3rem] border border-gray-100 shadow-xl group-hover:border-primary/10 group-hover:-translate-y-2 transition-all flex-1 flex flex-col text-left">
+                                        <div className="mb-10">
+                                            <div className={`w-20 h-20 ${color} text-white rounded-[1.75rem] flex items-center justify-center text-4xl shadow-2xl mb-8 transform group-hover:scale-110 transition-transform duration-500`}>
+                                                {icon}
+                                            </div>
+                                            <h3 className="text-3xl font-bold text-blue-950 tracking-tight mb-2">{group.categoryName}</h3>
+                                            <div className="w-12 h-1 bg-accent rounded-full group-hover:w-20 transition-all duration-500"></div>
+                                        </div>
+
+                                        <ul className="space-y-6">
+                                            {group.items.map((item: any, idx: number) => (
+                                                <li key={idx} className="flex items-center gap-4 group/item">
+                                                    <div className={`w-2.5 h-2.5 rounded-full ${i % 2 === 0 ? 'bg-primary' : 'bg-accent'} group-hover/item:scale-125 transition-transform`}></div>
+                                                    <span className="text-gray-600 font-bold text-lg group-hover/item:text-primary transition-colors">{item.name}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <div className="mt-16 text-center">
+                        <Link
+                            href="/infrastructure"
+                            className="bg-primary text-white px-10 py-4 rounded-2xl font-bold hover:bg-accent hover:text-primary transition-all shadow-xl group inline-flex items-center gap-4"
+                        >
+                            Tour Campus Facilities
+                            <span className="group-hover:translate-x-2 transition-transform">→</span>
+                        </Link>
+                    </div>
+                </section>
+            )}
 
             {/* Gallery & Upcoming Events Section */}
             <section className="bg-gray-50 py-24">
                 <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-3 gap-16">
                     <div className="lg:col-span-2 space-y-12">
-                        <div className="flex items-center justify-between">
-                            <h2 className="text-4xl font-bold text-primary">Gallery</h2>
-                            <Link
-                                href="/gallery"
-                                className="text-blue-600 font-bold flex items-center gap-2 hover:translate-x-1 transition-all"
-                            >
-                                View Full Gallery →
-                            </Link>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {highlightImages.map((url, i) => (
-                                <div key={i} className="group overflow-hidden rounded-[2rem] relative h-80 shadow-2xl">
-                                    <img src={url} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Gallery highlight" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-blue-900 via-transparent to-transparent opacity-90"></div>
-                                    <div className="absolute bottom-0 p-8 text-left">
-                                        <span className="bg-accent text-primary px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-3 inline-block">Campus Life</span>
-                                        <h4 className="text-white font-bold text-xl leading-snug">Moments of discovery and achievement captured.</h4>
-                                    </div>
+                        {galleryEnabled && galleryItems.length > 0 && (
+                            <>
+                                <div className="flex items-center justify-between">
+                                    <h2 className="text-4xl font-bold text-primary">Gallery</h2>
+                                    <Link
+                                        href="/gallery"
+                                        className="text-blue-600 font-bold flex items-center gap-2 hover:translate-x-1 transition-all"
+                                    >
+                                        View Full Gallery →
+                                    </Link>
                                 </div>
-                            ))}
-                        </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {galleryItems.map((item, i) => (
+                                        <div key={i} className="group overflow-hidden rounded-[2rem] relative h-80 shadow-2xl">
+                                            {!item?.url ? (
+                                                <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 text-gray-400"
+                                                        fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1">
+                                                        <path strokeLinecap="round" strokeLinejoin="round"
+                                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586
+                                                       a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6
+                                                       a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                    </svg>
+                                                </div>
+                                            ) : item.mediaType === 'video' ? (
+                                                <video
+                                                    src={item.url}
+                                                    autoPlay muted loop playsInline
+                                                    className="w-full h-full object-cover object-center"
+                                                />
+                                            ) : (
+                                                <img
+                                                    src={item.url}
+                                                    alt={item.caption ?? 'Gallery highlight'}
+                                                    className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
+                                                />
+                                            )}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-blue-900 via-transparent to-transparent opacity-90"></div>
+                                            <div className="absolute bottom-0 p-8 text-left">
+                                                <span className="bg-accent text-primary px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-3 inline-block">Campus Life</span>
+                                                <h4 className="text-white font-bold text-xl leading-snug">
+                                                    {item.caption ?? 'Moments of discovery and achievement captured.'}
+                                                </h4>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        )}
                     </div>
 
                     <div className="space-y-12 text-left">

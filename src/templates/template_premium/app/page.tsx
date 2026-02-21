@@ -125,85 +125,88 @@ const Hero: React.FC<{ heroSlide: HeroSlide | null }> = ({ heroSlide }) => {
   );
 };
 
-const InstitutionalStats: React.FC = () => {
+const InstitutionalStats: React.FC<{
+  academicResultsEnabled: boolean;
+  latestAcademicResult: any;
+  achievementsEnabled: boolean;
+  recentAchievements: any[];
+}> = ({ academicResultsEnabled, latestAcademicResult, achievementsEnabled, recentAchievements }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
+
+  if (!((academicResultsEnabled && latestAcademicResult) || (achievementsEnabled && recentAchievements.length > 0))) return null;
 
   return (
     <section ref={containerRef} className="bg-white border-b border-signature-navy/5 overflow-hidden">
       <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-0 relative">
         <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-px bg-signature-navy/5 -translate-x-1/2 z-10"></div>
 
-        <div className={`py-24 px-8 lg:pr-24 lg:pl-16 bg-[#F0F7FF] transition-all duration-1000 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-8 h-px bg-signature-gold"></div>
-            <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-signature-gold">Institutional Merit</span>
-          </div>
-          <h2 className="text-5xl md:text-6xl font-serif text-signature-navy mb-12 leading-tight tracking-tight">Honors & Academic <br />Results</h2>
-
-          <div className="mb-12">
-            <h3 className="text-2xl font-serif text-signature-navy mb-2">Board Results 2023</h3>
-            <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Academic Merit Summary</p>
-          </div>
-
-          <div className="space-y-8">
-            <div className="flex justify-between items-end border-b border-signature-navy/5 pb-4">
-              <span className="text-[11px] uppercase tracking-widest font-bold text-signature-navy/60">Pass Percentage</span>
-              <span className="text-5xl font-serif text-signature-navy">100%</span>
+        {academicResultsEnabled && latestAcademicResult && (
+          <div className={`py-24 px-8 lg:pr-24 lg:pl-16 bg-[#F0F7FF] transition-all duration-1000 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-8 h-px bg-signature-gold"></div>
+              <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-signature-gold">Institutional Merit</span>
             </div>
-            <div className="flex justify-between items-end border-b border-signature-navy/5 pb-4">
-              <span className="text-[11px] uppercase tracking-widest font-bold text-signature-navy/60">Distinctions</span>
-              <span className="text-5xl font-serif text-signature-gold">84%</span>
-            </div>
-            <div className="flex justify-between items-end border-b border-signature-navy/5 pb-4">
-              <span className="text-[11px] uppercase tracking-widest font-bold text-signature-navy/60">First Class</span>
-              <span className="text-5xl font-serif text-signature-navy">96%</span>
-            </div>
-          </div>
-        </div>
+            <h2 className="text-5xl md:text-6xl font-serif text-signature-navy mb-12 leading-tight tracking-tight">Honors & Academic <br />Results</h2>
 
-        <div className={`py-24 px-8 lg:pl-24 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'}`}>
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-8 h-px bg-signature-navy/20"></div>
-            <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-gray-400">Institutional Recognition</span>
-          </div>
-          <h2 className="text-5xl md:text-6xl font-serif text-signature-navy mb-16 tracking-tight">Achievements & Glories</h2>
+            <div className="mb-12">
+              <h3 className="text-2xl font-serif text-signature-navy mb-2">Board Results {latestAcademicResult.year}</h3>
+              <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Academic Merit Summary</p>
+            </div>
 
-          <div className="space-y-20 mb-20">
-            <div className="flex gap-12 group">
-              <div className="flex flex-col items-center">
-                <span className="text-[10px] uppercase tracking-widest font-bold text-signature-gold mb-2">Year</span>
-                <span className="text-4xl font-serif text-signature-navy group-hover:text-signature-gold transition-colors">2023</span>
-                <div className="w-px flex-grow bg-signature-navy/5 mt-4"></div>
+            <div className="space-y-8">
+              <div className="flex justify-between items-end border-b border-signature-navy/5 pb-4">
+                <span className="text-[11px] uppercase tracking-widest font-bold text-signature-navy/60">Pass Percentage</span>
+                <span className="text-5xl font-serif text-signature-navy">{latestAcademicResult.passPercentage}%</span>
               </div>
-              <div className="flex-grow pt-2">
-                <span className="inline-block bg-signature-gold/10 text-signature-gold text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4">State Recognition</span>
-                <h4 className="text-2xl font-serif mb-4 text-signature-navy group-hover:text-signature-gold transition-colors">Best Disciplined School Award</h4>
-                <p className="text-base text-gray-500 leading-loose">Awarded by the State Education Board for excellence in maintaining institutional decorum and student conduct.</p>
+              <div className="flex justify-between items-end border-b border-signature-navy/5 pb-4">
+                <span className="text-[11px] uppercase tracking-widest font-bold text-signature-navy/60">Distinctions</span>
+                <span className="text-5xl font-serif text-signature-gold">{latestAcademicResult.distinctions}%</span>
               </div>
-            </div>
-
-            <div className="flex gap-12 group">
-              <div className="flex flex-col items-center">
-                <span className="text-[10px] uppercase tracking-widest font-bold text-gray-300 mb-2">Year</span>
-                <span className="text-4xl font-serif text-gray-300 group-hover:text-signature-gold transition-colors">2022</span>
-              </div>
-              <div className="flex-grow pt-2">
-                <span className="inline-block bg-blue-50 text-blue-600 text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4">Board Milestone</span>
-                <h4 className="text-2xl font-serif mb-4 text-signature-navy group-hover:text-signature-gold transition-colors">Academic Excellence Trophy</h4>
-                <p className="text-base text-gray-500 leading-loose">Recognized for achieving 100% pass rate in State Board examinations for 15 consecutive years.</p>
+              <div className="flex justify-between items-end border-b border-signature-navy/5 pb-4">
+                <span className="text-[11px] uppercase tracking-widest font-bold text-signature-navy/60">First Class</span>
+                <span className="text-5xl font-serif text-signature-navy">{latestAcademicResult.firstClass}%</span>
               </div>
             </div>
           </div>
+        )}
 
-          <Link href="/about" className="inline-flex items-center gap-8 group">
-            <div className="w-16 h-16 rounded-full bg-signature-navy flex items-center justify-center group-hover:bg-signature-gold transition-all duration-500 shadow-2xl">
-              <svg className="w-6 h-6 text-white group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
+        {achievementsEnabled && recentAchievements.length > 0 && (
+          <div className={`py-24 px-8 lg:pl-24 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'}`}>
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-8 h-px bg-signature-navy/20"></div>
+              <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-gray-400">Institutional Recognition</span>
             </div>
-            <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-signature-navy group-hover:text-signature-gold transition-colors">Know more about our heritage</span>
-          </Link>
-        </div>
+            <h2 className="text-5xl md:text-6xl font-serif text-signature-navy mb-16 tracking-tight">Achievements & Glories</h2>
+
+            <div className="space-y-20 mb-20">
+              {recentAchievements.map((achievement, i) => (
+                <div key={i} className="flex gap-12 group">
+                  <div className="flex flex-col items-center">
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-signature-gold mb-2">Year</span>
+                    <span className="text-4xl font-serif text-signature-navy group-hover:text-signature-gold transition-colors">{achievement.year}</span>
+                    <div className="w-px flex-grow bg-signature-navy/5 mt-4"></div>
+                  </div>
+                  <div className="flex-grow pt-2 text-left">
+                    <span className="inline-block bg-signature-gold/10 text-signature-gold text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4">
+                      {achievement.category || "Institutional Recognition"}
+                    </span>
+                    <h4 className="text-2xl font-serif mb-4 text-signature-navy group-hover:text-signature-gold transition-colors">{achievement.title}</h4>
+                    <p className="text-base text-gray-500 leading-loose">{achievement.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Link href="/about" className="inline-flex items-center gap-8 group">
+              <div className="w-16 h-16 rounded-full bg-signature-navy flex items-center justify-center group-hover:bg-signature-gold transition-all duration-500 shadow-2xl">
+                <svg className="w-6 h-6 text-white group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </div>
+              <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-signature-navy group-hover:text-signature-gold transition-colors">Know more about our heritage</span>
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );
@@ -408,6 +411,66 @@ const AthleticExcellence: React.FC<AthleticExcellenceProps> = ({ sportsAchieveme
   );
 };
 
+interface FacilityGroup {
+  categoryName: string;
+  items: Array<{ name: string; description: string }>;
+}
+
+interface CampusFacilitiesProps {
+  facilityGroups: FacilityGroup[];
+  facilitiesEnabled: boolean;
+}
+
+const CampusFacilities: React.FC<CampusFacilitiesProps> = ({ facilityGroups, facilitiesEnabled }) => {
+  const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
+
+  if (!facilitiesEnabled || facilityGroups.length === 0) return null;
+
+  return (
+    <section ref={containerRef} className="py-48 px-8 bg-white border-b border-signature-navy/5">
+      <div className="max-w-[1400px] mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12">
+          <SectionHeader title="Campus Infrastructure" subtitle="Facilities & Learning Spaces" />
+          <Link href="/infrastructure">
+            <Button variant="outline">Tour The Campus</Button>
+          </Link>
+        </div>
+
+        <div className={`grid grid-cols-1 md:grid-cols-${Math.min(facilityGroups.length, 4)} gap-0 border border-signature-navy/5`}>
+          {facilityGroups.map((group, i) => (
+            <div
+              key={i}
+              className={`
+                px-12 py-16 border-r last:border-r-0 border-signature-navy/5
+                transition-all duration-1000
+                ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
+              `}
+              style={{ transitionDelay: `${i * 150}ms` }}
+            >
+              <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-signature-gold mb-6">
+                {group.categoryName}
+              </p>
+              <div className="w-full h-px bg-signature-gold/20 mb-10"></div>
+              <ul className="space-y-6">
+                {group.items.map((item, j) => (
+                  <li key={j} className="flex items-start gap-4 group/item">
+                    <span className="mt-2 w-1.5 h-1.5 rounded-full bg-signature-gold/60 flex-shrink-0
+                                     group-hover/item:bg-signature-gold transition-colors"></span>
+                    <span className="text-signature-navy/70 font-light leading-relaxed
+                                     group-hover/item:text-signature-navy transition-colors">
+                      {item.name}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const UpcomingEvents: React.FC = () => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
   const events = schoolData.events.slice(0, 3);
@@ -478,18 +541,54 @@ export default function Home({ data, statsEnabled, statistics }: {
     .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
   const achievementsEnabled = (data?.homepageSections ?? [])
-    .find(s => s.sectionKey === 'achievements')
+    .find(s => s.sectionKey === 'achievements' || s.sectionKey === 'sports')
     ?.isEnabled ?? true;
   const sportsAchievements = (data?.achievements ?? [])
-    .filter(a => a.achievementType === 'sports')
+    .filter(a => a.achievementType?.toLowerCase().trim() === 'sports')
     .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+
+  const facilitiesEnabled = (data?.homepageSections ?? [])
+    .find(s => s.sectionKey === 'facilities')
+    ?.isEnabled ?? true;
+
+  const grouped = (data?.facilities ?? []).reduce((acc: any, f: any) => {
+    const key = f.categoryName;
+    if (!acc[key]) acc[key] = { categoryName: key, items: [] };
+    acc[key].items.push(f);
+    return acc;
+  }, {});
+  const facilityGroups = Object.values(grouped) as any[];
+
+  const gallerySection = (data?.homepageSections ?? [])
+    .find(s => s.sectionKey === 'gallery');
+  const galleryEnabled = gallerySection?.isEnabled ?? true;
+  const galleryItems = (data?.mediaLibrary ?? [])
+    .filter(m => m.category === 'campus' && m.isFeatured)
+    .slice(0, 3);
+
+  const academicSection = (data?.homepageSections ?? [])
+    .find(s => s.sectionKey === 'academic_results');
+  const academicResultsEnabled = academicSection?.isEnabled ?? true;
+  const academicResults = [...(data?.academicResults ?? [])]
+    .sort((a, b) => b.year - a.year);
+  const latestAcademicResult = academicResults[0] ?? null;
+
+  const recentAchievements = (data?.achievements ?? [])
+    .filter(a => a.achievementType?.toLowerCase().trim() !== 'sports')
+    .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+    .slice(0, 2);
 
   return (
     <LayoutWrapper>
       <div className="fade-in bg-signature-ivory">
         <Hero heroSlide={heroSlide} />
 
-        <InstitutionalStats />
+        <InstitutionalStats
+          academicResultsEnabled={academicResultsEnabled}
+          latestAcademicResult={latestAcademicResult}
+          achievementsEnabled={achievementsEnabled}
+          recentAchievements={recentAchievements}
+        />
 
         <section className="py-48 px-8 grid lg:grid-cols-2 gap-24 items-center max-w-[1400px] mx-auto border-b border-signature-navy/5">
           <div className="relative aspect-[4/5] overflow-hidden rounded-2xl group">
@@ -520,21 +619,63 @@ export default function Home({ data, statsEnabled, statistics }: {
 
         <AthleticExcellence sportsAchievements={sportsAchievements} achievementsEnabled={achievementsEnabled} />
 
-        <section className="py-48 px-8 bg-white">
-          <div className="max-w-[1400px] mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12">
-              <SectionHeader title="Campus Masterpiece" subtitle="The Sterling Experience" />
-              <Link href="/activities">
-                <Button variant="outline">Explore Enrichment</Button>
-              </Link>
+        <CampusFacilities facilityGroups={facilityGroups} facilitiesEnabled={facilitiesEnabled} />
+
+        {galleryEnabled && galleryItems.length > 0 && (
+          <section className="py-48 px-8 bg-white">
+            <div className="max-w-[1400px] mx-auto">
+              <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12">
+                <SectionHeader title="Campus Masterpiece" subtitle="The Sterling Experience" />
+                <Link href="/activities">
+                  <Button variant="outline">Explore Enrichment</Button>
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                {galleryItems.map((item, i) => (
+                  <div key={i}>
+                    {item.mediaType === 'image' && item.url ? (
+                      <Card
+                        title={item.caption ?? 'Campus Life'}
+                        image={item.url}
+                        tag="Campus Portrait"
+                      />
+                    ) : (
+                      <div className="group overflow-hidden relative bg-white border border-black/5 hover:border-signature-gold/40 transition-all duration-700 shadow-sm hover:shadow-2xl">
+                        <div className="aspect-[3/4] overflow-hidden relative bg-signature-navy/5">
+                          {!item.url ? (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="w-20 h-20 text-signature-navy/10"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1">
+                                <path strokeLinecap="round" strokeLinejoin="round"
+                                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586
+                             a2 2.001 2.001 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6
+                             a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                            </div>
+                          ) : (
+                            <video
+                              src={item.url}
+                              autoPlay muted loop playsInline
+                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000 ease-out"
+                            />
+                          )}
+                          <div className="absolute inset-0 bg-signature-navy/10 group-hover:bg-transparent transition-colors duration-700"></div>
+                        </div>
+                        <div className="p-10 relative bg-white">
+                          <div className="absolute top-0 right-10 w-px h-10 bg-signature-gold/20 -translate-y-full"></div>
+                          <span className="text-[9px] uppercase tracking-[0.4em] text-signature-gold font-bold mb-4 block">Campus Portrait</span>
+                          <h3 className="text-2xl font-serif mb-4 tracking-tight group-hover:text-signature-gold transition-colors">
+                            {item.caption ?? 'Campus Life'}
+                          </h3>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-              {schoolData.highlights.slice(0, 3).map((h, i) => (
-                <Card key={i} title={h.title} image={h.image} tag={h.tag} />
-              ))}
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         <UpcomingEvents />
 

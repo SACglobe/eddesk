@@ -1,8 +1,20 @@
 import React from 'react';
-import { MOCK_DATA } from '../constants/mockData';
 
-const AboutScreen = () => {
-    const { SCHOOL_PROFILE, LEADERSHIP } = MOCK_DATA;
+const AboutScreen = ({ data }) => {
+    const SCHOOL_PROFILE = {
+        school_name: data?.name || 'Our Institution',
+        school_overview: data?.about || '',
+        vision: data?.vision || '',
+        mission: data?.mission || '',
+        motto: data?.motto || ''
+    };
+
+    const principal = data?.personnel?.find(p => p.personType === 'principal') ?? null;
+    const LEADERSHIP = {
+        principal_name: principal?.name || '',
+        principal_message: principal?.bio || '',
+        principal_image: principal?.photoUrl || ''
+    };
 
     const reasons = [
         { title: "Academic Rigor", desc: "A curriculum designed to challenge and inspire high-performers." },

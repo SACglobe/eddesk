@@ -1,8 +1,43 @@
 import React from 'react';
-import { MOCK_DATA } from '../constants/mockData';
 
-const BroadcastScreen = () => {
-    const { BROADCAST } = MOCK_DATA;
+const BroadcastScreen = ({ data }) => {
+    const now = new Date();
+    const activeAnnouncements = (data?.announcements ?? []).filter(a =>
+        a.isActive && (a.expiresAt == null || new Date(a.expiresAt) > now)
+    ).map(a => ({
+        publish_date: new Date(a.createdAt || Date.now()).toLocaleDateString(),
+        title: a.title,
+        description: a.message
+    }));
+
+    const upcomingEvents = (data?.events ?? []).filter(e =>
+        e.isActive && (e.eventDate && new Date(e.eventDate) >= now)
+    ).sort((a, b) => new Date(a.eventDate) - new Date(b.eventDate))
+        .map(e => ({
+            event_date: e.eventDate,
+            title: e.title,
+            description: e.description
+        }));
+
+    const circulars = (data?.circulars ?? []).filter(c => c.isActive)
+        .map(c => ({
+            title: c.title,
+            pdf_url: c.fileUrl
+        }));
+
+    const academicCalendar = (data?.academicCalendar ?? []).filter(e => e.isActive)
+        .map(e => ({
+            date: new Date(e.eventDate).toLocaleDateString(),
+            title: e.title,
+            type: e.eventType // assuming eventType maps to "Holiday" or "Academic"
+        }));
+
+    const BROADCAST = {
+        announcements: activeAnnouncements,
+        events: upcomingEvents,
+        circulars: circulars,
+        academic_calendar: academicCalendar
+    };
 
     return (
         <div className="max-w-[1600px] mx-auto px-2 md:px-6 py-20 fade-in">

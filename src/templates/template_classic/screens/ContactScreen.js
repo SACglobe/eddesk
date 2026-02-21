@@ -1,9 +1,13 @@
 "use client";
 import React from 'react';
-import { MOCK_DATA } from '../constants/mockData';
 
-const ContactScreen = () => {
-    const { SCHOOL_PROFILE } = MOCK_DATA;
+const ContactScreen = ({ data }) => {
+    const SCHOOL_PROFILE = {
+        address: data?.address || '',
+        phone: data?.phone || '',
+        email: data?.email || '',
+        office_hours: data?.officeHours || 'Mon - Fri: 8:00 AM - 4:00 PM'
+    };
 
     return (
         <div className="fade-in">

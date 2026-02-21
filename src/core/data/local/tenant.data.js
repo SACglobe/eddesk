@@ -185,15 +185,15 @@ export const LOCAL_TENANT_DATA = {
 
   // ── media_library ──────────────────────────────────────────────────
   media_library: [
-    { id: 'm-01', school_id: 'demo-school-001', media_type: 'image', category: 'campus', url: '/demo/gallery/campus-1.jpg', caption: 'Main Building', is_featured: true, created_at: '2024-08-01T10:00:00Z' },
-    { id: 'm-02', school_id: 'demo-school-001', media_type: 'image', category: 'campus', url: '/demo/gallery/campus-2.jpg', caption: 'Library', is_featured: true, created_at: '2024-08-01T10:00:00Z' },
-    { id: 'm-03', school_id: 'demo-school-001', media_type: 'image', category: 'sports', url: '/demo/gallery/sports-1.jpg', caption: 'Swimming Championship', is_featured: true, created_at: '2024-09-15T10:00:00Z' },
-    { id: 'm-04', school_id: 'demo-school-001', media_type: 'image', category: 'sports', url: '/demo/gallery/sports-2.jpg', caption: 'Football Ground', is_featured: false, created_at: '2024-09-15T10:00:00Z' },
-    { id: 'm-05', school_id: 'demo-school-001', media_type: 'image', category: 'events', url: '/demo/gallery/event-1.jpg', caption: 'Annual Day Celebration', is_featured: true, created_at: '2024-11-20T10:00:00Z' },
-    { id: 'm-06', school_id: 'demo-school-001', media_type: 'image', category: 'events', url: '/demo/gallery/event-2.jpg', caption: 'Science Exhibition', is_featured: false, created_at: '2024-11-22T10:00:00Z' },
-    { id: 'm-07', school_id: 'demo-school-001', media_type: 'image', category: 'academics', url: '/demo/gallery/academics-1.jpg', caption: 'Smart Classroom in Action', is_featured: false, created_at: '2024-07-10T10:00:00Z' },
-    { id: 'm-08', school_id: 'demo-school-001', media_type: 'image', category: 'campus', url: '/demo/gallery/campus-3.jpg', caption: 'Indoor Sports Complex', is_featured: true, created_at: '2024-08-15T10:00:00Z' },
-    { id: 'm-09', school_id: 'demo-school-001', media_type: 'video', category: 'campus', url: '/demo/gallery/campus-tour.mp4', caption: 'Campus Tour Video', is_featured: true, created_at: '2024-06-01T10:00:00Z' },
+    { id: 'm-01', school_id: 'demo-school-001', media_type: 'image', category: 'campus', url: '/school/image/campus1.png', caption: 'Main Building', is_featured: true, created_at: '2024-08-01T10:00:00Z' },
+    { id: 'm-02', school_id: 'demo-school-001', media_type: 'image', category: 'campus', url: '/school/image/campus2.png', caption: 'Library', is_featured: true, created_at: '2024-08-01T10:00:00Z' },
+    { id: 'm-03', school_id: 'demo-school-001', media_type: 'image', category: 'sports', url: '/school/image/campus3.png', caption: 'Swimming Championship', is_featured: true, created_at: '2024-09-15T10:00:00Z' },
+    { id: 'm-04', school_id: 'demo-school-001', media_type: 'image', category: 'sports', url: '/school/image/campus4.png', caption: 'Football Ground', is_featured: false, created_at: '2024-09-15T10:00:00Z' },
+    { id: 'm-05', school_id: 'demo-school-001', media_type: 'image', category: 'events', url: '/school/image/campus1.png', caption: 'Annual Day Celebration', is_featured: true, created_at: '2024-11-20T10:00:00Z' },
+    { id: 'm-06', school_id: 'demo-school-001', media_type: 'image', category: 'events', url: '/school/image/campus2.png', caption: 'Science Exhibition', is_featured: false, created_at: '2024-11-22T10:00:00Z' },
+    { id: 'm-07', school_id: 'demo-school-001', media_type: 'image', category: 'academics', url: '/school/image/campus3.png', caption: 'Smart Classroom in Action', is_featured: false, created_at: '2024-07-10T10:00:00Z' },
+    { id: 'm-08', school_id: 'demo-school-001', media_type: 'image', category: 'campus', url: '/school/image/campus4.png', caption: 'Indoor Sports Complex', is_featured: true, created_at: '2024-08-15T10:00:00Z' },
+    { id: 'm-09', school_id: 'demo-school-001', media_type: 'image', category: 'campus', url: '/school/image/campus1.png', caption: 'Campus Tour Video', is_featured: true, created_at: '2024-06-01T10:00:00Z' },
   ],
 
   // ── events ─────────────────────────────────────────────────────────

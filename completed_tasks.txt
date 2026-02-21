@@ -7,3 +7,5 @@ hero
 announcements
 principal
 faculty
+sports achievements
+campus infrastruture

@@ -1,9 +1,25 @@
 "use client";
 import React from 'react';
-import { MOCK_DATA } from '../constants/mockData';
 
-const AdmissionScreen = () => {
-    const { ADMISSION } = MOCK_DATA;
+const AdmissionScreen = ({ data }) => {
+    const ADMISSION = {
+        admission_overview: data?.about || "Our institution welcomes students from all backgrounds. We value diversity and seek to provide a platform for holistic growth.",
+        admission_process: [
+            "Online Application Submission",
+            "Document Verification",
+            "Entrance Evaluation / Interaction",
+            "Provisional Admission Offer",
+            "Fee Remittance & Enrollment"
+        ],
+        fee_payment_url: data?.paymentLinks?.find(l => l.linkType === 'admission_fee')?.url || '#',
+        admission_form_fields: [
+            { label: "Student Full Name", type: "text", required: true },
+            { label: "Applied Grade", type: "select", required: true },
+            { label: "Parent/Guardian Name", type: "text", required: true },
+            { label: "Contact Phone", type: "tel", required: true },
+            { label: "Email Address", type: "email", required: true }
+        ]
+    };
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 fade-in">
