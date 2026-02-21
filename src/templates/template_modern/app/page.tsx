@@ -15,43 +15,7 @@ const highlightImages = [
 
 
 
-const sportsAchievements = [
-    {
-        year: 2023,
-        title: "State Chess Champions",
-        category: "Chess",
-        image: "school/image/sports_chess.png",
-        description: "Undefeated run in the regional inter-school tournament."
-    },
-    {
-        year: 2024,
-        title: "National Kabadi Gold",
-        category: "Kabadi",
-        image: "school/image/sports_kabadi.png",
-        description: "Setting a new state record in the 4x100m relay event."
-    },
-    {
-        year: 2022,
-        title: "Elite Basketball Trophy",
-        category: "Basketball",
-        image: "school/image/sports_basketball.png",
-        description: "Victory in the Annual Metropolitan Schools Invitation."
-    },
-    {
-        year: 2023,
-        title: "Track & Field Excellence",
-        category: "Athletics",
-        image: "school/image/sports_athletics.png",
-        description: "Overall champions for 3 consecutive years at the State Meet."
-    },
-    {
-        year: 2024,
-        title: "Indoor Cricket Winners",
-        category: "Cricket",
-        image: "school/image/sports_cricket.png",
-        description: "Secured Top 3 positions in both Men's and Women's singles."
-    }
-];
+
 
 const infrastructureData = [
     {
@@ -165,6 +129,13 @@ export default function Home({ data }: { data: TenantViewModel }) {
     const faculty = (data?.personnel as any[] ?? [])
         .filter((p: any) => p.personType === 'faculty')
         .sort((a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0));
+
+    const achievementsEnabled = (data?.homepageSections ?? [])
+        .find(s => s.sectionKey === 'achievements')
+        ?.isEnabled ?? true;
+    const sportsAchievements = (data?.achievements ?? [])
+        .filter(a => a.achievementType === 'sports')
+        .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
     //
     return (
         <div className="space-y-24 pb-24">
@@ -411,61 +382,76 @@ export default function Home({ data }: { data: TenantViewModel }) {
                 </section>
             )}
 
-            {/* Athletic Excellence */}
-            <section className="max-w-[100vw] overflow-hidden py-24 bg-gray-50/50 border-y border-gray-100">
-                <div className="max-w-7xl mx-auto px-4 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
-                    <div className="space-y-4">
-                        <div className="inline-block px-4 py-1.5 bg-yellow-100 text-yellow-700 rounded-full text-[10px] font-black uppercase tracking-[0.3em]">
-                            Athletic Excellence
-                        </div>
-                        <h2 className="text-4xl md:text-5xl font-bold text-primary">Sports & Physical Achievements</h2>
-                    </div>
-                    <p className="text-gray-500 max-w-md font-medium">Nurturing champions on and off the field through competitive spirit and physical discipline.</p>
-                </div>
-
-                <div className="relative">
-                    <div className="achievement-scroll flex overflow-x-auto gap-8 px-[max(1rem,calc((100vw-80rem)/2+1rem))] pb-12 snap-x snap-mandatory cursor-grab active:cursor-grabbing">
-                        {sportsAchievements.map((achievement, i) => (
-                            <div
-                                key={i}
-                                className="min-w-[320px] md:min-w-[450px] snap-center group relative overflow-hidden rounded-[3rem] aspect-[16/10] shadow-2xl transition-all duration-500 hover:shadow-primary/10"
-                            >
-                                <img
-                                    src={achievement.image}
-                                    alt={achievement.title}
-                                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-blue-950 via-blue-950/20 to-transparent opacity-80"></div>
-
-                                <div className="absolute top-8 left-8 flex flex-col items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
-                                    <span className="text-[10px] font-black text-accent uppercase tracking-tighter">YEAR</span>
-                                    <span className="text-xl font-black text-white leading-none">
-                                        <AnimatedNumber value={achievement.year} duration={1000} />
-                                    </span>
-                                </div>
-
-                                <div className="absolute bottom-10 left-10 right-10 space-y-2">
-                                    <span className="text-[10px] font-black text-accent uppercase tracking-[0.3em] mb-2 inline-block">
-                                        {achievement.category}
-                                    </span>
-                                    <h4 className="text-2xl md:text-3xl font-bold text-white leading-tight mb-2 group-hover:text-accent transition-colors">
-                                        {achievement.title}
-                                    </h4>
-                                    <p className="text-blue-50/80 text-sm leading-relaxed line-clamp-2 font-medium">
-                                        {achievement.description}
-                                    </p>
-                                </div>
+            {achievementsEnabled && sportsAchievements.length > 0 && (
+                <section className="max-w-[100vw] overflow-hidden py-24 bg-gray-50/50 border-y border-gray-100">
+                    <div className="max-w-7xl mx-auto px-4 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                        <div className="space-y-4">
+                            <div className="inline-block px-4 py-1.5 bg-yellow-100 text-yellow-700 rounded-full text-[10px] font-black uppercase tracking-[0.3em]">
+                                Athletic Excellence
                             </div>
-                        ))}
-                    </div>
-                    <div className="max-w-7xl mx-auto px-4 mt-4 flex items-center justify-center gap-2">
-                        <div className="h-1 w-12 bg-primary/10 rounded-full overflow-hidden">
-                            <div className="h-full bg-primary w-1/3 rounded-full"></div>
+                            <h2 className="text-4xl md:text-5xl font-bold text-primary">Sports & Physical Achievements</h2>
                         </div>
-                        <span className="text-[10px] font-black text-primary/30 uppercase tracking-widest">Swipe to explore</span>
+                        <p className="text-gray-500 max-w-md font-medium">Nurturing champions on and off the field through competitive spirit and physical discipline.</p>
                     </div>
-                </div>
-            </section>
+
+                    <div className="relative">
+                        <div className="achievement-scroll flex overflow-x-auto gap-8 px-[max(1rem,calc((100vw-80rem)/2+1rem))] pb-12 snap-x snap-mandatory cursor-grab active:cursor-grabbing">
+                            {sportsAchievements.map((achievement, i) => (
+                                <div
+                                    key={i}
+                                    className="min-w-[320px] md:min-w-[450px] snap-center group relative overflow-hidden rounded-[3rem] aspect-[16/10] shadow-2xl transition-all duration-500 hover:shadow-primary/10"
+                                >
+                                    {achievement.photoUrl ? (
+                                        <img
+                                            src={achievement.photoUrl}
+                                            alt={achievement.title}
+                                            className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
+                                        />
+                                    ) : (
+                                        <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-blue-950/30">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="w-20 h-20 text-white/20"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1">
+                                                <path strokeLinecap="round" strokeLinejoin="round"
+                                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                <path strokeLinecap="round" strokeLinejoin="round"
+                                                    d="M8 21h8m-4-4v4M7 7H4a2 2 0 00-2 2v1a4 4 0 004 4h.5
+                                                    M17 7h3a2 2 0 012 2v1a4 4 0 01-4 4h-.5
+                                                    M7 7V5a5 5 0 0110 0v2M7 7h10" />
+                                            </svg>
+                                        </div>
+                                    )}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-blue-950 via-blue-950/20 to-transparent opacity-80"></div>
+
+                                    <div className="absolute top-8 left-8 flex flex-col items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
+                                        <span className="text-[10px] font-black text-accent uppercase tracking-tighter">YEAR</span>
+                                        <span className="text-xl font-black text-white leading-none">
+                                            <AnimatedNumber value={achievement.year} duration={1000} />
+                                        </span>
+                                    </div>
+
+                                    <div className="absolute bottom-10 left-10 right-10 space-y-2">
+                                        <span className="text-[10px] font-black text-accent uppercase tracking-[0.3em] mb-2 inline-block">
+                                            {achievement.category}
+                                        </span>
+                                        <h4 className="text-2xl md:text-3xl font-bold text-white leading-tight mb-2 group-hover:text-accent transition-colors">
+                                            {achievement.title}
+                                        </h4>
+                                        <p className="text-blue-50/80 text-sm leading-relaxed line-clamp-2 font-medium">
+                                            {achievement.description}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="max-w-7xl mx-auto px-4 mt-4 flex items-center justify-center gap-2">
+                            <div className="h-1 w-12 bg-primary/10 rounded-full overflow-hidden">
+                                <div className="h-full bg-primary w-1/3 rounded-full"></div>
+                            </div>
+                            <span className="text-[10px] font-black text-primary/30 uppercase tracking-widest">Swipe to explore</span>
+                        </div>
+                    </div>
+                </section>
+            )}
 
             {/* Campus highlights Section */}
             <section className="max-w-7xl mx-auto px-4 py-24">

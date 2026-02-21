@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { MOCK_DATA } from '../constants/mockData';
 import Link from 'next/link';
 
-const HomeScreen = ({ data, statsEnabled, statistics, facultyEnabled, faculty }) => {
+const HomeScreen = ({ data, statsEnabled, statistics, facultyEnabled, faculty, achievementsEnabled, sportsAchievements }) => {
     const { SCHOOL_PROFILE, STATISTICS_LEGACY, ACHIEVEMENTS, INFRASTRUCTURE } = MOCK_DATA;
     const [currentSlide, setCurrentSlide] = useState(0);
     const [galleryIndex, setGalleryIndex] = useState(0);
@@ -282,54 +282,69 @@ const HomeScreen = ({ data, statsEnabled, statistics, facultyEnabled, faculty })
                 </section>
             )}
 
-            {/* 6. Sports Activities and Achievements Section (HORIZONTAL SCROLL) */}
-            <section className="py-24 bg-emerald-50/30 border-t border-slate-100">
-                <div className="max-w-[1600px] mx-auto px-2 md:px-6">
-                    <div className="flex flex-col md:flex-row justify-between items-end mb-12">
-                        <div className="text-left">
-                            <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.4em] block mb-4">Athletic Excellence</span>
-                            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Sports & Physical Achievements</h2>
-                            <div className="h-1 w-20 bg-emerald-900 mt-6"></div>
-                        </div>
-                        <div className="hidden md:flex items-center gap-3 text-slate-400">
-                            <span className="text-[10px] uppercase font-bold tracking-widest">Swipe horizontally</span>
-                            <div className="w-12 h-px bg-slate-300"></div>
-                        </div>
-                    </div>
-
-                    <div className="flex gap-8 overflow-x-auto pb-12 pt-4 no-scrollbar snap-x snap-mandatory">
-                        {ACHIEVEMENTS.student_achievements.map((item, idx) => (
-                            <div
-                                key={idx}
-                                className="min-w-[300px] md:min-w-[400px] bg-white border border-slate-100 shadow-md snap-start group/card hover:shadow-2xl transition-all duration-500 flex flex-col"
-                            >
-                                <div className="relative h-60 overflow-hidden">
-                                    <img
-                                        src={item.image}
-                                        alt={item.title}
-                                        className="w-full h-full object-cover transition-transform duration-1000 group-hover/card:scale-110"
-                                    />
-                                    <div className="absolute top-4 right-4 bg-emerald-900 text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest shadow-lg">
-                                        {item.year}
-                                    </div>
-                                </div>
-                                <div className="p-8 flex-grow border-t-4 border-emerald-900">
-                                    <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.2em] block mb-3">
-                                        {item.category}
-                                    </span>
-                                    <h3 className="text-xl font-bold text-slate-900 serif leading-tight mb-4 group-hover/card:text-emerald-900 transition-colors">
-                                        {item.title}
-                                    </h3>
-                                    <div className="pt-6 border-t border-slate-50 flex items-center justify-between">
-                                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Honorary Mention</span>
-                                        <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                                    </div>
-                                </div>
+            {achievementsEnabled && sportsAchievements.length > 0 && (
+                <section className="py-24 bg-emerald-50/30 border-t border-slate-100">
+                    <div className="max-w-[1600px] mx-auto px-2 md:px-6">
+                        <div className="flex flex-col md:flex-row justify-between items-end mb-12">
+                            <div className="text-left">
+                                <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.4em] block mb-4">Athletic Excellence</span>
+                                <h2 className="text-3xl md:text-4xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Sports & Physical Achievements</h2>
+                                <div className="h-1 w-20 bg-emerald-900 mt-6"></div>
                             </div>
-                        ))}
+                            <div className="hidden md:flex items-center gap-3 text-slate-400">
+                                <span className="text-[10px] uppercase font-bold tracking-widest">Swipe horizontally</span>
+                                <div className="w-12 h-px bg-slate-300"></div>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-8 overflow-x-auto pb-12 pt-4 no-scrollbar snap-x snap-mandatory">
+                            {sportsAchievements.map((item, idx) => (
+                                <div
+                                    key={idx}
+                                    className="min-w-[300px] md:min-w-[400px] bg-white border border-slate-100 shadow-md snap-start group/card hover:shadow-2xl transition-all duration-500 flex flex-col"
+                                >
+                                    <div className="relative h-60 overflow-hidden">
+                                        {item.photoUrl ? (
+                                            <img
+                                                src={item.photoUrl}
+                                                alt={item.title}
+                                                className="w-full h-full object-cover object-center transition-transform duration-1000 group-hover/card:scale-110"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center bg-emerald-50">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 text-emerald-300"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1">
+                                                    <path strokeLinecap="round" strokeLinejoin="round"
+                                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round"
+                                                        d="M8 21h8m-4-4v4M7 7H4a2 2 0 00-2 2v1a4 4 0 004 4h.5
+                                                        M17 7h3a2 2 0 012 2v1a4 4 0 01-4 4h-.5
+                                                        M7 7V5a5 5 0 0110 0v2M7 7h10" />
+                                                </svg>
+                                            </div>
+                                        )}
+                                        <div className="absolute top-4 right-4 bg-emerald-900 text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest shadow-lg">
+                                            {item.year}
+                                        </div>
+                                    </div>
+                                    <div className="p-8 flex-grow border-t-4 border-emerald-900">
+                                        <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.2em] block mb-3">
+                                            {item.category}
+                                        </span>
+                                        <h3 className="text-xl font-bold text-slate-900 serif leading-tight mb-4 group-hover/card:text-emerald-900 transition-colors">
+                                            {item.title}
+                                        </h3>
+                                        <div className="pt-6 border-t border-slate-50 flex items-center justify-between">
+                                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Honorary Mention</span>
+                                            <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            )}
 
             {/* 7. Campus Highlights (Infrastructure Grid) */}
             <section className="py-24 bg-slate-50">

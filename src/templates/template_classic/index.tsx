@@ -44,6 +44,8 @@ export const Renderer = ({ data, path }: { data: any, path: string }) => {
                     statistics={statistics}
                     facultyEnabled={facultyEnabled}
                     faculty={faculty}
+                    achievementsEnabled={achievementsEnabled}
+                    sportsAchievements={sportsAchievements}
                 />;
             case '/about':
                 return <AboutScreen />;
@@ -62,6 +64,8 @@ export const Renderer = ({ data, path }: { data: any, path: string }) => {
                     statistics={statistics}
                     facultyEnabled={facultyEnabled}
                     faculty={faculty}
+                    achievementsEnabled={achievementsEnabled}
+                    sportsAchievements={sportsAchievements}
                 />;
         }
     };
@@ -80,6 +84,13 @@ export const Renderer = ({ data, path }: { data: any, path: string }) => {
         ?.isEnabled ?? true;
     const statistics = (data?.statistics ?? [])
         .sort((a, b) => a.displayOrder - b.displayOrder);
+
+    const achievementsEnabled = (data?.homepageSections ?? [])
+        .find((s: any) => s.sectionKey === 'achievements')
+        ?.isEnabled ?? true;
+    const sportsAchievements = (data?.achievements ?? [])
+        .filter((a: any) => a.achievementType === 'sports')
+        .sort((a: any, b: any) => a.displayOrder - b.displayOrder);
 
     const facultySection = (data?.homepageSections ?? [])
         .find((s: any) => s.sectionKey === 'faculty');

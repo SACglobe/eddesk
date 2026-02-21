@@ -338,28 +338,24 @@ const FacultyHighlights: React.FC<FacultyHighlightsProps> = ({ faculty, facultyE
   );
 };
 
-const AthleticExcellence: React.FC = () => {
+interface SportAchievement {
+  title: string;
+  category: string;
+  photoUrl: string;
+  description: string;
+  year: number;
+  displayOrder: number;
+}
+
+interface AthleticExcellenceProps {
+  sportsAchievements: SportAchievement[];
+  achievementsEnabled: boolean;
+}
+
+const AthleticExcellence: React.FC<AthleticExcellenceProps> = ({ sportsAchievements, achievementsEnabled }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
-  const sportsAchievements = [
-    {
-      title: "Champions of the Chess",
-      category: "Chess",
-      image: "school/image/sports_chess.png",
-      description: "Our varsity track squad secured the National Invitational Shield, setting three new record benchmarks in the 400m hurdles."
-    },
-    {
-      title: "Sterling XI Premier Glory",
-      category: "BasketBall",
-      image: "school/image/sports_basketball.png",
-      description: "The senior football collective achieved an undefeated season, culminating in the Independent Schools' Premier Trophy victory."
-    },
-    {
-      title: "The Sovereign Cup",
-      category: "Cricket",
-      image: "school/image/sports_cricket.png",
-      description: "A masterclass in precision and strategy led our cricket team to retain the Sovereign Cup for the fifth consecutive year."
-    }
-  ];
+
+  if (!achievementsEnabled || sportsAchievements.length === 0) return null;
 
   return (
     <section ref={containerRef} className="py-48 px-8 bg-signature-ivory border-b border-signature-navy/5 overflow-hidden">
@@ -377,7 +373,21 @@ const AthleticExcellence: React.FC = () => {
           {sportsAchievements.map((sport, i) => (
             <div key={i} className={`group transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`} style={{ transitionDelay: `${i * 200}ms` }}>
               <div className="relative aspect-[4/5] overflow-hidden mb-8">
-                <img src={sport.image} alt={sport.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
+                {sport.photoUrl ? (
+                  <img src={sport.photoUrl} alt={sport.title} className="w-full h-full object-cover object-center grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-signature-ivory">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 text-signature-navy/20"
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1">
+                      <path strokeLinecap="round" strokeLinejoin="round"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round"
+                        d="M8 21h8m-4-4v4M7 7H4a2 2 0 00-2 2v1a4 4 0 004 4h.5
+                        M17 7h3a2 2 0 012 2v1a4 4 0 01-4 4h-.5
+                        M7 7V5a5 5 0 0110 0v2M7 7h10" />
+                    </svg>
+                  </div>
+                )}
                 <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-signature-gold/30"></div>
               </div>
               <span className="text-[10px] uppercase tracking-[0.4em] text-signature-gold font-bold mb-4 block">{sport.category}</span>
@@ -467,6 +477,13 @@ export default function Home({ data, statsEnabled, statistics }: {
     .filter(p => p.personType === 'faculty')
     .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
+  const achievementsEnabled = (data?.homepageSections ?? [])
+    .find(s => s.sectionKey === 'achievements')
+    ?.isEnabled ?? true;
+  const sportsAchievements = (data?.achievements ?? [])
+    .filter(a => a.achievementType === 'sports')
+    .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+
   return (
     <LayoutWrapper>
       <div className="fade-in bg-signature-ivory">
@@ -474,28 +491,25 @@ export default function Home({ data, statsEnabled, statistics }: {
 
         <InstitutionalStats />
 
-        <section ref={introRef} className="pt-48 pb-24 px-8 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-32 items-center">
-          <div className={`lg:col-span-7 transition-all duration-1000 ${introVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
-            <SectionHeader title="A Message from the Principal" subtitle="Academic Leadership" />
-            <p className="text-4xl md:text-5xl font-serif italic text-signature-navy mb-12 leading-[1.2] tracking-tight">
-              "{principal?.bio ?? ''}"
+        <section className="py-48 px-8 grid lg:grid-cols-2 gap-24 items-center max-w-[1400px] mx-auto border-b border-signature-navy/5">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl group">
+            <img src={principal?.photoUrl ?? "/school/image/principal.png"} alt="Principal" className="w-full h-full object-cover object-top transition-transform duration-1000 group-hover:scale-105" />
+            <div className="absolute inset-0 bg-signature-navy/20 mix-blend-multiply"></div>
+          </div>
+          <div>
+            <SectionHeader title="Leadership" subtitle="Visionary Guidance" />
+            <p className="text-2xl text-signature-navy/60 font-serif italic mb-12 leading-relaxed">
+              "{principal?.bio}"
             </p>
-            <div className="flex items-center gap-8">
-              <img src={principal?.photoUrl ?? ''} className="w-24 h-24 rounded-full object-cover object-top grayscale border-2 border-signature-gold/20" alt="Principal" />
+            <div className="flex items-center gap-6 mb-12">
+              <div className="w-16 h-px bg-signature-gold"></div>
               <div>
-                <h4 className="font-bold text-2xl tracking-tight">{principal?.name ?? ''}</h4>
-                <p className="text-[11px] uppercase tracking-[0.4em] text-signature-gold font-bold">The Academy Principal</p>
+                <div className="text-xl font-bold uppercase tracking-widest text-signature-navy">{principal?.name}</div>
+                <div className="text-signature-gold text-sm tracking-[0.2em] font-bold">{principal?.designation}</div>
               </div>
             </div>
-          </div>
-          <div className={`lg:col-span-5 bg-signature-navy p-16 md:p-24 text-white relative transition-all duration-1000 delay-300 ${introVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'}`}>
-            <div className="absolute top-0 right-0 w-32 h-32 bg-signature-gold/10"></div>
-            <SectionHeader title="The Legacy of Excellence" subtitle="Institutional Governance" light />
-            <p className="text-white/50 leading-loose mb-12 font-light text-xl">
-              For over three decades, Sterling has stood as a beacon of intellectual rigor. Our governance is committed to maintaining the highest standards of stewardship and visionary growth.
-            </p>
             <Link href="/about">
-              <Button variant="outline">Governance Archive</Button>
+              <Button>Discover Our Legacy</Button>
             </Link>
           </div>
         </section>
@@ -504,8 +518,7 @@ export default function Home({ data, statsEnabled, statistics }: {
 
         <FacultyHighlights faculty={faculty as any} facultyEnabled={facultyEnabled} />
 
-
-        <AthleticExcellence />
+        <AthleticExcellence sportsAchievements={sportsAchievements} achievementsEnabled={achievementsEnabled} />
 
         <section className="py-48 px-8 bg-white">
           <div className="max-w-[1400px] mx-auto">

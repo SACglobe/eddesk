@@ -58,6 +58,7 @@ import {
     COL_ACHIEVEMENTS_YEAR,
     COL_ACHIEVEMENTS_CATEGORY,
     COL_ACHIEVEMENTS_TYPE,
+    COL_ACHIEVEMENTS_PHOTO_URL,
     COL_ACHIEVEMENTS_DISPLAY_ORDER,
     COL_PERSONNEL_NAME,
     COL_PERSONNEL_DESIGNATION,
@@ -141,7 +142,8 @@ export interface TenantViewModel {
         description: string;
         year: number;
         category: string;
-        type: string;
+        achievementType: string;
+        photoUrl: string;
         displayOrder: number;
     }>;
     personnel: Array<{
@@ -269,7 +271,8 @@ export function buildTenantViewModel(data: TenantApiDataItem[]): TenantViewModel
             description: str(r[COL_ACHIEVEMENTS_DESCRIPTION]),
             year: num(r[COL_ACHIEVEMENTS_YEAR]),
             category: str(r[COL_ACHIEVEMENTS_CATEGORY]),
-            type: str(r[COL_ACHIEVEMENTS_TYPE]),
+            achievementType: str(r[COL_ACHIEVEMENTS_TYPE]),
+            photoUrl: str(r[COL_ACHIEVEMENTS_PHOTO_URL]),
             displayOrder: num(r[COL_ACHIEVEMENTS_DISPLAY_ORDER]),
         })),
         personnel: personnelRows.map(r => ({
@@ -370,7 +373,8 @@ export function buildTenantViewModelFromLocal(data: any): TenantViewModel {
             description: str(r[COL_ACHIEVEMENTS_DESCRIPTION]),
             year: num(r[COL_ACHIEVEMENTS_YEAR]),
             category: str(r[COL_ACHIEVEMENTS_CATEGORY]),
-            type: str(r[COL_ACHIEVEMENTS_TYPE]),
+            achievementType: str(r[COL_ACHIEVEMENTS_TYPE]),
+            photoUrl: str(r[COL_ACHIEVEMENTS_PHOTO_URL]),
             displayOrder: num(r[COL_ACHIEVEMENTS_DISPLAY_ORDER]),
         })),
         personnel: (data.personnel || []).map((r: any) => ({

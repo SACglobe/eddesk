@@ -91,6 +91,7 @@ export const COL_ACHIEVEMENTS_CATEGORY = "category";
 export const COL_ACHIEVEMENTS_TITLE = "title";
 export const COL_ACHIEVEMENTS_DESCRIPTION = "description";
 export const COL_ACHIEVEMENTS_TYPE = "achievement_type";
+export const COL_ACHIEVEMENTS_PHOTO_URL = "photo_url";
 export const COL_ACHIEVEMENTS_DISPLAY_ORDER = "display_order";
 
 // --- Columns: personnel ---
