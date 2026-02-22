@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { leadViewModel, LeadData } from '@/core/viewmodels/lead.viewmodel';
 
 interface LeadCapturePopupProps {
@@ -8,6 +9,7 @@ interface LeadCapturePopupProps {
 }
 
 export default function LeadCapturePopup({ templateSlug }: LeadCapturePopupProps) {
+    const pathname = usePathname();
     const [isVisible, setIsVisible] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [formData, setFormData] = useState({
@@ -17,7 +19,11 @@ export default function LeadCapturePopup({ templateSlug }: LeadCapturePopupProps
         message: ''
     });
 
+    // Only activate on /demo/* routes — never on customer domains or tenant routes
+    const isDemoRoute = pathname?.startsWith('/demo/');
+
     useEffect(() => {
+        if (!isDemoRoute) return;
         if (!leadViewModel.shouldShowPopup()) return;
 
         const handleScroll = () => {
@@ -47,7 +53,7 @@ export default function LeadCapturePopup({ templateSlug }: LeadCapturePopupProps
         }
     };
 
-    if (!isVisible) return null;
+    if (!isDemoRoute || !isVisible) return null;
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 animate-in fade-in duration-500">
