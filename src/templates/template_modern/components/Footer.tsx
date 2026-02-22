@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 interface FooterProps {
-    school: any;
+    school?: any;
 }
 
 const Footer: React.FC<FooterProps> = ({ school }) => {
@@ -10,7 +10,7 @@ const Footer: React.FC<FooterProps> = ({ school }) => {
             <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div className="space-y-4">
-                        <h3 className="text-white text-xl font-bold">{school.name}</h3>
+                        <h3 className="text-white text-xl font-bold">{school?.name}</h3>
                         <p className="text-sm leading-relaxed">
                             Excellence in education since 1995. Preparing students for the global challenges of tomorrow.
                         </p>
