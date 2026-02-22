@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 interface NavbarProps {
-    school: any;
+    school?: any;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ school }) => {
