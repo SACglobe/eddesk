@@ -40,7 +40,7 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
 
         switch (normalizedPath) {
             case '/':
-                return <HomeScreen data={data} />;
+                return <HomeScreen data={data} academicEnabled={academicEnabled} latestResult={latestResult} academicAchievements={academicAchievements} />;
             case '/about':
                 return <AboutScreen data={data} />;
             case '/admission':
@@ -52,7 +52,7 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
             case '/broadcast':
                 return <BroadcastScreen data={data} />;
             default:
-                return <HomeScreen data={data} />;
+                return <HomeScreen data={data} academicEnabled={academicEnabled} latestResult={latestResult} academicAchievements={academicAchievements} />;
         }
     };
 
@@ -66,6 +66,17 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
             (a.expiresAt == null || new Date(a.expiresAt) > now)
         )
         : [];
+
+    const academicEnabled = (data?.homepageSections ?? [])
+        .find((s: any) => s.sectionKey === 'academic_results')
+        ?.isEnabled ?? true;
+
+    const latestResult = (data?.academicResults ?? [])
+        .sort((a, b) => b.year - a.year)[0] ?? null;
+
+    const academicAchievements = (data?.achievements ?? [])
+        .filter((a: any) => a.achievementType === 'academic')
+        .sort((a: any, b: any) => b.year - a.year || a.displayOrder - b.displayOrder);
 
     return (
         <div className="classic-template-wrapper">

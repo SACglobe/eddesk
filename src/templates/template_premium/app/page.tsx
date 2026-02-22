@@ -129,11 +129,11 @@ const InstitutionalStats: React.FC<{
   academicResultsEnabled: boolean;
   latestAcademicResult: any;
   achievementsEnabled: boolean;
-  recentAchievements: any[];
-}> = ({ academicResultsEnabled, latestAcademicResult, achievementsEnabled, recentAchievements }) => {
+  academicAchievements: any[];
+}> = ({ academicResultsEnabled, latestAcademicResult, achievementsEnabled, academicAchievements }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
 
-  if (!((academicResultsEnabled && latestAcademicResult) || (achievementsEnabled && recentAchievements.length > 0))) return null;
+  if (!((academicResultsEnabled && latestAcademicResult) || (achievementsEnabled && academicAchievements.length > 0))) return null;
 
   return (
     <section ref={containerRef} className="bg-white border-b border-signature-navy/5 overflow-hidden">
@@ -149,28 +149,34 @@ const InstitutionalStats: React.FC<{
             <h2 className="text-5xl md:text-6xl font-serif text-signature-navy mb-12 leading-tight tracking-tight">Honors & Academic <br />Results</h2>
 
             <div className="mb-12">
-              <h3 className="text-2xl font-serif text-signature-navy mb-2">Board Results {latestAcademicResult.year}</h3>
+              <h3 className="text-2xl font-serif text-signature-navy mb-2">Board Results {latestAcademicResult.year ?? '—'}</h3>
               <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Academic Merit Summary</p>
             </div>
 
             <div className="space-y-8">
               <div className="flex justify-between items-end border-b border-signature-navy/5 pb-4">
                 <span className="text-[11px] uppercase tracking-widest font-bold text-signature-navy/60">Pass Percentage</span>
-                <span className="text-5xl font-serif text-signature-navy">{latestAcademicResult.passPercentage}%</span>
+                <span className="text-5xl font-serif text-signature-navy">{latestAcademicResult.passPercentage ?? 0}%</span>
               </div>
               <div className="flex justify-between items-end border-b border-signature-navy/5 pb-4">
                 <span className="text-[11px] uppercase tracking-widest font-bold text-signature-navy/60">Distinctions</span>
-                <span className="text-5xl font-serif text-signature-gold">{latestAcademicResult.distinctions}%</span>
+                <span className="text-5xl font-serif text-signature-gold">{latestAcademicResult.distinctions ?? 0}%</span>
               </div>
               <div className="flex justify-between items-end border-b border-signature-navy/5 pb-4">
                 <span className="text-[11px] uppercase tracking-widest font-bold text-signature-navy/60">First Class</span>
-                <span className="text-5xl font-serif text-signature-navy">{latestAcademicResult.firstClass}%</span>
+                <span className="text-5xl font-serif text-signature-navy">{latestAcademicResult.firstClass ?? 0}%</span>
               </div>
             </div>
+
+            {latestAcademicResult.legacyQuote && (
+              <p className="mt-12 text-lg text-signature-navy/60 font-serif italic leading-relaxed">
+                "{latestAcademicResult.legacyQuote}"
+              </p>
+            )}
           </div>
         )}
 
-        {achievementsEnabled && recentAchievements.length > 0 && (
+        {achievementsEnabled && academicAchievements.length > 0 && (
           <div className={`py-24 px-8 lg:pl-24 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'}`}>
             <div className="flex items-center gap-4 mb-8">
               <div className="w-8 h-px bg-signature-navy/20"></div>
@@ -179,19 +185,21 @@ const InstitutionalStats: React.FC<{
             <h2 className="text-5xl md:text-6xl font-serif text-signature-navy mb-16 tracking-tight">Achievements & Glories</h2>
 
             <div className="space-y-20 mb-20">
-              {recentAchievements.map((achievement, i) => (
+              {academicAchievements.slice(0, 2).map((item, i) => (
                 <div key={i} className="flex gap-12 group">
                   <div className="flex flex-col items-center">
                     <span className="text-[10px] uppercase tracking-widest font-bold text-signature-gold mb-2">Year</span>
-                    <span className="text-4xl font-serif text-signature-navy group-hover:text-signature-gold transition-colors">{achievement.year}</span>
-                    <div className="w-px flex-grow bg-signature-navy/5 mt-4"></div>
+                    <span className="text-4xl font-serif text-signature-navy group-hover:text-signature-gold transition-colors">{item.year}</span>
+                    {i < academicAchievements.slice(0, 2).length - 1 && (
+                      <div className="w-px flex-grow bg-signature-navy/5 mt-4"></div>
+                    )}
                   </div>
                   <div className="flex-grow pt-2 text-left">
                     <span className="inline-block bg-signature-gold/10 text-signature-gold text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4">
-                      {achievement.category || "Institutional Recognition"}
+                      {item.category || "Institutional Recognition"}
                     </span>
-                    <h4 className="text-2xl font-serif mb-4 text-signature-navy group-hover:text-signature-gold transition-colors">{achievement.title}</h4>
-                    <p className="text-base text-gray-500 leading-loose">{achievement.description}</p>
+                    <h4 className="text-2xl font-serif mb-4 text-signature-navy group-hover:text-signature-gold transition-colors">{item.title}</h4>
+                    <p className="text-base text-gray-500 leading-loose">{item.description}</p>
                   </div>
                 </div>
               ))}
@@ -573,10 +581,9 @@ export default function Home({ data, statsEnabled, statistics }: {
     .sort((a, b) => b.year - a.year);
   const latestAcademicResult = academicResults[0] ?? null;
 
-  const recentAchievements = (data?.achievements ?? [])
-    .filter(a => a.achievementType?.toLowerCase().trim() !== 'sports')
-    .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
-    .slice(0, 2);
+  const academicAchievements = (data?.achievements ?? [])
+    .filter(a => a.achievementType === 'academic')
+    .sort((a, b) => b.year - a.year || (a.displayOrder || 0) - (b.displayOrder || 0));
 
   return (
     <LayoutWrapper>
@@ -587,7 +594,7 @@ export default function Home({ data, statsEnabled, statistics }: {
           academicResultsEnabled={academicResultsEnabled}
           latestAcademicResult={latestAcademicResult}
           achievementsEnabled={achievementsEnabled}
-          recentAchievements={recentAchievements}
+          academicAchievements={academicAchievements}
         />
 
         <section className="py-48 px-8 grid lg:grid-cols-2 gap-24 items-center max-w-[1400px] mx-auto border-b border-signature-navy/5">

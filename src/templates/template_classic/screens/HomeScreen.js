@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-const HomeScreen = ({ data }) => {
+const HomeScreen = ({ data, academicEnabled, latestResult, academicAchievements }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [galleryIndex, setGalleryIndex] = useState(0);
 
@@ -24,18 +24,7 @@ const HomeScreen = ({ data }) => {
         });
     }
 
-    // Latest Academic Results
-    const latestResults = data?.academicResults?.[0] || {
-        year: '2023',
-        passPercentage: 100,
-        distinctions: 84,
-        firstClass: 96
-    };
-
-    // Filter institutional/academic achievements
-    const recentAchievements = (data?.achievements ?? [])
-        .filter(a => a.achievementType === 'academic' || a.achievementType === 'recognition')
-        .slice(0, 3);
+    // Filter institutional/academic achievements (now handled by academicAchievements prop)
 
 
     const statisticsList = (data?.statistics ?? [])
@@ -133,73 +122,77 @@ const HomeScreen = ({ data }) => {
             </section>
 
             {/* 2. School Achievements & Academic Results Section */}
-            <section className="py-24 bg-white border-b border-slate-100">
-                <div className="max-w-[1600px] mx-auto px-2 md:px-6">
-                    <div className="text-center mb-16">
-                        <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.4em] block mb-4">Institutional Merit</span>
-                        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Honors & Academic Results</h2>
-                        <div className="h-1 w-20 bg-emerald-900 mx-auto mt-6"></div>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
-                        <div className="p-10 bg-emerald-900 text-white flex flex-col justify-between h-full shadow-xl">
-                            <div>
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-8 h-[1px] bg-emerald-400"></div>
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-300">Board Results {latestResults.year}</span>
-                                </div>
-                                <h3 className="text-2xl font-bold serif mb-6">Academic Merit Summary</h3>
-                                <div className="space-y-6">
-                                    <div className="flex justify-between items-end border-b border-emerald-800 pb-2">
-                                        <span className="text-xs uppercase text-emerald-300 font-bold">Pass Percentage</span>
-                                        <span className="text-xl font-bold serif text-white">{latestResults.passPercentage}%</span>
-                                    </div>
-                                    <div className="flex justify-between items-end border-b border-emerald-800 pb-2">
-                                        <span className="text-xs uppercase text-emerald-300 font-bold">Distinctions</span>
-                                        <span className="text-xl font-bold serif text-white">{latestResults.distinctions}%</span>
-                                    </div>
-                                    <div className="flex justify-between items-end border-b border-emerald-800 pb-2">
-                                        <span className="text-xs uppercase text-emerald-300 font-bold">First Class</span>
-                                        <span className="text-xl font-bold serif text-white">{latestResults.firstClass}%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <p className="mt-8 text-[10px] text-emerald-400 uppercase tracking-widest leading-relaxed">
-                                {latestResults.legacyQuote || "Consistently maintaining a legacy of academic excellence for over 15 consecutive years."}
-                            </p>
+            {academicEnabled && (latestResult || academicAchievements?.length > 0) && (
+                <section className="py-24 bg-white border-b border-slate-100">
+                    <div className="max-w-[1600px] mx-auto px-2 md:px-6">
+                        <div className="text-center mb-16">
+                            <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.4em] block mb-4">Institutional Merit</span>
+                            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Honors & Academic Results</h2>
+                            <div className="h-1 w-20 bg-emerald-900 mx-auto mt-6"></div>
                         </div>
 
-                        {recentAchievements.map((achievement, idx) => (
-                            <div key={idx} className="p-10 bg-slate-50 border border-slate-200 hover:border-emerald-200 transition-all group flex flex-col justify-between h-full">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+                            <div className="p-10 bg-emerald-900 text-white flex flex-col justify-between h-full shadow-xl">
                                 <div>
-                                    <div className="text-3xl font-bold text-emerald-100 serif mb-6 group-hover:text-emerald-900 transition-colors">
-                                        {achievement.year}
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="w-8 h-[1px] bg-emerald-400"></div>
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-300">Board Results {latestResult?.year ?? '—'}</span>
                                     </div>
-                                    <h3 className="text-lg font-bold text-slate-900 uppercase tracking-tight serif mb-4 leading-tight">
-                                        {achievement.title}
-                                    </h3>
-                                    <p className="text-slate-600 text-sm leading-relaxed mb-6 italic">
-                                        {achievement.description}
+                                    <h3 className="text-2xl font-bold serif mb-6">Academic Merit Summary</h3>
+                                    <div className="space-y-6">
+                                        <div className="flex justify-between items-end border-b border-emerald-800 pb-2">
+                                            <span className="text-xs uppercase text-emerald-300 font-bold">Pass Percentage</span>
+                                            <span className="text-xl font-bold serif text-white">{latestResult ? `${latestResult.passPercentage}%` : '—'}</span>
+                                        </div>
+                                        <div className="flex justify-between items-end border-b border-emerald-800 pb-2">
+                                            <span className="text-xs uppercase text-emerald-300 font-bold">Distinctions</span>
+                                            <span className="text-xl font-bold serif text-white">{latestResult ? `${latestResult.distinctions}%` : '—'}</span>
+                                        </div>
+                                        <div className="flex justify-between items-end border-b border-emerald-800 pb-2">
+                                            <span className="text-xs uppercase text-emerald-300 font-bold">First Class</span>
+                                            <span className="text-xl font-bold serif text-white">{latestResult ? `${latestResult.firstClass}%` : '—'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                {latestResult?.legacyQuote && (
+                                    <p className="mt-8 text-[10px] text-emerald-400 uppercase tracking-widest leading-relaxed">
+                                        {latestResult.legacyQuote}
                                     </p>
-                                </div>
-                                <div className="pt-6 border-t border-slate-200 text-[10px] font-bold text-emerald-600 uppercase tracking-widest flex items-center gap-2">
-                                    <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
-                                    Institutional Recognition
-                                </div>
+                                )}
                             </div>
-                        ))}
-                    </div>
 
-                    <div className="text-center">
-                        <Link
-                            href="/about"
-                            className="px-10 py-4 border-2 border-emerald-900 text-emerald-900 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-emerald-900 hover:text-white transition-all inline-block"
-                        >
-                            Know more
-                        </Link>
+                            {academicAchievements?.slice(0, 2).map((item, idx) => (
+                                <div key={idx} className="p-10 bg-slate-50 border border-slate-200 hover:border-emerald-200 transition-all group flex flex-col justify-between h-full">
+                                    <div>
+                                        <div className="text-3xl font-bold text-emerald-100 serif mb-6 group-hover:text-emerald-900 transition-colors">
+                                            {item.year}
+                                        </div>
+                                        <h3 className="text-lg font-bold text-slate-900 uppercase tracking-tight serif mb-4 leading-tight">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-slate-600 text-sm leading-relaxed mb-6 italic">
+                                            {item.description}
+                                        </p>
+                                    </div>
+                                    <div className="pt-6 border-t border-slate-200 text-[10px] font-bold text-emerald-600 uppercase tracking-widest flex items-center gap-2">
+                                        <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
+                                        {item.category}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="text-center">
+                            <Link
+                                href="/about"
+                                className="px-10 py-4 border-2 border-emerald-900 text-emerald-900 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-emerald-900 hover:text-white transition-all inline-block"
+                            >
+                                Know more
+                            </Link>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            )}
 
             {/* 3. A Message from Our Principal */}
             <section className="py-32 bg-white relative overflow-hidden">

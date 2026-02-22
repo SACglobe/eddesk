@@ -148,10 +148,9 @@ export default function Home({ data }: { data: TenantViewModel }) {
         .sort((a, b) => b.year - a.year);
     const latestAcademicResult = academicResults[0] ?? null;
 
-    const recentAchievements = (data?.achievements ?? [])
-        .filter(a => a.achievementType?.toLowerCase().trim() !== 'sports')
-        .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
-        .slice(0, 2);
+    const academicAchievements = (data?.achievements ?? [])
+        .filter(a => a.achievementType === 'academic')
+        .sort((a, b) => b.year - a.year || (a.displayOrder || 0) - (b.displayOrder || 0));
     return (
         <div className="space-y-24 pb-24">
             <HeroSlider slides={data?.heroMedia ?? []} />
@@ -184,7 +183,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                 </section>
             )}
 
-            {(academicResultsEnabled && latestAcademicResult) || (achievementsEnabled && recentAchievements.length > 0) ? (
+            {(academicResultsEnabled && latestAcademicResult) || (achievementsEnabled && academicAchievements.length > 0) ? (
                 <section className="max-w-7xl mx-auto px-6 py-8 text-left">
                     <div className="grid lg:grid-cols-12 gap-16 lg:gap-24">
                         {academicResultsEnabled && latestAcademicResult && (
@@ -196,7 +195,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                     </div>
                                     <h2 className="text-4xl md:text-5xl font-bold text-blue-950 leading-tight">Honors & Academic Results</h2>
                                     <div className="space-y-1">
-                                        <h3 className="text-xl font-medium text-primary">Board Results {latestAcademicResult.year}</h3>
+                                        <h3 className="text-xl font-medium text-primary">Board Results {latestAcademicResult.year ?? '—'}</h3>
                                         <p className="text-xs text-gray-400 font-medium uppercase tracking-widest">Academic Merit Summary</p>
                                     </div>
                                 </div>
@@ -231,16 +230,18 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                     </div>
                                 </div>
 
-                                <div className="relative p-8 rounded-3xl bg-blue-50/30 border border-blue-50">
-                                    <span className="absolute -top-4 left-6 text-6xl text-blue-100 font-serif leading-none">“</span>
-                                    <p className="text-gray-500 leading-relaxed font-medium italic relative z-10">
-                                        {latestAcademicResult.legacyQuote || "Consistently maintaining a legacy of academic excellence."}
-                                    </p>
-                                </div>
+                                {latestAcademicResult.legacyQuote && (
+                                    <div className="relative p-8 rounded-3xl bg-blue-50/30 border border-blue-50">
+                                        <span className="absolute -top-4 left-6 text-6xl text-blue-100 font-serif leading-none">“</span>
+                                        <p className="text-gray-500 leading-relaxed font-medium italic relative z-10">
+                                            {latestAcademicResult.legacyQuote}
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         )}
 
-                        {achievementsEnabled && recentAchievements.length > 0 && (
+                        {achievementsEnabled && academicAchievements.length > 0 && (
                             <div className="lg:col-span-7 flex flex-col space-y-12 lg:pl-16 lg:border-l border-gray-100">
                                 <div className="space-y-6">
                                     <div className="flex items-center gap-4">
@@ -251,20 +252,20 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                 </div>
 
                                 <div className="space-y-10">
-                                    {recentAchievements.map((achievement, i) => (
+                                    {academicAchievements.slice(0, 2).map((item, i) => (
                                         <div key={i} className="group relative grid grid-cols-[80px_1fr] gap-8 p-8 hover:bg-white rounded-[2rem] transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 border border-transparent hover:border-gray-50">
-                                            <div className={`flex flex-col items-center justify-center border-r border-gray-100 transition-colors ${i === 0 ? 'group-hover:border-accent-hover' : 'group-hover:border-blue-200'}`}>
+                                            <div className="flex flex-col items-center justify-center border-r border-gray-100 group-hover:border-accent-hover transition-colors">
                                                 <span className="text-[10px] font-black text-yellow-600 mb-1 tracking-widest uppercase">Year</span>
-                                                <span className={`text-3xl font-black tracking-tighter ${i === 0 ? 'text-primary' : 'text-primary/40'}`}>
-                                                    <AnimatedNumber value={achievement.year} duration={1000} />
+                                                <span className="text-3xl font-black text-primary tracking-tighter">
+                                                    <AnimatedNumber value={item.year} duration={1000} />
                                                 </span>
                                             </div>
                                             <div className="space-y-3">
                                                 <div className="inline-block px-3 py-1 bg-yellow-50 text-yellow-700 rounded-lg text-[9px] font-black uppercase tracking-widest">
-                                                    {achievement.category || "Institutional Recognition"}
+                                                    {item.category || "Institutional Recognition"}
                                                 </div>
-                                                <h4 className="text-2xl font-bold text-blue-950">{achievement.title}</h4>
-                                                <p className="text-gray-400 text-sm leading-relaxed">{achievement.description}</p>
+                                                <h4 className="text-2xl font-bold text-blue-950">{item.title}</h4>
+                                                <p className="text-gray-400 text-sm leading-relaxed">{item.description}</p>
                                             </div>
                                         </div>
                                     ))}
