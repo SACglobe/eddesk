@@ -47,7 +47,7 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
             case '/':
                 return <Home data={data} />;
             case '/about':
-                return <About />;
+                return <About data={data} />;
             case '/admissions':
                 return <Admissions />;
             case '/contact':

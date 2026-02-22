@@ -91,6 +91,9 @@ import {
     COL_SCHOOL_IDENTITY_VISION,
     COL_SCHOOL_IDENTITY_MISSION,
     COL_SCHOOL_IDENTITY_MOTTO,
+    COL_SCHOOL_IDENTITY_ABOUT_TITLE,
+    COL_SCHOOL_IDENTITY_ABOUT_DESCRIPTION,
+    COL_SCHOOL_IDENTITY_WHY_CHOOSE_US,
     COL_HOMEPAGE_SECTIONS_SECTION_KEY,
     COL_HOMEPAGE_SECTIONS_IS_ENABLED,
     COL_HOMEPAGE_SECTIONS_DISPLAY_ORDER,
@@ -125,6 +128,14 @@ export interface TenantViewModel {
         vision: string;
         mission: string;
         motto: string;
+        aboutTitle: string;
+        aboutDescription: string;
+        whyChooseUs: Array<{
+            id: string;
+            title: string;
+            description: string;
+            icon: string;
+        }>;
     };
     heroMedia: Array<{
         mediaType: string;
@@ -269,6 +280,14 @@ export function buildTenantViewModel(data: TenantApiDataItem[]): TenantViewModel
             vision: str(identity[COL_SCHOOL_IDENTITY_VISION]),
             mission: str(identity[COL_SCHOOL_IDENTITY_MISSION]),
             motto: str(identity[COL_SCHOOL_IDENTITY_MOTTO]),
+            aboutTitle: str(identity[COL_SCHOOL_IDENTITY_ABOUT_TITLE]),
+            aboutDescription: str(identity[COL_SCHOOL_IDENTITY_ABOUT_DESCRIPTION]),
+            whyChooseUs: ((identity[COL_SCHOOL_IDENTITY_WHY_CHOOSE_US] as any[]) || []).map((wc: any) => ({
+                id: str(wc.id),
+                title: str(wc.title),
+                description: str(wc.description),
+                icon: str(wc.icon),
+            })),
         },
         heroMedia: heroRows.map(r => ({
             mediaType: str(r[COL_HERO_MEDIA_TYPE]),
@@ -385,8 +404,17 @@ export function buildTenantViewModelFromLocal(data: any): TenantViewModel {
             vision: str(identity[COL_SCHOOL_IDENTITY_VISION]),
             mission: str(identity[COL_SCHOOL_IDENTITY_MISSION]),
             motto: str(identity[COL_SCHOOL_IDENTITY_MOTTO]),
+            aboutTitle: str(identity[COL_SCHOOL_IDENTITY_ABOUT_TITLE]),
+            aboutDescription: str(identity[COL_SCHOOL_IDENTITY_ABOUT_DESCRIPTION]),
+            whyChooseUs: ((identity[COL_SCHOOL_IDENTITY_WHY_CHOOSE_US] as any[]) || []).map((wc: any) => ({
+                id: str(wc.id),
+                title: str(wc.title),
+                description: str(wc.description),
+                icon: str(wc.icon),
+            })),
         },
         heroMedia: (data.hero_media || []).map((r: any) => ({
+
             mediaType: str(r[COL_HERO_MEDIA_TYPE]),
             mediaUrl: str(r[COL_HERO_MEDIA_URL]),
             headline: str(r[COL_HERO_MEDIA_HEADLINE]),

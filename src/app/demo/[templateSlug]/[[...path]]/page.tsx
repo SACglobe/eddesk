@@ -16,7 +16,7 @@ import { fetchTenantData, isTenantDomain } from '@/core/services/tenantApi.servi
 import { buildTenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import type { TenantState } from '@/core/context/TenantContext';
 import TemplateRenderer from './TemplateRenderer';
-import { generateTenantMetadata, generateSchoolJsonLd } from '@/core/utils/seo';
+import { generateTenantMetadata, generateSchoolJsonLd, generateAboutMetadata, generateAboutJsonLd } from '@/core/utils/seo';
 import { Metadata } from 'next';
 import LeadCapturePopup from '@/components/lead/LeadCapturePopup';
 
@@ -42,10 +42,16 @@ export async function generateMetadata({
         };
     }
 
+    const { path: pathSegments } = await params;
+    const path = '/' + (pathSegments?.join('/') ?? '');
+
     // Otherwise fetch data for metadata
     const result = await fetchTenantData(hostname, templateSlug);
     if (result.status === 'success') {
         const viewModel = buildTenantViewModel(result.data);
+        if (path === '/about') {
+            return generateAboutMetadata(viewModel, hostname, true);
+        }
         return generateTenantMetadata(viewModel, hostname, true);
     }
 
@@ -108,12 +114,22 @@ export default async function TemplateDemoPage({
     return (
         <>
             {tenantState.data && (
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify(generateSchoolJsonLd(tenantState.data, hostname))
-                    }}
-                />
+                <>
+                    <script
+                        type="application/ld+json"
+                        dangerouslySetInnerHTML={{
+                            __html: JSON.stringify(generateSchoolJsonLd(tenantState.data, hostname))
+                        }}
+                    />
+                    {path === '/about' && (
+                        <script
+                            type="application/ld+json"
+                            dangerouslySetInnerHTML={{
+                                __html: JSON.stringify(generateAboutJsonLd(tenantState.data, hostname))
+                            }}
+                        />
+                    )}
+                </>
             )}
             <TemplateRenderer
                 templateSlug={templateSlug}

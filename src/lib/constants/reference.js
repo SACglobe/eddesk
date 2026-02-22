@@ -164,3 +164,6 @@ export const COL_SCHOOL_IDENTITY_SCHOOL_ID = "school_id";
 export const COL_SCHOOL_IDENTITY_VISION = "vision";
 export const COL_SCHOOL_IDENTITY_MISSION = "mission";
 export const COL_SCHOOL_IDENTITY_MOTTO = "motto";
+export const COL_SCHOOL_IDENTITY_ABOUT_TITLE = "about_title";
+export const COL_SCHOOL_IDENTITY_ABOUT_DESCRIPTION = "about_description";
+export const COL_SCHOOL_IDENTITY_WHY_CHOOSE_US = "why_choose_us";

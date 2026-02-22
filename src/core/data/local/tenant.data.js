@@ -40,10 +40,7 @@ export const LOCAL_TENANT_DATA = {
     updated_at: '2025-01-10T08:30:00Z',
   },
 
-  // ── homepage_sections ──────────────────────────────────────────────
-  // ✅ To hide a section:   set is_enabled: false
-  // ✅ To reorder sections: change display_order values
-  // ❌ Never edit templates to do this
+
   sections: [
     { id: 's-01', school_id: 'demo-school-001', section_key: 'hero', is_enabled: true, display_order: 1, settings: null, created_at: '2024-01-15T10:00:00Z' },
     { id: 's-02', school_id: 'demo-school-001', section_key: 'announcements', is_enabled: true, display_order: 2, settings: null, created_at: '2024-01-15T10:00:00Z' },
@@ -221,6 +218,38 @@ export const LOCAL_TENANT_DATA = {
     vision: 'To be a globally recognised institution that nurtures compassionate, creative, and critical thinkers who lead with integrity.',
     mission: 'To provide a holistic, student-centred education that blends academic rigour with character development — preparing every child for the challenges and opportunities of the 21st century.',
     motto: 'Illuminate. Inspire. Excel.',
+    about_title: 'About Us',
+    about_description: 'Nestled in the serene outskirts of Chennai, Greenwood High School stands as a beacon of academic excellence and holistic development. Established in 2005, our co-educational institution affiliated with the Central Board of Secondary Education (CBSE) has evolved into one of the region’s most sought-after schools. With a sprawling campus, state-of-the-art facilities, and a student-centric approach, we are committed to nurturing the leaders of tomorrow.',
+    why_choose_us: [
+      {
+        id: 'wc-01',
+        school_id: 'demo-school-001',
+        title: 'Academic Excellence',
+        description: 'A rigorous curriculum that challenges students to reach their full potential.',
+        icon: '📚',
+      },
+      {
+        id: 'wc-02',
+        school_id: 'demo-school-001',
+        title: 'Holistic Development',
+        description: 'A balanced approach that nurtures intellectual, emotional, and social growth.',
+        icon: '🌱',
+      },
+      {
+        id: 'wc-03',
+        school_id: 'demo-school-001',
+        title: 'Experienced Faculty',
+        description: 'A team of dedicated educators committed to student success.',
+        icon: '👨‍🏫',
+      },
+      {
+        id: 'wc-04',
+        school_id: 'demo-school-001',
+        title: 'State-of-the-Art Facilities',
+        description: 'Modern infrastructure that supports learning and development.',
+        icon: '🏫',
+      },
+    ],
   },
 
 };

@@ -8,7 +8,7 @@ import { Metadata } from 'next';
 import { getSchoolByDomain } from '@/core/services/school.service';
 import { fetchTenantData, isTenantDomain } from '@/core/services/tenantApi.service';
 import { buildTenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
-import { generateTenantMetadata, generateSchoolJsonLd } from '@/core/utils/seo';
+import { generateTenantMetadata, generateSchoolJsonLd, generateAboutMetadata, generateAboutJsonLd } from '@/core/utils/seo';
 import TemplateRenderer from '../../demo/[templateSlug]/[[...path]]/TemplateRenderer';
 import { TenantState } from '@/core/context/TenantContext';
 import { checkSubscription } from '@/core/business/subscription';
@@ -33,7 +33,14 @@ const KEYFRAMES = `
 }
 `;
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ path?: string[] }>
+}): Promise<Metadata> {
+    const { path: pathSegments } = await params;
+    const path = '/' + (pathSegments?.join('/') ?? '');
+
     const headersList = await headers();
     const host = headersList.get('host') || '';
     const hostname = host.split(':')[0].toLowerCase().replace(/^www\./, '');
@@ -46,6 +53,9 @@ export async function generateMetadata(): Promise<Metadata> {
     const result = await fetchTenantData(hostname, schoolConfig.templateId);
     if (result.status === 'success') {
         const viewModel = buildTenantViewModel(result.data);
+        if (path === '/about') {
+            return generateAboutMetadata(viewModel, hostname, false);
+        }
         return generateTenantMetadata(viewModel, hostname, false);
     }
 
@@ -296,12 +306,22 @@ export default async function TenantPage({
     return (
         <>
             {tenantState.data && (
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify(generateSchoolJsonLd(tenantState.data, hostname))
-                    }}
-                />
+                <>
+                    <script
+                        type="application/ld+json"
+                        dangerouslySetInnerHTML={{
+                            __html: JSON.stringify(generateSchoolJsonLd(tenantState.data, hostname))
+                        }}
+                    />
+                    {path === '/about' && (
+                        <script
+                            type="application/ld+json"
+                            dangerouslySetInnerHTML={{
+                                __html: JSON.stringify(generateAboutJsonLd(tenantState.data, hostname))
+                            }}
+                        />
+                    )}
+                </>
             )}
             <TemplateRenderer
                 templateSlug={schoolConfig.templateId}

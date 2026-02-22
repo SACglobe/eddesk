@@ -64,3 +64,54 @@ export function generateSchoolJsonLd(data: TenantViewModel, domain: string) {
         email: school.email,
     };
 }
+/**
+ * Generates About Page specific metadata.
+ */
+export function generateAboutMetadata(data: TenantViewModel, domain: string, isDemo = false): Metadata {
+    const school = data.school;
+    const title = isDemo
+        ? `[PREVIEW] About Us - ${school.name} | EdDesk`
+        : `About Our Institution | ${school.name}`;
+
+    const description = `Discover the vision, mission, and academic leadership of ${school.name}. Learn about our heritage and commitment to excellence.`;
+
+    return {
+        ...generateTenantMetadata(data, domain, isDemo),
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            url: `https://${domain}/about`,
+            type: 'website',
+        }
+    };
+}
+
+/**
+ * Generates JSON-LD for AboutPage.
+ */
+export function generateAboutJsonLd(data: TenantViewModel, domain: string) {
+    const school = data.school;
+    const principal = data.personnel?.find((p: any) => p.personType === 'principal');
+
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'AboutPage',
+        'mainEntity': {
+            '@type': 'EducationalOrganization',
+            'name': school.name,
+            'description': data.identity?.vision || `Official website of ${school.name}`,
+            'identifier': domain,
+            'image': school.logoUrl,
+            ...(principal ? {
+                'employee': {
+                    '@type': 'Person',
+                    'name': principal.name,
+                    'jobTitle': 'Principal',
+                    'description': principal.bio
+                }
+            } : {})
+        }
+    };
+}
