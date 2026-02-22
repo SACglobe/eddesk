@@ -21,8 +21,14 @@ const crimsonPro = Crimson_Pro({
 });
 
 export const metadata: Metadata = {
-    title: "EdDesk | Revolutionizing School Management",
-    description: "Revolutionizing School Management with EdDesk",
+    title: {
+        template: '%s | EdDesk',
+        default: 'EdDesk | Revolutionizing School Management',
+    },
+    description: "Revolutionizing School Management with EdDesk. Empowering educational institutions with state-of-the-art digital presence.",
+    icons: {
+        icon: '/icon.svg',
+    }
 };
 
 export default function RootLayout({

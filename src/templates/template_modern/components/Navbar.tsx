@@ -4,7 +4,11 @@ import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+    school: any;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ school }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isMoreOpen, setIsMoreOpen] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -50,12 +54,25 @@ const Navbar: React.FC = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
                     <Link href="/" className="flex items-center gap-3 cursor-pointer">
-                        <div className="bg-accent p-2 rounded-lg">
-                            <span className="text-primary font-bold text-2xl">ED</span>
-                        </div>
-                        <div>
-                            <span className="font-bold text-xl tracking-tight hidden sm:block">EdDesk</span>
-                            <p className="text-xs text-accent font-medium hidden sm:block uppercase">Modern Template</p>
+                        <div className="flex items-center gap-3">
+                            <div className="flex-shrink-0 w-10 h-10">
+                                {school.logoUrl ? (
+                                    <img src={school.logoUrl} alt={`${school.name} logo`}
+                                        className="w-full h-full object-contain" />
+                                ) : (
+                                    <div className="bg-accent p-2 rounded-lg flex items-center justify-center w-full h-full">
+                                        <span className="text-primary font-bold text-xl">
+                                            {school.name.charAt(0)}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                            <div>
+                                <span className="font-bold text-xl tracking-tight hidden sm:block">
+                                    {school.name}
+                                </span>
+                                <p className="text-xs text-accent font-medium hidden sm:block uppercase">Modern Template</p>
+                            </div>
                         </div>
                     </Link>
 

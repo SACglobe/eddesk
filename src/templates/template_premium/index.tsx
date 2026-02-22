@@ -97,11 +97,11 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
 
     return (
         <div className="premium-template-wrapper antialiased bg-white min-h-screen flex flex-col">
-            <Header announcements={activeAnnouncements} />
+            <Header announcements={activeAnnouncements} school={data.school} />
             <main className="flex-grow">
                 {renderScreen()}
             </main>
-            <Footer />
+            <Footer school={data.school} />
         </div>
     );
 };

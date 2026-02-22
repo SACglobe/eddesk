@@ -97,13 +97,13 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
     return (
         <div className="classic-template-wrapper">
             <div className="sticky top-0 z-[100] bg-white">
-                <Header />
+                <Header school={data.school} />
                 <BroadcastTicker announcements={activeAnnouncements} />
             </div>
             <main>
                 {renderScreen()}
             </main>
-            <Footer />
+            <Footer school={data.school} />
         </div>
     );
 };

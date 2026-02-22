@@ -32,6 +32,9 @@ import {
     COL_SCHOOLS_CITY,
     COL_SCHOOLS_STATE,
     COL_SCHOOLS_COUNTRY,
+    COL_SCHOOLS_POSTAL_CODE,
+    COL_SCHOOLS_IS_ACTIVE,
+    COL_SCHOOLS_EXPIRATION_DATE,
     COL_SCHOOLS_TEMPLATE_ID,
     COL_SCHOOLS_PAYMENTGATEWAY_URL,
     COL_HERO_MEDIA_TYPE,
@@ -110,8 +113,13 @@ export interface TenantViewModel {
         city: string;
         state: string;
         country: string;
+        zipCode: string;
+        fullAddress: string;
         templateId: string;
         paymentGatewayUrl: string;
+        isActive: boolean;
+        expirationDate: string | null;
+        gracePeriodDays: number;
     };
     identity: {
         vision: string;
@@ -249,8 +257,13 @@ export function buildTenantViewModel(data: TenantApiDataItem[]): TenantViewModel
             city: str(school[COL_SCHOOLS_CITY]),
             state: str(school[COL_SCHOOLS_STATE]),
             country: str(school[COL_SCHOOLS_COUNTRY]),
+            zipCode: str(school[COL_SCHOOLS_POSTAL_CODE]),
+            fullAddress: `${str(school[COL_SCHOOLS_ADDRESS])}, ${str(school[COL_SCHOOLS_CITY])}, ${str(school[COL_SCHOOLS_STATE])} - ${str(school[COL_SCHOOLS_POSTAL_CODE])}`,
             templateId: str(school[COL_SCHOOLS_TEMPLATE_ID]),
             paymentGatewayUrl: str(school[COL_SCHOOLS_PAYMENTGATEWAY_URL]),
+            isActive: bool(school[COL_SCHOOLS_IS_ACTIVE]),
+            expirationDate: str(school[COL_SCHOOLS_EXPIRATION_DATE]),
+            gracePeriodDays: 7, // Default as per prompt requirement for safety
         },
         identity: {
             vision: str(identity[COL_SCHOOL_IDENTITY_VISION]),
@@ -360,8 +373,13 @@ export function buildTenantViewModelFromLocal(data: any): TenantViewModel {
             city: str(school[COL_SCHOOLS_CITY]),
             state: str(school[COL_SCHOOLS_STATE]),
             country: str(school[COL_SCHOOLS_COUNTRY]),
+            zipCode: str(school[COL_SCHOOLS_POSTAL_CODE]),
+            fullAddress: `${str(school[COL_SCHOOLS_ADDRESS])}, ${str(school[COL_SCHOOLS_CITY])}, ${str(school[COL_SCHOOLS_STATE])} - ${str(school[COL_SCHOOLS_POSTAL_CODE])}`,
             templateId: str(school[COL_SCHOOLS_TEMPLATE_ID]),
             paymentGatewayUrl: str(school[COL_SCHOOLS_PAYMENTGATEWAY_URL]),
+            isActive: bool(school[COL_SCHOOLS_IS_ACTIVE]),
+            expirationDate: str(school[COL_SCHOOLS_EXPIRATION_DATE]),
+            gracePeriodDays: 7,
         },
         identity: {
             vision: str(identity[COL_SCHOOL_IDENTITY_VISION]),

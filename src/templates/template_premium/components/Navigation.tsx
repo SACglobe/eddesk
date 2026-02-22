@@ -35,8 +35,11 @@ const BroadcastBar: React.FC<BroadcastBarProps> = ({ announcements: items }) => 
     );
 };
 
-interface HeaderProps { announcements: Array<{ title: string; message: string; isActive: boolean; expiresAt: string | null }> }
-const Header: React.FC<HeaderProps> = ({ announcements }) => {
+interface HeaderProps {
+    announcements: Array<{ title: string; message: string; isActive: boolean; expiresAt: string | null }>;
+    school: any;
+}
+const Header: React.FC<HeaderProps> = ({ announcements, school }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isMoreOpen, setIsMoreOpen] = useState(false);
@@ -85,8 +88,11 @@ const Header: React.FC<HeaderProps> = ({ announcements }) => {
                 <div className="max-w-[1400px] mx-auto px-8 flex flex-col items-center">
                     <div className="flex justify-between items-center w-full">
                         <Link href="/" className="flex items-center gap-6 group">
+                            {school.logoUrl && (
+                                <img src={school.logoUrl} alt={`${school.name} logo`} className="w-12 h-12 object-contain brightness-200" />
+                            )}
                             <div className="text-2xl md:text-3xl font-serif font-bold tracking-tighter transition-colors duration-500 text-white">
-                                {schoolData.name.split(' ').map((word, i) => (
+                                {school.name.split(' ').map((word: string, i: number) => (
                                     <span key={i} className={i === 1 ? 'italic text-signature-gold' : ''}>{word} </span>
                                 ))}
                             </div>
@@ -174,7 +180,11 @@ const Header: React.FC<HeaderProps> = ({ announcements }) => {
     );
 };
 
-const Footer: React.FC = () => {
+interface FooterProps {
+    school: any;
+}
+
+const Footer: React.FC<FooterProps> = ({ school }) => {
     return (
         <footer className="bg-signature-navy text-white relative overflow-hidden">
             <div className="absolute top-0 right-0 w-1/3 h-full bg-signature-gold/5 -skew-x-12 translate-x-1/2"></div>
@@ -182,7 +192,7 @@ const Footer: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-20 border-b border-white/5 pb-32">
                     <div className="lg:col-span-5">
                         <h2 className="text-5xl font-serif mb-10 text-white leading-tight">
-                            Sterling <span className="italic text-signature-gold">Signature</span> Academy
+                            {school.name.split(' ')[0]} <span className="italic text-signature-gold">{school.name.split(' ')[1] || ''}</span> {school.name.split(' ').slice(2).join(' ')}
                         </h2>
                         <p className="text-white/40 max-w-md leading-loose font-light text-lg italic mb-10">
                             "We provide a sanctuary for deep thought and a launchpad for global leadership. Excellence is not our goal; it is our tradition."
@@ -207,17 +217,16 @@ const Footer: React.FC = () => {
                     <div className="lg:col-span-4">
                         <h4 className="text-[11px] uppercase tracking-[0.5em] mb-10 text-signature-gold font-bold">The Heights</h4>
                         <p className="text-white/50 text-sm leading-relaxed mb-8">
-                            {schoolData.contact.address}<br />
-                            United Kingdom
+                            {school.fullAddress}
                         </p>
-                        <p className="text-xl font-serif text-white mb-2">{schoolData.contact.phone}</p>
-                        <p className="text-sm text-white/40 tracking-widest uppercase">{schoolData.contact.email}</p>
+                        <p className="text-xl font-serif text-white mb-2">{school.phone}</p>
+                        <p className="text-sm text-white/40 tracking-widest uppercase">{school.email}</p>
                     </div>
                 </div>
 
                 <div className="mt-16 flex flex-col md:flex-row justify-between items-center gap-8">
                     <div className="text-[10px] uppercase tracking-[0.5em] text-white/20">
-                        © {new Date().getFullYear()} STERLING ACADEMY. AUTHORED BY TRADITION.
+                        © {new Date().getFullYear()} {school.name}.
                     </div>
                     <div className="flex gap-12 text-[9px] uppercase tracking-[0.3em] text-white/30 font-bold">
                         <a href="#" className="hover:text-signature-gold transition-colors">Privacy Charter</a>

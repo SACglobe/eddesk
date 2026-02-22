@@ -1,14 +1,16 @@
 import React from 'react';
 import Link from 'next/link';
-import { SCHOOL_NAME } from '../constants';
+interface FooterProps {
+    school: any;
+}
 
-const Footer: React.FC = () => {
+const Footer: React.FC<FooterProps> = ({ school }) => {
     return (
         <footer className="bg-gray-900 text-gray-300">
             <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div className="space-y-4">
-                        <h3 className="text-white text-xl font-bold">{SCHOOL_NAME}</h3>
+                        <h3 className="text-white text-xl font-bold">{school.name}</h3>
                         <p className="text-sm leading-relaxed">
                             Excellence in education since 1995. Preparing students for the global challenges of tomorrow.
                         </p>
@@ -25,10 +27,9 @@ const Footer: React.FC = () => {
                     <div>
                         <h4 className="text-white font-semibold mb-4">Contact Us</h4>
                         <ul className="space-y-2 text-sm">
-                            <li>123 Education Lane</li>
-                            <li>Springfield, IL 62704</li>
-                            <li>Phone: (555) 123-4567</li>
-                            <li>Email: info@standrews.edu</li>
+                            <li>{school.fullAddress}</li>
+                            <li>Phone: {school.phone}</li>
+                            <li>Email: {school.email}</li>
                         </ul>
                     </div>
                     <div>
@@ -46,7 +47,7 @@ const Footer: React.FC = () => {
                     </div>
                 </div>
                 <div className="mt-12 pt-8 border-t border-gray-800 text-center text-xs">
-                    <p>© {new Date().getFullYear()} {SCHOOL_NAME}. All rights reserved.</p>
+                    <p>© {new Date().getFullYear()} {school.name}. All rights reserved.</p>
                 </div>
             </div>
         </footer>

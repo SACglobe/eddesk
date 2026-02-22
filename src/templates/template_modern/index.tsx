@@ -71,11 +71,11 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
 
     return (
         <div className="modern-template-wrapper antialiased bg-white min-h-screen flex flex-col">
-            <Navbar />
+            <Navbar school={data.school} />
             <main className="flex-grow">
                 {renderScreen()}
             </main>
-            <Footer />
+            <Footer school={data.school} />
             <ScrollToTop />
         </div>
     );

@@ -2,12 +2,10 @@
 "use client";
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { MOCK_DATA } from '../constants/mockData';
 
-const Header = () => {
+const Header = ({ school }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isMoreOpen, setIsMoreOpen] = useState(false);
-    const { SCHOOL_PROFILE } = MOCK_DATA;
     const moreRef = useRef(null);
 
     const mainLinks = [
@@ -40,17 +38,25 @@ const Header = () => {
             <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                 <div className="flex justify-between items-center py-4">
                     <Link href="/" className="flex items-center gap-3 md:gap-4 group">
-                        <img
-                            src={SCHOOL_PROFILE.logo}
-                            alt={`${SCHOOL_PROFILE.school_name} Logo`}
-                            className="w-10 h-10 md:w-12 md:h-12 object-contain group-hover:scale-110 transition-transform duration-500"
-                        />
+                        <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 group-hover:scale-110 transition-transform duration-500">
+                            {school.logoUrl ? (
+                                <img
+                                    src={school.logoUrl}
+                                    alt={`${school.name} logo`}
+                                    className="w-full h-full object-contain"
+                                />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-emerald-100 rounded text-emerald-800 font-bold text-lg">
+                                    {school.name.charAt(0)}
+                                </div>
+                            )}
+                        </div>
                         <div className="flex flex-col">
                             <span className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight serif uppercase group-hover:text-emerald-900 transition-colors leading-tight">
-                                {SCHOOL_PROFILE.school_name}
+                                {school.name}
                             </span>
                             <span className="text-[10px] text-slate-500 uppercase tracking-widest leading-none mt-1">
-                                {SCHOOL_PROFILE.motto}
+                                EXCELLENCE IN EDUCATION
                             </span>
                         </div>
                     </Link>

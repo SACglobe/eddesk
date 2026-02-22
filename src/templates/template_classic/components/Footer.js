@@ -1,9 +1,6 @@
 
 import Link from 'next/link';
-import { MOCK_DATA } from '../constants/mockData';
-
-const Footer = () => {
-    const { SCHOOL_PROFILE } = MOCK_DATA;
+const Footer = ({ school }) => {
     return (
         <footer className="bg-emerald-950 text-slate-300 py-16">
             <div className="max-w-[1600px] mx-auto px-2 md:px-6">
@@ -11,23 +8,35 @@ const Footer = () => {
                     <div className="space-y-4">
                         <h3 className="text-white text-lg font-bold serif uppercase tracking-widest border-b border-emerald-800 pb-2 inline-block">Institutional Profile</h3>
                         <div className="flex items-center gap-4 mb-4">
-                            <img src={SCHOOL_PROFILE.logo} alt="Logo" className="w-10 h-10 brightness-200" />
-                            <p className="text-white font-bold serif text-sm uppercase leading-tight">{SCHOOL_PROFILE.school_name}</p>
+                            <div className="flex-shrink-0 w-10 h-10 group-hover:scale-110 transition-transform duration-500">
+                                {school.logoUrl ? (
+                                    <img
+                                        src={school.logoUrl}
+                                        alt={`${school.name} logo`}
+                                        className="w-full h-full object-contain brightness-200"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-emerald-100 rounded text-emerald-800 font-bold text-lg">
+                                        {school.name.charAt(0)}
+                                    </div>
+                                )}
+                            </div>
+                            <p className="text-white font-bold serif text-sm uppercase leading-tight">{school.name}</p>
                         </div>
-                        <p className="text-sm leading-relaxed text-emerald-100/70">{SCHOOL_PROFILE.school_overview.slice(0, 180)}...</p>
-                        <p className="text-xs italic text-emerald-500">"{SCHOOL_PROFILE.motto}"</p>
+                        <p className="text-sm leading-relaxed text-emerald-100/70">Empowering students to achieve excellence through innovative education, dedicated faculty, and a supportive community environment.</p>
+                        <p className="text-xs italic text-emerald-500">"Excellence in Education"</p>
                     </div>
                     <div className="space-y-4">
                         <h3 className="text-white text-lg font-bold serif uppercase tracking-widest border-b border-emerald-800 pb-2 inline-block">Contact Core</h3>
                         <div className="text-sm space-y-3">
                             <p className="flex items-start gap-2">
-                                <span className="font-bold text-emerald-500">ADDR:</span> {SCHOOL_PROFILE.address}
+                                <span className="font-bold text-emerald-500">ADDR:</span> {school.fullAddress}
                             </p>
                             <p className="flex items-center gap-2">
-                                <span className="font-bold text-emerald-500">PH:</span> {SCHOOL_PROFILE.phone}
+                                <span className="font-bold text-emerald-500">PH:</span> {school.phone}
                             </p>
                             <p className="flex items-center gap-2">
-                                <span className="font-bold text-emerald-500">MAIL:</span> {SCHOOL_PROFILE.email}
+                                <span className="font-bold text-emerald-500">MAIL:</span> {school.email}
                             </p>
                         </div>
                     </div>
@@ -55,8 +64,8 @@ const Footer = () => {
                     </div>
                 </div>
                 <div className="flex flex-col md:flex-row justify-between items-center text-[10px] text-emerald-600 uppercase tracking-[0.2em] font-bold">
-                    <p>&copy; {new Date().getFullYear()} {SCHOOL_PROFILE.school_name}. All Rights Reserved.</p>
-                    <p className="mt-4 md:mt-0">Design Standards by EduDesk SaaS</p>
+                    <p>&copy; {new Date().getFullYear()} {school.name}. All Rights Reserved.</p>
+                    <p className="mt-4 md:mt-0">Design Standards by EdDesk</p>
                 </div>
             </div>
         </footer>

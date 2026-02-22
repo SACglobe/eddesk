@@ -16,9 +16,41 @@ import { fetchTenantData, isTenantDomain } from '@/core/services/tenantApi.servi
 import { buildTenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import type { TenantState } from '@/core/context/TenantContext';
 import TemplateRenderer from './TemplateRenderer';
+import { generateTenantMetadata, generateSchoolJsonLd } from '@/core/utils/seo';
+import { Metadata } from 'next';
+import LeadCapturePopup from '@/components/lead/LeadCapturePopup';
 
 // Known valid template slugs — checked server-side without importing templates
 const VALID_SLUGS = ['template_classic', 'template_modern', 'template_premium'];
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ templateSlug: string; path?: string[] }>
+}): Promise<Metadata> {
+    const { templateSlug } = await params;
+    const headersList = await headers();
+    const host = headersList.get('host') || '';
+    const hostname = host.split(':')[0].toLowerCase().replace(/^www\./, '');
+
+    // For demo/localhost, we use specific defaults or mock metadata
+    if (!isTenantDomain(hostname)) {
+        return {
+            title: `Demo [${templateSlug}] | EdDesk`,
+            description: 'Previewing EdDesk school templates.',
+            robots: { index: false, follow: false },
+        };
+    }
+
+    // Otherwise fetch data for metadata
+    const result = await fetchTenantData(hostname, templateSlug);
+    if (result.status === 'success') {
+        const viewModel = buildTenantViewModel(result.data);
+        return generateTenantMetadata(viewModel, hostname, true);
+    }
+
+    return { title: 'Template Preview' };
+}
 
 export default async function TemplateDemoPage({
     params,
@@ -74,10 +106,21 @@ export default async function TemplateDemoPage({
     }
 
     return (
-        <TemplateRenderer
-            templateSlug={templateSlug}
-            path={path}
-            tenantState={tenantState}
-        />
+        <>
+            {tenantState.data && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(generateSchoolJsonLd(tenantState.data, hostname))
+                    }}
+                />
+            )}
+            <TemplateRenderer
+                templateSlug={templateSlug}
+                path={path}
+                tenantState={tenantState}
+            />
+            <LeadCapturePopup templateSlug={templateSlug} />
+        </>
     );
 }
