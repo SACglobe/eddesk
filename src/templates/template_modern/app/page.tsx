@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import HeroSlider from '../components/HeroSlider';
-import { SCHOOL_NAME, ACTIVITIES, UPCOMING_EVENTS } from '../constants';
+import { SCHOOL_NAME, ACTIVITIES } from '../constants';
 import Link from 'next/link';
 import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 
@@ -112,6 +112,30 @@ export default function Home({ data }: { data: TenantViewModel }) {
     const sportsAchievements = (data?.achievements ?? [])
         .filter(a => a.achievementType?.toLowerCase().trim() === 'sports')
         .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+
+    const eventsEnabled = (data?.homepageSections ?? [])
+        .find(s => s.sectionKey === 'events')
+        ?.isEnabled ?? true;
+
+    const eventsToShow = (data?.events ?? [])
+        .filter((e: any) => {
+            if (!e.isFeatured) return false;
+            const eventDateTime = new Date(`${e.eventDate}T${e.startTime}`);
+            return eventDateTime > now;
+        })
+        .sort((a: any, b: any) =>
+            new Date(`${a.eventDate}T${a.startTime}`).getTime() -
+            new Date(`${b.eventDate}T${b.startTime}`).getTime()
+        )
+        .slice(0, 3);
+
+    const formatEventDate = (dateStr: string) => {
+        const d = new Date(dateStr + 'T00:00:00');
+        return {
+            month: d.toLocaleString('en-US', { month: 'short' }).toUpperCase(),
+            day: d.getDate().toString()
+        };
+    };
 
     const facilitiesEnabled = (data?.homepageSections ?? [])
         .find(s => s.sectionKey === 'facilities')
@@ -572,32 +596,37 @@ export default function Home({ data }: { data: TenantViewModel }) {
                         )}
                     </div>
 
-                    <div className="space-y-12 text-left">
-                        <h2 className="text-4xl font-bold text-primary">Upcoming Events</h2>
-                        <div className="space-y-6">
-                            {UPCOMING_EVENTS.map((event) => (
-                                <div key={event.id} className="bg-white p-8 rounded-[2rem] shadow-xl hover:shadow-2xl transition-all border border-gray-100 group">
-                                    <div className="flex items-start justify-between mb-4">
-                                        <div className="bg-primary text-white p-3 rounded-2xl text-center min-w-[60px] group-hover:bg-accent group-hover:text-primary transition-colors">
-                                            <p className="text-xs font-bold uppercase tracking-tighter">{event.date.split(' ')[0]}</p>
-                                            <p className="text-xl font-black">{event.date.split(' ')[1].replace(',', '')}</p>
+                    {eventsEnabled && eventsToShow.length > 0 ? (
+                        <div className="space-y-12 text-left">
+                            <h2 className="text-4xl font-bold text-primary">Upcoming Events</h2>
+                            <div className="space-y-6">
+                                {eventsToShow.map((event: any) => {
+                                    const { month, day } = formatEventDate(event.eventDate);
+                                    return (
+                                        <div key={event.id} className="bg-white p-8 rounded-[2rem] shadow-xl hover:shadow-2xl transition-all border border-gray-100 group">
+                                            <div className="flex items-start justify-between mb-4">
+                                                <div className="bg-primary text-white p-3 rounded-2xl text-center min-w-[60px] group-hover:bg-accent group-hover:text-primary transition-colors">
+                                                    <p className="text-xs font-bold uppercase tracking-tighter">{month}</p>
+                                                    <p className="text-xl font-black">{day}</p>
+                                                </div>
+                                                <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-widest">
+                                                    {event.category}
+                                                </span>
+                                            </div>
+                                            <h4 className="font-bold text-xl text-primary mb-3">{event.title}</h4>
+                                            <p className="text-gray-500 text-sm leading-relaxed">{event.description}</p>
                                         </div>
-                                        <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-widest">
-                                            {event.category}
-                                        </span>
-                                    </div>
-                                    <h4 className="font-bold text-xl text-primary mb-3">{event.title}</h4>
-                                    <p className="text-gray-500 text-sm leading-relaxed">{event.description}</p>
-                                </div>
-                            ))}
-                            <Link
-                                href="/events"
-                                className="block text-center w-full py-5 bg-blue-50 text-primary font-bold rounded-2xl hover:bg-primary hover:text-white transition-all shadow-sm"
-                            >
-                                View Full Calendar
-                            </Link>
+                                    );
+                                })}
+                                <Link
+                                    href="/events"
+                                    className="block text-center w-full py-5 bg-blue-50 text-primary font-bold rounded-2xl hover:bg-primary hover:text-white transition-all shadow-sm"
+                                >
+                                    View Full Calendar
+                                </Link>
+                            </div>
                         </div>
-                    </div>
+                    ) : <div></div>}
                 </div>
             </section>
         </div>

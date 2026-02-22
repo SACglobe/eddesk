@@ -2,9 +2,17 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-const HomeScreen = ({ data, academicEnabled, latestResult, academicAchievements }) => {
+const HomeScreen = ({ data, academicEnabled, latestResult, academicAchievements, eventsEnabled, eventsToShow }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [galleryIndex, setGalleryIndex] = useState(0);
+
+    const formatEventDate = (dateStr) => {
+        const d = new Date(dateStr + 'T00:00:00');
+        return {
+            month: d.toLocaleString('en-US', { month: 'short' }).toUpperCase(),
+            day: d.getDate().toString()
+        };
+    };
 
     const principal = data?.personnel?.find(p => p.personType === 'principal') ?? null;
 
@@ -420,6 +428,74 @@ const HomeScreen = ({ data, academicEnabled, latestResult, academicAchievements 
                     </div>
                 </div>
             </section>
+
+            {/* 9. Upcoming Events Section */}
+            {eventsEnabled && eventsToShow?.length > 0 && (
+                <section className="py-24 bg-white border-t border-slate-100">
+                    <div className="max-w-[1600px] mx-auto px-2 md:px-6">
+
+                        {/* Section Header */}
+                        <div className="flex flex-col md:flex-row justify-between items-end mb-16">
+                            <div>
+                                <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.4em] block mb-4">Upcoming Events</span>
+                                <h2 className="text-3xl md:text-4xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Events & Activities</h2>
+                                <div className="h-1 w-20 bg-emerald-900"></div>
+                            </div>
+                            <Link
+                                href="/events"
+                                className="mt-6 md:mt-0 text-[10px] font-bold uppercase tracking-[0.3em] text-emerald-900 border-b border-emerald-900 pb-1 hover:text-emerald-700 transition-colors"
+                            >
+                                View Full Calendar
+                            </Link>
+                        </div>
+
+                        {/* Event List */}
+                        <div className="divide-y divide-slate-100">
+                            {eventsToShow.map((event) => {
+                                const { month, day } = formatEventDate(event.eventDate);
+                                return (
+                                    <div key={event.id} className="py-10 flex flex-col md:flex-row md:items-center gap-8 group hover:bg-slate-50 px-4 transition-colors">
+
+                                        {/* Date Block */}
+                                        <div className="flex-shrink-0 w-24 text-center">
+                                            <div className="text-emerald-900 font-bold text-xs uppercase tracking-widest">{month}</div>
+                                            <div className="text-4xl font-bold serif text-slate-900 group-hover:text-emerald-900 transition-colors">
+                                                {day}
+                                            </div>
+                                        </div>
+
+                                        {/* Divider */}
+                                        <div className="hidden md:block w-px h-16 bg-slate-200"></div>
+
+                                        {/* Content */}
+                                        <div className="flex-grow">
+                                            <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.2em] block mb-2">{event.category}</span>
+                                            <h3 className="text-xl font-bold text-slate-900 serif uppercase tracking-tight mb-2 group-hover:text-emerald-900 transition-colors">
+                                                {event.title}
+                                            </h3>
+                                            <p className="text-slate-500 text-sm leading-relaxed">
+                                                {event.description}
+                                            </p>
+                                        </div>
+
+                                        {/* Arrow */}
+                                        <div className="flex-shrink-0">
+                                            <Link
+                                                href="/events"
+                                                className="w-10 h-10 border border-slate-200 flex items-center justify-center group-hover:border-emerald-900 group-hover:bg-emerald-900 transition-all"
+                                            >
+                                                <svg className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                                </svg>
+                                            </Link>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </section>
+            )}
 
             <style jsx>{`
         .animate-fade-up { animation: fadeUp 1s ease-out forwards; }

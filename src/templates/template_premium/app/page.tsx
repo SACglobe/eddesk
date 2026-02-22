@@ -479,9 +479,17 @@ const CampusFacilities: React.FC<CampusFacilitiesProps> = ({ facilityGroups, fac
   );
 };
 
-const UpcomingEvents: React.FC = () => {
+const UpcomingEvents: React.FC<{ eventsToShow: any[], eventsEnabled: boolean }> = ({ eventsToShow, eventsEnabled }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
-  const events = schoolData.events.slice(0, 3);
+
+  if (!eventsEnabled || eventsToShow.length === 0) return null;
+
+  const formatEventDate = (dateStr: string) => {
+    const d = new Date(dateStr + 'T00:00:00');
+    const month = d.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+    const day = d.getDate();
+    return `${month} ${day}`;
+  };
 
   return (
     <section ref={containerRef} className="bg-signature-navy text-white py-48 px-8 relative overflow-hidden">
@@ -490,7 +498,7 @@ const UpcomingEvents: React.FC = () => {
         <SectionHeader title="Upcoming Events" subtitle="Institutional Engagements" light center />
 
         <div className="mt-24 space-y-0 border-t border-white/10">
-          {events.map((event, i) => (
+          {eventsToShow.map((event: any, i: number) => (
             <Link
               key={event.id}
               href="/events"
@@ -498,7 +506,7 @@ const UpcomingEvents: React.FC = () => {
               style={{ transitionDelay: `${i * 150}ms` }}
             >
               <div className="md:col-span-3">
-                <div className="text-signature-gold font-serif italic text-3xl mb-2">{event.date.split(',')[0]}</div>
+                <div className="text-signature-gold font-serif italic text-3xl mb-2">{formatEventDate(event.eventDate)}</div>
                 <div className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{event.category}</div>
               </div>
               <div className="md:col-span-7">
@@ -584,6 +592,23 @@ export default function Home({ data, statsEnabled, statistics }: {
   const academicAchievements = (data?.achievements ?? [])
     .filter(a => a.achievementType === 'academic')
     .sort((a, b) => b.year - a.year || (a.displayOrder || 0) - (b.displayOrder || 0));
+
+  const eventsEnabled = (data?.homepageSections ?? [])
+    .find(s => s.sectionKey === 'events')
+    ?.isEnabled ?? true;
+
+  const now = new Date();
+  const eventsToShow = (data?.events ?? [])
+    .filter((e: any) => {
+      if (!e.isFeatured) return false;
+      const eventDateTime = new Date(`${e.eventDate}T${e.startTime}`);
+      return eventDateTime > now;
+    })
+    .sort((a: any, b: any) =>
+      new Date(`${a.eventDate}T${a.startTime}`).getTime() -
+      new Date(`${b.eventDate}T${b.startTime}`).getTime()
+    )
+    .slice(0, 3);
 
   return (
     <LayoutWrapper>
@@ -684,7 +709,7 @@ export default function Home({ data, statsEnabled, statistics }: {
           </section>
         )}
 
-        <UpcomingEvents />
+        <UpcomingEvents eventsToShow={eventsToShow} eventsEnabled={eventsEnabled} />
 
         <section className="py-48 bg-signature-gold text-white text-center px-8 relative overflow-hidden">
           <div className="absolute inset-0 bg-signature-navy/10"></div>

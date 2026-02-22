@@ -76,10 +76,12 @@ import {
     COL_MEDIA_LIBRARY_IS_FEATURED,
     COL_EVENTS_TITLE,
     COL_EVENTS_DATE,
+    COL_EVENTS_START_TIME,
     COL_EVENTS_DESCRIPTION,
     COL_EVENTS_LOCATION,
     COL_EVENTS_CATEGORY,
     COL_EVENTS_IS_FEATURED,
+    COL_EVENTS_ID,
     COL_ADMISSION_STEPS_NUMBER,
     COL_ADMISSION_STEPS_TITLE,
     COL_ADMISSION_STEPS_DESCRIPTION,
@@ -172,8 +174,11 @@ export interface TenantViewModel {
         isFeatured: boolean;
     }>;
     events: Array<{
+        id: string;
         title: string;
         date: string;
+        eventDate: string;
+        startTime: string;
         description: string;
         location: string;
         category: string;
@@ -308,8 +313,11 @@ export function buildTenantViewModel(data: TenantApiDataItem[]): TenantViewModel
             isFeatured: bool(r[COL_MEDIA_LIBRARY_IS_FEATURED]),
         })),
         events: eventRows.map(r => ({
+            id: str(r[COL_EVENTS_ID]),
             title: str(r[COL_EVENTS_TITLE]),
             date: str(r[COL_EVENTS_DATE]),
+            eventDate: str(r[COL_EVENTS_DATE]),
+            startTime: str(r[COL_EVENTS_START_TIME]),
             description: str(r[COL_EVENTS_DESCRIPTION]),
             location: str(r[COL_EVENTS_LOCATION]),
             category: str(r[COL_EVENTS_CATEGORY]),
@@ -416,8 +424,11 @@ export function buildTenantViewModelFromLocal(data: any): TenantViewModel {
             isFeatured: bool(r[COL_MEDIA_LIBRARY_IS_FEATURED]),
         })),
         events: (data.events || []).map((r: any) => ({
+            id: str(r[COL_EVENTS_ID]),
             title: str(r[COL_EVENTS_TITLE]),
             date: str(r[COL_EVENTS_DATE]),
+            eventDate: str(r[COL_EVENTS_DATE]),
+            startTime: str(r[COL_EVENTS_START_TIME]),
             description: str(r[COL_EVENTS_DESCRIPTION]),
             location: str(r[COL_EVENTS_LOCATION]),
             category: str(r[COL_EVENTS_CATEGORY]),

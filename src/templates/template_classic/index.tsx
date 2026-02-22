@@ -40,7 +40,7 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
 
         switch (normalizedPath) {
             case '/':
-                return <HomeScreen data={data} academicEnabled={academicEnabled} latestResult={latestResult} academicAchievements={academicAchievements} />;
+                return <HomeScreen data={data} academicEnabled={academicEnabled} latestResult={latestResult} academicAchievements={academicAchievements} eventsEnabled={eventsEnabled} eventsToShow={eventsToShow} />;
             case '/about':
                 return <AboutScreen data={data} />;
             case '/admission':
@@ -52,7 +52,7 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
             case '/broadcast':
                 return <BroadcastScreen data={data} />;
             default:
-                return <HomeScreen data={data} academicEnabled={academicEnabled} latestResult={latestResult} academicAchievements={academicAchievements} />;
+                return <HomeScreen data={data} academicEnabled={academicEnabled} latestResult={latestResult} academicAchievements={academicAchievements} eventsEnabled={eventsEnabled} eventsToShow={eventsToShow} />;
         }
     };
 
@@ -77,6 +77,22 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
     const academicAchievements = (data?.achievements ?? [])
         .filter((a: any) => a.achievementType === 'academic')
         .sort((a: any, b: any) => b.year - a.year || a.displayOrder - b.displayOrder);
+
+    const eventsEnabled = (data?.homepageSections ?? [])
+        .find((s: any) => s.sectionKey === 'events')
+        ?.isEnabled ?? true;
+
+    const eventsToShow = (data?.events ?? [])
+        .filter((e: any) => {
+            if (!e.isFeatured) return false;
+            const eventDateTime = new Date(`${e.eventDate}T${e.startTime}`);
+            return eventDateTime > now;
+        })
+        .sort((a: any, b: any) =>
+            new Date(`${a.eventDate}T${a.startTime}`).getTime() -
+            new Date(`${b.eventDate}T${b.startTime}`).getTime()
+        )
+        .slice(0, 3);
 
     return (
         <div className="classic-template-wrapper">
