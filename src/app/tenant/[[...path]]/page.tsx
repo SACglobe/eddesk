@@ -13,6 +13,7 @@ import TemplateRenderer from '../../demo/[templateSlug]/[[...path]]/TemplateRend
 import { TenantState } from '@/core/context/TenantContext';
 import { checkSubscription } from '@/core/business/subscription';
 import SystemPopup from '@/components/system/SystemPopup';
+import { debugTenantByDomain } from '@/app/core/data/supabase/tenant.service'; // PHASE 1 DEBUG
 
 const KEYFRAMES = `
 @keyframes ed-fadeIn {
@@ -72,6 +73,14 @@ export default async function TenantPage({
 
     const headersList = await headers();
     const host = headersList.get('host') || '';
+    const domain = host || 'localhost:3001'; // PHASE 1 DEBUG - REMOVE AFTER REVIEW
+
+    // PHASE 1 DEBUG - Testing each domain type
+    await debugTenantByDomain(domain);
+    await debugTenantByDomain('localhost:3001');
+    await debugTenantByDomain('eddesk.in');
+    await debugTenantByDomain('localhost:3000');
+
     const hostname = host.split(':')[0].toLowerCase().replace(/^www\./, '');
 
     const schoolConfig = await getSchoolByDomain(hostname);

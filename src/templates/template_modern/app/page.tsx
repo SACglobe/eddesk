@@ -314,7 +314,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                 <div className="relative order-2 lg:order-1 overflow-hidden rounded-[3rem]">
                     <div className="absolute inset-0 bg-accent rounded-[3rem] rotate-3 translate-x-4 translate-y-4"></div>
                     <img
-                        src={principal?.photoUrl ?? "school/image/principal.png"}
+                        src={principal?.photoUrl || "school/image/principal.png"}
                         alt="Principal"
                         className="rounded-[3rem] shadow-2xl relative z-10 w-full object-cover object-top aspect-[4/5]"
                     />
@@ -402,7 +402,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                 <div className="relative inline-block mb-8 overflow-hidden rounded-[2.5rem]">
                                     <div className="absolute inset-0 bg-primary rounded-[2.5rem] rotate-6 scale-95 group-hover:rotate-12 transition-transform duration-500"></div>
                                     <img
-                                        src={member.photoUrl ?? ''}
+                                        src={member.photoUrl || "school/image/faculty.png"}
                                         alt={member.name ?? ''}
                                         className="relative w-full aspect-[4/5] object-cover object-top rounded-[2.5rem] shadow-xl border-4 border-white grayscale group-hover:grayscale-0 transition-all duration-500"
                                     />

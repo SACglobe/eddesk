@@ -18,6 +18,7 @@ import type { TenantState } from '@/core/context/TenantContext';
 import TemplateRenderer from './TemplateRenderer';
 import { generateTenantMetadata, generateSchoolJsonLd, generateAboutMetadata, generateAboutJsonLd } from '@/core/utils/seo';
 import { Metadata } from 'next';
+import { debugTenantByDomain } from '@/app/core/data/supabase/tenant.service';
 import LeadCapturePopup from '@/components/lead/LeadCapturePopup';
 
 // Known valid template slugs — checked server-side without importing templates
@@ -104,6 +105,10 @@ export default async function TemplateDemoPage({
         }
     } else {
         // Demo domain (localhost / eddesk.in) — skip API, use demo data
+
+        // PHASE 1 DEBUG - Database response check even for demo
+        await debugTenantByDomain(hostname);
+
         tenantState = {
             status: 'idle',
             data: null,

@@ -212,7 +212,7 @@ const HomeScreen = ({ data, academicEnabled, latestResult, academicAchievements,
                             <div className="absolute -top-10 -left-10 w-full h-full bg-slate-50 border border-slate-100 -z-10 translate-x-4 translate-y-4"></div>
                             <div className="relative group">
                                 <img
-                                    src={principal?.photoUrl ?? ''}
+                                    src={principal?.photoUrl || '/school/image/principal.png'}
                                     alt={principal?.name ?? 'Principal'}
                                     className="w-full aspect-[4/5] lg:aspect-auto lg:h-[650px] object-cover shadow-2xl transition-all duration-1000 group-hover:scale-[1.02]"
                                 />

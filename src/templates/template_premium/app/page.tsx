@@ -42,13 +42,13 @@ const Hero: React.FC<{ heroSlide: HeroSlide | null }> = ({ heroSlide }) => {
             poster="https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?auto=format&fit=crop&q=80&w=2000"
           >
             <source
-              src={heroSlide?.mediaUrl ?? "https://assets.mixkit.co/videos/preview/mixkit-university-building-with-a-large-fountain-in-front-4354-large.mp4"}
+              src={heroSlide?.mediaUrl || "https://assets.mixkit.co/videos/preview/mixkit-university-building-with-a-large-fountain-in-front-4354-large.mp4"}
               type="video/mp4"
             />
           </video>
         ) : (
           <img
-            src={heroSlide?.mediaUrl ?? "https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?auto=format&fit=crop&q=80&w=2000"}
+            src={heroSlide?.mediaUrl || "https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?auto=format&fit=crop&q=80&w=2000"}
             alt="Hero background"
             className="w-full h-full object-cover scale-110"
           />
@@ -61,7 +61,7 @@ const Hero: React.FC<{ heroSlide: HeroSlide | null }> = ({ heroSlide }) => {
           <div className="mb-10 flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-10 duration-1000">
             <div className="w-px h-24 bg-gradient-to-b from-transparent to-signature-gold/60"></div>
             <p className="text-signature-gold uppercase tracking-[0.8em] text-[10px] md:text-xs font-bold">
-              {heroSlide?.subheadline ?? 'ESTABLISHED MCMLXXXVIII'}
+              {heroSlide?.subheadline || 'ESTABLISHED MCMLXXXVIII'}
             </p>
           </div>
 
@@ -75,8 +75,8 @@ const Hero: React.FC<{ heroSlide: HeroSlide | null }> = ({ heroSlide }) => {
           </h1>
 
           <div className="flex flex-col sm:flex-row gap-12 justify-center items-center mt-12 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-500">
-            <Link href={heroSlide?.primaryButtonUrl ?? '/admissions'}>
-              <Button variant="gold">{heroSlide?.primaryButtonText ?? 'Institutional Prospectus'}</Button>
+            <Link href={heroSlide?.primaryButtonUrl || '/admissions'}>
+              <Button variant="gold">{heroSlide?.primaryButtonText || 'Institutional Prospectus'}</Button>
             </Link>
 
             {heroSlide?.secondaryButtonText && (
@@ -104,7 +104,7 @@ const Hero: React.FC<{ heroSlide: HeroSlide | null }> = ({ heroSlide }) => {
           <div className="absolute inset-0 bg-signature-navy/95 backdrop-blur-2xl" onClick={() => setIsFilmOpen(false)}></div>
           <div className="relative w-full max-w-6xl aspect-video bg-black z-[105] shadow-2xl border border-white/5">
             <video autoPlay controls className="w-full h-full">
-              <source src={heroSlide?.secondaryButtonUrl ?? heroSlide?.mediaUrl ?? "https://assets.mixkit.co/videos/preview/mixkit-university-building-with-a-large-fountain-in-front-4354-large.mp4"} type="video/mp4" />
+              <source src={heroSlide?.secondaryButtonUrl || heroSlide?.mediaUrl || "https://assets.mixkit.co/videos/preview/mixkit-university-building-with-a-large-fountain-in-front-4354-large.mp4"} type="video/mp4" />
             </video>
             <button
               onClick={() => setIsFilmOpen(false)}
@@ -149,7 +149,7 @@ const InstitutionalStats: React.FC<{
             <h2 className="text-5xl md:text-6xl font-serif text-signature-navy mb-12 leading-tight tracking-tight">Honors & Academic <br />Results</h2>
 
             <div className="mb-12">
-              <h3 className="text-2xl font-serif text-signature-navy mb-2">Board Results {latestAcademicResult.year ?? '—'}</h3>
+              <h3 className="text-2xl font-serif text-signature-navy mb-2">Board Results {latestAcademicResult.year || '—'}</h3>
               <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Academic Merit Summary</p>
             </div>
 
@@ -332,12 +332,12 @@ const FacultyHighlights: React.FC<FacultyHighlightsProps> = ({ faculty, facultyE
           {faculty.map((edu, i) => (
             <div key={i} className={`group transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`} style={{ transitionDelay: `${i * 200}ms` }}>
               <div className="relative aspect-[4/5] overflow-hidden mb-8">
-                <img src={edu.photoUrl ?? ''} alt={edu.name ?? ''} className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
+                <img src={edu.photoUrl || ''} alt={edu.name || ''} className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
                 <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-signature-gold/30"></div>
               </div>
-              <span className="text-[10px] uppercase tracking-[0.4em] text-signature-gold font-bold mb-4 block">{edu.designation ?? ''}</span>
-              <h3 className="text-3xl font-serif mb-6 group-hover:text-signature-gold transition-colors">{edu.name ?? ''}</h3>
-              <p className="text-gray-500 font-light leading-relaxed mb-8">{edu.bio ?? ''}</p>
+              <span className="text-[10px] uppercase tracking-[0.4em] text-signature-gold font-bold mb-4 block">{edu.designation || ''}</span>
+              <h3 className="text-3xl font-serif mb-6 group-hover:text-signature-gold transition-colors">{edu.name || ''}</h3>
+              <p className="text-gray-500 font-light leading-relaxed mb-8">{edu.bio || ''}</p>
               <div className="w-8 h-px bg-signature-navy/20 group-hover:w-16 group-hover:bg-signature-gold transition-all duration-700"></div>
             </div>
           ))}
@@ -624,7 +624,7 @@ export default function Home({ data, statsEnabled, statistics }: {
 
         <section className="py-48 px-8 grid lg:grid-cols-2 gap-24 items-center max-w-[1400px] mx-auto border-b border-signature-navy/5">
           <div className="relative aspect-[4/5] overflow-hidden rounded-2xl group">
-            <img src={principal?.photoUrl ?? "/school/image/principal.png"} alt="Principal" className="w-full h-full object-cover object-top transition-transform duration-1000 group-hover:scale-105" />
+            <img src={principal?.photoUrl || "/school/image/principal.png"} alt="Principal" className="w-full h-full object-cover object-top transition-transform duration-1000 group-hover:scale-105" />
             <div className="absolute inset-0 bg-signature-navy/20 mix-blend-multiply"></div>
           </div>
           <div>
@@ -667,7 +667,7 @@ export default function Home({ data, statsEnabled, statistics }: {
                   <div key={i}>
                     {item.mediaType === 'image' && item.url ? (
                       <Card
-                        title={item.caption ?? 'Campus Life'}
+                        title={item.caption || 'Campus Life'}
                         image={item.url}
                         tag="Campus Portrait"
                       />
@@ -697,7 +697,7 @@ export default function Home({ data, statsEnabled, statistics }: {
                           <div className="absolute top-0 right-10 w-px h-10 bg-signature-gold/20 -translate-y-full"></div>
                           <span className="text-[9px] uppercase tracking-[0.4em] text-signature-gold font-bold mb-4 block">Campus Portrait</span>
                           <h3 className="text-2xl font-serif mb-4 tracking-tight group-hover:text-signature-gold transition-colors">
-                            {item.caption ?? 'Campus Life'}
+                            {item.caption || 'Campus Life'}
                           </h3>
                         </div>
                       </div>
