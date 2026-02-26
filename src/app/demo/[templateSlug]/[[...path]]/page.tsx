@@ -107,7 +107,11 @@ export default async function TemplateDemoPage({
         // Demo domain (localhost / eddesk.in) — skip API, use demo data
 
         // PHASE 1 DEBUG - Database response check even for demo
-        await debugTenantByDomain(hostname);
+        try {
+            await debugTenantByDomain(hostname);
+        } catch (err) {
+            console.error('Server', 'Debug log failed:', err);
+        }
 
         tenantState = {
             status: 'idle',

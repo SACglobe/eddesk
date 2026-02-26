@@ -76,10 +76,14 @@ export default async function TenantPage({
     const domain = host || 'localhost:3001'; // PHASE 1 DEBUG - REMOVE AFTER REVIEW
 
     // PHASE 1 DEBUG - Testing each domain type
-    await debugTenantByDomain(domain);
-    await debugTenantByDomain('localhost:3001');
-    await debugTenantByDomain('eddesk.in');
-    await debugTenantByDomain('localhost:3000');
+    try {
+        await debugTenantByDomain(domain);
+        await debugTenantByDomain('localhost:3001');
+        await debugTenantByDomain('eddesk.in');
+        await debugTenantByDomain('localhost:3000');
+    } catch (err) {
+        console.error('Server', 'Debug log failed in main page:', err);
+    }
 
     const hostname = host.split(':')[0].toLowerCase().replace(/^www\./, '');
 
