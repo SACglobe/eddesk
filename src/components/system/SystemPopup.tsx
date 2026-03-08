@@ -1,7 +1,7 @@
 /**
  * SystemPopup.tsx
  * Enhanced premium popup component — EdDesk marketing theme.
- * Two variants: 'empty' (not configured) and 'error' (connection error).
+ * Variants: 'empty' | 'error' | 'network_error' | 'inactive' | 'expired'.
  *
  * Rules:
  * - No API calls
@@ -16,7 +16,7 @@ import React, { useEffect, useState } from 'react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type PopupVariant = 'empty' | 'error';
+export type PopupVariant = 'empty' | 'error' | 'network_error' | 'inactive' | 'expired';
 
 interface SystemPopupProps {
     variant: PopupVariant;
@@ -43,6 +43,14 @@ const KEYFRAMES = `
 @keyframes ed-pulse-red {
   0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.55), 0 0 32px rgba(239,68,68,0.3); }
   50%       { box-shadow: 0 0 0 10px rgba(239,68,68,0), 0 0 48px rgba(239,68,68,0.5); }
+}
+@keyframes ed-pulse-yellow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(234,179,8,0.55), 0 0 32px rgba(234,179,8,0.3); }
+  50%       { box-shadow: 0 0 0 10px rgba(234,179,8,0), 0 0 48px rgba(234,179,8,0.5); }
+}
+@keyframes ed-pulse-orange {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(249,115,22,0.55), 0 0 32px rgba(249,115,22,0.3); }
+  50%       { box-shadow: 0 0 0 10px rgba(249,115,22,0), 0 0 48px rgba(249,115,22,0.5); }
 }
 @keyframes ed-spin-slow {
   from { transform: rotate(0deg); }
@@ -75,8 +83,8 @@ export default function SystemPopup({
     onRetry,
     onDismiss,
 }: SystemPopupProps) {
-    const isEmpty = variant === 'empty';
     const [visible, setVisible] = useState(false);
+    const [isOnline, setIsOnline] = useState(true);
 
     useEffect(() => {
         injectKeyframes();
@@ -85,12 +93,117 @@ export default function SystemPopup({
         return () => clearTimeout(t);
     }, []);
 
-    // ── Color tokens ──────────────────────────────────────────────────────────
-    const accent = isEmpty
-        ? { h: '99,102,241', hex: '#6366f1', dark: '#4f46e5', light: '#a5b4fc' }
-        : { h: '239,68,68', hex: '#ef4444', dark: '#dc2626', light: '#fca5a5' };
+    useEffect(() => {
+        // Track online/offline status for network_error variant
+        const handleOnline = () => { setIsOnline(true); window.location.reload(); };
+        const handleOffline = () => setIsOnline(false);
 
-    const pulseAnim = isEmpty ? 'ed-pulse-indigo 2.4s ease-in-out infinite' : 'ed-pulse-red 2.4s ease-in-out infinite';
+        if (variant === 'network_error') {
+            // Set initial state based on browser
+            setIsOnline(navigator.onLine);
+            window.addEventListener('online', handleOnline);
+            window.addEventListener('offline', handleOffline);
+        }
+
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, [variant]);
+
+    // ── Mapping Tables ────────────────────────────────────────────────────────
+
+    const ACCENT_MAP: Record<PopupVariant, { h: string; hex: string; dark: string; light: string }> = {
+        empty: { h: '99,102,241', hex: '#6366f1', dark: '#4f46e5', light: '#a5b4fc' }, // indigo
+        error: { h: '239,68,68', hex: '#ef4444', dark: '#dc2626', light: '#fca5a5' }, // red
+        network_error: { h: '234,179,8', hex: '#eab308', dark: '#ca8a04', light: '#fde047' }, // yellow
+        inactive: { h: '239,68,68', hex: '#ef4444', dark: '#dc2626', light: '#fca5a5' }, // red
+        expired: { h: '249,115,22', hex: '#f97316', dark: '#ea580c', light: '#fdba74' }, // orange
+    };
+
+    const accent = ACCENT_MAP[variant];
+
+    const PULSE_ANIM: Record<PopupVariant, string> = {
+        empty: 'ed-pulse-indigo 2.4s ease-in-out infinite',
+        error: 'ed-pulse-red    2.4s ease-in-out infinite',
+        network_error: 'ed-pulse-yellow 2.4s ease-in-out infinite',
+        inactive: 'ed-pulse-red    2.4s ease-in-out infinite',
+        expired: 'ed-pulse-orange 2.4s ease-in-out infinite',
+    };
+    const pulseAnim = PULSE_ANIM[variant];
+
+    const VARIANT_CONFIG: Record<PopupVariant, {
+        icon: string;
+        badge: string;
+        heading: string;
+        subtitle: string;
+    }> = {
+        empty: {
+            icon: '⚙️',
+            badge: '⚙ Not Configured',
+            heading: 'Your website data is not configured yet.',
+            subtitle: 'Set up your school profile, sections, and content from the EdDesk Admin Panel to go live.',
+        },
+        error: {
+            icon: '⚡',
+            badge: '⚠ Connection Error',
+            heading: "We couldn't load your website data.",
+            subtitle: 'A server or network error occurred while loading your school data. Please retry or refresh.',
+        },
+        network_error: {
+            icon: '📡',
+            badge: '⚠ No Internet',
+            heading: 'Cannot connect to the internet.',
+            subtitle: isOnline
+                ? 'Connection restored! Reloading...'
+                : 'This website requires an internet connection. The page will reload automatically when you reconnect.',
+        },
+        inactive: {
+            icon: '🔒',
+            badge: '⛔ Website Inactive',
+            heading: 'This website is currently inactive.',
+            subtitle: 'The school administrator has deactivated this website. Please raise a support ticket to reactivate it.',
+        },
+        expired: {
+            icon: '⏰',
+            badge: '⚠ Subscription Expired',
+            heading: 'Your subscription has expired.',
+            subtitle: 'Renew your EdDesk subscription to restore access to this website.',
+        },
+    };
+
+    const config = VARIANT_CONFIG[variant];
+
+    // ── Style Helpers ─────────────────────────────────────────────────────────
+
+    const primaryButtonStyle = (a: typeof accent): React.CSSProperties => ({
+        padding: '0.7rem 1.75rem',
+        borderRadius: '0.75rem',
+        border: 'none',
+        cursor: 'pointer',
+        fontWeight: 700,
+        fontSize: '0.875rem',
+        background: `linear-gradient(135deg, ${a.dark} 0%, ${a.hex} 100%)`,
+        color: '#fff',
+        boxShadow: `0 4px 20px rgba(${a.h}, 0.4)`,
+        letterSpacing: '0.01em',
+        fontFamily: 'inherit',
+        transition: 'all 0.2s',
+    });
+
+    const secondaryButtonStyle: React.CSSProperties = {
+        padding: '0.7rem 1.5rem',
+        borderRadius: '0.75rem',
+        border: '1px solid rgba(148,163,184,0.2)',
+        cursor: 'pointer',
+        fontWeight: 600,
+        fontSize: '0.875rem',
+        background: 'rgba(255,255,255,0.04)',
+        color: '#94a3b8',
+        letterSpacing: '0.01em',
+        fontFamily: 'inherit',
+        transition: 'all 0.2s',
+    };
 
     return (
         <div
@@ -203,7 +316,7 @@ export default function SystemPopup({
                         fontSize: '2rem',
                         animation: pulseAnim,
                     }}>
-                        {isEmpty ? '⚙️' : '⚡'}
+                        {config.icon}
                     </div>
                 </div>
 
@@ -221,7 +334,7 @@ export default function SystemPopup({
                         color: accent.light,
                         border: `1px solid rgba(${accent.h}, 0.28)`,
                     }}>
-                        {isEmpty ? '⚙ Not Configured' : '⚠ Connection Error'}
+                        {config.badge}
                     </span>
                 </div>
 
@@ -234,9 +347,7 @@ export default function SystemPopup({
                     color: '#f8fafc',
                     letterSpacing: '-0.01em',
                 }}>
-                    {isEmpty
-                        ? 'Your website data is not configured yet.'
-                        : "We couldn't load your website data."}
+                    {config.heading}
                 </h2>
 
                 {/* ── Subtitle ── */}
@@ -246,13 +357,11 @@ export default function SystemPopup({
                     lineHeight: 1.65,
                     marginBottom: '1.75rem',
                 }}>
-                    {isEmpty
-                        ? 'Set up your school profile, sections, and content from the EdDesk Admin Panel to go live.'
-                        : 'A server or network error occurred while loading your school data. Please retry or refresh.'}
+                    {config.subtitle}
                 </p>
 
-                {/* ── Empty: Admin link pill ── */}
-                {isEmpty && (
+                {/* ── Admin link pill (shown for empty, inactive, expired) ── */}
+                {(variant === 'empty' || variant === 'inactive' || variant === 'expired') && (
                     <div style={{ marginBottom: '1.5rem' }}>
                         <a
                             href="https://admin.eddesk.in"
@@ -283,7 +392,7 @@ export default function SystemPopup({
                 )}
 
                 {/* ── Error: Error detail box ── */}
-                {!isEmpty && errorMessage && (
+                {variant === 'error' && errorMessage && (
                     <div style={{
                         background: 'rgba(239,68,68,0.07)',
                         border: '1px solid rgba(239,68,68,0.2)',
@@ -310,48 +419,27 @@ export default function SystemPopup({
 
                 {/* ── Buttons ── */}
                 <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-                    {isEmpty ? (
+
+                    {/* empty → Go to Admin Panel */}
+                    {variant === 'empty' && (
                         <a href="https://admin.eddesk.in" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                             <button
-                                style={{
-                                    padding: '0.7rem 1.75rem',
-                                    borderRadius: '0.75rem',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    fontWeight: 700,
-                                    fontSize: '0.875rem',
-                                    background: `linear-gradient(135deg, ${accent.dark} 0%, #7c3aed 100%)`,
-                                    color: '#fff',
-                                    boxShadow: `0 4px 20px rgba(${accent.h}, 0.4)`,
-                                    letterSpacing: '0.01em',
-                                    transition: 'all 0.2s',
-                                    fontFamily: 'inherit',
-                                }}
+                                style={primaryButtonStyle(accent)}
                                 onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 8px 28px rgba(${accent.h}, 0.5)`; }}
                                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'none'; (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 4px 20px rgba(${accent.h}, 0.4)`; }}
                             >
                                 Go to Admin Panel →
                             </button>
                         </a>
-                    ) : (
+                    )}
+
+                    {/* error → Retry + Refresh */}
+                    {variant === 'error' && (
                         <>
                             {onRetry && (
                                 <button
                                     onClick={onRetry}
-                                    style={{
-                                        padding: '0.7rem 1.5rem',
-                                        borderRadius: '0.75rem',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        fontWeight: 700,
-                                        fontSize: '0.875rem',
-                                        background: `linear-gradient(135deg, ${accent.dark} 0%, #b91c1c 100%)`,
-                                        color: '#fff',
-                                        boxShadow: `0 4px 20px rgba(${accent.h}, 0.4)`,
-                                        letterSpacing: '0.01em',
-                                        transition: 'all 0.2s',
-                                        fontFamily: 'inherit',
-                                    }}
+                                    style={primaryButtonStyle(accent)}
                                     onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)'; }}
                                     onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'none'; }}
                                 >
@@ -360,19 +448,7 @@ export default function SystemPopup({
                             )}
                             <button
                                 onClick={() => window.location.reload()}
-                                style={{
-                                    padding: '0.7rem 1.5rem',
-                                    borderRadius: '0.75rem',
-                                    border: '1px solid rgba(148,163,184,0.2)',
-                                    cursor: 'pointer',
-                                    fontWeight: 600,
-                                    fontSize: '0.875rem',
-                                    background: 'rgba(255,255,255,0.04)',
-                                    color: '#94a3b8',
-                                    letterSpacing: '0.01em',
-                                    transition: 'all 0.2s',
-                                    fontFamily: 'inherit',
-                                }}
+                                style={secondaryButtonStyle}
                                 onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.08)'; (e.currentTarget as HTMLButtonElement).style.color = '#cbd5e1'; }}
                                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.04)'; (e.currentTarget as HTMLButtonElement).style.color = '#94a3b8'; }}
                             >
@@ -380,17 +456,51 @@ export default function SystemPopup({
                             </button>
                         </>
                     )}
+
+                    {/* network_error → waiting message, no button (auto-reloads) */}
+                    {variant === 'network_error' && (
+                        <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>
+                            {isOnline ? 'Reloading...' : 'Waiting for connection...'}
+                        </p>
+                    )}
+
+                    {/* inactive → Raise a Ticket */}
+                    {variant === 'inactive' && (
+                        <a href="https://admin.eddesk.in" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                            <button
+                                style={primaryButtonStyle(accent)}
+                                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 8px 28px rgba(${accent.h}, 0.5)`; }}
+                                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'none'; (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 4px 20px rgba(${accent.h}, 0.4)`; }}
+                            >
+                                Raise a Support Ticket →
+                            </button>
+                        </a>
+                    )}
+
+                    {/* expired → Renew Subscription */}
+                    {variant === 'expired' && (
+                        <a href="https://admin.eddesk.in" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                            <button
+                                style={primaryButtonStyle(accent)}
+                                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 8px 28px rgba(${accent.h}, 0.5)`; }}
+                                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'none'; (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 4px 20px rgba(${accent.h}, 0.4)`; }}
+                            >
+                                Renew Subscription →
+                            </button>
+                        </a>
+                    )}
+
                 </div>
 
                 {/* ── EdDesk brand footer ── */}
                 <div style={{
-                    marginTop: '1.75rem',
+                    marginTop: '2rem',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '0.4rem',
                     fontSize: '0.7rem',
-                    color: '#1e293b',
+                    color: '#475569',
                     letterSpacing: '0.06em',
                     fontWeight: 600,
                     textTransform: 'uppercase',

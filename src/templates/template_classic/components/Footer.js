@@ -23,8 +23,9 @@ const Footer = ({ school }) => {
                             </div>
                             <p className="text-white font-bold serif text-sm uppercase leading-tight">{school.name}</p>
                         </div>
-                        <p className="text-sm leading-relaxed text-emerald-100/70">Empowering students to achieve excellence through innovative education, dedicated faculty, and a supportive community environment.</p>
-                        <p className="text-xs italic text-emerald-500">"Excellence in Education"</p>
+                        {school.description && (
+                            <p className="text-sm leading-relaxed text-emerald-100/70">{school.description}</p>
+                        )}
                     </div>
                     <div className="space-y-4">
                         <h3 className="text-white text-lg font-bold serif uppercase tracking-widest border-b border-emerald-800 pb-2 inline-block">Contact Core</h3>

@@ -55,9 +55,11 @@ const Header = ({ school }) => {
                             <span className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight serif uppercase group-hover:text-emerald-900 transition-colors leading-tight">
                                 {school.name}
                             </span>
-                            <span className="text-[10px] text-slate-500 uppercase tracking-widest leading-none mt-1">
-                                EXCELLENCE IN EDUCATION
-                            </span>
+                            {school.slogan && (
+                                <span className="text-[10px] text-slate-500 uppercase tracking-widest leading-none mt-1">
+                                    {school.slogan}
+                                </span>
+                            )}
                         </div>
                     </Link>
 

@@ -1,38 +1,31 @@
 // src/app/tenant/[[...path]]/page.tsx
-// Reached via internal rewrite for unknown/unconfigured domains.
-// Valid tenants are rewritten to /demo/... and do NOT land here.
+//
+// SSR-only Server Component for all tenant (customer) domains.
+//
+// Flow:
+//   1. getSchoolByDomain(hostname)     → domain guard (not-configured gate)
+//   2. fetchTenantScreen(...)          → RPC call, returns ScreenDataResult
+//   3. buildTenantViewModel(payload)   → maps ScreenDataPayload → TenantViewModel
+//   4. checkSubscription(viewModel)    → reads mode + subscription + plan from viewModel
+//   5. render correct SystemPopup variant or template
+//
+// Guardrails:
+//   - No client-side data fetching
+//   - templateSlug comes from viewModel.school.templateId (RPC response), never from URL
+//   - Subscription checks run AFTER RPC — grace period + mode come from RPC
+//   - config.service is deleted — grace period lives in plan.gracePeriod
 
 import React from 'react'
 import { headers } from 'next/headers';
 import { Metadata } from 'next';
 import { getSchoolByDomain } from '@/core/services/school.service';
-import { fetchTenantData, isTenantDomain } from '@/core/services/tenantApi.service';
+import { fetchTenantScreen, pathToScreenName, normalizeDomain } from '@/core/services/screenData.service';
 import { buildTenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
+import { checkSubscription } from '@/core/business/subscription';
 import { generateTenantMetadata, generateSchoolJsonLd, generateAboutMetadata, generateAboutJsonLd } from '@/core/utils/seo';
 import TemplateRenderer from '../../demo/[templateSlug]/[[...path]]/TemplateRenderer';
 import { TenantState } from '@/core/context/TenantContext';
-import { checkSubscription } from '@/core/business/subscription';
 import SystemPopup from '@/components/system/SystemPopup';
-import { debugTenantByDomain } from '@/app/core/data/supabase/tenant.service'; // PHASE 1 DEBUG
-
-const KEYFRAMES = `
-@keyframes ed-fadeIn {
-  from { opacity: 0; transform: scale(0.94) translateY(12px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
-}
-@keyframes ed-pulse-indigo {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.55), 0 0 32px rgba(99,102,241,0.3); }
-  50%       { box-shadow: 0 0 0 10px rgba(99,102,241,0), 0 0 48px rgba(99,102,241,0.5); }
-}
-@keyframes ed-spin-slow {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-@keyframes ed-orb-float {
-  0%, 100% { transform: translateY(0px) scale(1); }
-  50%       { transform: translateY(-18px) scale(1.04); }
-}
-`;
 
 export async function generateMetadata({
     params,
@@ -44,23 +37,19 @@ export async function generateMetadata({
 
     const headersList = await headers();
     const host = headersList.get('host') || '';
-    const hostname = host.split(':')[0].toLowerCase().replace(/^www\./, '');
+    const hostname = normalizeDomain(host);
+    const screenName = pathSegments?.[0] || 'home';
 
-    const schoolConfig = await getSchoolByDomain(hostname);
-    if (!schoolConfig) {
-        return { title: 'Site Not Configured | EdDesk' };
-    }
-
-    const result = await fetchTenantData(hostname, schoolConfig.templateId);
+    const result = await fetchTenantScreen(hostname, screenName);
     if (result.status === 'success') {
-        const viewModel = buildTenantViewModel(result.data);
+        const viewModel = buildTenantViewModel(result.payload);
         if (path === '/about') {
             return generateAboutMetadata(viewModel, hostname, false);
         }
         return generateTenantMetadata(viewModel, hostname, false);
     }
 
-    return { title: 'Authenticating... | EdDesk' };
+    return { title: 'Loading Site... | EdDesk' };
 }
 
 export default async function TenantPage({
@@ -73,271 +62,116 @@ export default async function TenantPage({
 
     const headersList = await headers();
     const host = headersList.get('host') || '';
-    const domain = host || 'localhost:3001'; // PHASE 1 DEBUG - REMOVE AFTER REVIEW
+    const hostname = normalizeDomain(host);
 
-    // PHASE 1 DEBUG - Testing each domain type
-    try {
-        await debugTenantByDomain(domain);
-        await debugTenantByDomain('localhost:3001');
-        await debugTenantByDomain('eddesk.in');
-        await debugTenantByDomain('localhost:3000');
-    } catch (err) {
-        console.error('Server', 'Debug log failed in main page:', err);
-    }
-
-    const hostname = host.split(':')[0].toLowerCase().replace(/^www\./, '');
-
+    // Step 1: Domain guard — check if this domain is registered at all
     const schoolConfig = await getSchoolByDomain(hostname);
 
-    // 1. If no config found for this domain, show the "Not Configured" fallback
     if (!schoolConfig) {
         return (
-            <>
-                <style dangerouslySetInnerHTML={{ __html: KEYFRAMES }} />
+            <div style={{
+                minHeight: '100vh',
+                background: 'linear-gradient(145deg, #020617 0%, #0d1526 50%, #0f172a 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontFamily: 'var(--font-plus-jakarta-sans, "Plus Jakarta Sans", system-ui, sans-serif)',
+                padding: '1rem',
+            }}>
                 <div style={{
-                    minHeight: '100vh',
-                    background: 'linear-gradient(145deg, #020617 0%, #0d1526 50%, #0f172a 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontFamily: 'var(--font-plus-jakarta-sans, "Plus Jakarta Sans", system-ui, sans-serif)',
-                    padding: '1rem',
+                    position: 'relative',
+                    width: '100%',
+                    maxWidth: '440px',
+                    borderRadius: '1.5rem',
+                    background: 'linear-gradient(145deg, #0d1526 0%, #111827 60%, #0f172a 100%)',
+                    border: '1px solid rgba(99,102,241,0.22)',
+                    boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(99,102,241,0.1), inset 0 1px 0 rgba(255,255,255,0.05)',
+                    padding: '2.75rem 2.25rem 2.25rem',
+                    textAlign: 'center',
+                    color: '#f1f5f9',
+                    overflow: 'hidden',
+                    animation: 'ed-fadeIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards',
                 }}>
-                    {/* Card */}
-                    <div style={{
-                        position: 'relative',
-                        width: '100%',
-                        maxWidth: '440px',
-                        borderRadius: '1.5rem',
-                        background: 'linear-gradient(145deg, #0d1526 0%, #111827 60%, #0f172a 100%)',
-                        border: '1px solid rgba(99,102,241,0.22)',
-                        boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(99,102,241,0.1), inset 0 1px 0 rgba(255,255,255,0.05)',
-                        padding: '2.75rem 2.25rem 2.25rem',
-                        textAlign: 'center',
-                        color: '#f1f5f9',
-                        overflow: 'hidden',
-                        animation: 'ed-fadeIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards',
-                    }}>
-                        {/* Background orbs */}
-                        <div style={{
-                            position: 'absolute', top: '-60px', right: '-60px',
-                            width: '200px', height: '200px', borderRadius: '50%',
-                            background: 'radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)',
-                            animation: 'ed-orb-float 5s ease-in-out infinite',
-                            pointerEvents: 'none',
-                        }} />
-                        <div style={{
-                            position: 'absolute', bottom: '-40px', left: '-40px',
-                            width: '160px', height: '160px', borderRadius: '50%',
-                            background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)',
-                            animation: 'ed-orb-float 7s ease-in-out infinite reverse',
-                            pointerEvents: 'none',
-                        }} />
-
-                        {/* Animated icon ring */}
-                        <div style={{ position: 'relative', width: '80px', height: '80px', margin: '0 auto 1.75rem' }}>
-                            <div style={{
-                                position: 'absolute', inset: '-8px',
-                                borderRadius: '50%',
-                                border: '2px dashed rgba(99,102,241,0.35)',
-                                animation: 'ed-spin-slow 8s linear infinite',
-                            }} />
-                            <div style={{
-                                position: 'absolute', inset: '-2px',
-                                borderRadius: '50%',
-                                border: '1px solid rgba(99,102,241,0.15)',
-                            }} />
-                            <div style={{
-                                width: '80px', height: '80px', borderRadius: '50%',
-                                background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontSize: '2rem',
-                                animation: 'ed-pulse-indigo 2.4s ease-in-out infinite',
-                            }}>
-                                🌐
-                            </div>
-                        </div>
-
-                        {/* Badge */}
-                        <div style={{ marginBottom: '0.875rem' }}>
-                            <span style={{
-                                display: 'inline-block',
-                                fontSize: '0.65rem',
-                                fontWeight: 800,
-                                letterSpacing: '0.14em',
-                                textTransform: 'uppercase',
-                                padding: '0.3rem 0.9rem',
-                                borderRadius: '999px',
-                                background: 'rgba(99,102,241,0.12)',
-                                color: '#a5b4fc',
-                                border: '1px solid rgba(99,102,241,0.28)',
-                            }}>
-                                ⚙ Domain Not Configured
-                            </span>
-                        </div>
-
-                        {/* Heading */}
-                        <h1 style={{
-                            fontSize: '1.3rem',
-                            fontWeight: 800,
-                            lineHeight: 1.3,
-                            marginBottom: '0.625rem',
-                            color: '#f8fafc',
-                            letterSpacing: '-0.01em',
-                        }}>
-                            This website is not configured yet.
-                        </h1>
-
-                        {/* Subtitle */}
-                        <p style={{
-                            fontSize: '0.875rem',
-                            color: '#64748b',
-                            lineHeight: 1.65,
-                            marginBottom: '1.75rem',
-                        }}>
-                            This domain is not yet active. Please configure your website settings via the EdDesk admin panel to go live.
-                        </p>
-
-                        {/* Admin link pill */}
-                        <div style={{ marginBottom: '1.5rem' }}>
-                            <a
-                                href="https://admin.eddesk.in"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '0.45rem',
-                                    fontSize: '0.8rem',
-                                    fontWeight: 600,
-                                    color: '#a5b4fc',
-                                    textDecoration: 'none',
-                                    padding: '0.45rem 1rem',
-                                    borderRadius: '0.625rem',
-                                    background: 'rgba(99,102,241,0.1)',
-                                    border: '1px solid rgba(99,102,241,0.22)',
-                                }}
-                            >
-                                <span style={{ fontSize: '0.75rem' }}>🔗</span>
-                                admin.eddesk.in
-                                <span style={{ fontSize: '0.65rem', opacity: 0.7 }}>↗</span>
-                            </a>
-                        </div>
-
-                        {/* Divider */}
-                        <div style={{
-                            height: '1px',
-                            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent)',
-                            marginBottom: '1.5rem',
-                        }} />
-
-                        {/* CTA Button */}
-                        <a href="https://admin.eddesk.in" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-                            <button style={{
-                                padding: '0.7rem 1.75rem',
-                                borderRadius: '0.75rem',
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontWeight: 700,
-                                fontSize: '0.875rem',
-                                background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-                                color: '#fff',
-                                boxShadow: '0 4px 20px rgba(99,102,241,0.4)',
-                                letterSpacing: '0.01em',
-                                fontFamily: 'inherit',
-                            }}>
-                                Go to Admin Panel →
-                            </button>
-                        </a>
-
-                        {/* EdDesk brand */}
-                        <div style={{
-                            marginTop: '1.75rem',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '0.4rem',
-                            fontSize: '0.7rem',
-                            color: '#1e293b',
-                            letterSpacing: '0.06em',
-                            fontWeight: 600,
-                            textTransform: 'uppercase',
-                        }}>
-                            <span style={{
-                                display: 'inline-block',
-                                width: '16px', height: '16px',
-                                borderRadius: '4px',
-                                background: 'linear-gradient(135deg, #4f46e5, #6366f1)',
-                                opacity: 0.6,
-                            }} />
-                            Powered by EdDesk
-                        </div>
-                    </div>
+                    <h1 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#f8fafc' }}>
+                        Site Not Configured
+                    </h1>
+                    <p style={{ color: '#64748b', marginTop: '1rem' }}>
+                        This domain is not yet active.
+                    </p>
                 </div>
-            </>
-        )
-    }
-
-    // 2. Fetch data for the configured domain
-    const result = await fetchTenantData(hostname, schoolConfig.templateId);
-    if (result.status !== 'success') {
-        const tenantState: TenantState = {
-            status: result.status === 'empty' ? 'empty' : 'error',
-            data: null,
-            message: result.status === 'empty' ? result.message : result.error,
-        };
-        return (
-            <SystemPopup
-                variant={tenantState.status === 'empty' ? 'empty' : 'error'}
-                errorMessage={tenantState.message}
-            />
+            </div>
         );
     }
 
-    const viewModel = buildTenantViewModel(result.data);
+    const screenName = pathToScreenName(path);
+    const result = await fetchTenantScreen(hostname, screenName);
 
-    // 3. Subscription Guard
-    const subCheck = checkSubscription(viewModel);
-    if (!subCheck.isAccessAllowed) {
+    // Step 3: Handle RPC failure states BEFORE subscription check
+    if (result.status === 'error') {
         return (
             <SystemPopup
                 variant="error"
-                errorMessage={subCheck.status === 'inactive'
-                    ? "This school is currently inactive. Please contact administration."
-                    : "Subscription expired. Please renew to restore access."}
+                errorMessage={result.error}
             />
         );
     }
 
+    if (result.status === 'empty') {
+        return (
+            <SystemPopup
+                variant="empty"
+                errorMessage={result.message}
+            />
+        );
+    }
+
+    // Step 4: Build viewModel from the correctly unwrapped payload
+    const viewModel = buildTenantViewModel(result.payload);
+
+    // Step 5: Subscription check (reads mode, subscription.endDate, plan.gracePeriod)
+    const subscriptionCheck = checkSubscription(viewModel);
+
+    if (!subscriptionCheck.isAccessAllowed) {
+        if (subscriptionCheck.status === 'inactive') {
+            return <SystemPopup variant="inactive" />;
+        }
+        if (subscriptionCheck.status === 'expired') {
+            return <SystemPopup variant="expired" />;
+        }
+        return (
+            <SystemPopup
+                variant="error"
+                errorMessage={subscriptionCheck.message}
+            />
+        );
+    }
+
+    // Step 6: Build TenantState for context + TemplateRenderer
     const tenantState: TenantState = {
         status: 'success',
         data: viewModel,
         message: '',
     };
 
-    // 4. Render the Template with SEO scripts
+    // Step 7: Render — templateSlug now comes from viewModel (not schoolConfig)
     return (
         <>
             {tenantState.data && (
                 <>
                     <script
                         type="application/ld+json"
-                        dangerouslySetInnerHTML={{
-                            __html: JSON.stringify(generateSchoolJsonLd(tenantState.data, hostname))
-                        }}
+                        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateSchoolJsonLd(tenantState.data, hostname)) }}
                     />
                     {path === '/about' && (
                         <script
                             type="application/ld+json"
-                            dangerouslySetInnerHTML={{
-                                __html: JSON.stringify(generateAboutJsonLd(tenantState.data, hostname))
-                            }}
+                            dangerouslySetInnerHTML={{ __html: JSON.stringify(generateAboutJsonLd(tenantState.data, hostname)) }}
                         />
                     )}
                 </>
             )}
             <TemplateRenderer
-                templateSlug={schoolConfig.templateId}
+                templateSlug={viewModel.school.templateId}
                 path={path}
                 tenantState={tenantState}
             />

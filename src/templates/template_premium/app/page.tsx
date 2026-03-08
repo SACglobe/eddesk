@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { schoolData } from '../data';
 import { SectionHeader, Card, Button, StatCounter, TestimonialSlider, useIntersectionObserver } from '../components/Shared';
 import Link from 'next/link';
 import LayoutWrapper from '../components/LayoutWrapper';
@@ -223,9 +222,10 @@ const InstitutionalStats: React.FC<{
 interface DashboardProps {
   statistics: Array<{ label: string; value: string; icon: string; displayOrder: number }>;
   statsEnabled: boolean;
+  statsRequired: boolean;
 }
 
-const SchoolDashboard: React.FC<DashboardProps> = ({ statistics, statsEnabled }) => {
+const SchoolDashboard: React.FC<DashboardProps> = ({ statistics, statsEnabled, statsRequired }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
 
   const SVG_ICON_MAP: Record<string, React.ReactNode> = {
@@ -271,7 +271,11 @@ const SchoolDashboard: React.FC<DashboardProps> = ({ statistics, statsEnabled })
 
   const getSvgIcon = (name: string) => SVG_ICON_MAP[name] ?? DEFAULT_SVG;
 
-  if (!statsEnabled || statistics.length === 0) return null;
+  if (!statsEnabled) return null;
+  if (statsRequired && statistics.length === 0) {
+    console.error('[EdDesk] Required section "stats" has no data');
+  }
+  if (!statsRequired && statistics.length === 0) return null;
 
   return (
     <section ref={containerRef} className="bg-[#F0F7FF] py-24 px-8 border-b border-signature-navy/5">
@@ -308,12 +312,17 @@ interface FacultyMember {
 interface FacultyHighlightsProps {
   faculty: FacultyMember[];
   facultyEnabled: boolean;
+  facultyRequired: boolean;
 }
 
-const FacultyHighlights: React.FC<FacultyHighlightsProps> = ({ faculty, facultyEnabled }) => {
+const FacultyHighlights: React.FC<FacultyHighlightsProps> = ({ faculty, facultyEnabled, facultyRequired }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
 
-  if (!facultyEnabled || faculty.length === 0) return null;
+  if (!facultyEnabled) return null;
+  if (facultyRequired && faculty.length === 0) {
+    console.error('[EdDesk] Required section "faculty" has no data');
+  }
+  if (!facultyRequired && faculty.length === 0) return null;
 
 
   return (
@@ -360,13 +369,18 @@ interface SportAchievement {
 
 interface AthleticExcellenceProps {
   sportsAchievements: SportAchievement[];
-  achievementsEnabled: boolean;
+  sportsEnabled: boolean;
+  sportsRequired: boolean;
 }
 
-const AthleticExcellence: React.FC<AthleticExcellenceProps> = ({ sportsAchievements, achievementsEnabled }) => {
+const AthleticExcellence: React.FC<AthleticExcellenceProps> = ({ sportsAchievements, sportsEnabled, sportsRequired }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
 
-  if (!achievementsEnabled || sportsAchievements.length === 0) return null;
+  if (!sportsEnabled) return null;
+  if (sportsRequired && sportsAchievements.length === 0) {
+    console.error('[EdDesk] Required section "sports" has no data');
+  }
+  if (!sportsRequired && sportsAchievements.length === 0) return null;
 
   return (
     <section ref={containerRef} className="py-48 px-8 bg-signature-ivory border-b border-signature-navy/5 overflow-hidden">
@@ -427,12 +441,17 @@ interface FacilityGroup {
 interface CampusFacilitiesProps {
   facilityGroups: FacilityGroup[];
   facilitiesEnabled: boolean;
+  facilitiesRequired: boolean;
 }
 
-const CampusFacilities: React.FC<CampusFacilitiesProps> = ({ facilityGroups, facilitiesEnabled }) => {
+const CampusFacilities: React.FC<CampusFacilitiesProps> = ({ facilityGroups, facilitiesEnabled, facilitiesRequired }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
 
-  if (!facilitiesEnabled || facilityGroups.length === 0) return null;
+  if (!facilitiesEnabled) return null;
+  if (facilitiesRequired && facilityGroups.length === 0) {
+    console.error('[EdDesk] Required section "facilities" has no data');
+  }
+  if (!facilitiesRequired && facilityGroups.length === 0) return null;
 
   return (
     <section ref={containerRef} className="py-48 px-8 bg-white border-b border-signature-navy/5">
@@ -479,10 +498,14 @@ const CampusFacilities: React.FC<CampusFacilitiesProps> = ({ facilityGroups, fac
   );
 };
 
-const UpcomingEvents: React.FC<{ eventsToShow: any[], eventsEnabled: boolean }> = ({ eventsToShow, eventsEnabled }) => {
+const UpcomingEvents: React.FC<{ eventsToShow: any[], eventsEnabled: boolean, eventsRequired: boolean }> = ({ eventsToShow, eventsEnabled, eventsRequired }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
 
-  if (!eventsEnabled || eventsToShow.length === 0) return null;
+  if (!eventsEnabled) return null;
+  if (eventsRequired && eventsToShow.length === 0) {
+    console.error('[EdDesk] Required section "events" has no data');
+  }
+  if (!eventsRequired && eventsToShow.length === 0) return null;
 
   const formatEventDate = (dateStr: string) => {
     const d = new Date(dateStr + 'T00:00:00');
@@ -536,67 +559,111 @@ const UpcomingEvents: React.FC<{ eventsToShow: any[], eventsEnabled: boolean }> 
   );
 };
 
-export default function Home({ data, statsEnabled, statistics }: {
-  data: TenantViewModel;
-  statsEnabled: boolean;
-  statistics: any[];
-}) {
+export default function Home({ data }: { data: TenantViewModel }) {
   const { containerRef: introRef, isVisible: introVisible } = useIntersectionObserver({ threshold: 0.1 });
 
-  const heroSlide = (data?.heroMedia ?? [])
+  // 1. Hero
+  const heroSection = data?.homepageSections?.find(s => s.sectionKey === 'hero');
+  const heroEnabled = heroSection?.isEnabled ?? true;
+  const heroRequired = heroSection?.isRequired ?? false;
+  const heroMedia = (data?.heroMedia ?? [])
     .filter(s => s.isActive)
-    .sort((a, b) => a.displayOrder - b.displayOrder)[0] ?? null;
+    .sort((a, b) => a.displayOrder - b.displayOrder);
 
+  if (heroEnabled && heroRequired && heroMedia.length === 0) {
+    console.error('[EdDesk] Required section "hero" has no data');
+  }
+  const heroSlide = heroMedia[0] ?? null;
+
+  // 2. Institutional Stats (Academics + Achievements)
+  const academicSection = data?.homepageSections?.find(s => s.sectionKey === 'academics');
+  const academicResultsEnabled = academicSection?.isEnabled ?? true;
+  const academicResultsRequired = academicSection?.isRequired ?? false;
+  const academicResults = [...(data?.academicResults ?? [])].sort((a, b) => b.year - a.year);
+  if (academicResultsEnabled && academicResultsRequired && academicResults.length === 0) {
+    console.error('[EdDesk] Required section "academics" has no data');
+  }
+  const latestAcademicResult = academicResults[0] ?? null;
+
+  const achievementsSection = data?.homepageSections?.find(s => s.sectionKey === 'achievements');
+  const achievementsEnabled = achievementsSection?.isEnabled ?? true;
+  const achievementsRequired = achievementsSection?.isRequired ?? false;
+  const academicAchievements = (data?.achievements ?? [])
+    .filter(a => a.achievementType === 'academic')
+    .sort((a, b) => b.year - a.year || (a.displayOrder || 0) - (b.displayOrder || 0));
+  if (achievementsEnabled && achievementsRequired && academicAchievements.length === 0) {
+    console.error('[EdDesk] Required section "achievements" has no data');
+  }
+
+  // 3. Principal
+  const principalSection = data?.homepageSections?.find(s => s.sectionKey === 'principal');
+  const principalEnabled = principalSection?.isEnabled ?? true;
+  const principalRequired = principalSection?.isRequired ?? false;
   const principal = data?.personnel?.find(p => p.personType === 'principal') ?? null;
+  if (principalEnabled && principalRequired && !principal) {
+    console.error('[EdDesk] Required section "principal" has no data');
+  }
 
-  const facultySection = (data?.homepageSections ?? [])
-    .find(s => s.sectionKey === 'faculty');
+  // 4. Statistics Dashboard
+  const statsSection = data?.homepageSections?.find(s => s.sectionKey === 'stats');
+  const statsEnabled = statsSection?.isEnabled ?? true;
+  const statsRequired = statsSection?.isRequired ?? false;
+  const statistics = (data?.statistics ?? []).sort((a, b) => a.displayOrder - b.displayOrder);
+  if (statsEnabled && statsRequired && statistics.length === 0) {
+    console.error('[EdDesk] Required section "stats" has no data');
+  }
+
+  // 5. Faculty
+  const facultySection = data?.homepageSections?.find(s => s.sectionKey === 'faculty');
   const facultyEnabled = facultySection?.isEnabled ?? true;
-  const faculty = (data?.personnel as any[] ?? [])
-    .filter(p => p.personType === 'faculty')
-    .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+  const facultyRequired = facultySection?.isRequired ?? false;
+  const faculty = (data?.personnel ?? [])
+    .filter(p => p.personType === 'faculty');
+  if (facultyEnabled && facultyRequired && faculty.length === 0) {
+    console.error('[EdDesk] Required section "faculty" has no data');
+  }
 
-  const achievementsEnabled = (data?.homepageSections ?? [])
-    .find(s => s.sectionKey === 'achievements' || s.sectionKey === 'sports')
-    ?.isEnabled ?? true;
+  // 6. Sports (Athletic Excellence)
+  const sportsSection = data?.homepageSections?.find(s => s.sectionKey === 'sports');
+  const sportsEnabled = sportsSection?.isEnabled ?? true;
+  const sportsRequired = sportsSection?.isRequired ?? false;
   const sportsAchievements = (data?.achievements ?? [])
     .filter(a => a.achievementType?.toLowerCase().trim() === 'sports')
     .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+  if (sportsEnabled && sportsRequired && sportsAchievements.length === 0) {
+    console.error('[EdDesk] Required section "sports" has no data');
+  }
 
-  const facilitiesEnabled = (data?.homepageSections ?? [])
-    .find(s => s.sectionKey === 'facilities')
-    ?.isEnabled ?? true;
-
-  const grouped = (data?.facilities ?? []).reduce((acc: any, f: any) => {
+  // 7. Facilities
+  const facilitiesSection = data?.homepageSections?.find(s => s.sectionKey === 'facilities');
+  const facilitiesEnabled = facilitiesSection?.isEnabled ?? true;
+  const facilitiesRequired = facilitiesSection?.isRequired ?? false;
+  const groupedFacilities = (data?.facilities ?? []).reduce((acc: any, f: any) => {
     const key = f.categoryName;
     if (!acc[key]) acc[key] = { categoryName: key, items: [] };
     acc[key].items.push(f);
     return acc;
   }, {});
-  const facilityGroups = Object.values(grouped) as any[];
+  const facilityGroups = Object.values(groupedFacilities) as any[];
+  if (facilitiesEnabled && facilitiesRequired && facilityGroups.length === 0) {
+    console.error('[EdDesk] Required section "facilities" has no data');
+  }
 
-  const gallerySection = (data?.homepageSections ?? [])
-    .find(s => s.sectionKey === 'gallery');
+  // 8. Gallery (Campus Masterpiece)
+  const gallerySection = data?.homepageSections?.find(s => s.sectionKey === 'gallery');
   const galleryEnabled = gallerySection?.isEnabled ?? true;
+  const galleryRequired = gallerySection?.isRequired ?? false;
   const galleryItems = (data?.mediaLibrary ?? [])
     .filter(m => m.category === 'campus' && m.isFeatured)
     .slice(0, 3);
+  if (galleryEnabled && galleryRequired && galleryItems.length === 0) {
+    console.error('[EdDesk] Required section "gallery" has no data');
+  }
 
-  const academicSection = (data?.homepageSections ?? [])
-    .find(s => s.sectionKey === 'academic_results');
-  const academicResultsEnabled = academicSection?.isEnabled ?? true;
-  const academicResults = [...(data?.academicResults ?? [])]
-    .sort((a, b) => b.year - a.year);
-  const latestAcademicResult = academicResults[0] ?? null;
-
-  const academicAchievements = (data?.achievements ?? [])
-    .filter(a => a.achievementType === 'academic')
-    .sort((a, b) => b.year - a.year || (a.displayOrder || 0) - (b.displayOrder || 0));
-
-  const eventsEnabled = (data?.homepageSections ?? [])
-    .find(s => s.sectionKey === 'events')
-    ?.isEnabled ?? true;
-
+  // 9. Events
+  const eventsSection = data?.homepageSections?.find(s => s.sectionKey === 'events');
+  const eventsEnabled = eventsSection?.isEnabled ?? true;
+  const eventsRequired = eventsSection?.isRequired ?? false;
   const now = new Date();
   const eventsToShow = (data?.events ?? [])
     .filter((e: any) => {
@@ -609,11 +676,16 @@ export default function Home({ data, statsEnabled, statistics }: {
       new Date(`${b.eventDate}T${b.startTime}`).getTime()
     )
     .slice(0, 3);
+  if (eventsEnabled && eventsRequired && eventsToShow.length === 0) {
+    console.error('[EdDesk] Required section "events" has no data');
+  }
 
   return (
     <LayoutWrapper>
       <div className="fade-in bg-signature-ivory">
-        <Hero heroSlide={heroSlide} />
+        {heroEnabled && (heroRequired || heroSlide) && (
+          <Hero heroSlide={heroSlide} />
+        )}
 
         <InstitutionalStats
           academicResultsEnabled={academicResultsEnabled}
@@ -622,38 +694,57 @@ export default function Home({ data, statsEnabled, statistics }: {
           academicAchievements={academicAchievements}
         />
 
-        <section className="py-48 px-8 grid lg:grid-cols-2 gap-24 items-center max-w-[1400px] mx-auto border-b border-signature-navy/5">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl group">
-            <img src={principal?.photoUrl || "/school/image/principal.png"} alt="Principal" className="w-full h-full object-cover object-top transition-transform duration-1000 group-hover:scale-105" />
-            <div className="absolute inset-0 bg-signature-navy/20 mix-blend-multiply"></div>
-          </div>
-          <div>
-            <SectionHeader title="Leadership" subtitle="Visionary Guidance" />
-            <p className="text-2xl text-signature-navy/60 font-serif italic mb-12 leading-relaxed">
-              "{principal?.bio}"
-            </p>
-            <div className="flex items-center gap-6 mb-12">
-              <div className="w-16 h-px bg-signature-gold"></div>
-              <div>
-                <div className="text-xl font-bold uppercase tracking-widest text-signature-navy">{principal?.name}</div>
-                <div className="text-signature-gold text-sm tracking-[0.2em] font-bold">{principal?.designation}</div>
-              </div>
+        {principalEnabled && (principalRequired || principal) && (
+          <section className="py-48 px-8 grid lg:grid-cols-2 gap-24 items-center max-w-[1400px] mx-auto border-b border-signature-navy/5">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl group">
+              <img src={principal?.photoUrl || "/school/image/principal.png"} alt="Principal" className="w-full h-full object-cover object-top transition-transform duration-1000 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-signature-navy/20 mix-blend-multiply"></div>
             </div>
-            <Link href="/about">
-              <Button>Discover Our Legacy</Button>
-            </Link>
-          </div>
-        </section>
+            <div>
+              <SectionHeader title="Leadership" subtitle="Visionary Guidance" />
+              <p className="text-2xl text-signature-navy/60 font-serif italic mb-12 leading-relaxed">
+                "{principal?.bio || ''}"
+              </p>
+              <div className="flex items-center gap-6 mb-12">
+                <div className="w-16 h-px bg-signature-gold"></div>
+                <div>
+                  <div className="text-xl font-bold uppercase tracking-widest text-signature-navy">{principal?.name || ''}</div>
+                  <div className="text-signature-gold text-sm tracking-[0.2em] font-bold">{principal?.designation || ''}</div>
+                </div>
+              </div>
+              <Link href="/about">
+                <Button>Discover Our Legacy</Button>
+              </Link>
+            </div>
+          </section>
+        )}
 
-        <SchoolDashboard statistics={statistics} statsEnabled={statsEnabled} />
+        <SchoolDashboard
+          statistics={statistics}
+          statsEnabled={statsEnabled}
+          statsRequired={statsRequired}
+        />
 
-        <FacultyHighlights faculty={faculty as any} facultyEnabled={facultyEnabled} />
+        <FacultyHighlights
+          faculty={faculty}
+          facultyEnabled={facultyEnabled}
+          facultyRequired={facultyRequired}
+        />
 
-        <AthleticExcellence sportsAchievements={sportsAchievements} achievementsEnabled={achievementsEnabled} />
+        <AthleticExcellence
+          sportsAchievements={sportsAchievements}
+          sportsEnabled={sportsEnabled}
+          sportsRequired={sportsRequired}
+        />
 
-        <CampusFacilities facilityGroups={facilityGroups} facilitiesEnabled={facilitiesEnabled} />
+        <CampusFacilities
+          facilityGroups={facilityGroups}
+          facilitiesEnabled={facilitiesEnabled}
+          facilitiesRequired={facilitiesRequired}
+        />
 
-        {galleryEnabled && galleryItems.length > 0 && (
+        {galleryEnabled && (galleryRequired || galleryItems.length > 0) && (
+          // ... (same gallery code)
           <section className="py-48 px-8 bg-white">
             <div className="max-w-[1400px] mx-auto">
               <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12">
@@ -709,7 +800,11 @@ export default function Home({ data, statsEnabled, statistics }: {
           </section>
         )}
 
-        <UpcomingEvents eventsToShow={eventsToShow} eventsEnabled={eventsEnabled} />
+        <UpcomingEvents
+          eventsToShow={eventsToShow}
+          eventsEnabled={eventsEnabled}
+          eventsRequired={eventsRequired}
+        />
 
         <section className="py-48 bg-signature-gold text-white text-center px-8 relative overflow-hidden">
           <div className="absolute inset-0 bg-signature-navy/10"></div>

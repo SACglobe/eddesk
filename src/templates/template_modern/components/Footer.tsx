@@ -11,9 +11,11 @@ const Footer: React.FC<FooterProps> = ({ school }) => {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div className="space-y-4">
                         <h3 className="text-white text-xl font-bold">{school?.name}</h3>
-                        <p className="text-sm leading-relaxed">
-                            Excellence in education since 1995. Preparing students for the global challenges of tomorrow.
-                        </p>
+                        {school?.description && (
+                            <p className="text-sm leading-relaxed">
+                                {school.description}
+                            </p>
+                        )}
                     </div>
                     <div>
                         <h4 className="text-white font-semibold mb-4">Quick Links</h4>

@@ -71,7 +71,9 @@ const Navbar: React.FC<NavbarProps> = ({ school }) => {
                                 <span className="font-bold text-xl tracking-tight hidden sm:block">
                                     {school.name}
                                 </span>
-                                <p className="text-xs text-accent font-medium hidden sm:block uppercase">Modern Template</p>
+                                {school.slogan && (
+                                    <p className="text-xs text-accent font-medium hidden sm:block uppercase">{school.slogan}</p>
+                                )}
                             </div>
                         </div>
                     </Link>

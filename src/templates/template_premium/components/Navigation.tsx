@@ -194,9 +194,11 @@ const Footer: React.FC<FooterProps> = ({ school }) => {
                         <h2 className="text-5xl font-serif mb-10 text-white leading-tight">
                             {school.name.split(' ')[0]} <span className="italic text-signature-gold">{school.name.split(' ')[1] || ''}</span> {school.name.split(' ').slice(2).join(' ')}
                         </h2>
-                        <p className="text-white/40 max-w-md leading-loose font-light text-lg italic mb-10">
-                            "We provide a sanctuary for deep thought and a launchpad for global leadership. Excellence is not our goal; it is our tradition."
-                        </p>
+                        {school.description && (
+                            <p className="text-white/40 max-w-md leading-loose font-light text-lg italic mb-10">
+                                "{school.description}"
+                            </p>
+                        )}
                         <div className="flex gap-6">
                             {['Instagram', 'LinkedIn', 'YouTube'].map(social => (
                                 <a key={social} href="#" className="text-[10px] uppercase tracking-widest text-signature-gold hover:text-white transition-colors">{social}</a>
