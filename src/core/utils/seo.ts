@@ -57,7 +57,7 @@ export function generateSchoolJsonLd(data: TenantViewModel, domain: string) {
             streetAddress: school.fullAddress,
             addressLocality: school.city || 'Default City',
             addressRegion: school.state || 'Default State',
-            postalCode: school.zipCode || '000000',
+            postalCode: school.postalCode || '000000',
             addressCountry: 'IN',
         },
         telephone: school.phone,
