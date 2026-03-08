@@ -299,6 +299,7 @@ export interface TenantViewModel {
         personType: string;        // maps from role (leadership) or 'faculty' (faculty)
         isFeatured: boolean;
         isActive: boolean;
+        displayOrder: number;
     }>;
 
     // ── Stats ─────────────────────────────────────────────────────────────────
