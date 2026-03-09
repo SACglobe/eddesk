@@ -63,7 +63,7 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
     const activeAnnouncements = announcementsEnabled
         ? (data?.announcements ?? []).filter((a: any) =>
             a.isActive &&
-            (a.expiresAt == null || new Date(a.expiresAt) > now)
+            (!a.expiresAt || a.expiresAt === '' || new Date(a.expiresAt) > now)
         )
         : [];
 

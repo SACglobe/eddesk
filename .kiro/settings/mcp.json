@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "command": "uvx",
+      "args": ["supabase-mcp-server"],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "sbp_a82c408ba95104013a0316aa6b8e1abfa108c19c"
+      },
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}

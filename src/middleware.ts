@@ -13,6 +13,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import domain_data from '@/lib/constants/constants';
+import { isOwnerDomain } from '@/lib/middleware/domain-classifier';
+import { findDomainConfig } from '@/lib/middleware/domain-lookup';
 
 export function middleware(request: NextRequest) {
     const url = request.nextUrl.clone();
@@ -29,13 +31,13 @@ export function middleware(request: NextRequest) {
 
     // 0.1 EXPLICIT BYPASS for demo routes on local/owner
     if (url.pathname.startsWith('/demo')) {
-        const isOwner = host.includes('localhost') || host.includes('127.0.0.1') || host.includes('eddesk.in');
+        const isOwner = isOwnerDomain(hostname);
         if (isOwner) {
             console.log(`[EdDesk Proxy DEBUG] Owner detected for demo route. BYPASSING proxy for: ${url.pathname}`);
             return NextResponse.next();
         } else {
             console.warn(`[EdDesk Proxy DEBUG] Non-owner blocked for demo route: ${host}`);
-            return new NextResponse('Not Allowed', { status: 404 });
+            return new NextResponse('Not Found', { status: 404 });
         }
     }
 
@@ -46,7 +48,7 @@ export function middleware(request: NextRequest) {
     console.log(`[EdDesk Proxy DEBUG] Found Config:`, config?.domain || 'NONE', 'Type:', config?.type || 'NONE');
 
     // 2. Handle Owner Domains (Root Marketing)
-    if (config?.type === 'owner' || host === 'localhost:3000' || host === '127.0.0.1:3000' || hostname === 'eddesk.in') {
+    if (isOwnerDomain(hostname)) {
         return NextResponse.next();
     }
 

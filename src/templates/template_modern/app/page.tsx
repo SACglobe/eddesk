@@ -85,7 +85,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
     const announcementsRequired = announcementsSection?.isRequired ?? false;
     const activeAnnouncements = (data?.announcements ?? []).filter(a =>
         a.isActive &&
-        (a.expiresAt == null || new Date(a.expiresAt) > now)
+        (!a.expiresAt || a.expiresAt === '' || new Date(a.expiresAt) > now)
     );
     if (announcementsEnabled && announcementsRequired && activeAnnouncements.length === 0) {
         console.error('[EdDesk] Required section "announcements" has no data');
