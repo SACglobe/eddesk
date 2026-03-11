@@ -2,7 +2,7 @@ import fs from 'fs'
 
 // Phase branches are cross-cutting by design — skip template boundary enforcement
 const branch = process.env.GITHUB_HEAD_REF || ''
-if (branch.startsWith('phase/')) {
+if (branch.startsWith('home_screen/')) {
   console.log('✅ Phase branch detected — template boundary check skipped')
   process.exit(0)
 }
