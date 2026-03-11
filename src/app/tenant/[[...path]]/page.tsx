@@ -22,7 +22,14 @@ import { getSchoolByDomain } from '@/core/services/school.service';
 import { fetchTenantScreen, pathToScreenName, normalizeDomain } from '@/core/services/screenData.service';
 import { buildTenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import { checkSubscription } from '@/core/business/subscription';
-import { generateTenantMetadata, generateSchoolJsonLd, generateAboutMetadata, generateAboutJsonLd } from '@/core/utils/seo';
+import {
+    generateTenantMetadata,
+    generateSchoolJsonLd,
+    generateEventsJsonLd,
+    generatePrincipalJsonLd,
+    generateAboutMetadata,
+    generateAboutJsonLd,
+} from '@/core/utils/seo';
 import TemplateRenderer from '../../demo/[templateSlug]/[[...path]]/TemplateRenderer';
 import { TenantState } from '@/core/context/TenantContext';
 import SystemPopup from '@/components/system/SystemPopup';
@@ -158,16 +165,45 @@ export default async function TenantPage({
         <>
             {tenantState.data && (
                 <>
+                    {/* 1. School / EducationalOrganization — always present */}
                     <script
                         type="application/ld+json"
-                        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateSchoolJsonLd(tenantState.data, hostname)) }}
+                        dangerouslySetInnerHTML={{
+                            __html: JSON.stringify(generateSchoolJsonLd(tenantState.data, hostname)),
+                        }}
                     />
+
+                    {/* 2. About page schema — only on /about */}
                     {path === '/about' && (
                         <script
                             type="application/ld+json"
-                            dangerouslySetInnerHTML={{ __html: JSON.stringify(generateAboutJsonLd(tenantState.data, hostname)) }}
+                            dangerouslySetInnerHTML={{
+                                __html: JSON.stringify(generateAboutJsonLd(tenantState.data, hostname)),
+                            }}
                         />
                     )}
+
+                    {/* 3. Upcoming Events — home screen only, skip if no upcoming events */}
+                    {screenName === 'home' && (() => {
+                        const eventsLd = generateEventsJsonLd(tenantState.data, hostname);
+                        return eventsLd ? (
+                            <script
+                                type="application/ld+json"
+                                dangerouslySetInnerHTML={{ __html: JSON.stringify(eventsLd) }}
+                            />
+                        ) : null;
+                    })()}
+
+                    {/* 4. Principal Person schema — home screen only, skip if no principal */}
+                    {screenName === 'home' && (() => {
+                        const principalLd = generatePrincipalJsonLd(tenantState.data, hostname);
+                        return principalLd ? (
+                            <script
+                                type="application/ld+json"
+                                dangerouslySetInnerHTML={{ __html: JSON.stringify(principalLd) }}
+                            />
+                        ) : null;
+                    })()}
                 </>
             )}
             <TemplateRenderer

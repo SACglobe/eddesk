@@ -21,7 +21,14 @@ import { fetchDemoScreen, pathToScreenName } from '@/core/services/screenData.se
 import { buildTenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import type { TenantState } from '@/core/context/TenantContext';
 import TemplateRenderer from './TemplateRenderer';
-import { generateTenantMetadata, generateSchoolJsonLd, generateAboutMetadata, generateAboutJsonLd } from '@/core/utils/seo';
+import {
+    generateTenantMetadata,
+    generateSchoolJsonLd,
+    generateEventsJsonLd,
+    generatePrincipalJsonLd,
+    generateAboutMetadata,
+    generateAboutJsonLd,
+} from '@/core/utils/seo';
 import { Metadata } from 'next';
 import LeadCapturePopup from '@/components/lead/LeadCapturePopup';
 
@@ -102,6 +109,7 @@ export default async function TemplateDemoPage({
         <>
             {tenantState.data && (
                 <>
+                    {/* 1. School / EducationalOrganization — always present */}
                     <script
                         type="application/ld+json"
                         dangerouslySetInnerHTML={{
@@ -109,6 +117,8 @@ export default async function TemplateDemoPage({
                             __html: JSON.stringify(generateSchoolJsonLd(tenantState.data, 'eddesk.in'))
                         }}
                     />
+
+                    {/* 2. About page schema — only on /about */}
                     {path === '/about' && (
                         <script
                             type="application/ld+json"
@@ -117,6 +127,28 @@ export default async function TemplateDemoPage({
                             }}
                         />
                     )}
+
+                    {/* 3. Upcoming Events — home screen only, skip if no upcoming events */}
+                    {screenName === 'home' && (() => {
+                        const eventsLd = generateEventsJsonLd(tenantState.data, 'eddesk.in');
+                        return eventsLd ? (
+                            <script
+                                type="application/ld+json"
+                                dangerouslySetInnerHTML={{ __html: JSON.stringify(eventsLd) }}
+                            />
+                        ) : null;
+                    })()}
+
+                    {/* 4. Principal Person schema — home screen only, skip if no principal */}
+                    {screenName === 'home' && (() => {
+                        const principalLd = generatePrincipalJsonLd(tenantState.data, 'eddesk.in');
+                        return principalLd ? (
+                            <script
+                                type="application/ld+json"
+                                dangerouslySetInnerHTML={{ __html: JSON.stringify(principalLd) }}
+                            />
+                        ) : null;
+                    })()}
                 </>
             )}
             <TemplateRenderer

@@ -618,7 +618,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             templateSlug,
             templateId: templateSlug,
             isActive: bool(school[COL_SCHOOLS_IS_ACTIVE]),
-            isDemo: bool(school[COL_SCHOOLS_IS_DEMO]),
+            isDemo: bool(school[COL_SCHOOLS_IS_ACTIVE]),
             logoUrl: str(school[COL_SCHOOLS_LOGO_URL]),
             slogan: str(school[COL_SCHOOLS_SLOGAN]),
             description: str(school[COL_SCHOOLS_DESCRIPTION]),

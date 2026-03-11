@@ -2,16 +2,11 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, MoveRight, CheckCircle, Globe, Shield, Star } from 'lucide-react';
+import { Sparkles, MoveRight, Globe, Shield, Star } from 'lucide-react';
+import { mContainer, mSection, mLabel, mDisplay, mBtnPrimary, mBtnSecondary, marketingTheme } from '@/lib/marketing/theme';
+import Link from 'next/link';
 
 export const Hero: React.FC = () => {
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
     <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
       {/* Dynamic Background */}
@@ -25,17 +20,17 @@ export const Hero: React.FC = () => {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center space-x-2 bg-slate-900/50 backdrop-blur-xl border border-white/10 px-5 py-2.5 rounded-full text-indigo-400 text-sm font-bold mb-10 shadow-xl shadow-indigo-500/5"
+          className={marketingTheme.components.badge}
         >
-          <div className="flex -space-x-2 mr-2">
+          <div className="flex -space-x-2 mr-3">
             {[1, 2, 3].map((i) => (
               <div key={i} className="w-6 h-6 rounded-full border-2 border-slate-900 bg-slate-800 flex items-center justify-center text-[10px] overflow-hidden">
-                <img src={`https://i.pravatar.cc/100?u=${i + 10}`} alt="User" />
+                <img src={`https://i.pravatar.cc/100?u=${i + 20}`} alt="User" />
               </div>
             ))}
           </div>
-          <span className="text-slate-300">Trusted by 500+ Institutions</span>
-          <div className="w-px h-4 bg-white/10 mx-2"></div>
+          <span className="text-slate-300">Powering Schools Across India</span>
+          <div className="w-px h-4 bg-white/10 mx-3"></div>
           <div className="flex items-center text-yellow-500">
             <Star className="w-3.5 h-3.5 fill-current" />
             <span className="ml-1 text-white">4.9/5</span>
@@ -46,11 +41,11 @@ export const Hero: React.FC = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="font-display text-6xl md:text-8xl lg:text-9xl font-black mb-10 leading-[0.95] tracking-tighter"
+          className={`${mDisplay} text-6xl md:text-8xl lg:text-9xl mb-10 leading-[0.95]`}
         >
-          Redefining the <br />
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-white to-purple-400">
-            School Experience.
+          Professional <br />
+          <span className={marketingTheme.gradients.text}>
+            School Websites.
           </span>
         </motion.h1>
 
@@ -60,8 +55,8 @@ export const Hero: React.FC = () => {
           transition={{ duration: 0.7, delay: 0.2 }}
           className="text-slate-400 text-lg md:text-2xl max-w-3xl mx-auto mb-16 leading-relaxed font-medium"
         >
-          Empower your school with the world's most sophisticated website builder and administrative ecosystem.
-          Beautiful templates. Powerful backend. Seamless growth.
+          Launch a premium website for your school in days. Complete with a powerful admin panel, 
+          automated notices, and student results management. Built for modern Indian institutions.
         </motion.p>
 
         <motion.div
@@ -70,19 +65,19 @@ export const Hero: React.FC = () => {
           transition={{ duration: 0.7, delay: 0.3 }}
           className="flex flex-col sm:flex-row items-center justify-center space-y-5 sm:space-y-0 sm:space-x-8 mb-24"
         >
-          <button
-            onClick={() => scrollToSection('templates')}
-            className="w-full sm:w-auto bg-white text-slate-950 px-12 py-6 rounded-2xl font-black text-xl hover:bg-indigo-50 hover:text-white hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-indigo-500/20 flex items-center justify-center space-x-3 group"
+          <Link
+            href="/#templates"
+            className={`${mBtnPrimary} px-12 py-6 text-xl flex items-center justify-center space-x-3 group w-full sm:w-auto`}
           >
-            <span>Explore Templates</span>
+            <span>View Templates</span>
             <MoveRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
-          </button>
-          <button
-            onClick={() => scrollToSection('admin')}
-            className="w-full sm:w-auto bg-slate-900/40 border border-slate-700/50 backdrop-blur-md hover:border-indigo-500/50 px-12 py-6 rounded-2xl font-black text-xl text-white hover:bg-slate-800 transition-all flex items-center justify-center space-x-3"
+          </Link>
+          <Link
+            href="/contact"
+            className={`${mBtnSecondary} px-12 py-6 text-xl text-white w-full sm:w-auto flex items-center justify-center`}
           >
-            <span>Live Admin Demo</span>
-          </button>
+            <span>Schedule a Demo</span>
+          </Link>
         </motion.div>
 
         {/* Dynamic Trust Bar */}
@@ -90,19 +85,19 @@ export const Hero: React.FC = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
-          className="flex flex-wrap justify-center items-center gap-10 md:gap-20 opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-700"
+          className="flex flex-wrap justify-center items-center gap-10 md:gap-20 opacity-40 hover:opacity-100 transition-opacity duration-700"
         >
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center"><Globe className="w-5 h-5 text-indigo-400" /></div>
-            <span className="font-bold tracking-widest text-xs uppercase text-white">Global Infrastructure</span>
+            <div className="w-10 h-10 bg-slate-900 border border-white/5 rounded-xl flex items-center justify-center"><Globe className="w-5 h-5 text-indigo-400" /></div>
+            <span className="font-bold tracking-widest text-[10px] uppercase text-white">Cloud Hosting Included</span>
           </div>
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center"><Shield className="w-5 h-5 text-emerald-400" /></div>
-            <span className="font-bold tracking-widest text-xs uppercase text-white">Institutional Security</span>
+            <div className="w-10 h-10 bg-slate-900 border border-white/5 rounded-xl flex items-center justify-center"><Shield className="w-5 h-5 text-indigo-400" /></div>
+            <span className="font-bold tracking-widest text-[10px] uppercase text-white">Secure Data Vault</span>
           </div>
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center"><CheckCircle className="w-5 h-5 text-blue-400" /></div>
-            <span className="font-bold tracking-widest text-xs uppercase text-white">Compliant Ready</span>
+            <div className="w-10 h-10 bg-slate-900 border border-white/5 rounded-xl flex items-center justify-center"><Sparkles className="w-5 h-5 text-indigo-400" /></div>
+            <span className="font-bold tracking-widest text-[10px] uppercase text-white">AI Content Support</span>
           </div>
         </motion.div>
 

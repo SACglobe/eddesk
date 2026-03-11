@@ -16,7 +16,7 @@ import React, { useEffect, useState } from 'react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type PopupVariant = 'empty' | 'error' | 'network_error' | 'inactive' | 'expired';
+export type PopupVariant = 'empty' | 'error' | 'network_error' | 'inactive' | 'expired' | 'data_error';
 
 interface SystemPopupProps {
     variant: PopupVariant;
@@ -119,6 +119,7 @@ export default function SystemPopup({
         network_error: { h: '234,179,8', hex: '#eab308', dark: '#ca8a04', light: '#fde047' }, // yellow
         inactive: { h: '239,68,68', hex: '#ef4444', dark: '#dc2626', light: '#fca5a5' }, // red
         expired: { h: '249,115,22', hex: '#f97316', dark: '#ea580c', light: '#fdba74' }, // orange
+        data_error: { h: '99,102,241', hex: '#6366f1', dark: '#4f46e5', light: '#a5b4fc' }, // indigo
     };
 
     const accent = ACCENT_MAP[variant];
@@ -129,6 +130,7 @@ export default function SystemPopup({
         network_error: 'ed-pulse-yellow 2.4s ease-in-out infinite',
         inactive: 'ed-pulse-red    2.4s ease-in-out infinite',
         expired: 'ed-pulse-orange 2.4s ease-in-out infinite',
+        data_error: 'ed-pulse-indigo 2.4s ease-in-out infinite',
     };
     const pulseAnim = PULSE_ANIM[variant];
 
@@ -169,6 +171,12 @@ export default function SystemPopup({
             badge: '⚠ Subscription Expired',
             heading: 'Your subscription has expired.',
             subtitle: 'Renew your EdDesk subscription to restore access to this website.',
+        },
+        data_error: {
+            icon: '📋',
+            badge: '⚠ Data Missing',
+            heading: 'Required data is missing.',
+            subtitle: 'Configure your school profile, personnel, and features from the EdDesk Admin Panel.',
         },
     };
 
@@ -391,17 +399,17 @@ export default function SystemPopup({
                     </div>
                 )}
 
-                {/* ── Error: Error detail box ── */}
-                {variant === 'error' && errorMessage && (
+                {/* ── Error & Data Missing: Detail box ── */}
+                {(variant === 'error' || variant === 'data_error') && errorMessage && (
                     <div style={{
-                        background: 'rgba(239,68,68,0.07)',
-                        border: '1px solid rgba(239,68,68,0.2)',
+                        background: variant === 'error' ? 'rgba(239,68,68,0.07)' : 'rgba(99,102,241,0.07)',
+                        border: `1px solid ${variant === 'error' ? 'rgba(239,68,68,0.2)' : 'rgba(99,102,241,0.2)'}`,
                         borderRadius: '0.625rem',
                         padding: '0.7rem 1rem',
                         marginBottom: '1.5rem',
                         textAlign: 'left',
                         fontSize: '0.78rem',
-                        color: '#fca5a5',
+                        color: variant === 'error' ? '#fca5a5' : '#a5b4fc',
                         lineHeight: 1.55,
                         wordBreak: 'break-word',
                         fontFamily: 'monospace',
@@ -433,8 +441,8 @@ export default function SystemPopup({
                         </a>
                     )}
 
-                    {/* error → Retry + Refresh */}
-                    {variant === 'error' && (
+                    {/* error & data_error → Retry + Refresh */}
+                    {(variant === 'error' || variant === 'data_error') && (
                         <>
                             {onRetry && (
                                 <button

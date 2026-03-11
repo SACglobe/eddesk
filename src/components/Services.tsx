@@ -2,79 +2,79 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Users, FileText, Globe, Smartphone, BarChart3, ShieldCheck, Zap } from 'lucide-react';
+import { Layout, Shield, Bell, Award, Users, Settings } from 'lucide-react';
+import { mContainer, mSection, mLabel, mDisplay, mCard, marketingTheme } from '@/lib/marketing/theme';
 
 const features = [
   {
-    icon: <Globe className="w-6 h-6" />,
-    color: "from-blue-500/20 to-indigo-500/20",
-    iconColor: "text-blue-400",
-    title: "Global Presence",
-    description: "Launch professional, multi-lingual websites for your school in minutes with zero coding."
+    icon: <Layout className="w-6 h-6" />,
+    color: "from-indigo-500/20 to-blue-500/20",
+    iconColor: "text-indigo-400",
+    title: "Premium Templates",
+    description: "Choose from Modern, Classic, or Tech themes. Each designed to make your institution look world-class."
   },
   {
     icon: <Users className="w-6 h-6" />,
-    color: "from-purple-500/20 to-indigo-500/20",
+    color: "from-purple-500/20 to-pink-500/20",
     iconColor: "text-purple-400",
-    title: "Student Experience",
-    description: "A cohesive digital ecosystem for students to track academics, schedules, and communities."
+    title: "Faculty Profiles",
+    description: "Showcase your expertise. Manage teacher bios, qualifications, and department details with ease."
   },
   {
-    icon: <FileText className="w-6 h-6" />,
-    color: "from-blue-500/20 to-cyan-500/20",
-    iconColor: "text-cyan-400",
-    title: "Digital Admissions",
-    description: "Streamline your enrollment with integrated paperless application workflows."
+    icon: <Bell className="w-6 h-6" />,
+    color: "from-orange-500/20 to-red-500/20",
+    iconColor: "text-orange-400",
+    title: "Smart Notices",
+    description: "Post circulars, exam dates, and holiday alerts. Automated tickers keep parents informed 24/7."
   },
   {
-    icon: <Smartphone className="w-6 h-6" />,
-    color: "from-teal-500/20 to-emerald-500/20",
+    icon: <Award className="w-6 h-6" />,
+    color: "from-emerald-500/20 to-teal-500/20",
     iconColor: "text-emerald-400",
-    title: "Omnichannel Reach",
-    description: "Stunning performance and layouts that adapt flawlessly to every screen and device."
+    title: "Academic Results",
+    description: "Secure system to publish and manage student results. Parents can view performance instantly."
   },
   {
-    icon: <BarChart3 className="w-6 h-6" />,
-    color: "from-rose-500/20 to-orange-500/20",
-    iconColor: "text-rose-400",
-    title: "Intelligent Insights",
-    description: "Data-driven dashboards that reveal institutional performance and engagement metrics."
+    icon: <Settings className="w-6 h-6" />,
+    color: "from-blue-500/20 to-cyan-500/20",
+    iconColor: "text-blue-400",
+    title: "Manager Dashboard",
+    description: "A single control center for your entire website. Update content in seconds, no technical skills required."
   },
   {
-    icon: <ShieldCheck className="w-6 h-6" />,
-    color: "from-amber-500/20 to-yellow-500/20",
-    iconColor: "text-amber-400",
-    title: "Bank-Grade Security",
-    description: "Rest easy knowing your institutional and student data is protected by elite encryption."
+    icon: <Shield className="w-6 h-6" />,
+    color: "from-slate-500/20 to-blue-500/20",
+    iconColor: "text-slate-400",
+    title: "Data Protection",
+    description: "Secure institutional data hosting. Daily backups and encrypted storage for your peace of mind."
   }
 ];
 
 export const Services: React.FC = () => {
   return (
-    <section id="features" className="py-32 bg-[#020617] relative">
+    <section id="features" className={`${mSection} bg-slate-950 relative`}>
       {/* Accent Light */}
       <div className="absolute left-0 top-1/4 w-96 h-96 bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none"></div>
 
-      <div className="container mx-auto px-6">
+      <div className={mContainer}>
         <div className="flex flex-col md:flex-row items-end justify-between mb-24 gap-10">
           <div className="max-w-3xl">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="flex items-center space-x-3 text-indigo-400 font-black text-sm uppercase tracking-[0.3em] mb-6"
+              className={mLabel}
             >
-              <Zap className="w-4 h-4 fill-current" />
-              <span>Core Infrastructure</span>
+              <span>Platform Capabilities</span>
             </motion.div>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="font-display text-5xl md:text-7xl font-bold mb-8 leading-[1.1]"
+              className={`${mDisplay} text-5xl md:text-7xl mb-8`}
             >
               The Full Spectrum of <br />
-              <span className="text-slate-500 italic">School Management.</span>
+              <span className={marketingTheme.gradients.textAlt}>School Control.</span>
             </motion.h2>
           </div>
           <motion.p
@@ -82,9 +82,9 @@ export const Services: React.FC = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="text-slate-400 max-w-md text-lg leading-relaxed mb-4"
+            className={`${marketingTheme.type.body} max-w-md text-lg mb-4`}
           >
-            A powerful, all-in-one suite built specifically for educational pioneers who demand excellence.
+            A powerful, all-in-one suite built specifically for educational pioneers who demand digital excellence.
           </motion.p>
         </div>
 
@@ -96,7 +96,7 @@ export const Services: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="relative p-10 rounded-[3rem] bg-slate-900/40 border border-white/5 hover:border-indigo-500/30 hover:bg-slate-900/60 transition-all duration-500 group overflow-hidden"
+              className={`relative ${mCard} overflow-hidden group`}
             >
               {/* Card Glow */}
               <div className={`absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br ${feature.color} blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-700`}></div>
@@ -105,13 +105,12 @@ export const Services: React.FC = () => {
                 {feature.icon}
               </div>
               <h3 className="text-2xl font-black mb-4 text-white group-hover:text-indigo-400 transition-colors">{feature.title}</h3>
-              <p className="text-slate-400 leading-relaxed text-lg">
+              <p className={marketingTheme.type.body}>
                 {feature.description}
               </p>
 
               <div className="mt-10 flex items-center space-x-2 text-indigo-400 font-bold text-xs uppercase tracking-widest opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-4 transition-all duration-500">
-                <span>Learn Details</span>
-                <MoveRight className="w-4 h-4" />
+                <span>Core Feature</span>
               </div>
             </motion.div>
           ))}
@@ -120,7 +119,3 @@ export const Services: React.FC = () => {
     </section>
   );
 };
-
-const MoveRight = ({ className }: { className?: string }) => (
-  <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-7-7 7 7-7 7" /></svg>
-);

@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     },
     description: "Revolutionizing School Management with EdDesk. Empowering educational institutions with state-of-the-art digital presence.",
     icons: {
-        icon: '/icon.svg',
+        icon: '/icon.png',
     }
 };
 

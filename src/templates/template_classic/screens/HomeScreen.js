@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { isValidImageUrl } from '@/core/utils/url';
+import SystemPopup from '@/components/system/SystemPopup';
 
 const HomeScreen = ({ data }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -29,7 +31,12 @@ const HomeScreen = ({ data }) => {
         .sort((a, b) => a.displayOrder - b.displayOrder);
 
     if (heroRequired && heroSlides.length === 0) {
-        console.error("Home Screen: Hero section is required but no specific data is found.");
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Hero section is required but no specific data is found. Please add hero data in the admin panel."
+            />
+        );
     }
 
     if (heroSlides.length === 0) {
@@ -51,7 +58,12 @@ const HomeScreen = ({ data }) => {
         .sort((a, b) => b.year - a.year)[0] ?? null;
 
     if (academicResultsRequired && !latestResult) {
-        console.error("Home Screen: Academic Results section is required but no specific data is found.");
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Academic Results section is required but no specific data is found. Please add academic results in the admin panel."
+            />
+        );
     }
 
     const achievementsEnabled = isSectionEnabled('achievements');
@@ -61,16 +73,26 @@ const HomeScreen = ({ data }) => {
         .sort((a, b) => b.year - a.year || a.displayOrder - b.displayOrder);
 
     if (achievementsRequired && academicAchievements.length === 0) {
-        console.error("Home Screen: Achievements section is required but no specific data is found.");
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Achievements section is required but no specific data is found. Please add achievements in the admin panel."
+            />
+        );
     }
 
-    // 3. Principal
-    const principalEnabled = isSectionEnabled('principal');
-    const principalRequired = isSectionRequired('principal');
-    const principal = data?.personnel?.find(p => p.personType === 'principal') ?? null;
+    // 3. Leadership
+    const leadershipEnabled = isSectionEnabled('leadership');
+    const leadershipRequired = isSectionRequired('leadership');
+    const leadership = (data?.leadership ?? []).filter(l => l.isActive);
 
-    if (principalRequired && !principal) {
-        console.error("Home Screen: Principal section is required but no specific data is found.");
+    if (leadershipEnabled && leadershipRequired && leadership.length === 0) {
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Leadership section is required but no specific data is found. Please add leadership data in the admin panel."
+            />
+        );
     }
 
     // 4. Statistics
@@ -80,7 +102,12 @@ const HomeScreen = ({ data }) => {
         .sort((a, b) => a.displayOrder - b.displayOrder);
 
     if (statsRequired && statisticsList.length === 0) {
-        console.error("Home Screen: Statistics section is required but no specific data is found.");
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Statistics section is required but no specific data is found. Please add statistics data in the admin panel."
+            />
+        );
     }
 
     // 5. Faculty
@@ -90,7 +117,12 @@ const HomeScreen = ({ data }) => {
         .filter(p => p.personType === 'faculty');
 
     if (facultyRequired && allFaculty.length === 0) {
-        console.error("Home Screen: Faculty section is required but no specific data is found.");
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Faculty section is required but no specific data is found. Please add faculty data in the admin panel."
+            />
+        );
     }
 
     // 6. Sports
@@ -101,7 +133,12 @@ const HomeScreen = ({ data }) => {
         .slice(0, 6);
 
     if (sportsRequired && sportsAchievements.length === 0) {
-        console.error("Home Screen: Sports section is required but no specific data is found.");
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Sports section is required but no specific data is found. Please add sports data in the admin panel."
+            />
+        );
     }
 
     // 7. Facilities
@@ -116,18 +153,28 @@ const HomeScreen = ({ data }) => {
     const groupedFacilitiesKeys = Object.keys(groupedFacilities);
 
     if (facilitiesRequired && groupedFacilitiesKeys.length === 0) {
-        console.error("Home Screen: Facilities section is required but no specific data is found.");
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Facilities section is required but no specific data is found. Please add facilities data in the admin panel."
+            />
+        );
     }
 
     // 8. Gallery
     const galleryEnabled = isSectionEnabled('gallery');
     const galleryRequired = isSectionRequired('gallery');
     const campusGallery = (data?.mediaLibrary ?? [])
-        .filter(m => m.isFeatured || m.category === 'campus')
+        .filter(m => (m.isFeatured || m.category === 'campus') && m.url)
         .map(m => m.url);
 
     if (galleryRequired && campusGallery.length === 0) {
-        console.error("Home Screen: Gallery section is required but no specific data is found.");
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Gallery section is required but no specific data is found. Please add gallery items in the admin panel."
+            />
+        );
     }
 
     const displayCount = 4;
@@ -140,17 +187,22 @@ const HomeScreen = ({ data }) => {
     const eventsToShow = (data?.events ?? [])
         .filter(e => {
             if (!e.isFeatured) return false;
-            const eventDateTime = new Date(`${e.eventDate}T${e.startTime}`);
+            const eventDateTime = new Date(`${e.eventDate}T${e.startTime || '00:00:00'}Z`);
             return eventDateTime > now;
         })
         .sort((a, b) =>
-            new Date(`${a.eventDate}T${a.startTime}`).getTime() -
-            new Date(`${b.eventDate}T${b.startTime}`).getTime()
+            new Date(`${a.eventDate}T${a.startTime || '00:00:00'}Z`).getTime() -
+            new Date(`${b.eventDate}T${b.startTime || '00:00:00'}Z`).getTime()
         )
         .slice(0, 3);
 
     if (eventsRequired && eventsToShow.length === 0) {
-        console.error("Home Screen: Events section is required but no specific data is found.");
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Events section is required but no specific data is found. Please add events data in the admin panel."
+            />
+        );
     }
 
     useEffect(() => {
@@ -194,7 +246,7 @@ const HomeScreen = ({ data }) => {
                             style={{ transition: 'opacity 1s ease-in-out, transform 10s linear' }}
                         >
                             <div className="absolute inset-0 bg-emerald-950/40 z-10" />
-                            {slide.mediaUrl && <img src={slide.mediaUrl} alt={`Slide ${idx + 1}`} className="w-full h-full object-cover" />}
+                            {slide.mediaUrl && isValidImageUrl(slide.mediaUrl) && <img src={slide.mediaUrl} alt={`Slide ${idx + 1}`} className="w-full h-full object-cover" />}
                         </div>
                     ))}
 
@@ -305,58 +357,60 @@ const HomeScreen = ({ data }) => {
                     </section>
                 )}
 
-            {/* 3. A Message from Our Principal */}
-            {principalEnabled && (principalRequired || principal) && (
-                <section className="py-32 bg-white relative overflow-hidden">
-                    <div className="absolute top-1/2 left-0 w-64 h-64 bg-emerald-50 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-50 blur-3xl"></div>
+            {/* 3. Leadership Section */}
+            {leadershipEnabled && (leadershipRequired || leadership.length > 0) && (
+                <div className="space-y-32">
+                    {leadership.map((member, idx) => (
+                        <section key={member.key || idx} className="py-32 bg-white relative overflow-hidden border-b border-slate-50 last:border-b-0">
+                            <div className="absolute top-1/2 left-0 w-64 h-64 bg-emerald-50 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-50 blur-3xl"></div>
 
-                    <div className="max-w-[1600px] mx-auto px-2 md:px-6 relative z-10">
-                        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-0">
-                            <div className="w-full lg:w-1/2 relative">
-                                <div className="absolute -top-10 -left-10 w-full h-full bg-slate-50 border border-slate-100 -z-10 translate-x-4 translate-y-4"></div>
-                                <div className="relative group">
-                                    <img
-                                        src={principal?.photoUrl || '/school/image/principal.png'}
-                                        alt={principal?.name ?? 'Principal'}
-                                        className="w-full aspect-[4/5] lg:aspect-auto lg:h-[650px] object-cover shadow-2xl transition-all duration-1000 group-hover:scale-[1.02]"
-                                    />
-                                    <div className="absolute bottom-10 left-10 p-8 bg-emerald-900 text-white shadow-2xl hidden lg:block border-l-4 border-emerald-400">
-                                        <div className="text-xs uppercase font-bold tracking-[0.3em] mb-1">Academic Head</div>
-                                        <div className="text-xl font-bold serif">Dean of Students</div>
+                            <div className="max-w-[1600px] mx-auto px-2 md:px-6 relative z-10">
+                                <div className={`flex flex-col lg:flex-row items-center gap-12 lg:gap-0 ${idx % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}>
+                                    <div className="w-full lg:w-1/2 relative">
+                                        <div className={`absolute -top-10 -left-10 w-full h-full bg-slate-50 border border-slate-100 -z-10 translate-x-4 translate-y-4`}></div>
+                                        <div className="relative group">
+                                            {member.imageUrl && isValidImageUrl(member.imageUrl) && (
+                                                <img
+                                                    src={member.imageUrl}
+                                                    alt={""}
+                                                    className="w-full aspect-[4/5] lg:aspect-auto lg:h-[650px] object-cover shadow-2xl transition-all duration-1000 group-hover:scale-[1.02]"
+                                                />
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
 
-                            <div className="w-full lg:w-7/12 lg:-ml-24 z-20">
-                                <div className="bg-white p-8 md:p-16 lg:p-20 shadow-[-20px_20px_60px_rgba(0,0,0,0.05)] border border-slate-100 relative">
-                                    <div className="absolute top-0 left-10 -translate-y-1/2 text-8xl text-emerald-900/10 serif leading-none font-black italic">"</div>
+                                    <div className={`w-full lg:w-7/12 ${idx % 2 !== 0 ? 'lg:-mr-24 lg:ml-0' : 'lg:-ml-24'} z-20`}>
+                                        <div className="bg-white p-8 md:p-16 lg:p-20 shadow-[-20px_20px_60px_rgba(0,0,0,0.05)] border border-slate-100 relative">
+                                            <div className="absolute top-0 left-10 -translate-y-1/2 text-8xl text-emerald-900/10 serif leading-none font-black italic">"</div>
 
-                                    <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.5em] block mb-6">Institutional Vision</span>
-                                    <h2 className="text-3xl md:text-5xl font-bold text-slate-900 uppercase tracking-widest serif mb-8 leading-tight">
-                                        Word from the <br /> Principal's Desk
-                                    </h2>
+                                            <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.5em] block mb-6">{member.role?.toUpperCase() || "Institutional Vision"}</span>
+                                            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 uppercase tracking-widest serif mb-8 leading-tight">
+                                                Leading with <br /> Vision & Integrity
+                                            </h2>
 
-                                    <div className="h-[2px] w-24 bg-emerald-900 mb-12"></div>
+                                            <div className="h-[2px] w-24 bg-emerald-900 mb-12"></div>
 
-                                    <div className="relative">
-                                        <p className="text-lg md:text-xl text-slate-700 italic leading-relaxed serif mb-12 relative z-10">
-                                            "{principal?.bio ?? ''}"
-                                        </p>
-                                        <div className="pt-10 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                                            <div>
-                                                <p className="text-2xl font-bold text-slate-900 serif tracking-wide uppercase">{principal?.name ?? ''}</p>
-                                                <p className="text-[10px] text-emerald-600 uppercase tracking-[0.3em] font-bold mt-2">{principal?.designation ?? 'Principal'}</p>
-                                            </div>
-                                            <div className="flex gap-4">
-                                                <Link href="/about" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-emerald-900 transition-colors py-2 border-b border-transparent hover:border-emerald-900">Read Full Address →</Link>
+                                            <div className="relative">
+                                                <p className="text-lg md:text-xl text-slate-700 italic leading-relaxed serif mb-12 relative z-10">
+                                                    "{member.message ?? ''}"
+                                                </p>
+                                                <div className="pt-10 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                                    <div>
+                                                        <p className="text-2xl font-bold text-slate-900 serif tracking-wide uppercase">{member.name ?? ''}</p>
+                                                        <p className="text-[10px] text-emerald-600 uppercase tracking-[0.3em] font-bold mt-2">{member.designation ?? member.role ?? 'Leader'}</p>
+                                                    </div>
+                                                    <div className="flex gap-4">
+                                                        <Link href="/about" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-emerald-900 transition-colors py-2 border-b border-transparent hover:border-emerald-900">Read More →</Link>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </section>
+                        </section>
+                    ))}
+                </div>
             )}
 
             {/* 4. Statistics Counter Section */}
@@ -394,11 +448,13 @@ const HomeScreen = ({ data }) => {
                                 <div key={idx} className="flex flex-col items-center group">
                                     <div className="relative mb-6">
                                         <div className="w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-white shadow-xl group-hover:border-emerald-500 transition-all duration-500 group-hover:scale-105">
-                                            <img
-                                                src={teacher.photoUrl}
-                                                alt={teacher.name}
-                                                className="w-full h-full object-cover transition-transform duration-700 group-hover:rotate-3"
-                                            />
+                                            {teacher.photoUrl && isValidImageUrl(teacher.photoUrl) && (
+                                                <img
+                                                    src={teacher.photoUrl}
+                                                    alt={""}
+                                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:rotate-3"
+                                                />
+                                            )}
                                         </div>
                                         <div className="absolute inset-0 rounded-full border border-emerald-900/10 scale-110 -z-10"></div>
                                     </div>
@@ -443,7 +499,7 @@ const HomeScreen = ({ data }) => {
                                     className="min-w-[300px] md:min-w-[400px] bg-white border border-slate-100 shadow-md snap-start group/card hover:shadow-2xl transition-all duration-500 flex flex-col"
                                 >
                                     <div className="relative h-60 overflow-hidden">
-                                        {item.photoUrl && (
+                                        {item.photoUrl && isValidImageUrl(item.photoUrl) && (
                                             <img
                                                 src={item.photoUrl}
                                                 alt={item.title}
@@ -523,11 +579,13 @@ const HomeScreen = ({ data }) => {
                                 {visibleGallery.map((img, idx) => (
                                     <div key={`${galleryIndex}-${idx}`} className="flex-none w-1/2 md:w-1/4 px-1">
                                         <div className="aspect-square overflow-hidden border border-slate-100 group relative">
-                                            <img
-                                                src={img}
-                                                alt="Campus"
-                                                className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700 cursor-pointer"
-                                            />
+                                            {img && isValidImageUrl(img) && (
+                                                <img
+                                                    src={img}
+                                                    alt="Campus"
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700 cursor-pointer"
+                                                />
+                                            )}
                                         </div>
                                     </div>
                                 ))}

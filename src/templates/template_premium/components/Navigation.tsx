@@ -39,12 +39,16 @@ interface HeaderProps {
     announcements: Array<{ title: string; message: string; isActive: boolean; expiresAt: string | null }>;
     school: any;
 }
+import { isValidImageUrl } from '@/core/utils/url';
+
 const Header: React.FC<HeaderProps> = ({ announcements, school }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isMoreOpen, setIsMoreOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
+
+    const showLogo = school.logoUrl && isValidImageUrl(school.logoUrl);
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -88,8 +92,8 @@ const Header: React.FC<HeaderProps> = ({ announcements, school }) => {
                 <div className="max-w-[1400px] mx-auto px-8 flex flex-col items-center">
                     <div className="flex justify-between items-center w-full">
                         <Link href="/" className="flex items-center gap-6 group">
-                            {school.logoUrl && (
-                                <img src={school.logoUrl} alt={`${school.name} logo`} className="w-12 h-12 object-contain brightness-200" />
+                            {showLogo && (
+                                <img src={school.logoUrl} alt={""} className="w-12 h-12 object-contain brightness-200" />
                             )}
                             <div className="text-2xl md:text-3xl font-serif font-bold tracking-tighter transition-colors duration-500 text-white">
                                 {school.name.split(' ').map((word: string, i: number) => (

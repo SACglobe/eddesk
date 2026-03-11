@@ -9,16 +9,12 @@ const Footer = ({ school }) => {
                         <h3 className="text-white text-lg font-bold serif uppercase tracking-widest border-b border-emerald-800 pb-2 inline-block">Institutional Profile</h3>
                         <div className="flex items-center gap-4 mb-4">
                             <div className="flex-shrink-0 w-10 h-10 group-hover:scale-110 transition-transform duration-500">
-                                {school.logoUrl ? (
+                                {school.logoUrl && (
                                     <img
                                         src={school.logoUrl}
-                                        alt={`${school.name} logo`}
+                                        alt={""}
                                         className="w-full h-full object-contain brightness-200"
                                     />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-emerald-100 rounded text-emerald-800 font-bold text-lg">
-                                        {school.name.charAt(0)}
-                                    </div>
                                 )}
                             </div>
                             <p className="text-white font-bold serif text-sm uppercase leading-tight">{school.name}</p>

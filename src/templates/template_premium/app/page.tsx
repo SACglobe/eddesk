@@ -3,8 +3,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { SectionHeader, Card, Button, StatCounter, TestimonialSlider, useIntersectionObserver } from '../components/Shared';
 import Link from 'next/link';
+import { isValidImageUrl } from '@/core/utils/url';
 import LayoutWrapper from '../components/LayoutWrapper';
 import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
+import SystemPopup from '@/components/system/SystemPopup';
 
 interface HeroSlide {
   mediaType: string;
@@ -30,27 +32,28 @@ const Hero: React.FC<{ heroSlide: HeroSlide | null }> = ({ heroSlide }) => {
   return (
     <section className="h-screen relative overflow-hidden bg-signature-navy">
       <div className="absolute inset-0 z-0">
-        {heroSlide?.mediaType === 'video' ? (
-          <video
-            ref={videoRef}
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-full h-full object-cover scale-110"
-            poster="https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?auto=format&fit=crop&q=80&w=2000"
-          >
-            <source
-              src={heroSlide?.mediaUrl || "https://assets.mixkit.co/videos/preview/mixkit-university-building-with-a-large-fountain-in-front-4354-large.mp4"}
-              type="video/mp4"
+        {heroSlide?.mediaUrl && isValidImageUrl(heroSlide.mediaUrl) && (
+          heroSlide.mediaType === 'video' ? (
+            <video
+              ref={videoRef}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="w-full h-full object-cover scale-110"
+            >
+              <source
+                src={heroSlide.mediaUrl}
+                type="video/mp4"
+              />
+            </video>
+          ) : (
+            <img
+              src={heroSlide.mediaUrl}
+              alt={""}
+              className="w-full h-full object-cover scale-110"
             />
-          </video>
-        ) : (
-          <img
-            src={heroSlide?.mediaUrl || "https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?auto=format&fit=crop&q=80&w=2000"}
-            alt="Hero background"
-            className="w-full h-full object-cover scale-110"
-          />
+          )
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-signature-navy/80 via-signature-navy/40 to-signature-navy z-[1]"></div>
       </div>
@@ -273,7 +276,12 @@ const SchoolDashboard: React.FC<DashboardProps> = ({ statistics, statsEnabled, s
 
   if (!statsEnabled) return null;
   if (statsRequired && statistics.length === 0) {
-    console.error('[EdDesk] Required section "stats" has no data');
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Statistics section is required but no specific data is found. Please add statistics data in the admin panel."
+      />
+    );
   }
   if (!statsRequired && statistics.length === 0) return null;
 
@@ -320,7 +328,12 @@ const FacultyHighlights: React.FC<FacultyHighlightsProps> = ({ faculty, facultyE
 
   if (!facultyEnabled) return null;
   if (facultyRequired && faculty.length === 0) {
-    console.error('[EdDesk] Required section "faculty" has no data');
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Faculty section is required but no specific data is found. Please add faculty data in the admin panel."
+      />
+    );
   }
   if (!facultyRequired && faculty.length === 0) return null;
 
@@ -341,7 +354,9 @@ const FacultyHighlights: React.FC<FacultyHighlightsProps> = ({ faculty, facultyE
           {faculty.map((edu, i) => (
             <div key={i} className={`group transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`} style={{ transitionDelay: `${i * 200}ms` }}>
               <div className="relative aspect-[4/5] overflow-hidden mb-8">
-                <img src={edu.photoUrl || ''} alt={edu.name || ''} className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
+                {edu.photoUrl && isValidImageUrl(edu.photoUrl) && (
+                  <img src={edu.photoUrl} alt={""} className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
+                )}
                 <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-signature-gold/30"></div>
               </div>
               <span className="text-[10px] uppercase tracking-[0.4em] text-signature-gold font-bold mb-4 block">{edu.designation || ''}</span>
@@ -378,7 +393,12 @@ const AthleticExcellence: React.FC<AthleticExcellenceProps> = ({ sportsAchieveme
 
   if (!sportsEnabled) return null;
   if (sportsRequired && sportsAchievements.length === 0) {
-    console.error('[EdDesk] Required section "sports" has no data');
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Sports section is required but no specific data is found. Please add sports data in the admin panel."
+      />
+    );
   }
   if (!sportsRequired && sportsAchievements.length === 0) return null;
 
@@ -398,7 +418,7 @@ const AthleticExcellence: React.FC<AthleticExcellenceProps> = ({ sportsAchieveme
           {sportsAchievements.map((sport, i) => (
             <div key={i} className={`group transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`} style={{ transitionDelay: `${i * 200}ms` }}>
               <div className="relative aspect-[4/5] overflow-hidden mb-8">
-                {sport.photoUrl ? (
+                {sport.photoUrl && isValidImageUrl(sport.photoUrl) ? (
                   <img src={sport.photoUrl} alt={sport.title} className="w-full h-full object-cover object-center grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-signature-ivory">
@@ -449,7 +469,12 @@ const CampusFacilities: React.FC<CampusFacilitiesProps> = ({ facilityGroups, fac
 
   if (!facilitiesEnabled) return null;
   if (facilitiesRequired && facilityGroups.length === 0) {
-    console.error('[EdDesk] Required section "facilities" has no data');
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Facilities section is required but no specific data is found. Please add facilities data in the admin panel."
+      />
+    );
   }
   if (!facilitiesRequired && facilityGroups.length === 0) return null;
 
@@ -503,7 +528,12 @@ const UpcomingEvents: React.FC<{ eventsToShow: any[], eventsEnabled: boolean, ev
 
   if (!eventsEnabled) return null;
   if (eventsRequired && eventsToShow.length === 0) {
-    console.error('[EdDesk] Required section "events" has no data');
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Events section is required but no specific data is found. Please add events data in the admin panel."
+      />
+    );
   }
   if (!eventsRequired && eventsToShow.length === 0) return null;
 
@@ -571,7 +601,12 @@ export default function Home({ data }: { data: TenantViewModel }) {
     .sort((a, b) => a.displayOrder - b.displayOrder);
 
   if (heroEnabled && heroRequired && heroMedia.length === 0) {
-    console.error('[EdDesk] Required section "hero" has no data');
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Hero section is required but no specific data is found. Please add hero data in the admin panel."
+      />
+    );
   }
   const heroSlide = heroMedia[0] ?? null;
 
@@ -581,7 +616,12 @@ export default function Home({ data }: { data: TenantViewModel }) {
   const academicResultsRequired = academicSection?.isRequired ?? false;
   const academicResults = [...(data?.academicResults ?? [])].sort((a, b) => b.year - a.year);
   if (academicResultsEnabled && academicResultsRequired && academicResults.length === 0) {
-    console.error('[EdDesk] Required section "academics" has no data');
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Academics section is required but no specific data is found. Please add academic results in the admin panel."
+      />
+    );
   }
   const latestAcademicResult = academicResults[0] ?? null;
 
@@ -592,16 +632,27 @@ export default function Home({ data }: { data: TenantViewModel }) {
     .filter(a => a.achievementType === 'academic')
     .sort((a, b) => b.year - a.year || (a.displayOrder || 0) - (b.displayOrder || 0));
   if (achievementsEnabled && achievementsRequired && academicAchievements.length === 0) {
-    console.error('[EdDesk] Required section "achievements" has no data');
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Achievements section is required but no specific data is found. Please add achievements in the admin panel."
+      />
+    );
   }
 
-  // 3. Principal
-  const principalSection = data?.homepageSections?.find(s => s.sectionKey === 'principal');
-  const principalEnabled = principalSection?.isEnabled ?? true;
-  const principalRequired = principalSection?.isRequired ?? false;
-  const principal = data?.personnel?.find(p => p.personType === 'principal') ?? null;
-  if (principalEnabled && principalRequired && !principal) {
-    console.error('[EdDesk] Required section "principal" has no data');
+  // 3. Leadership
+  const leadershipSection = data?.homepageSections?.find(s => s.sectionKey === 'leadership');
+  const leadershipEnabled = leadershipSection?.isEnabled ?? true;
+  const leadershipRequired = leadershipSection?.isRequired ?? false;
+  const leadership = (data?.leadership ?? []).filter(l => l.isActive);
+
+  if (leadershipEnabled && leadershipRequired && leadership.length === 0) {
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Leadership section is required but no specific data is found. Please add leadership data in the admin panel."
+      />
+    );
   }
 
   // 4. Statistics Dashboard
@@ -610,7 +661,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
   const statsRequired = statsSection?.isRequired ?? false;
   const statistics = (data?.statistics ?? []).sort((a, b) => a.displayOrder - b.displayOrder);
   if (statsEnabled && statsRequired && statistics.length === 0) {
-    console.error('[EdDesk] Required section "stats" has no data');
+    // Handled in SchoolDashboard component
   }
 
   // 5. Faculty
@@ -620,7 +671,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
   const faculty = (data?.personnel ?? [])
     .filter(p => p.personType === 'faculty');
   if (facultyEnabled && facultyRequired && faculty.length === 0) {
-    console.error('[EdDesk] Required section "faculty" has no data');
+    // Handled in FacultyHighlights component
   }
 
   // 6. Sports (Athletic Excellence)
@@ -631,7 +682,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
     .filter(a => a.achievementType?.toLowerCase().trim() === 'sports')
     .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
   if (sportsEnabled && sportsRequired && sportsAchievements.length === 0) {
-    console.error('[EdDesk] Required section "sports" has no data');
+    // Handled in AthleticExcellence component
   }
 
   // 7. Facilities
@@ -646,7 +697,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
   }, {});
   const facilityGroups = Object.values(groupedFacilities) as any[];
   if (facilitiesEnabled && facilitiesRequired && facilityGroups.length === 0) {
-    console.error('[EdDesk] Required section "facilities" has no data');
+    // Handled in CampusFacilities component
   }
 
   // 8. Gallery (Campus Masterpiece)
@@ -657,7 +708,12 @@ export default function Home({ data }: { data: TenantViewModel }) {
     .filter(m => m.category === 'campus' && m.isFeatured)
     .slice(0, 3);
   if (galleryEnabled && galleryRequired && galleryItems.length === 0) {
-    console.error('[EdDesk] Required section "gallery" has no data');
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Gallery section is required but no specific data is found. Please add gallery items in the admin panel."
+      />
+    );
   }
 
   // 9. Events
@@ -668,16 +724,16 @@ export default function Home({ data }: { data: TenantViewModel }) {
   const eventsToShow = (data?.events ?? [])
     .filter((e: any) => {
       if (!e.isFeatured) return false;
-      const eventDateTime = new Date(`${e.eventDate}T${e.startTime}`);
+      const eventDateTime = new Date(`${e.eventDate}T${e.startTime || '00:00:00'}Z`);
       return eventDateTime > now;
     })
     .sort((a: any, b: any) =>
-      new Date(`${a.eventDate}T${a.startTime}`).getTime() -
-      new Date(`${b.eventDate}T${b.startTime}`).getTime()
+      new Date(`${a.eventDate}T${a.startTime || '00:00:00'}Z`).getTime() -
+      new Date(`${b.eventDate}T${b.startTime || '00:00:00'}Z`).getTime()
     )
     .slice(0, 3);
   if (eventsEnabled && eventsRequired && eventsToShow.length === 0) {
-    console.error('[EdDesk] Required section "events" has no data');
+    // Handled in UpcomingEvents component
   }
 
   return (
@@ -694,29 +750,35 @@ export default function Home({ data }: { data: TenantViewModel }) {
           academicAchievements={academicAchievements}
         />
 
-        {principalEnabled && (principalRequired || principal) && (
-          <section className="py-48 px-8 grid lg:grid-cols-2 gap-24 items-center max-w-[1400px] mx-auto border-b border-signature-navy/5">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl group">
-              <img src={principal?.photoUrl || "/school/image/principal.png"} alt="Principal" className="w-full h-full object-cover object-top transition-transform duration-1000 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-signature-navy/20 mix-blend-multiply"></div>
-            </div>
-            <div>
-              <SectionHeader title="Leadership" subtitle="Visionary Guidance" />
-              <p className="text-2xl text-signature-navy/60 font-serif italic mb-12 leading-relaxed">
-                "{principal?.bio || ''}"
-              </p>
-              <div className="flex items-center gap-6 mb-12">
-                <div className="w-16 h-px bg-signature-gold"></div>
-                <div>
-                  <div className="text-xl font-bold uppercase tracking-widest text-signature-navy">{principal?.name || ''}</div>
-                  <div className="text-signature-gold text-sm tracking-[0.2em] font-bold">{principal?.designation || ''}</div>
+        {leadershipEnabled && (leadershipRequired || leadership.length > 0) && (
+          <div className="space-y-48 bg-white">
+            {leadership.map((member, idx) => (
+              <section key={member.key || idx} className="py-48 px-8 grid lg:grid-cols-2 gap-24 items-center max-w-[1400px] mx-auto border-b border-signature-navy/5">
+                <div className={`relative aspect-[4/5] overflow-hidden rounded-2xl group ${idx % 2 !== 0 ? 'lg:order-2' : ''}`}>
+                  {member.imageUrl && isValidImageUrl(member.imageUrl) && (
+                    <img src={member.imageUrl} alt={""} className="w-full h-full object-cover object-top transition-transform duration-1000 group-hover:scale-105" />
+                  )}
+                  <div className="absolute inset-0 bg-signature-navy/20 mix-blend-multiply"></div>
                 </div>
-              </div>
-              <Link href="/about">
-                <Button>Discover Our Legacy</Button>
-              </Link>
-            </div>
-          </section>
+                <div className={`${idx % 2 !== 0 ? 'lg:order-1' : ''}`}>
+                  <SectionHeader title="Leadership" subtitle={member.role?.toUpperCase() || "Visionary Guidance"} />
+                  <p className="text-2xl text-signature-navy/60 font-serif italic mb-12 leading-relaxed">
+                    "{member.message || ''}"
+                  </p>
+                  <div className="flex items-center gap-6 mb-12">
+                    <div className="w-16 h-px bg-signature-gold"></div>
+                    <div>
+                      <div className="text-xl font-bold uppercase tracking-widest text-signature-navy">{member.name || ''}</div>
+                      <div className="text-signature-gold text-sm tracking-[0.2em] font-bold">{member.designation || member.role || 'Leader'}</div>
+                    </div>
+                  </div>
+                  <Link href="/about">
+                    <Button>Discover Our Legacy</Button>
+                  </Link>
+                </div>
+              </section>
+            ))}
+          </div>
         )}
 
         <SchoolDashboard
@@ -744,7 +806,6 @@ export default function Home({ data }: { data: TenantViewModel }) {
         />
 
         {galleryEnabled && (galleryRequired || galleryItems.length > 0) && (
-          // ... (same gallery code)
           <section className="py-48 px-8 bg-white">
             <div className="max-w-[1400px] mx-auto">
               <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12">
@@ -756,7 +817,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                 {galleryItems.map((item, i) => (
                   <div key={i}>
-                    {item.mediaType === 'image' && item.url ? (
+                    {item.mediaType === 'image' && item.url && isValidImageUrl(item.url) ? (
                       <Card
                         title={item.caption || 'Campus Life'}
                         image={item.url}
@@ -765,7 +826,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                     ) : (
                       <div className="group overflow-hidden relative bg-white border border-black/5 hover:border-signature-gold/40 transition-all duration-700 shadow-sm hover:shadow-2xl">
                         <div className="aspect-[3/4] overflow-hidden relative bg-signature-navy/5">
-                          {!item.url ? (
+                          {!item.url || !isValidImageUrl(item.url) ? (
                             <div className="w-full h-full flex items-center justify-center">
                               <svg xmlns="http://www.w3.org/2000/svg" className="w-20 h-20 text-signature-navy/10"
                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1">
@@ -777,9 +838,9 @@ export default function Home({ data }: { data: TenantViewModel }) {
                             </div>
                           ) : (
                             <video
-                              src={item.url}
-                              autoPlay muted loop playsInline
-                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000 ease-out"
+                                src={item.url}
+                                autoPlay muted loop playsInline
+                                className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000 ease-out"
                             />
                           )}
                           <div className="absolute inset-0 bg-signature-navy/10 group-hover:bg-transparent transition-colors duration-700"></div>
