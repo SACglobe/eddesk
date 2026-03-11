@@ -10,6 +10,7 @@
  */
 
 import type { ScreenDataPayload } from '@/core/services/screenData.service';
+import { isValidImageUrl, resolveImageUrl } from '@/core/utils/url';
 import {
     COL_SCHOOLS_ID,
     COL_SCHOOLS_KEY,
@@ -354,7 +355,7 @@ export interface TenantViewModel {
     // ── Gallery ───────────────────────────────────────────────────────────────
     gallery: Array<{
         key: string;
-        url: string;
+        imageUrl: string;
         caption: string;
         category: string;
         mediaType: string;
@@ -478,8 +479,8 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
         role: str(r[COL_LEADERSHIP_ROLE]),
         designation: str(r[COL_LEADERSHIP_DESIGNATION]),
         message: str(r[COL_LEADERSHIP_MESSAGE]),
-        imageUrl: str(r[COL_LEADERSHIP_IMAGE_URL]),
-        signatureUrl: str(r[COL_LEADERSHIP_SIGNATURE_URL]),
+        imageUrl: resolveImageUrl(str(r[COL_LEADERSHIP_IMAGE_URL])),
+        signatureUrl: resolveImageUrl(str(r[COL_LEADERSHIP_SIGNATURE_URL])),
         isActive: bool(r[COL_LEADERSHIP_IS_ACTIVE]),
         displayOrder: num(r[COL_LEADERSHIP_DISPLAY_ORDER]),
     }));
@@ -493,7 +494,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
         name: str(r[COL_PERSONNEL_NAME]),
         designation: str(r[COL_PERSONNEL_DESIGNATION]),
         bio: str(r[COL_PERSONNEL_BIO]),
-        photoUrl: str(r[COL_PERSONNEL_IMAGE_URL]),
+        photoUrl: resolveImageUrl(str(r[COL_PERSONNEL_IMAGE_URL])),
         personType: 'faculty',
         isFeatured: bool(r[COL_PERSONNEL_IS_FEATURED]),
         isActive: bool(r[COL_PERSONNEL_IS_ACTIVE]),
@@ -536,12 +537,12 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
         category: str(r[COL_ACHIEVEMENTS_CATEGORY]),
         year: num(r[COL_ACHIEVEMENTS_YEAR]),
         awardLevel: str(r[COL_ACHIEVEMENTS_AWARD_LEVEL]),
-        imageUrl: str(r[COL_ACHIEVEMENTS_IMAGE_URL]),
+        imageUrl: resolveImageUrl(str(r[COL_ACHIEVEMENTS_IMAGE_URL])),
         isFeatured: bool(r[COL_ACHIEVEMENTS_IS_FEATURED]),
         isActive: bool(r[COL_IS_ACTIVE]),
         displayOrder: num(r[COL_ACHIEVEMENTS_DISPLAY_ORDER]),
         achievementType: str(r[COL_ACHIEVEMENTS_CATEGORY]),
-        photoUrl: str(r[COL_ACHIEVEMENTS_IMAGE_URL]),
+        photoUrl: resolveImageUrl(str(r[COL_ACHIEVEMENTS_IMAGE_URL])),
     }));
 
     // 10. Map events
@@ -556,14 +557,15 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
         date: str(r[COL_EVENTS_DATE]),
         startTime: str(r[COL_EVENTS_START_TIME]),
         endTime: str(r[COL_EVENTS_END_TIME]),
-        imageUrl: str(r[COL_EVENTS_IMAGE_URL]),
+        imageUrl: resolveImageUrl(str(r[COL_EVENTS_IMAGE_URL])),
         isFeatured: bool(r[COL_EVENTS_IS_FEATURED]),
     }));
 
     // 11. Map gallery
     const mappedGallery = galleryRows.map(r => ({
         key: str(r[COL_MEDIA_LIBRARY_ID]),
-        url: str(r[COL_MEDIA_LIBRARY_URL]),
+        url: resolveImageUrl(str(r[COL_MEDIA_LIBRARY_URL])),
+        imageUrl: resolveImageUrl(str(r[COL_MEDIA_LIBRARY_URL])),
         caption: str(r[COL_MEDIA_LIBRARY_CAPTION]),
         category: str(r[COL_MEDIA_LIBRARY_CATEGORY]),
         mediaType: str(r[COL_MEDIA_LIBRARY_TYPE]),
@@ -665,7 +667,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             headline: str(r[COL_HERO_MEDIA_HEADLINE]),
             subheadline: str(r[COL_HERO_MEDIA_SUBHEADLINE]),
             mediaType: str(r[COL_HERO_MEDIA_TYPE]),
-            mediaUrl: str(r[COL_HERO_MEDIA_URL]),
+            mediaUrl: resolveImageUrl(str(r[COL_HERO_MEDIA_URL])),
             primaryButtonText: str(r[COL_HERO_MEDIA_PRIMARY_BUTTON_TEXT]),
             primaryButtonUrl: str(r[COL_HERO_MEDIA_PRIMARY_BUTTON_URL]),
             secondaryButtonText: str(r[COL_HERO_MEDIA_SECONDARY_BUTTON_TEXT]),
@@ -697,7 +699,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             description: str(r[COL_PERSONNEL_BIO]),
             qualification: str(r[COL_PERSONNEL_QUALIFICATION]),
             experienceYears: num(r[COL_PERSONNEL_EXPERIENCE]),
-            imageUrl: str(r[COL_PERSONNEL_IMAGE_URL]),
+            imageUrl: resolveImageUrl(str(r[COL_PERSONNEL_IMAGE_URL])),
             email: str(r[COL_PERSONNEL_EMAIL]),
             phone: str(r[COL_PERSONNEL_PHONE]),
             isActive: bool(r[COL_PERSONNEL_IS_ACTIVE]),
@@ -803,7 +805,7 @@ export function buildTenantViewModelFromLocal(data: any): TenantViewModel {
         heroMedia: (data.hero_media || []).map((h: any) => ({
             key: str(h.key),
             mediaType: str(h.mediatype),
-            mediaUrl: str(h.mediaurl),
+            mediaUrl: resolveImageUrl(str(h.mediaurl)),
             headline: str(h.headline),
             subHeadline: str(h.subheadline),
             primaryButtonText: str(h.primarybuttontext),
@@ -840,7 +842,7 @@ export function buildTenantViewModelFromLocal(data: any): TenantViewModel {
             name: str(p.name),
             designation: str(p.designation),
             bio: str(p.description),
-            photoUrl: str(p.imageurl),
+            photoUrl: resolveImageUrl(str(p.imageurl)),
             personType: str(p.person_type),
             isFeatured: bool(p.isfeatured),
             displayOrder: num(p.displayorder),
@@ -853,7 +855,7 @@ export function buildTenantViewModelFromLocal(data: any): TenantViewModel {
                 name: str(p.name),
                 designation: str(p.designation),
                 bio: str(p.description),
-                photoUrl: str(p.imageurl),
+                photoUrl: resolveImageUrl(str(p.imageurl)),
                 personType: 'faculty',
                 isFeatured: bool(p.isfeatured),
                 displayOrder: num(p.displayorder),
@@ -866,7 +868,7 @@ export function buildTenantViewModelFromLocal(data: any): TenantViewModel {
                 name: str(p.name),
                 designation: str(p.designation),
                 bio: str(p.description),
-                photoUrl: str(p.imageurl),
+                photoUrl: resolveImageUrl(str(p.imageurl)),
                 personType: 'board',
                 isFeatured: bool(p.isfeatured),
                 displayOrder: num(p.displayorder),
@@ -879,7 +881,7 @@ export function buildTenantViewModelFromLocal(data: any): TenantViewModel {
                 name: str(p.name),
                 designation: str(p.designation),
                 bio: str(p.description),
-                photoUrl: str(p.imageurl),
+                photoUrl: resolveImageUrl(str(p.imageurl)),
                 personType: 'principal',
                 isFeatured: bool(p.isfeatured),
                 displayOrder: num(p.displayorder),
@@ -907,7 +909,7 @@ export function buildTenantViewModelFromLocal(data: any): TenantViewModel {
             category: str(a.category),
             title: str(a.title),
             description: str(a.description),
-            photoUrl: str(a.imageurl),
+            photoUrl: resolveImageUrl(str(a.imageurl)),
             achievementType: str(a.achievement_type),
             displayOrder: num(a.displayorder),
         })),
@@ -922,13 +924,13 @@ export function buildTenantViewModelFromLocal(data: any): TenantViewModel {
             date: str(e.eventdate),
             startTime: str(e.starttime),
             endTime: str(e.endtime),
-            imageUrl: str(e.imageurl),
+            imageUrl: resolveImageUrl(str(e.imageurl)),
             isFeatured: bool(e.isfeatured),
         })),
 
         gallery: (data.media_library || []).map((m: any) => ({
             key: str(m.key),
-            url: str(m.url),
+            url: resolveImageUrl(str(m.url)),
             caption: str(m.caption),
             category: str(m.category),
             mediaType: str(m.mediatype),
@@ -938,7 +940,7 @@ export function buildTenantViewModelFromLocal(data: any): TenantViewModel {
 
         mediaLibrary: (data.media_library || []).map((m: any) => ({
             key: str(m.key),
-            url: str(m.url),
+            url: resolveImageUrl(str(m.url)),
             caption: str(m.caption),
             category: str(m.category),
             mediaType: str(m.mediatype),

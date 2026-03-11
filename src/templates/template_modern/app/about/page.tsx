@@ -32,12 +32,12 @@ const About: React.FC<{ data?: any }> = ({ data }) => {
     // Management team: All personnel EXCEPT principal and faculty
     const managementTeam = (data?.personnel ?? []).filter((p: any) => {
         const type = (p.personType || '').toUpperCase();
-        return type !== 'PRINCIPAL' && type !== 'FACULTY';
+        return type !== 'PRINCIPAL' && type !== 'FACULTY' && type !== 'BOARD' && type !== 'CHAIRMAN';
     });
 
     // Board messages: All personnel with type BOARD
     const boardMessages = (data?.personnel ?? []).filter((p: any) =>
-        (p.personType || '').toUpperCase() === 'BOARD'
+        ['BOARD', 'CHAIRMAN'].includes((p.personType || '').toUpperCase())
     );
 
     return (

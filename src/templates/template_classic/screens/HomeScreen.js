@@ -165,7 +165,7 @@ const HomeScreen = ({ data }) => {
     const galleryEnabled = isSectionEnabled('gallery');
     const galleryRequired = isSectionRequired('gallery');
     const campusGallery = (data?.mediaLibrary ?? [])
-        .filter(m => (m.isFeatured || m.category === 'campus') && m.url)
+        .filter(m => m.url)
         .map(m => m.url);
 
     if (galleryRequired && campusGallery.length === 0) {
@@ -186,7 +186,6 @@ const HomeScreen = ({ data }) => {
     const now = new Date();
     const eventsToShow = (data?.events ?? [])
         .filter(e => {
-            if (!e.isFeatured) return false;
             const eventDateTime = new Date(`${e.eventDate}T${e.startTime || '00:00:00'}Z`);
             return eventDateTime > now;
         })
