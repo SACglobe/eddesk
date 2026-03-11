@@ -2,15 +2,17 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Palette, Edit3, Type, Layers, LayoutPanelLeft, Zap, Sparkles } from 'lucide-react';
+import { Palette, Layers, LayoutPanelLeft, Sparkles, Bell, Users, Award } from 'lucide-react';
+import { mContainer, mSection, mLabel, mDisplay, mBtnPrimary, marketingTheme } from '@/lib/marketing/theme';
+import Link from 'next/link';
 
 export const AdminPreview: React.FC = () => {
   return (
-    <section id="admin" className="py-24 bg-gradient-to-b from-[#020617] to-indigo-950/20 relative overflow-hidden">
+    <section id="admin" className={`${mSection} bg-gradient-to-b from-[#020617] to-indigo-950/20 relative overflow-hidden`}>
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-indigo-500/10 blur-[150px] rounded-full pointer-events-none"></div>
 
-      <div className="container mx-auto px-6">
+      <div className={mContainer}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -18,35 +20,32 @@ export const AdminPreview: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <div className="inline-flex items-center space-x-2 text-indigo-400 font-bold mb-6 bg-indigo-400/10 px-4 py-1.5 rounded-full border border-indigo-400/20">
-              <Zap size={16} className="fill-current" />
-              <span className="uppercase tracking-widest text-[10px]">Institutional Control</span>
+            <div className={mLabel}>
+              <span>Management Power</span>
             </div>
-            <h2 className="font-display text-4xl md:text-5xl font-black mb-8 leading-tight">
-              Powerful Editing. <br />
-              <span className="text-indigo-500">Zero Technical Debt.</span>
+            <h2 className={`${mDisplay} text-4xl md:text-5xl mb-8`}>
+              Complete Control. <br />
+              <span className={marketingTheme.gradients.textAlt}>Zero Technical Debt.</span>
             </h2>
-            <p className="text-slate-400 text-lg mb-10 leading-relaxed">
-              Our bespoke Admin Panel gives you complete control over every pixel.
-              Update news, manage admissions, or change your school's visual identity with zero coding required.
+            <p className={`${marketingTheme.type.body} text-lg mb-10 leading-relaxed`}>
+              Our bespoke Manager Dashboard gives you complete control over your institution's digital presence.
+              Update notices, manage student records, and switch themes in seconds—all with zero coding required.
             </p>
 
             <div className="grid grid-cols-2 gap-8 mb-12">
-              <AdminFeature icon={<Palette size={20} />} label="Global Theme Engine" />
-              <AdminFeature icon={<Edit3 size={20} />} label="Live Visual Editor" />
-              <AdminFeature icon={<Type size={20} />} label="Google Fonts Library" />
-              <AdminFeature icon={<Layers size={20} />} label="Smart Layout Builder" />
+              <AdminFeature icon={<Bell size={20} />} label="Instant Notice Tickers" />
+              <AdminFeature icon={<Award size={20} />} label="Result Management" />
+              <AdminFeature icon={<Users size={20} />} label="Faculty Directory" />
+              <AdminFeature icon={<Palette size={20} />} label="Live Theme Switcher" />
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => window.open("https://admin.eddesk.in", '_blank')}
-              className="group bg-white text-slate-950 px-10 py-5 rounded-full font-bold shadow-2xl shadow-white/5 flex items-center space-x-3"
+            <Link
+              href="/contact"
+              className={mBtnPrimary + " inline-flex px-10 py-5 rounded-full font-bold shadow-2xl flex items-center space-x-3 group"}
             >
-              <span>Explore Admin Panel</span>
-              <Sparkles className="w-5 h-5 text-indigo-600" />
-            </motion.button>
+              <span>See the Dashboard</span>
+              <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+            </Link>
           </motion.div>
 
           <motion.div
@@ -72,15 +71,15 @@ export const AdminPreview: React.FC = () => {
                   </div>
                   <div className="flex space-x-3">
                     <div className="w-20 h-9 rounded-full bg-slate-800 border border-slate-700"></div>
-                    <div className="w-9 h-9 rounded-full bg-indigo-600"></div>
+                    <div className="w-9 h-9 rounded-full bg-indigo-600 shadow-xl shadow-indigo-500/20"></div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-12 gap-6">
-                  <div className="col-span-4 space-y-6">
-                    {[1, 2, 3].map(i => (
+                  <div className="col-span-4 space-y-4">
+                    {[1, 2, 3, 4].map(i => (
                       <div key={i} className="h-10 bg-slate-900/80 rounded-2xl border border-white/5 p-2 flex items-center space-x-3">
-                        <div className="w-6 h-6 rounded-lg bg-white/5"></div>
+                        <div className="w-6 h-6 rounded-lg bg-indigo-500/20"></div>
                         <div className="w-full h-1.5 bg-white/10 rounded-full"></div>
                       </div>
                     ))}
@@ -89,15 +88,18 @@ export const AdminPreview: React.FC = () => {
                     <div className="aspect-video bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-3xl border border-indigo-500/20 flex items-center justify-center relative group">
                       <div className="text-center">
                         <Palette className="w-16 h-16 text-indigo-500/30 mb-3 mx-auto" />
-                        <div className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em]">Canvas Area</div>
+                        <div className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em]">Institutional Profile</div>
                       </div>
                     </div>
-                    <div className="h-4 bg-white/5 rounded-full w-full"></div>
-                    <div className="h-4 bg-white/5 rounded-full w-2/3"></div>
+                    <div className="space-y-3">
+                      <div className="h-2.5 bg-white/5 rounded-full w-full"></div>
+                      <div className="h-2.5 bg-white/5 rounded-full w-2/3"></div>
+                      <div className="h-2.5 bg-white/5 rounded-full w-1/2"></div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Animated Cursor - Made smoother */}
+                {/* Animated Cursor */}
                 <motion.div
                   animate={{
                     x: [150, 400, 250, 180],
@@ -111,14 +113,14 @@ export const AdminPreview: React.FC = () => {
                       <path d="M7 2l12 11.013-4.504.469 3.012 6.518-2.508 1.157-3-6.574-4.012 3.917V2z" />
                     </svg>
                     <div className="absolute top-8 left-8 bg-indigo-600 text-[10px] font-black px-3 py-1.5 rounded-xl text-white whitespace-nowrap shadow-xl border border-white/20 uppercase tracking-widest">
-                      SYSTEM ARCHITECT
+                      ADMINISTRATOR
                     </div>
                   </div>
                 </motion.div>
               </div>
             </div>
 
-            {/* Floating Card Decors - More intense */}
+            {/* Floating Card Decors */}
             <motion.div
               animate={{ x: [0, 20, 0], y: [0, -20, 0] }}
               transition={{ duration: 5, repeat: Infinity }}
@@ -138,7 +140,7 @@ export const AdminPreview: React.FC = () => {
 
 const AdminFeature: React.FC<{ icon: React.ReactNode; label: string }> = ({ icon, label }) => (
   <div className="flex items-center space-x-4 text-slate-300 group cursor-default">
-    <div className="w-12 h-12 bg-slate-900 border border-white/5 rounded-2xl flex items-center justify-center text-indigo-400 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+    <div className="w-12 h-12 bg-slate-900 border border-white/5 rounded-2xl flex items-center justify-center text-indigo-400 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-lg">
       {icon}
     </div>
     <span className="font-bold text-base tracking-tight">{label}</span>

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { isValidImageUrl } from '@/core/utils/url';
 
 export interface HeroSlide {
     mediaType: string;
@@ -19,7 +20,7 @@ export interface HeroSliderProps { slides: HeroSlide[] }
 
 const HeroSlider: React.FC<HeroSliderProps> = ({ slides: rawSlides }) => {
     const slides = rawSlides
-        .filter(s => s.isActive)
+        .filter(s => s.isActive && s.mediaUrl && isValidImageUrl(s.mediaUrl))
         .sort((a, b) => a.displayOrder - b.displayOrder);
 
     const [current, setCurrent] = useState(0);

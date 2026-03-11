@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { isValidImageUrl } from '@/core/utils/url';
 
 export const useIntersectionObserver = (options: IntersectionObserverInit) => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -36,7 +37,9 @@ export const SectionHeader: React.FC<{ title: string; subtitle?: string; light?:
 export const Card: React.FC<{ title: string; image: string; description?: string; tag?: string }> = ({ title, image, description, tag }) => (
     <div className="group overflow-hidden relative bg-white border border-black/5 hover:border-signature-gold/40 transition-all duration-700 shadow-sm hover:shadow-2xl">
         <div className="aspect-[3/4] overflow-hidden relative">
-            <img src={image} alt={title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000 ease-out" loading="lazy" />
+            {image && isValidImageUrl(image) && (
+                <img src={image} alt={""} className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000 ease-out" loading="lazy" />
+            )}
             <div className="absolute inset-0 bg-signature-navy/10 group-hover:bg-transparent transition-colors duration-700"></div>
         </div>
         <div className="p-10 relative bg-white">

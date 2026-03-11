@@ -3,10 +3,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 
+import { isValidImageUrl } from '@/core/utils/url';
+
 const Header = ({ school }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isMoreOpen, setIsMoreOpen] = useState(false);
     const moreRef = useRef(null);
+
+    const showLogo = school.logoUrl && isValidImageUrl(school.logoUrl);
 
     const mainLinks = [
         { name: 'Home', path: '/' },
@@ -38,26 +42,24 @@ const Header = ({ school }) => {
             <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                 <div className="flex justify-between items-center py-4">
                     <Link href="/" className="flex items-center gap-3 md:gap-4 group">
-                        <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 group-hover:scale-110 transition-transform duration-500">
-                            {school.logoUrl ? (
+                        {showLogo && (
+                            <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 group-hover:scale-110 transition-transform duration-500">
                                 <img
                                     src={school.logoUrl}
-                                    alt={`${school.name} logo`}
+                                    alt={""}
                                     className="w-full h-full object-contain"
                                 />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-emerald-100 rounded text-emerald-800 font-bold text-lg">
-                                    {school.name.charAt(0)}
-                                </div>
-                            )}
-                        </div>
+                            </div>
+                        )}
                         <div className="flex flex-col">
                             <span className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight serif uppercase group-hover:text-emerald-900 transition-colors leading-tight">
                                 {school.name}
                             </span>
-                            <span className="text-[10px] text-slate-500 uppercase tracking-widest leading-none mt-1">
-                                EXCELLENCE IN EDUCATION
-                            </span>
+                            {school.slogan && (
+                                <span className="text-[10px] text-slate-500 uppercase tracking-widest leading-none mt-1">
+                                    {school.slogan}
+                                </span>
+                            )}
                         </div>
                     </Link>
 

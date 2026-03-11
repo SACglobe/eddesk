@@ -5,14 +5,8 @@ import HeroSlider from '../components/HeroSlider';
 import { SCHOOL_NAME, ACTIVITIES } from '../constants';
 import Link from 'next/link';
 import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
-
-
-
-
-
-
-
-
+import { isValidImageUrl } from '@/core/utils/url';
+import SystemPopup from '@/components/system/SystemPopup';
 
 const AnimatedNumber: React.FC<{ value: number; suffix?: string; duration?: number }> = ({ value, suffix = "", duration = 1500 }) => {
     const [count, setCount] = useState(0);
@@ -66,28 +60,123 @@ const AnimatedNumber: React.FC<{ value: number; suffix?: string; duration?: numb
 }
 
 export default function Home({ data }: { data: TenantViewModel }) {
-    const principal = data?.personnel?.find(p => p.personType === 'principal') ?? null;
-
-    const announcementsEnabled = (data?.homepageSections ?? [])
-        .find(s => s.sectionKey === 'announcements')
-        ?.isEnabled ?? true;
     const now = new Date();
+
+    // 1. Hero
+    const heroSection = data?.homepageSections?.find(s => s.sectionKey === 'hero');
+    const heroEnabled = heroSection?.isEnabled ?? true;
+    const heroRequired = heroSection?.isRequired ?? false;
+    const heroMedia = (data?.heroMedia ?? [])
+        .filter(s => s.isActive)
+        .sort((a, b) => a.displayOrder - b.displayOrder);
+    if (heroEnabled && heroRequired && heroMedia.length === 0) {
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Hero section is required but no specific data is found. Please add hero data in the admin panel."
+            />
+        );
+    }
+
+    // 2. Announcements
+    const announcementsSection = data?.homepageSections?.find(s => s.sectionKey === 'announcements');
+    const announcementsEnabled = announcementsSection?.isEnabled ?? true;
+    const announcementsRequired = announcementsSection?.isRequired ?? false;
     const activeAnnouncements = (data?.announcements ?? []).filter(a =>
         a.isActive &&
-        (a.expiresAt == null || new Date(a.expiresAt) > now)
+        (!a.expiresAt || a.expiresAt === '' || new Date(a.expiresAt.endsWith('Z') ? a.expiresAt : `${a.expiresAt}Z`) > now)
     );
+    if (announcementsEnabled && announcementsRequired && activeAnnouncements.length === 0) {
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Announcements section is required but no specific data is found. Please add announcements data in the admin panel."
+            />
+        );
+    }
+
+    // 3. Academic Results
+    const academicSection = data?.homepageSections?.find(s => s.sectionKey === 'academics');
+    const academicResultsEnabled = academicSection?.isEnabled ?? true;
+    const academicResultsRequired = academicSection?.isRequired ?? false;
+    const academicResults = [...(data?.academicResults ?? [])].sort((a, b) => b.year - a.year);
+    if (academicResultsEnabled && academicResultsRequired && academicResults.length === 0) {
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Academics section is required but no specific data is found. Please add academic results in the admin panel."
+            />
+        );
+    }
+    const latestAcademicResult = academicResults[0] ?? null;
+
+    // 4. Achievements (Split into Academic and Sports)
+    const achievementsSection = data?.homepageSections?.find(s => s.sectionKey === 'achievements');
+    const achievementsEnabled = achievementsSection?.isEnabled ?? true;
+    const achievementsRequired = achievementsSection?.isRequired ?? false;
+
+    const academicAchievements = (data?.achievements ?? [])
+        .filter(a => a.achievementType === 'academic')
+        .sort((a, b) => b.year - a.year || (a.displayOrder || 0) - (b.displayOrder || 0));
+    if (achievementsEnabled && achievementsRequired && academicAchievements.length === 0) {
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Achievements section is required but no specific data is found. Please add achievements in the admin panel."
+            />
+        );
+    }
+
+    const sportsSection = data?.homepageSections?.find(s => s.sectionKey === 'sports');
+    const sportsEnabled = sportsSection?.isEnabled ?? true;
+    const sportsRequired = sportsSection?.isRequired ?? false;
+    const sportsAchievements = (data?.achievements ?? [])
+        .filter(a => a.achievementType?.toLowerCase().trim() === 'sports')
+        .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+    if (sportsEnabled && sportsRequired && sportsAchievements.length === 0) {
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Sports section is required but no specific data is found. Please add sports data in the admin panel."
+            />
+        );
+    }
+
+    // 5. Leadership
+    const leadershipSection = data?.homepageSections?.find(s => s.sectionKey === 'leadership');
+    const leadershipEnabled = leadershipSection?.isEnabled ?? true;
+    const leadershipRequired = leadershipSection?.isRequired ?? false;
+    const leadership = (data?.leadership ?? []).filter(l => l.isActive);
+
+    if (leadershipEnabled && leadershipRequired && leadership.length === 0) {
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Leadership section is required but no specific data is found. Please add leadership data in the admin panel."
+            />
+        );
+    }
+
+    // 6. Statistics
+    const statsSection = data?.homepageSections?.find(s => s.sectionKey === 'stats');
+    const statsEnabled = statsSection?.isEnabled ?? true;
+    const statsRequired = statsSection?.isRequired ?? false;
+    const statistics = (data?.statistics ?? [])
+        .sort((a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0));
+    if (statsEnabled && statsRequired && statistics.length === 0) {
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Statistics section is required but no specific data is found. Please add statistics data in the admin panel."
+            />
+        );
+    }
 
     const parseStat = (val: string) => {
         const num = parseInt(val.replace(/[^0-9]/g, '')) || 0;
         const suffix = val.replace(/[0-9]/g, '');
         return { num, suffix };
     };
-
-    const statsEnabled = (data?.homepageSections ?? [])
-        .find(s => s.sectionKey === 'stats')
-        ?.isEnabled ?? true;
-    const statistics = (data?.statistics ?? [])
-        .sort((a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
     const ICON_MAP: Record<string, string> = {
         users: '👥',
@@ -99,47 +188,26 @@ export default function Home({ data }: { data: TenantViewModel }) {
     };
     const getIcon = (name: string) => ICON_MAP[name] ?? '📊';
 
-    const facultySection = (data?.homepageSections ?? [])
-        .find(s => s.sectionKey === 'faculty');
+    // 7. Faculty
+    const facultySection = data?.homepageSections?.find(s => s.sectionKey === 'faculty');
     const facultyEnabled = facultySection?.isEnabled ?? true;
+    const facultyRequired = facultySection?.isRequired ?? false;
     const faculty = (data?.personnel as any[] ?? [])
         .filter((p: any) => p.personType === 'faculty')
         .sort((a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0));
+    if (facultyEnabled && facultyRequired && faculty.length === 0) {
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Faculty section is required but no specific data is found. Please add faculty data in the admin panel."
+            />
+        );
+    }
 
-    const achievementsEnabled = (data?.homepageSections ?? [])
-        .find(s => s.sectionKey === 'achievements' || s.sectionKey === 'sports')
-        ?.isEnabled ?? true;
-    const sportsAchievements = (data?.achievements ?? [])
-        .filter(a => a.achievementType?.toLowerCase().trim() === 'sports')
-        .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
-
-    const eventsEnabled = (data?.homepageSections ?? [])
-        .find(s => s.sectionKey === 'events')
-        ?.isEnabled ?? true;
-
-    const eventsToShow = (data?.events ?? [])
-        .filter((e: any) => {
-            if (!e.isFeatured) return false;
-            const eventDateTime = new Date(`${e.eventDate}T${e.startTime}`);
-            return eventDateTime > now;
-        })
-        .sort((a: any, b: any) =>
-            new Date(`${a.eventDate}T${a.startTime}`).getTime() -
-            new Date(`${b.eventDate}T${b.startTime}`).getTime()
-        )
-        .slice(0, 3);
-
-    const formatEventDate = (dateStr: string) => {
-        const d = new Date(dateStr + 'T00:00:00');
-        return {
-            month: d.toLocaleString('en-US', { month: 'short' }).toUpperCase(),
-            day: d.getDate().toString()
-        };
-    };
-
-    const facilitiesEnabled = (data?.homepageSections ?? [])
-        .find(s => s.sectionKey === 'facilities')
-        ?.isEnabled ?? true;
+    // 8. Facilities
+    const facilitiesSection = data?.homepageSections?.find(s => s.sectionKey === 'facilities');
+    const facilitiesEnabled = facilitiesSection?.isEnabled ?? true;
+    const facilitiesRequired = facilitiesSection?.isRequired ?? false;
 
     const grouped = (data?.facilities ?? []).reduce((acc: any, f: any) => {
         const key = f.categoryName;
@@ -148,6 +216,14 @@ export default function Home({ data }: { data: TenantViewModel }) {
         return acc;
     }, {});
     const facilityGroups = Object.values(grouped) as any[];
+    if (facilitiesEnabled && facilitiesRequired && facilityGroups.length === 0) {
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Facilities section is required but no specific data is found. Please add facilities data in the admin panel."
+            />
+        );
+    }
 
     const FACILITY_ICON_MAP: Record<string, { icon: string; color: string }> = {
         'Academics': { icon: '🔬', color: 'bg-primary' },
@@ -159,28 +235,61 @@ export default function Home({ data }: { data: TenantViewModel }) {
     const getFacilityMeta = (cat: string) =>
         FACILITY_ICON_MAP[cat] ?? { icon: '🏫', color: 'bg-primary' };
 
-    const gallerySection = (data?.homepageSections ?? [])
-        .find(s => s.sectionKey === 'gallery');
+    // 9. Gallery
+    const gallerySection = data?.homepageSections?.find(s => s.sectionKey === 'gallery');
     const galleryEnabled = gallerySection?.isEnabled ?? true;
+    const galleryRequired = gallerySection?.isRequired ?? false;
     const galleryItems = (data?.mediaLibrary ?? [])
         .filter(m => m.category === 'campus' && m.isFeatured);
+    if (galleryEnabled && galleryRequired && galleryItems.length === 0) {
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Gallery section is required but no specific data is found. Please add gallery items in the admin panel."
+            />
+        );
+    }
 
-    const academicSection = (data?.homepageSections ?? [])
-        .find(s => s.sectionKey === 'academic_results');
-    const academicResultsEnabled = academicSection?.isEnabled ?? true;
-    const academicResults = [...(data?.academicResults ?? [])]
-        .sort((a, b) => b.year - a.year);
-    const latestAcademicResult = academicResults[0] ?? null;
+    // 10. Events
+    const eventsSection = data?.homepageSections?.find(s => s.sectionKey === 'events');
+    const eventsEnabled = eventsSection?.isEnabled ?? true;
+    const eventsRequired = eventsSection?.isRequired ?? false;
 
-    const academicAchievements = (data?.achievements ?? [])
-        .filter(a => a.achievementType === 'academic')
-        .sort((a, b) => b.year - a.year || (a.displayOrder || 0) - (b.displayOrder || 0));
+    const eventsToShow = (data?.events ?? [])
+        .filter((e: any) => {
+            if (!e.isFeatured) return false;
+            const eventDateTime = new Date(`${e.eventDate}T${e.startTime || '00:00:00'}Z`);
+            return eventDateTime > now;
+        })
+        .sort((a: any, b: any) =>
+            new Date(`${a.eventDate}T${a.startTime || '00:00:00'}Z`).getTime() -
+            new Date(`${b.eventDate}T${b.startTime || '00:00:00'}Z`).getTime()
+        )
+        .slice(0, 3);
+    if (eventsEnabled && eventsRequired && eventsToShow.length === 0) {
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="Home Screen: Events section is required but no specific data is found. Please add events data in the admin panel."
+            />
+        );
+    }
+
+    const formatEventDate = (dateStr: string) => {
+        const d = new Date(dateStr + 'T00:00:00');
+        return {
+            month: d.toLocaleString('en-US', { month: 'short' }).toUpperCase(),
+            day: d.getDate().toString()
+        };
+    };
     return (
         <div className="space-y-24 pb-24">
-            <HeroSlider slides={data?.heroMedia ?? []} />
+            {heroEnabled && (heroRequired || heroMedia.length > 0) && (
+                <HeroSlider slides={heroMedia} />
+            )}
 
             {/* Broadcast Ticker */}
-            {announcementsEnabled && activeAnnouncements.length > 0 && (
+            {announcementsEnabled && (announcementsRequired || activeAnnouncements.length > 0) && (
                 <section className="sticky top-20 z-40 flex items-center h-12 overflow-hidden bg-accent shadow-[0_4px_20px_rgba(0,0,0,0.1)] border-y border-yellow-500/20">
                     <div className="absolute left-0 top-0 bottom-0 bg-[#1e293b] text-accent px-6 flex items-center z-30 shadow-[4px_0_15px_rgba(0,0,0,0.3)]">
                         <div className="flex items-center gap-3">
@@ -207,7 +316,8 @@ export default function Home({ data }: { data: TenantViewModel }) {
                 </section>
             )}
 
-            {(academicResultsEnabled && latestAcademicResult) || (achievementsEnabled && academicAchievements.length > 0) ? (
+            {((academicResultsEnabled && (academicResultsRequired || latestAcademicResult)) ||
+                (achievementsEnabled && (achievementsRequired || academicAchievements.length > 0))) ? (
                 <section className="max-w-7xl mx-auto px-6 py-8 text-left">
                     <div className="grid lg:grid-cols-12 gap-16 lg:gap-24">
                         {academicResultsEnabled && latestAcademicResult && (
@@ -309,41 +419,51 @@ export default function Home({ data }: { data: TenantViewModel }) {
                 </section>
             ) : null}
 
-            {/* Message from Our Principal */}
-            <section className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-16 items-center">
-                <div className="relative order-2 lg:order-1 overflow-hidden rounded-[3rem]">
-                    <div className="absolute inset-0 bg-accent rounded-[3rem] rotate-3 translate-x-4 translate-y-4"></div>
-                    <img
-                        src={principal?.photoUrl || "school/image/principal.png"}
-                        alt="Principal"
-                        className="rounded-[3rem] shadow-2xl relative z-10 w-full object-cover object-top aspect-[4/5]"
-                    />
-                    <div className="absolute -bottom-8 -left-8 bg-primary text-white p-8 rounded-3xl shadow-2xl z-20 max-w-xs hidden md:block">
-                        <p className="italic font-serif text-xl">"Nurturing seeds of potential into forests of greatness."</p>
-                    </div>
+            {/* Leadership Section */}
+            {leadershipEnabled && (leadershipRequired || leadership.length > 0) && (
+                <div className="space-y-24">
+                    {leadership.map((member, idx) => (
+                        <section key={member.key || idx} className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-16 items-center">
+                            <div className={`relative ${idx % 2 !== 0 ? 'order-2' : 'order-2 lg:order-1'} overflow-hidden rounded-[3rem]`}>
+                                <div className="absolute inset-0 bg-accent rounded-[3rem] rotate-3 translate-x-4 translate-y-4"></div>
+                                {member.imageUrl && isValidImageUrl(member.imageUrl) && (
+                                    <img
+                                        src={member.imageUrl}
+                                        alt={""}
+                                        className="rounded-[3rem] shadow-2xl relative z-10 w-full object-cover object-top aspect-[4/5]"
+                                    />
+                                )}
+                                {member.message && (
+                                    <div className="absolute -bottom-8 -left-8 bg-primary text-white p-8 rounded-3xl shadow-2xl z-20 max-w-xs hidden md:block">
+                                        <p className="italic font-serif text-xl">"{member.message}"</p>
+                                    </div>
+                                )}
+                            </div>
+                            <div className={`space-y-8 ${idx % 2 !== 0 ? 'order-1' : 'order-1 lg:order-2'}`}>
+                                <div className="inline-flex items-center gap-2 bg-blue-50 text-primary px-6 py-2 rounded-full font-bold uppercase tracking-widest text-xs">
+                                    <span className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></span>
+                                    {member.role?.toUpperCase() || 'LEADERSHIP'}
+                                </div>
+                                <h2 className="text-4xl md:text-6xl font-bold text-primary leading-[1.1]">Leading with Vision & Integrity</h2>
+                                <p className="text-gray-600 text-lg md:text-xl leading-relaxed">
+                                    "{member.message ?? ''}"
+                                </p>
+                                <div className="pt-4 border-t-2 border-gray-100">
+                                    <p className="font-bold text-primary text-2xl mb-1">{member.name ?? ''}</p>
+                                    <p className="text-yellow-600 font-bold uppercase tracking-widest text-sm">{member.designation ?? member.role ?? 'Leader'}</p>
+                                    <Link href="/about" className="mt-8 bg-primary text-white px-8 py-4 rounded-2xl font-bold hover:bg-accent hover:text-primary transition-all flex items-center gap-3 group">
+                                        Read More
+                                        <span className="group-hover:translate-x-2 transition-transform">→</span>
+                                    </Link>
+                                </div>
+                            </div>
+                        </section>
+                    ))}
                 </div>
-                <div className="space-y-8 order-1 lg:order-2">
-                    <div className="inline-flex items-center gap-2 bg-blue-50 text-primary px-6 py-2 rounded-full font-bold uppercase tracking-widest text-xs">
-                        <span className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></span>
-                        From the Principal's Desk
-                    </div>
-                    <h2 className="text-4xl md:text-6xl font-bold text-primary leading-[1.1]">Leading with Vision & Integrity</h2>
-                    <p className="text-gray-600 text-lg md:text-xl leading-relaxed">
-                        "{principal?.bio ?? ''}"
-                    </p>
-                    <div className="pt-4 border-t-2 border-gray-100">
-                        <p className="font-bold text-primary text-2xl mb-1">{principal?.name ?? ''}</p>
-                        <p className="text-yellow-600 font-bold uppercase tracking-widest text-sm">{principal?.designation ?? 'Principal'}</p>
-                        <Link href="/about" className="mt-8 bg-primary text-white px-8 py-4 rounded-2xl font-bold hover:bg-accent hover:text-primary transition-all flex items-center gap-3 group">
-                            Read More
-                            <span className="group-hover:translate-x-2 transition-transform">→</span>
-                        </Link>
-                    </div>
-                </div>
-            </section>
+            )}
 
             {/* Creative Statistics Section */}
-            {statsEnabled && statistics.length > 0 && (
+            {statsEnabled && (statsRequired || statistics.length > 0) && (
                 <section className="bg-primary py-32 relative z-20">
                     <div className="max-w-7xl mx-auto px-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -353,11 +473,11 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                     <div
                                         key={i}
                                         className={`
-                    relative group bg-white p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] 
-                    border-t-[6px] border-accent overflow-hidden transition-all duration-500 hover:-translate-y-4
-                    hover:shadow-[0_40px_80px_rgba(234,179,8,0.25)]
-                    ${i % 2 !== 0 ? 'lg:translate-y-12' : ''}
-                  `}
+                                            relative group bg-white p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] 
+                                            border-t-[6px] border-accent overflow-hidden transition-all duration-500 hover:-translate-y-4
+                                            hover:shadow-[0_40px_80px_rgba(234,179,8,0.25)]
+                                            ${i % 2 !== 0 ? 'lg:translate-y-12' : ''}
+                                        `}
                                     >
                                         <div className="absolute -right-4 -bottom-4 text-9xl opacity-[0.03] grayscale group-hover:opacity-[0.08] transition-opacity duration-500 pointer-events-none transform rotate-12">
                                             {getIcon(stat.icon)}
@@ -387,7 +507,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
             )}
 
 
-            {facultyEnabled && faculty.length > 0 && (
+            {facultyEnabled && (facultyRequired || faculty.length > 0) && (
                 <section className="max-w-7xl mx-auto px-4 py-24">
                     <div className="text-center mb-16 space-y-4">
                         <div className="inline-block px-4 py-1.5 bg-blue-50 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.3em] mb-4">
@@ -401,11 +521,13 @@ export default function Home({ data }: { data: TenantViewModel }) {
                             <div key={i} className="group text-center">
                                 <div className="relative inline-block mb-8 overflow-hidden rounded-[2.5rem]">
                                     <div className="absolute inset-0 bg-primary rounded-[2.5rem] rotate-6 scale-95 group-hover:rotate-12 transition-transform duration-500"></div>
-                                    <img
-                                        src={member.photoUrl || "school/image/faculty.png"}
-                                        alt={member.name ?? ''}
-                                        className="relative w-full aspect-[4/5] object-cover object-top rounded-[2.5rem] shadow-xl border-4 border-white grayscale group-hover:grayscale-0 transition-all duration-500"
-                                    />
+                                    {member.photoUrl && isValidImageUrl(member.photoUrl) && (
+                                        <img
+                                            src={member.photoUrl}
+                                            alt={""}
+                                            className="relative w-full aspect-[4/5] object-cover object-top rounded-[2.5rem] shadow-xl border-4 border-white grayscale group-hover:grayscale-0 transition-all duration-500"
+                                        />
+                                    )}
                                 </div>
                                 <h3 className="text-2xl font-bold text-primary group-hover:text-blue-600 transition-colors">{member.name ?? ''}</h3>
                                 <p className="text-yellow-600 font-bold uppercase tracking-widest text-xs mb-4">{member.designation ?? ''}</p>
@@ -417,7 +539,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                 </section>
             )}
 
-            {achievementsEnabled && sportsAchievements.length > 0 && (
+            {sportsEnabled && (sportsRequired || sportsAchievements.length > 0) && (
                 <section className="max-w-[100vw] overflow-hidden py-24 bg-gray-50/50 border-y border-gray-100">
                     <div className="max-w-7xl mx-auto px-4 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
                         <div className="space-y-4">
@@ -436,7 +558,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                     key={i}
                                     className="min-w-[320px] md:min-w-[450px] snap-center group relative overflow-hidden rounded-[3rem] aspect-[16/10] shadow-2xl transition-all duration-500 hover:shadow-primary/10"
                                 >
-                                    {achievement.photoUrl ? (
+                                    {achievement.photoUrl && isValidImageUrl(achievement.photoUrl) ? (
                                         <img
                                             src={achievement.photoUrl}
                                             alt={achievement.title}
@@ -489,7 +611,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
             )}
 
             {/* Campus highlights Section */}
-            {facilitiesEnabled && facilityGroups.length > 0 && (
+            {facilitiesEnabled && (facilitiesRequired || facilityGroups.length > 0) && (
                 <section className="max-w-7xl mx-auto px-4 py-24">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
                         <div className="space-y-4">
@@ -545,7 +667,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
             <section className="bg-gray-50 py-24">
                 <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-3 gap-16">
                     <div className="lg:col-span-2 space-y-12">
-                        {galleryEnabled && galleryItems.length > 0 && (
+                        {galleryEnabled && (galleryRequired || galleryItems.length > 0) && (
                             <>
                                 <div className="flex items-center justify-between">
                                     <h2 className="text-4xl font-bold text-primary">Gallery</h2>
@@ -575,13 +697,13 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                                     autoPlay muted loop playsInline
                                                     className="w-full h-full object-cover object-center"
                                                 />
-                                            ) : (
+                                            ) : (item.url && isValidImageUrl(item.url)) ? (
                                                 <img
                                                     src={item.url}
                                                     alt={item.caption ?? 'Gallery highlight'}
                                                     className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
                                                 />
-                                            )}
+                                            ) : null}
                                             <div className="absolute inset-0 bg-gradient-to-t from-blue-900 via-transparent to-transparent opacity-90"></div>
                                             <div className="absolute bottom-0 p-8 text-left">
                                                 <span className="bg-accent text-primary px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-3 inline-block">Campus Life</span>
@@ -596,7 +718,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                         )}
                     </div>
 
-                    {eventsEnabled && eventsToShow.length > 0 ? (
+                    {eventsEnabled && (eventsRequired || eventsToShow.length > 0) ? (
                         <div className="space-y-12 text-left">
                             <h2 className="text-4xl font-bold text-primary">Upcoming Events</h2>
                             <div className="space-y-6">

@@ -1,62 +1,57 @@
-/**
- * src/app/demo/[templateSlug]/[[...path]]/page.tsx
- *
- * Server Component — handles API call for real tenant domains.
- * Demo routes (localhost, eddesk.in) skip the API and use demo data.
- *
- * Guardrails:
- * - API is NEVER called for localhost or eddesk.in
- * - API is NEVER called for demo routes
- * - Templates are NOT modified
- */
+// src/app/demo/[templateSlug]/[[...path]]/page.tsx
+//
+// SSR-only Server Component for demo/preview routes.
+// Accessible ONLY from owner domains (eddesk.in, localhost:*).
+//
+// Flow:
+//   1. Validate templateSlug against VALID_SLUGS
+//   2. Guard: notFound() if accessed from non-owner domain
+//   3. fetchDemoScreen(templateSlug, screen)  → NO cache, domain always eddesk.in
+//   4. buildTenantViewModel(payload)          → maps ScreenDataPayload → TenantViewModel
+//   5. render template (NO subscription checks — demo bypasses all of them)
+//
+// Guardrails:
+//   - No subscription checks — checkSubscription returns demo_bypass for mode='demo'
+//   - No getSchoolByDomain call — demo does not have a registered domain
+//   - templateSlug comes from URL param — validated against VALID_SLUGS server-side
 
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { fetchTenantData, isTenantDomain } from '@/core/services/tenantApi.service';
+import { fetchDemoScreen, pathToScreenName } from '@/core/services/screenData.service';
 import { buildTenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import type { TenantState } from '@/core/context/TenantContext';
 import TemplateRenderer from './TemplateRenderer';
-import { generateTenantMetadata, generateSchoolJsonLd, generateAboutMetadata, generateAboutJsonLd } from '@/core/utils/seo';
+import {
+    generateTenantMetadata,
+    generateSchoolJsonLd,
+    generateEventsJsonLd,
+    generatePrincipalJsonLd,
+    generateAboutMetadata,
+    generateAboutJsonLd,
+} from '@/core/utils/seo';
 import { Metadata } from 'next';
-import { debugTenantByDomain } from '@/app/core/data/supabase/tenant.service';
 import LeadCapturePopup from '@/components/lead/LeadCapturePopup';
 
-// Known valid template slugs — checked server-side without importing templates
+// Known valid template slugs
 const VALID_SLUGS = ['template_classic', 'template_modern', 'template_premium'];
+
+// Owner domains allowed to access demo routes
+const OWNER_DOMAINS = ['eddesk.in', 'localhost', '127.0.0.1', 'test.eddesk.in'];
 
 export async function generateMetadata({
     params,
 }: {
     params: Promise<{ templateSlug: string; path?: string[] }>
 }): Promise<Metadata> {
-    const { templateSlug } = await params;
-    const headersList = await headers();
-    const host = headersList.get('host') || '';
-    const hostname = host.split(':')[0].toLowerCase().replace(/^www\./, '');
+    const { templateSlug, path: pathSegments } = await params;
+    const screenName = pathSegments?.[0] || 'home';
 
-    // For demo/localhost, we use specific defaults or mock metadata
-    if (!isTenantDomain(hostname)) {
-        return {
-            title: `Demo [${templateSlug}] | EdDesk`,
-            description: 'Previewing EdDesk school templates.',
-            robots: { index: false, follow: false },
-        };
-    }
-
-    const { path: pathSegments } = await params;
-    const path = '/' + (pathSegments?.join('/') ?? '');
-
-    // Otherwise fetch data for metadata
-    const result = await fetchTenantData(hostname, templateSlug);
-    if (result.status === 'success') {
-        const viewModel = buildTenantViewModel(result.data);
-        if (path === '/about') {
-            return generateAboutMetadata(viewModel, hostname, true);
-        }
-        return generateTenantMetadata(viewModel, hostname, true);
-    }
-
-    return { title: 'Template Preview' };
+    // Metadata for demo routes
+    return {
+        title: `Demo [${templateSlug}] - ${screenName.charAt(0).toUpperCase() + screenName.slice(1)} | EdDesk`,
+        description: 'Previewing EdDesk school templates.',
+        robots: { index: false, follow: false },
+    };
 }
 
 export default async function TemplateDemoPage({
@@ -66,57 +61,47 @@ export default async function TemplateDemoPage({
 }) {
     const { templateSlug, path: pathSegments } = await params;
     const path = '/' + (pathSegments?.join('/') ?? '');
+    const screenName = pathSegments?.[0] || 'home';
 
-    // Validate template slug server-side without importing template files
+    // 1. Validate template slug
     if (!VALID_SLUGS.includes(templateSlug)) {
         return notFound();
     }
 
-    // Read hostname from request headers (SSR only)
+    // 2. Domain guard: Only allow owner domains
     const headersList = await headers();
     const host = headersList.get('host') || '';
-    const hostname = host.split(':')[0].toLowerCase().replace(/^www\./, '');
+    const domainOnly = host.split(':')[0].toLowerCase();
 
-    // Build tenant state — API is called ONLY for real tenant domains
+    const isOwner = OWNER_DOMAINS.includes(domainOnly);
+    if (!isOwner) {
+        return notFound();
+    }
+
+    // C1: fetchDemoScreen with 2 args only — domain is always eddesk.in internally
+    const result = await fetchDemoScreen('eddesk.in', templateSlug, screenName);
+
+
     let tenantState: TenantState;
 
-    if (isTenantDomain(hostname)) {
-        // Real tenant domain — call the API
-        const result = await fetchTenantData(hostname, templateSlug);
-
-        if (result.status === 'success') {
-            tenantState = {
-                status: 'success',
-                data: buildTenantViewModel(result.data),
-                message: '',
-            };
-        } else if (result.status === 'empty') {
-            tenantState = {
-                status: 'empty',
-                data: null,
-                message: result.message,
-            };
-        } else {
-            tenantState = {
-                status: 'error',
-                data: null,
-                message: result.error,
-            };
-        }
-    } else {
-        // Demo domain (localhost / eddesk.in) — skip API, use demo data
-
-        // PHASE 1 DEBUG - Database response check even for demo
-        try {
-            await debugTenantByDomain(hostname);
-        } catch (err) {
-            console.error('Server', 'Debug log failed:', err);
-        }
-
+    if (result.status === 'success') {
         tenantState = {
-            status: 'idle',
-            data: null,
+            status: 'success',
+            data: buildTenantViewModel(result.payload),
             message: '',
+        };
+    } else if (result.status === 'empty') {
+        // C5: Pass real 'empty' status — do not pretend success
+        tenantState = {
+            status: 'empty',
+            data: null,
+            message: result.message,
+        };
+    } else {
+        tenantState = {
+            status: 'error',
+            data: null,
+            message: result.error,
         };
     }
 
@@ -124,20 +109,46 @@ export default async function TemplateDemoPage({
         <>
             {tenantState.data && (
                 <>
+                    {/* 1. School / EducationalOrganization — always present */}
                     <script
                         type="application/ld+json"
                         dangerouslySetInnerHTML={{
-                            __html: JSON.stringify(generateSchoolJsonLd(tenantState.data, hostname))
+                            // C4: use 'eddesk.in' constant directly (hostname removed)
+                            __html: JSON.stringify(generateSchoolJsonLd(tenantState.data, 'eddesk.in'))
                         }}
                     />
+
+                    {/* 2. About page schema — only on /about */}
                     {path === '/about' && (
                         <script
                             type="application/ld+json"
                             dangerouslySetInnerHTML={{
-                                __html: JSON.stringify(generateAboutJsonLd(tenantState.data, hostname))
+                                __html: JSON.stringify(generateAboutJsonLd(tenantState.data, 'eddesk.in'))
                             }}
                         />
                     )}
+
+                    {/* 3. Upcoming Events — home screen only, skip if no upcoming events */}
+                    {screenName === 'home' && (() => {
+                        const eventsLd = generateEventsJsonLd(tenantState.data, 'eddesk.in');
+                        return eventsLd ? (
+                            <script
+                                type="application/ld+json"
+                                dangerouslySetInnerHTML={{ __html: JSON.stringify(eventsLd) }}
+                            />
+                        ) : null;
+                    })()}
+
+                    {/* 4. Principal Person schema — home screen only, skip if no principal */}
+                    {screenName === 'home' && (() => {
+                        const principalLd = generatePrincipalJsonLd(tenantState.data, 'eddesk.in');
+                        return principalLd ? (
+                            <script
+                                type="application/ld+json"
+                                dangerouslySetInnerHTML={{ __html: JSON.stringify(principalLd) }}
+                            />
+                        ) : null;
+                    })()}
                 </>
             )}
             <TemplateRenderer

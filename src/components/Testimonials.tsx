@@ -1,67 +1,67 @@
 "use client";
-"use client";
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { mContainer, mSection, mLabel, mDisplay, mCard, marketingTheme } from '@/lib/marketing/theme';
 import { Quote, Star } from 'lucide-react';
 
 const testimonials = [
   {
-    quote: "EdDesk transformed our online presence in a matter of weeks. The enrollment process is now 40% faster and parents love the new portal.",
-    author: "Dr. Sarah Jenkins",
-    role: "Principal, Oakwood Academy",
-    school: "Oakwood Academy",
+    quote: "EdDesk transformed our online presence in a matter of weeks. The enrollment process is now 40% faster and parents love the new professional portal.",
+    author: "Dr. Rajesh Kumar",
+    role: "Principal",
+    school: "St. Xavier's International",
     rating: 5
   },
   {
-    quote: "The admin panel is incredibly intuitive. Even our non-technical staff can update class schedules and school news without any training.",
-    author: "Mark Thompson",
-    role: "IT Director, Heritage Global",
-    school: "Heritage Global",
+    quote: "The Manager Dashboard is incredibly intuitive. Even our non-technical staff can update fees, notices, and faculty profiles without any training.",
+    author: "Mrs. Anjali Sharma",
+    role: "Director",
+    school: "Green Valley Public School",
     rating: 5
   },
   {
-    quote: "Switching to this SAAS was the best decision we made this academic year. The AI-powered branding tools helped us refresh our look effortlessly.",
-    author: "Elena Rodriguez",
-    role: "Marketing Head, Vision Tech School",
-    school: "Vision Tech School",
+    quote: "Switching to EdDesk was the best decision for our digital identity. The automated theme engine helped us launch a world-class site overnight.",
+    author: "Mr. Amit Patel",
+    role: "Administrator",
+    school: "Bright Future Academy",
     rating: 5
   }
 ];
 
 export const Testimonials: React.FC = () => {
   return (
-    <section id="testimonials" className="py-24 bg-slate-950 relative overflow-hidden">
+    <section id="testimonials" className={`${mSection} bg-slate-950 relative overflow-hidden`}>
       {/* Decorative patterns */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 blur-[100px] rounded-full"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/5 blur-[100px] rounded-full"></div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className={mContainer}>
         <div className="text-center mb-16">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="inline-block p-3 rounded-2xl bg-slate-900 border border-slate-800 mb-6"
+            className={mLabel + " mx-auto w-fit mb-6"}
           >
-            <Star className="text-yellow-500 w-6 h-6 fill-current" />
+            <span>Institutional Success</span>
           </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="font-display text-4xl md:text-5xl font-bold mb-6"
+            className={`${mDisplay} text-4xl md:text-5xl mb-6`}
           >
-            Trusted by Elite Schools
+            Trusted by <span className={marketingTheme.gradients.text}>EdDesk Schools</span>
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-slate-400 max-w-2xl mx-auto text-lg"
+            className={marketingTheme.type.body + " max-w-2xl mx-auto text-lg"}
           >
-            Join 500+ educational institutions that have elevated their digital standard with our platform.
+            Join hundreds of educational institutions that have elevated their digital standard with our platform.
           </motion.p>
         </div>
 
@@ -69,12 +69,12 @@ export const Testimonials: React.FC = () => {
           {testimonials.map((t, idx) => (
             <motion.div
               key={idx}
-              initial={{ opacity: 0, x: idx % 2 === 0 ? -20 : 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.15, duration: 0.5 }}
               whileHover={{ y: -10 }}
-              className="bg-slate-900/40 border border-slate-800 p-10 rounded-[2.5rem] relative group"
+              className={`${mCard} p-10 relative group`}
             >
               <Quote className="absolute top-8 right-10 text-indigo-500/10 w-20 h-20 group-hover:text-indigo-500/20 transition-colors" />
 
@@ -98,9 +98,9 @@ export const Testimonials: React.FC = () => {
                 </div>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-slate-800/50 flex items-center justify-between">
-                <div className="text-[10px] uppercase tracking-widest font-bold text-slate-600">Verified Client</div>
-                <div className="text-sm font-display font-semibold text-slate-400 group-hover:text-indigo-400 transition-colors">{t.school}</div>
+              <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between">
+                <div className="text-[10px] uppercase tracking-widest font-black text-slate-600">Verified Client</div>
+                <div className="text-sm font-bold text-slate-400 group-hover:text-indigo-400 transition-colors">{t.school}</div>
               </div>
             </motion.div>
           ))}
@@ -112,10 +112,10 @@ export const Testimonials: React.FC = () => {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.6 }}
-          className="mt-20 flex flex-wrap justify-center items-center gap-12 opacity-30 grayscale"
+          className="mt-24 flex flex-wrap justify-center items-center gap-12 opacity-40"
         >
-          {['SCHOOLS', 'ACADEMY', 'INSTITUTE', 'COLLEGE', 'KINDERGARTEN'].map((logo, i) => (
-            <div key={i} className="text-xl font-display font-bold text-slate-500 border-2 border-slate-800 px-6 py-2 rounded-xl">
+          {['ACADEMY', 'INSTITUTE', 'COLLEGE', 'KINDERGARTEN', 'HIGHER ED'].map((logo, i) => (
+            <div key={i} className="text-sm font-black text-slate-500 border border-white/5 px-8 py-3 rounded-2xl tracking-[0.3em] uppercase">
               {logo}
             </div>
           ))}

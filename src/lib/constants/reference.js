@@ -11,8 +11,8 @@
 export const TABLE_SCHOOLS = "schools";
 export const TABLE_HOMEPAGE_SECTIONS = "templatecomponents"; // Map to new table
 export const TABLE_COMPONENT_REGISTRY = "componentregistry";
-export const TABLE_HERO_MEDIA = "herocontent";
-export const TABLE_ANNOUNCEMENTS = "broadcastcontent";
+export const TABLE_HERO_MEDIA = "hero";
+export const TABLE_ANNOUNCEMENTS = "broadcast";
 export const TABLE_ACADEMIC_RESULTS = "academicresults";
 export const TABLE_ACHIEVEMENTS = "achievements";
 export const TABLE_PERSONNEL = "faculty";
@@ -37,6 +37,10 @@ export const TABLE_TEMPLATES = "templates";
 export const TABLE_TEMPLATE_SCREENS = "templatescreens";
 export const TABLE_FORM_SUBMISSIONS = "formsubmissions";
 
+export const TABLE_LEADERSHIP = "leadership";
+export const TABLE_BROADCAST = "broadcast"; // alias for TABLE_ANNOUNCEMENTS
+export const TABLE_HERO = "hero"; // alias for TABLE_HERO_MEDIA
+
 // --- Columns: Global / Shared ---
 export const COL_ID = "key";
 export const COL_SCHOOL_ID = "schoolkey";
@@ -47,6 +51,7 @@ export const COL_DISPLAY_ORDER = "displayorder";
 
 // --- Columns: schools ---
 export const COL_SCHOOLS_ID = "key";
+export const COL_SCHOOLS_KEY = "key"; // Alias for tenant.viewmodel.ts
 export const COL_SCHOOLS_NAME = "name";
 export const COL_SCHOOLS_SLUG = "slug";
 export const COL_SCHOOLS_CUSTOM_DOMAIN = "customdomain";
@@ -65,8 +70,12 @@ export const COL_SCHOOLS_CREATED_AT = "createdat";
 export const COL_SCHOOLS_UPDATED_AT = "updatedat";
 export const COL_SCHOOLS_EXPIRATION_DATE = "expirationdate"; // Added back
 export const COL_SCHOOLS_PAYMENTGATEWAY_URL = "paymentgateway_url"; // Added back
+export const COL_SCHOOLS_TEMPLATE_SLUG = "templateslug"; // e.g. "template_classic"
+export const COL_SCHOOLS_IS_DEMO = "isdemo"; // boolean
+export const COL_SCHOOLS_SLOGAN = "slogan"; // short tagline shown in navbar/header
+export const COL_SCHOOLS_DESCRIPTION = "description"; // longer description shown in footer
 
-// --- Columns: herocontent (TABLE_HERO_MEDIA) ---
+// --- Columns: hero (TABLE_HERO_MEDIA) ---
 export const COL_HERO_MEDIA_ID = "key";
 export const COL_HERO_MEDIA_SCHOOL_ID = "schoolkey";
 export const COL_HERO_MEDIA_PAGE_TYPE = "pagetype";
@@ -81,7 +90,7 @@ export const COL_HERO_MEDIA_SECONDARY_BUTTON_URL = "secondarybuttonurl";
 export const COL_HERO_MEDIA_DISPLAY_ORDER = "displayorder";
 export const COL_HERO_MEDIA_IS_ACTIVE = "isactive";
 
-// --- Columns: broadcastcontent (TABLE_ANNOUNCEMENTS) ---
+// --- Columns: broadcast (TABLE_ANNOUNCEMENTS) ---
 export const COL_ANNOUNCEMENTS_ID = "key";
 export const COL_ANNOUNCEMENTS_SCHOOL_ID = "schoolkey";
 export const COL_ANNOUNCEMENTS_TITLE = "title";
@@ -131,6 +140,18 @@ export const COL_PERSONNEL_DISPLAY_ORDER = "displayorder";
 export const COL_PERSONNEL_IS_ACTIVE = "isactive";
 export const COL_PERSONNEL_TYPE = "person_type"; // Restored
 export const COL_PERSONNEL_IS_FEATURED = "isfeatured"; // Restored
+
+// --- Columns: leadership ---
+export const COL_LEADERSHIP_ID = "key";
+export const COL_LEADERSHIP_SCHOOL_ID = "schoolkey";
+export const COL_LEADERSHIP_NAME = "name";
+export const COL_LEADERSHIP_ROLE = "role"; // 'principal' | 'chairman' | 'board' | others
+export const COL_LEADERSHIP_DESIGNATION = "designation";
+export const COL_LEADERSHIP_MESSAGE = "message";
+export const COL_LEADERSHIP_IMAGE_URL = "imageurl";
+export const COL_LEADERSHIP_SIGNATURE_URL = "signatureurl";
+export const COL_LEADERSHIP_IS_ACTIVE = "isactive";
+export const COL_LEADERSHIP_DISPLAY_ORDER = "displayorder";
 
 // --- Columns: schoolstats (TABLE_CAMPUS_STATISTICS) ---
 export const COL_CAMPUS_STATISTICS_ID = "key";
@@ -252,10 +273,12 @@ export const COL_TEMPLATE_COMPONENTS_KEY = "componentkey";
 export const COL_TEMPLATE_COMPONENTS_ORDER = "displayorder";
 export const COL_TEMPLATE_COMPONENTS_REQUIRED = "isrequired";
 export const COL_TEMPLATE_COMPONENTS_VALIDATION = "validationconfig";
+export const COL_TEMPLATE_COMPONENTS_CODE = "componentcode"; // 'hero' | 'broadcast' | etc.
 export const COL_TEMPLATE_COMPONENTS_IS_ACTIVE = "isactive";
 
 export const COL_HOMEPAGE_SECTIONS_SECTION_KEY = "componentkey"; // Re-mapped
 export const COL_HOMEPAGE_SECTIONS_IS_ENABLED = "isactive"; // Re-mapped
+export const COL_HOMEPAGE_SECTIONS_IS_REQUIRED = "isrequired"; // Re-mapped
 export const COL_HOMEPAGE_SECTIONS_DISPLAY_ORDER = "displayorder";
 export const COL_HOMEPAGE_SECTIONS_SETTINGS = "validationconfig"; // Best guess mapping or JSON settings?
 
@@ -289,6 +312,21 @@ export const COL_FORM_SUBMISSIONS_SCHOOL_ID = "schoolkey";
 export const COL_FORM_SUBMISSIONS_TYPE = "formtype";
 export const COL_FORM_SUBMISSIONS_PAYLOAD = "payload";
 export const COL_FORM_SUBMISSIONS_STATUS = "status";
+
+// --- Columns: subscription ---
+export const COL_SUBSCRIPTION_ID = "key";
+export const COL_SUBSCRIPTION_SCHOOL_ID = "schoolkey";
+export const COL_SUBSCRIPTION_PLAN_ID = "plankey";
+export const COL_SUBSCRIPTION_STATUS = "status";
+export const COL_SUBSCRIPTION_START_DATE = "startdate";
+export const COL_SUBSCRIPTION_END_DATE = "enddate"; // expiry date
+
+// --- Columns: plan (plandetails) ---
+export const COL_PLAN_ID = "key";
+export const COL_PLAN_NAME = "name";
+export const COL_PLAN_CODE = "code";
+export const COL_PLAN_GRACE_PERIOD = "graceperiod"; // number of days
+export const COL_PLAN_IS_ACTIVE = "isactive";
 
 // --- Columns: school_identity (Mapped back for compatibility) ---
 // Note: Many of these were previously in school_identity table but are now scattered.

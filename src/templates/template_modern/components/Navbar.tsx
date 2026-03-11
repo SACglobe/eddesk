@@ -8,11 +8,15 @@ interface NavbarProps {
     school?: any;
 }
 
+import { isValidImageUrl } from '@/core/utils/url';
+
 const Navbar: React.FC<NavbarProps> = ({ school }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isMoreOpen, setIsMoreOpen] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const pathname = usePathname();
+
+    const showLogo = school.logoUrl && isValidImageUrl(school.logoUrl);
 
     const mainNavItems = [
         { name: 'Home', href: '/' },
@@ -55,23 +59,19 @@ const Navbar: React.FC<NavbarProps> = ({ school }) => {
                 <div className="flex items-center justify-between h-20">
                     <Link href="/" className="flex items-center gap-3 cursor-pointer">
                         <div className="flex items-center gap-3">
-                            <div className="flex-shrink-0 w-10 h-10">
-                                {school.logoUrl ? (
-                                    <img src={school.logoUrl} alt={`${school.name} logo`}
+                            {showLogo && (
+                                <div className="flex-shrink-0 w-10 h-10">
+                                    <img src={school.logoUrl} alt={""}
                                         className="w-full h-full object-contain" />
-                                ) : (
-                                    <div className="bg-accent p-2 rounded-lg flex items-center justify-center w-full h-full">
-                                        <span className="text-primary font-bold text-xl">
-                                            {school.name.charAt(0)}
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
+                                </div>
+                            )}
                             <div>
                                 <span className="font-bold text-xl tracking-tight hidden sm:block">
                                     {school.name}
                                 </span>
-                                <p className="text-xs text-accent font-medium hidden sm:block uppercase">Modern Template</p>
+                                {school.slogan && (
+                                    <p className="text-xs text-accent font-medium hidden sm:block uppercase">{school.slogan}</p>
+                                )}
                             </div>
                         </div>
                     </Link>

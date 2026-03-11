@@ -1,17 +1,31 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { GraduationCap, Layout, Settings, Rocket, Menu, X, MessageSquare, ChevronDown, Monitor, Sparkles } from 'lucide-react';
+
+const NAV_ITEMS = [
+  { label: 'Features',   type: 'anchor', id: 'features',     icon: <Rocket className="w-4 h-4" /> },
+  { label: 'Templates',  type: 'anchor', id: 'templates',    icon: <Layout className="w-4 h-4" /> },
+  { label: 'Pricing',    type: 'anchor', id: 'pricing',      icon: <Settings className="w-4 h-4" /> },
+  { label: 'About',      type: 'page',   href: '/about',     icon: <GraduationCap className="w-4 h-4" /> },
+  { label: 'Contact',    type: 'page',   href: '/contact',   icon: <MessageSquare className="w-4 h-4" /> },
+];
 
 export const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const pathname = usePathname();
+  const isHome = pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
 
-      const sections = ['features', 'templates', 'admin', 'testimonials'];
+      const sections = ['features', 'templates', 'pricing', 'admin', 'testimonials'];
       for (const section of sections) {
         const element = document.getElementById(section);
         if (element) {
@@ -28,9 +42,9 @@ export const Navbar: React.FC = () => {
   }, []);
 
   const scrollToSection = (e: React.MouseEvent, id: string) => {
-    e.preventDefault();
     const element = document.getElementById(id);
     if (element) {
+      e.preventDefault();
       const offset = 80;
       const bodyRect = document.body.getBoundingClientRect().top;
       const elementRect = element.getBoundingClientRect().top;
@@ -46,6 +60,12 @@ export const Navbar: React.FC = () => {
     setMobileMenuOpen(false);
   };
 
+  const handleNavClick = (e: React.MouseEvent, item: typeof NAV_ITEMS[0]) => {
+    if (item.type === 'anchor' && isHome && item.id) {
+      scrollToSection(e, item.id);
+    }
+  };
+
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'py-3' : 'py-6'}`}>
       <div className="container mx-auto px-6">
@@ -55,65 +75,33 @@ export const Navbar: React.FC = () => {
             className="flex items-center space-x-2 cursor-pointer group"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
-            <div className="bg-indigo-600 p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300 shadow-lg shadow-indigo-600/20 flex items-center justify-center">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
-                <path d="M4 6C4 4.89543 4.89543 4 6 4H18C19.1046 4 20 4.89543 20 6V16C20 17.1046 19.1046 18 18 18H6C4.89543 18 4 17.1046 4 16V6Z" fill="white" fillOpacity="0.2" />
-                <path d="M7 7H17V9H7V7Z" fill="white" />
-                <path d="M7 11H17V13H7V11Z" fill="white" />
-                <path d="M7 15H13V17H7V15Z" fill="white" />
-                <path d="M2 20H22V22H2V20Z" fill="white" fillOpacity="0.4" />
-              </svg>
-            </div>
-            <span className="font-display font-black text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-              EdDesk
-            </span>
+            <img src="/assets/images/logo.png" alt="EdDesk Logo" className="h-10 w-auto object-contain" />
           </div>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center space-x-1">
-            <NavLink
-              href="#features"
-              icon={<Rocket className="w-4 h-4" />}
-              isActive={activeSection === 'features'}
-              onClick={(e) => scrollToSection(e, 'features')}
-            >
-              Features
-            </NavLink>
-            <NavLink
-              href="#templates"
-              icon={<Layout className="w-4 h-4" />}
-              isActive={activeSection === 'templates'}
-              onClick={(e) => scrollToSection(e, 'templates')}
-            >
-              Templates
-            </NavLink>
-            <NavLink
-              href="#admin"
-              icon={<Settings className="w-4 h-4" />}
-              isActive={activeSection === 'admin'}
-              onClick={(e) => scrollToSection(e, 'admin')}
-            >
-              Admin Panel
-            </NavLink>
-            <NavLink
-              href="#testimonials"
-              icon={<MessageSquare className="w-4 h-4" />}
-              isActive={activeSection === 'testimonials'}
-              onClick={(e) => scrollToSection(e, 'testimonials')}
-            >
-              Success
-            </NavLink>
+            {NAV_ITEMS.map((item) => (
+              <NavLink
+                key={item.label}
+                href={item.type === 'anchor' ? (isHome ? `#${item.id}` : `/#${item.id}`) : item.href!}
+                icon={item.icon}
+                isActive={item.type === 'anchor' ? activeSection === item.id : pathname === item.href}
+                onClick={(e) => handleNavClick(e, item)}
+              >
+                {item.label}
+              </NavLink>
+            ))}
           </div>
 
           {/* Right Action */}
           <div className="hidden md:flex items-center space-x-4">
-            <button
-              onClick={(e) => scrollToSection(e, 'templates')}
+            <Link
+              href="/contact"
               className="relative overflow-hidden bg-white text-slate-950 px-8 py-2.5 rounded-full font-black text-sm transition-all hover:scale-105 active:scale-95 shadow-xl shadow-white/5 group"
             >
               <span className="relative z-10">Start Project</span>
               <div className="absolute inset-0 bg-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            </button>
+            </Link>
           </div>
 
           {/* Mobile Toggle */}
@@ -133,22 +121,32 @@ export const Navbar: React.FC = () => {
             className="absolute top-full left-0 right-0 bg-slate-950/95 backdrop-blur-2xl border-b border-slate-800 overflow-hidden md:hidden"
           >
             <div className="p-6 flex flex-col space-y-4">
-              {['features', 'templates', 'admin', 'testimonials'].map((id) => (
-                <button
-                  key={id}
-                  onClick={(e) => scrollToSection(e, id)}
-                  className={`flex items-center space-x-4 p-4 rounded-2xl text-left transition-all ${activeSection === id ? 'bg-indigo-600/10 text-white' : 'text-slate-400'}`}
+              {NAV_ITEMS.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.type === 'anchor' ? (isHome ? `#${item.id}` : `/#${item.id}`) : item.href!}
+                  onClick={(e) => {
+                    handleNavClick(e, item);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`flex items-center space-x-4 p-4 rounded-2xl text-left transition-all ${
+                    (item.type === 'anchor' ? activeSection === item.id : pathname === item.href) 
+                    ? 'bg-indigo-600/10 text-indigo-400' 
+                    : 'text-slate-400 hover:text-white'
+                  }`}
                 >
-                  <span className="font-bold capitalize">{id.replace('-', ' ')}</span>
-                </button>
+                  <span className="shrink-0">{item.icon}</span>
+                  <span className="font-bold capitalize">{item.label}</span>
+                </Link>
               ))}
               <div className="pt-4 border-t border-slate-800">
-                <button
-                  onClick={(e) => scrollToSection(e, 'templates')}
-                  className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-xl shadow-indigo-500/20"
+                <Link
+                  href="/contact"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-xl shadow-indigo-500/20 flex items-center justify-center"
                 >
                   Get Started Now
-                </button>
+                </Link>
               </div>
             </div>
           </motion.div>
@@ -165,7 +163,7 @@ const NavLink: React.FC<{
   isActive: boolean;
   onClick: (e: React.MouseEvent) => void
 }> = ({ href, children, icon, isActive, onClick }) => (
-  <a
+  <Link
     href={href}
     onClick={onClick}
     className="relative flex items-center space-x-2 px-4 py-2 text-sm font-semibold transition-all group"
@@ -183,5 +181,5 @@ const NavLink: React.FC<{
         transition={{ type: "spring", stiffness: 380, damping: 30 }}
       />
     )}
-  </a>
+  </Link>
 );

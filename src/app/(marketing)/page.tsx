@@ -2,14 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Navbar } from '@/components/Navbar';
 import { Hero } from '@/components/Hero';
 import { Services } from '@/components/Services';
 import { Process } from '@/components/Process';
 import { Templates } from '@/components/Templates';
 import { AdminPreview } from '@/components/AdminPreview';
 import { Testimonials } from '@/components/Testimonials';
-import { Footer } from '@/components/Footer';
 import { Monitor, Smartphone, Tablet, X as CloseIcon, ChevronLeft, ChevronUp } from 'lucide-react';
 
 export default function Home() {
@@ -68,16 +66,8 @@ export default function Home() {
     };
 
     return (
-        <div className="min-h-screen selection:bg-indigo-500/30">
-            {/* Background Gradients */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/10 blur-[120px] rounded-full animate-blob"></div>
-                <div className="absolute bottom-[10%] right-[-5%] w-[35%] h-[35%] bg-purple-600/10 blur-[120px] rounded-full animate-blob animation-delay-2000"></div>
-                <div className="absolute top-[40%] left-[20%] w-[25%] h-[25%] bg-blue-600/5 blur-[100px] rounded-full animate-blob animation-delay-4000"></div>
-            </div>
-
+        <>
             <div className="relative z-10">
-                <Navbar />
                 <main>
                     <Hero />
                     <Services />
@@ -86,7 +76,6 @@ export default function Home() {
                     <AdminPreview />
                     <Testimonials />
                 </main>
-                <Footer />
             </div>
 
             {/* Scroll to Top Button */}
@@ -187,6 +176,6 @@ export default function Home() {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div>
+        </>
     );
 }

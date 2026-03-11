@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { schoolData } from '../data';
 import { SectionHeader, Card, Button, StatCounter, TestimonialSlider, useIntersectionObserver } from '../components/Shared';
 import Link from 'next/link';
+import { isValidImageUrl } from '@/core/utils/url';
 import LayoutWrapper from '../components/LayoutWrapper';
 import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
+import SystemPopup from '@/components/system/SystemPopup';
 
 interface HeroSlide {
   mediaType: string;
@@ -31,27 +32,28 @@ const Hero: React.FC<{ heroSlide: HeroSlide | null }> = ({ heroSlide }) => {
   return (
     <section className="h-screen relative overflow-hidden bg-signature-navy">
       <div className="absolute inset-0 z-0">
-        {heroSlide?.mediaType === 'video' ? (
-          <video
-            ref={videoRef}
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-full h-full object-cover scale-110"
-            poster="https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?auto=format&fit=crop&q=80&w=2000"
-          >
-            <source
-              src={heroSlide?.mediaUrl || "https://assets.mixkit.co/videos/preview/mixkit-university-building-with-a-large-fountain-in-front-4354-large.mp4"}
-              type="video/mp4"
+        {heroSlide?.mediaUrl && isValidImageUrl(heroSlide.mediaUrl) && (
+          heroSlide.mediaType === 'video' ? (
+            <video
+              ref={videoRef}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="w-full h-full object-cover scale-110"
+            >
+              <source
+                src={heroSlide.mediaUrl}
+                type="video/mp4"
+              />
+            </video>
+          ) : (
+            <img
+              src={heroSlide.mediaUrl}
+              alt={""}
+              className="w-full h-full object-cover scale-110"
             />
-          </video>
-        ) : (
-          <img
-            src={heroSlide?.mediaUrl || "https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?auto=format&fit=crop&q=80&w=2000"}
-            alt="Hero background"
-            className="w-full h-full object-cover scale-110"
-          />
+          )
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-signature-navy/80 via-signature-navy/40 to-signature-navy z-[1]"></div>
       </div>
@@ -223,9 +225,10 @@ const InstitutionalStats: React.FC<{
 interface DashboardProps {
   statistics: Array<{ label: string; value: string; icon: string; displayOrder: number }>;
   statsEnabled: boolean;
+  statsRequired: boolean;
 }
 
-const SchoolDashboard: React.FC<DashboardProps> = ({ statistics, statsEnabled }) => {
+const SchoolDashboard: React.FC<DashboardProps> = ({ statistics, statsEnabled, statsRequired }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
 
   const SVG_ICON_MAP: Record<string, React.ReactNode> = {
@@ -271,7 +274,16 @@ const SchoolDashboard: React.FC<DashboardProps> = ({ statistics, statsEnabled })
 
   const getSvgIcon = (name: string) => SVG_ICON_MAP[name] ?? DEFAULT_SVG;
 
-  if (!statsEnabled || statistics.length === 0) return null;
+  if (!statsEnabled) return null;
+  if (statsRequired && statistics.length === 0) {
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Statistics section is required but no specific data is found. Please add statistics data in the admin panel."
+      />
+    );
+  }
+  if (!statsRequired && statistics.length === 0) return null;
 
   return (
     <section ref={containerRef} className="bg-[#F0F7FF] py-24 px-8 border-b border-signature-navy/5">
@@ -308,12 +320,22 @@ interface FacultyMember {
 interface FacultyHighlightsProps {
   faculty: FacultyMember[];
   facultyEnabled: boolean;
+  facultyRequired: boolean;
 }
 
-const FacultyHighlights: React.FC<FacultyHighlightsProps> = ({ faculty, facultyEnabled }) => {
+const FacultyHighlights: React.FC<FacultyHighlightsProps> = ({ faculty, facultyEnabled, facultyRequired }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
 
-  if (!facultyEnabled || faculty.length === 0) return null;
+  if (!facultyEnabled) return null;
+  if (facultyRequired && faculty.length === 0) {
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Faculty section is required but no specific data is found. Please add faculty data in the admin panel."
+      />
+    );
+  }
+  if (!facultyRequired && faculty.length === 0) return null;
 
 
   return (
@@ -332,7 +354,9 @@ const FacultyHighlights: React.FC<FacultyHighlightsProps> = ({ faculty, facultyE
           {faculty.map((edu, i) => (
             <div key={i} className={`group transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`} style={{ transitionDelay: `${i * 200}ms` }}>
               <div className="relative aspect-[4/5] overflow-hidden mb-8">
-                <img src={edu.photoUrl || ''} alt={edu.name || ''} className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
+                {edu.photoUrl && isValidImageUrl(edu.photoUrl) && (
+                  <img src={edu.photoUrl} alt={""} className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
+                )}
                 <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-signature-gold/30"></div>
               </div>
               <span className="text-[10px] uppercase tracking-[0.4em] text-signature-gold font-bold mb-4 block">{edu.designation || ''}</span>
@@ -360,13 +384,23 @@ interface SportAchievement {
 
 interface AthleticExcellenceProps {
   sportsAchievements: SportAchievement[];
-  achievementsEnabled: boolean;
+  sportsEnabled: boolean;
+  sportsRequired: boolean;
 }
 
-const AthleticExcellence: React.FC<AthleticExcellenceProps> = ({ sportsAchievements, achievementsEnabled }) => {
+const AthleticExcellence: React.FC<AthleticExcellenceProps> = ({ sportsAchievements, sportsEnabled, sportsRequired }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
 
-  if (!achievementsEnabled || sportsAchievements.length === 0) return null;
+  if (!sportsEnabled) return null;
+  if (sportsRequired && sportsAchievements.length === 0) {
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Sports section is required but no specific data is found. Please add sports data in the admin panel."
+      />
+    );
+  }
+  if (!sportsRequired && sportsAchievements.length === 0) return null;
 
   return (
     <section ref={containerRef} className="py-48 px-8 bg-signature-ivory border-b border-signature-navy/5 overflow-hidden">
@@ -384,7 +418,7 @@ const AthleticExcellence: React.FC<AthleticExcellenceProps> = ({ sportsAchieveme
           {sportsAchievements.map((sport, i) => (
             <div key={i} className={`group transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`} style={{ transitionDelay: `${i * 200}ms` }}>
               <div className="relative aspect-[4/5] overflow-hidden mb-8">
-                {sport.photoUrl ? (
+                {sport.photoUrl && isValidImageUrl(sport.photoUrl) ? (
                   <img src={sport.photoUrl} alt={sport.title} className="w-full h-full object-cover object-center grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-signature-ivory">
@@ -427,12 +461,22 @@ interface FacilityGroup {
 interface CampusFacilitiesProps {
   facilityGroups: FacilityGroup[];
   facilitiesEnabled: boolean;
+  facilitiesRequired: boolean;
 }
 
-const CampusFacilities: React.FC<CampusFacilitiesProps> = ({ facilityGroups, facilitiesEnabled }) => {
+const CampusFacilities: React.FC<CampusFacilitiesProps> = ({ facilityGroups, facilitiesEnabled, facilitiesRequired }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
 
-  if (!facilitiesEnabled || facilityGroups.length === 0) return null;
+  if (!facilitiesEnabled) return null;
+  if (facilitiesRequired && facilityGroups.length === 0) {
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Facilities section is required but no specific data is found. Please add facilities data in the admin panel."
+      />
+    );
+  }
+  if (!facilitiesRequired && facilityGroups.length === 0) return null;
 
   return (
     <section ref={containerRef} className="py-48 px-8 bg-white border-b border-signature-navy/5">
@@ -479,10 +523,19 @@ const CampusFacilities: React.FC<CampusFacilitiesProps> = ({ facilityGroups, fac
   );
 };
 
-const UpcomingEvents: React.FC<{ eventsToShow: any[], eventsEnabled: boolean }> = ({ eventsToShow, eventsEnabled }) => {
+const UpcomingEvents: React.FC<{ eventsToShow: any[], eventsEnabled: boolean, eventsRequired: boolean }> = ({ eventsToShow, eventsEnabled, eventsRequired }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
 
-  if (!eventsEnabled || eventsToShow.length === 0) return null;
+  if (!eventsEnabled) return null;
+  if (eventsRequired && eventsToShow.length === 0) {
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Events section is required but no specific data is found. Please add events data in the admin panel."
+      />
+    );
+  }
+  if (!eventsRequired && eventsToShow.length === 0) return null;
 
   const formatEventDate = (dateStr: string) => {
     const d = new Date(dateStr + 'T00:00:00');
@@ -536,84 +589,159 @@ const UpcomingEvents: React.FC<{ eventsToShow: any[], eventsEnabled: boolean }> 
   );
 };
 
-export default function Home({ data, statsEnabled, statistics }: {
-  data: TenantViewModel;
-  statsEnabled: boolean;
-  statistics: any[];
-}) {
+export default function Home({ data }: { data: TenantViewModel }) {
   const { containerRef: introRef, isVisible: introVisible } = useIntersectionObserver({ threshold: 0.1 });
 
-  const heroSlide = (data?.heroMedia ?? [])
+  // 1. Hero
+  const heroSection = data?.homepageSections?.find(s => s.sectionKey === 'hero');
+  const heroEnabled = heroSection?.isEnabled ?? true;
+  const heroRequired = heroSection?.isRequired ?? false;
+  const heroMedia = (data?.heroMedia ?? [])
     .filter(s => s.isActive)
-    .sort((a, b) => a.displayOrder - b.displayOrder)[0] ?? null;
+    .sort((a, b) => a.displayOrder - b.displayOrder);
 
-  const principal = data?.personnel?.find(p => p.personType === 'principal') ?? null;
+  if (heroEnabled && heroRequired && heroMedia.length === 0) {
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Hero section is required but no specific data is found. Please add hero data in the admin panel."
+      />
+    );
+  }
+  const heroSlide = heroMedia[0] ?? null;
 
-  const facultySection = (data?.homepageSections ?? [])
-    .find(s => s.sectionKey === 'faculty');
+  // 2. Institutional Stats (Academics + Achievements)
+  const academicSection = data?.homepageSections?.find(s => s.sectionKey === 'academics');
+  const academicResultsEnabled = academicSection?.isEnabled ?? true;
+  const academicResultsRequired = academicSection?.isRequired ?? false;
+  const academicResults = [...(data?.academicResults ?? [])].sort((a, b) => b.year - a.year);
+  if (academicResultsEnabled && academicResultsRequired && academicResults.length === 0) {
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Academics section is required but no specific data is found. Please add academic results in the admin panel."
+      />
+    );
+  }
+  const latestAcademicResult = academicResults[0] ?? null;
+
+  const achievementsSection = data?.homepageSections?.find(s => s.sectionKey === 'achievements');
+  const achievementsEnabled = achievementsSection?.isEnabled ?? true;
+  const achievementsRequired = achievementsSection?.isRequired ?? false;
+  const academicAchievements = (data?.achievements ?? [])
+    .filter(a => a.achievementType === 'academic')
+    .sort((a, b) => b.year - a.year || (a.displayOrder || 0) - (b.displayOrder || 0));
+  if (achievementsEnabled && achievementsRequired && academicAchievements.length === 0) {
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Achievements section is required but no specific data is found. Please add achievements in the admin panel."
+      />
+    );
+  }
+
+  // 3. Leadership
+  const leadershipSection = data?.homepageSections?.find(s => s.sectionKey === 'leadership');
+  const leadershipEnabled = leadershipSection?.isEnabled ?? true;
+  const leadershipRequired = leadershipSection?.isRequired ?? false;
+  const leadership = (data?.leadership ?? []).filter(l => l.isActive);
+
+  if (leadershipEnabled && leadershipRequired && leadership.length === 0) {
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Leadership section is required but no specific data is found. Please add leadership data in the admin panel."
+      />
+    );
+  }
+
+  // 4. Statistics Dashboard
+  const statsSection = data?.homepageSections?.find(s => s.sectionKey === 'stats');
+  const statsEnabled = statsSection?.isEnabled ?? true;
+  const statsRequired = statsSection?.isRequired ?? false;
+  const statistics = (data?.statistics ?? []).sort((a, b) => a.displayOrder - b.displayOrder);
+  if (statsEnabled && statsRequired && statistics.length === 0) {
+    // Handled in SchoolDashboard component
+  }
+
+  // 5. Faculty
+  const facultySection = data?.homepageSections?.find(s => s.sectionKey === 'faculty');
   const facultyEnabled = facultySection?.isEnabled ?? true;
-  const faculty = (data?.personnel as any[] ?? [])
-    .filter(p => p.personType === 'faculty')
-    .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+  const facultyRequired = facultySection?.isRequired ?? false;
+  const faculty = (data?.personnel ?? [])
+    .filter(p => p.personType === 'faculty');
+  if (facultyEnabled && facultyRequired && faculty.length === 0) {
+    // Handled in FacultyHighlights component
+  }
 
-  const achievementsEnabled = (data?.homepageSections ?? [])
-    .find(s => s.sectionKey === 'achievements' || s.sectionKey === 'sports')
-    ?.isEnabled ?? true;
+  // 6. Sports (Athletic Excellence)
+  const sportsSection = data?.homepageSections?.find(s => s.sectionKey === 'sports');
+  const sportsEnabled = sportsSection?.isEnabled ?? true;
+  const sportsRequired = sportsSection?.isRequired ?? false;
   const sportsAchievements = (data?.achievements ?? [])
     .filter(a => a.achievementType?.toLowerCase().trim() === 'sports')
     .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+  if (sportsEnabled && sportsRequired && sportsAchievements.length === 0) {
+    // Handled in AthleticExcellence component
+  }
 
-  const facilitiesEnabled = (data?.homepageSections ?? [])
-    .find(s => s.sectionKey === 'facilities')
-    ?.isEnabled ?? true;
-
-  const grouped = (data?.facilities ?? []).reduce((acc: any, f: any) => {
+  // 7. Facilities
+  const facilitiesSection = data?.homepageSections?.find(s => s.sectionKey === 'facilities');
+  const facilitiesEnabled = facilitiesSection?.isEnabled ?? true;
+  const facilitiesRequired = facilitiesSection?.isRequired ?? false;
+  const groupedFacilities = (data?.facilities ?? []).reduce((acc: any, f: any) => {
     const key = f.categoryName;
     if (!acc[key]) acc[key] = { categoryName: key, items: [] };
     acc[key].items.push(f);
     return acc;
   }, {});
-  const facilityGroups = Object.values(grouped) as any[];
+  const facilityGroups = Object.values(groupedFacilities) as any[];
+  if (facilitiesEnabled && facilitiesRequired && facilityGroups.length === 0) {
+    // Handled in CampusFacilities component
+  }
 
-  const gallerySection = (data?.homepageSections ?? [])
-    .find(s => s.sectionKey === 'gallery');
+  // 8. Gallery (Campus Masterpiece)
+  const gallerySection = data?.homepageSections?.find(s => s.sectionKey === 'gallery');
   const galleryEnabled = gallerySection?.isEnabled ?? true;
+  const galleryRequired = gallerySection?.isRequired ?? false;
   const galleryItems = (data?.mediaLibrary ?? [])
     .filter(m => m.category === 'campus' && m.isFeatured)
     .slice(0, 3);
+  if (galleryEnabled && galleryRequired && galleryItems.length === 0) {
+    return (
+      <SystemPopup
+        variant="data_error"
+        errorMessage="Home Screen: Gallery section is required but no specific data is found. Please add gallery items in the admin panel."
+      />
+    );
+  }
 
-  const academicSection = (data?.homepageSections ?? [])
-    .find(s => s.sectionKey === 'academic_results');
-  const academicResultsEnabled = academicSection?.isEnabled ?? true;
-  const academicResults = [...(data?.academicResults ?? [])]
-    .sort((a, b) => b.year - a.year);
-  const latestAcademicResult = academicResults[0] ?? null;
-
-  const academicAchievements = (data?.achievements ?? [])
-    .filter(a => a.achievementType === 'academic')
-    .sort((a, b) => b.year - a.year || (a.displayOrder || 0) - (b.displayOrder || 0));
-
-  const eventsEnabled = (data?.homepageSections ?? [])
-    .find(s => s.sectionKey === 'events')
-    ?.isEnabled ?? true;
-
+  // 9. Events
+  const eventsSection = data?.homepageSections?.find(s => s.sectionKey === 'events');
+  const eventsEnabled = eventsSection?.isEnabled ?? true;
+  const eventsRequired = eventsSection?.isRequired ?? false;
   const now = new Date();
   const eventsToShow = (data?.events ?? [])
     .filter((e: any) => {
       if (!e.isFeatured) return false;
-      const eventDateTime = new Date(`${e.eventDate}T${e.startTime}`);
+      const eventDateTime = new Date(`${e.eventDate}T${e.startTime || '00:00:00'}Z`);
       return eventDateTime > now;
     })
     .sort((a: any, b: any) =>
-      new Date(`${a.eventDate}T${a.startTime}`).getTime() -
-      new Date(`${b.eventDate}T${b.startTime}`).getTime()
+      new Date(`${a.eventDate}T${a.startTime || '00:00:00'}Z`).getTime() -
+      new Date(`${b.eventDate}T${b.startTime || '00:00:00'}Z`).getTime()
     )
     .slice(0, 3);
+  if (eventsEnabled && eventsRequired && eventsToShow.length === 0) {
+    // Handled in UpcomingEvents component
+  }
 
   return (
     <LayoutWrapper>
       <div className="fade-in bg-signature-ivory">
-        <Hero heroSlide={heroSlide} />
+        {heroEnabled && (heroRequired || heroSlide) && (
+          <Hero heroSlide={heroSlide} />
+        )}
 
         <InstitutionalStats
           academicResultsEnabled={academicResultsEnabled}
@@ -622,38 +750,62 @@ export default function Home({ data, statsEnabled, statistics }: {
           academicAchievements={academicAchievements}
         />
 
-        <section className="py-48 px-8 grid lg:grid-cols-2 gap-24 items-center max-w-[1400px] mx-auto border-b border-signature-navy/5">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl group">
-            <img src={principal?.photoUrl || "/school/image/principal.png"} alt="Principal" className="w-full h-full object-cover object-top transition-transform duration-1000 group-hover:scale-105" />
-            <div className="absolute inset-0 bg-signature-navy/20 mix-blend-multiply"></div>
+        {leadershipEnabled && (leadershipRequired || leadership.length > 0) && (
+          <div className="space-y-48 bg-white">
+            {leadership.map((member, idx) => (
+              <section key={member.key || idx} className="py-48 px-8 grid lg:grid-cols-2 gap-24 items-center max-w-[1400px] mx-auto border-b border-signature-navy/5">
+                <div className={`relative aspect-[4/5] overflow-hidden rounded-2xl group ${idx % 2 !== 0 ? 'lg:order-2' : ''}`}>
+                  {member.imageUrl && isValidImageUrl(member.imageUrl) && (
+                    <img src={member.imageUrl} alt={""} className="w-full h-full object-cover object-top transition-transform duration-1000 group-hover:scale-105" />
+                  )}
+                  <div className="absolute inset-0 bg-signature-navy/20 mix-blend-multiply"></div>
+                </div>
+                <div className={`${idx % 2 !== 0 ? 'lg:order-1' : ''}`}>
+                  <SectionHeader title="Leadership" subtitle={member.role?.toUpperCase() || "Visionary Guidance"} />
+                  <p className="text-2xl text-signature-navy/60 font-serif italic mb-12 leading-relaxed">
+                    "{member.message || ''}"
+                  </p>
+                  <div className="flex items-center gap-6 mb-12">
+                    <div className="w-16 h-px bg-signature-gold"></div>
+                    <div>
+                      <div className="text-xl font-bold uppercase tracking-widest text-signature-navy">{member.name || ''}</div>
+                      <div className="text-signature-gold text-sm tracking-[0.2em] font-bold">{member.designation || member.role || 'Leader'}</div>
+                    </div>
+                  </div>
+                  <Link href="/about">
+                    <Button>Discover Our Legacy</Button>
+                  </Link>
+                </div>
+              </section>
+            ))}
           </div>
-          <div>
-            <SectionHeader title="Leadership" subtitle="Visionary Guidance" />
-            <p className="text-2xl text-signature-navy/60 font-serif italic mb-12 leading-relaxed">
-              "{principal?.bio}"
-            </p>
-            <div className="flex items-center gap-6 mb-12">
-              <div className="w-16 h-px bg-signature-gold"></div>
-              <div>
-                <div className="text-xl font-bold uppercase tracking-widest text-signature-navy">{principal?.name}</div>
-                <div className="text-signature-gold text-sm tracking-[0.2em] font-bold">{principal?.designation}</div>
-              </div>
-            </div>
-            <Link href="/about">
-              <Button>Discover Our Legacy</Button>
-            </Link>
-          </div>
-        </section>
+        )}
 
-        <SchoolDashboard statistics={statistics} statsEnabled={statsEnabled} />
+        <SchoolDashboard
+          statistics={statistics}
+          statsEnabled={statsEnabled}
+          statsRequired={statsRequired}
+        />
 
-        <FacultyHighlights faculty={faculty as any} facultyEnabled={facultyEnabled} />
+        <FacultyHighlights
+          faculty={faculty}
+          facultyEnabled={facultyEnabled}
+          facultyRequired={facultyRequired}
+        />
 
-        <AthleticExcellence sportsAchievements={sportsAchievements} achievementsEnabled={achievementsEnabled} />
+        <AthleticExcellence
+          sportsAchievements={sportsAchievements}
+          sportsEnabled={sportsEnabled}
+          sportsRequired={sportsRequired}
+        />
 
-        <CampusFacilities facilityGroups={facilityGroups} facilitiesEnabled={facilitiesEnabled} />
+        <CampusFacilities
+          facilityGroups={facilityGroups}
+          facilitiesEnabled={facilitiesEnabled}
+          facilitiesRequired={facilitiesRequired}
+        />
 
-        {galleryEnabled && galleryItems.length > 0 && (
+        {galleryEnabled && (galleryRequired || galleryItems.length > 0) && (
           <section className="py-48 px-8 bg-white">
             <div className="max-w-[1400px] mx-auto">
               <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12">
@@ -665,7 +817,7 @@ export default function Home({ data, statsEnabled, statistics }: {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                 {galleryItems.map((item, i) => (
                   <div key={i}>
-                    {item.mediaType === 'image' && item.url ? (
+                    {item.mediaType === 'image' && item.url && isValidImageUrl(item.url) ? (
                       <Card
                         title={item.caption || 'Campus Life'}
                         image={item.url}
@@ -674,7 +826,7 @@ export default function Home({ data, statsEnabled, statistics }: {
                     ) : (
                       <div className="group overflow-hidden relative bg-white border border-black/5 hover:border-signature-gold/40 transition-all duration-700 shadow-sm hover:shadow-2xl">
                         <div className="aspect-[3/4] overflow-hidden relative bg-signature-navy/5">
-                          {!item.url ? (
+                          {!item.url || !isValidImageUrl(item.url) ? (
                             <div className="w-full h-full flex items-center justify-center">
                               <svg xmlns="http://www.w3.org/2000/svg" className="w-20 h-20 text-signature-navy/10"
                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1">
@@ -686,9 +838,9 @@ export default function Home({ data, statsEnabled, statistics }: {
                             </div>
                           ) : (
                             <video
-                              src={item.url}
-                              autoPlay muted loop playsInline
-                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000 ease-out"
+                                src={item.url}
+                                autoPlay muted loop playsInline
+                                className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000 ease-out"
                             />
                           )}
                           <div className="absolute inset-0 bg-signature-navy/10 group-hover:bg-transparent transition-colors duration-700"></div>
@@ -709,7 +861,11 @@ export default function Home({ data, statsEnabled, statistics }: {
           </section>
         )}
 
-        <UpcomingEvents eventsToShow={eventsToShow} eventsEnabled={eventsEnabled} />
+        <UpcomingEvents
+          eventsToShow={eventsToShow}
+          eventsEnabled={eventsEnabled}
+          eventsRequired={eventsRequired}
+        />
 
         <section className="py-48 bg-signature-gold text-white text-center px-8 relative overflow-hidden">
           <div className="absolute inset-0 bg-signature-navy/10"></div>

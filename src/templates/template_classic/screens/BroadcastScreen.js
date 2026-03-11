@@ -3,16 +3,16 @@ import React from 'react';
 const BroadcastScreen = ({ data }) => {
     const now = new Date();
     const activeAnnouncements = (data?.announcements ?? []).filter(a =>
-        a.isActive && (a.expiresAt == null || new Date(a.expiresAt) > now)
+        a.isActive && (a.expiresAt == null || new Date(a.expiresAt.endsWith('Z') ? a.expiresAt : `${a.expiresAt}Z`) > now)
     ).map(a => ({
-        publish_date: new Date(a.createdAt || Date.now()).toLocaleDateString(),
+        publish_date: new Date((a.createdAt?.endsWith('Z') ? a.createdAt : `${a.createdAt}Z`) || Date.now()).toLocaleDateString(),
         title: a.title,
         description: a.message
     }));
 
     const upcomingEvents = (data?.events ?? []).filter(e =>
-        e.isActive && (e.eventDate && new Date(e.eventDate) >= now)
-    ).sort((a, b) => new Date(a.eventDate) - new Date(b.eventDate))
+        e.isActive && (e.eventDate && new Date(`${e.eventDate}T00:00:00Z`) >= now)
+    ).sort((a, b) => new Date(`${a.eventDate}T00:00:00Z`) - new Date(`${b.eventDate}T00:00:00Z`))
         .map(e => ({
             event_date: e.eventDate,
             title: e.title,
@@ -27,7 +27,7 @@ const BroadcastScreen = ({ data }) => {
 
     const academicCalendar = (data?.academicCalendar ?? []).filter(e => e.isActive)
         .map(e => ({
-            date: new Date(e.eventDate).toLocaleDateString(),
+            date: new Date(`${e.eventDate}T00:00:00Z`).toLocaleDateString(),
             title: e.title,
             type: e.eventType // assuming eventType maps to "Holiday" or "Academic"
         }));
@@ -87,7 +87,7 @@ const BroadcastScreen = ({ data }) => {
                                     <div className="bg-emerald-900 text-white p-4 flex flex-col items-center justify-center min-w-[100px] h-fit shadow-lg group-hover:bg-emerald-800 transition-colors">
                                         <span className="text-2xl font-bold serif">{item.event_date.split('-')[2]}</span>
                                         <span className="text-[10px] uppercase font-bold tracking-tighter text-emerald-300">
-                                            {new Date(item.event_date).toLocaleString('default', { month: 'short' })} {item.event_date.split('-')[0]}
+                                            {new Date(`${item.event_date}T00:00:00Z`).toLocaleString('default', { month: 'short' })} {item.event_date.split('-')[0]}
                                         </span>
                                     </div>
                                     <div>

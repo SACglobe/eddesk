@@ -54,7 +54,7 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
 
         switch (normalizedPath) {
             case '/':
-                return <Home data={data} statsEnabled={statsEnabled} statistics={statistics} />;
+                return <Home data={data} />;
             case '/about':
                 return <About data={data} />;
             case '/academics':
@@ -74,7 +74,7 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
             case '/portrait':
                 return <Portrait />;
             default:
-                return <Home data={data} statsEnabled={statsEnabled} statistics={statistics} />;
+                return <Home data={data} />;
         }
     };
 
@@ -85,15 +85,9 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
     const activeAnnouncements = announcementsEnabled
         ? (data?.announcements ?? []).filter((a: any) =>
             a.isActive &&
-            (a.expiresAt == null || new Date(a.expiresAt) > now)
+            (!a.expiresAt || a.expiresAt === '' || new Date(a.expiresAt.endsWith('Z') ? a.expiresAt : `${a.expiresAt}Z`) > now)
         )
         : [];
-
-    const statsEnabled = (data?.homepageSections ?? [])
-        .find((s: any) => s.sectionKey === 'stats')
-        ?.isEnabled ?? true;
-    const statistics = (data?.statistics ?? [])
-        .sort((a, b) => a.displayOrder - b.displayOrder);
 
     return (
         <div className="premium-template-wrapper antialiased bg-white min-h-screen flex flex-col">
