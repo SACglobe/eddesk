@@ -84,12 +84,12 @@ export default function About({ data }: { data?: any }) {
                     )}
 
                     {/* Board Message Section */}
-                    {(data?.personnel || []).filter((p: any) => (p.personType || '').toUpperCase() === 'BOARD').length > 0 && (
+                    {(data?.personnel || []).filter((p: any) => ['BOARD', 'CHAIRMAN'].includes((p.personType || '').toUpperCase())).length > 0 && (
                         <section className="mb-40">
                             <SectionHeader title="Board's Vision" subtitle="Governance & Purpose" />
                             <div className="grid grid-cols-1 gap-12">
                                 {(data?.personnel || [])
-                                    .filter((p: any) => (p.personType || '').toUpperCase() === 'BOARD')
+                                    .filter((p: any) => ['BOARD', 'CHAIRMAN'].includes((p.personType || '').toUpperCase()))
                                     .map((member: any, idx: number) => (
                                         <div key={idx} className="bg-signature-navy/5 p-12 md:p-20 border border-signature-navy/5 relative group">
                                             <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 items-center">
@@ -120,7 +120,7 @@ export default function About({ data }: { data?: any }) {
                     {/* Leadership & Management Team */}
                     {(data?.personnel || []).filter((p: any) => {
                         const type = (p.personType || '').toUpperCase();
-                        return type !== 'PRINCIPAL' && type !== 'FACULTY';
+                        return type !== 'PRINCIPAL' && type !== 'FACULTY' && type !== 'BOARD' && type !== 'CHAIRMAN';
                     }).length > 0 && (
                             <section className="mb-40">
                                 <SectionHeader title="Institutional Leadership" subtitle="Management & Strategy" />
@@ -128,7 +128,7 @@ export default function About({ data }: { data?: any }) {
                                     {(data?.personnel || [])
                                         .filter((p: any) => {
                                             const type = (p.personType || '').toUpperCase();
-                                            return type !== 'PRINCIPAL' && type !== 'FACULTY';
+                                            return type !== 'PRINCIPAL' && type !== 'FACULTY' && type !== 'BOARD' && type !== 'CHAIRMAN';
                                         })
                                         .map((member: any, idx: number) => (
                                             <div key={idx} className="group">

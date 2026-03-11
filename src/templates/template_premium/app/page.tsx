@@ -686,7 +686,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
   }
 
   // 7. Facilities
-  const facilitiesSection = data?.homepageSections?.find(s => s.sectionKey === 'facilities');
+  const facilitiesSection = data?.homepageSections?.find(s => s.sectionKey === 'infrastructure' || s.sectionKey === 'facilities');
   const facilitiesEnabled = facilitiesSection?.isEnabled ?? true;
   const facilitiesRequired = facilitiesSection?.isRequired ?? false;
   const groupedFacilities = (data?.facilities ?? []).reduce((acc: any, f: any) => {
@@ -705,7 +705,6 @@ export default function Home({ data }: { data: TenantViewModel }) {
   const galleryEnabled = gallerySection?.isEnabled ?? true;
   const galleryRequired = gallerySection?.isRequired ?? false;
   const galleryItems = (data?.mediaLibrary ?? [])
-    .filter(m => m.category === 'campus' && m.isFeatured)
     .slice(0, 3);
   if (galleryEnabled && galleryRequired && galleryItems.length === 0) {
     return (
@@ -723,7 +722,6 @@ export default function Home({ data }: { data: TenantViewModel }) {
   const now = new Date();
   const eventsToShow = (data?.events ?? [])
     .filter((e: any) => {
-      if (!e.isFeatured) return false;
       const eventDateTime = new Date(`${e.eventDate}T${e.startTime || '00:00:00'}Z`);
       return eventDateTime > now;
     })
@@ -809,7 +807,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
           <section className="py-48 px-8 bg-white">
             <div className="max-w-[1400px] mx-auto">
               <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12">
-                <SectionHeader title="Campus Masterpiece" subtitle="The Sterling Experience" />
+                <SectionHeader title="Gallery" subtitle="The Sterling Experience" />
                 <Link href="/activities">
                   <Button variant="outline">Explore Enrichment</Button>
                 </Link>

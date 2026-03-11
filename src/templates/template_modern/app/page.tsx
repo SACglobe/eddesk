@@ -205,7 +205,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
     }
 
     // 8. Facilities
-    const facilitiesSection = data?.homepageSections?.find(s => s.sectionKey === 'facilities');
+    const facilitiesSection = data?.homepageSections?.find(s => s.sectionKey === 'infrastructure' || s.sectionKey === 'facilities');
     const facilitiesEnabled = facilitiesSection?.isEnabled ?? true;
     const facilitiesRequired = facilitiesSection?.isRequired ?? false;
 
@@ -239,8 +239,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
     const gallerySection = data?.homepageSections?.find(s => s.sectionKey === 'gallery');
     const galleryEnabled = gallerySection?.isEnabled ?? true;
     const galleryRequired = gallerySection?.isRequired ?? false;
-    const galleryItems = (data?.mediaLibrary ?? [])
-        .filter(m => m.category === 'campus' && m.isFeatured);
+    const galleryItems = (data?.mediaLibrary ?? []);
     if (galleryEnabled && galleryRequired && galleryItems.length === 0) {
         return (
             <SystemPopup
@@ -257,7 +256,6 @@ export default function Home({ data }: { data: TenantViewModel }) {
 
     const eventsToShow = (data?.events ?? [])
         .filter((e: any) => {
-            if (!e.isFeatured) return false;
             const eventDateTime = new Date(`${e.eventDate}T${e.startTime || '00:00:00'}Z`);
             return eventDateTime > now;
         })

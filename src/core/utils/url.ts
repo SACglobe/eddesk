@@ -28,3 +28,29 @@ export const isValidImageUrl = (url: string | null | undefined): boolean => {
     return false;
   }
 };
+
+/**
+ * Resolves an image URL. If the URL is relative (doesn't start with http/https/data:),
+ * it prepends the Supabase public storage base URL.
+ */
+export const resolveImageUrl = (url: string | null | undefined, bucket: string = 'public'): string => {
+  if (!url || typeof url !== 'string') return '';
+  
+  const trimmed = url.trim();
+  if (trimmed === '' || trimmed === 'null' || trimmed === 'undefined') return '';
+
+  // Return as-is if it's already a full URL or data URL
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) {
+    return trimmed;
+  }
+
+  // Otherwise, assume it's a relative path in a Supabase storage bucket
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!supabaseUrl) return trimmed;
+
+  // Clean slash to avoid double slashes
+  const base = supabaseUrl.replace(/\/$/, '');
+  const path = trimmed.replace(/^\//, '');
+  
+  return `${base}/storage/v1/object/public/${bucket}/${path}`;
+};

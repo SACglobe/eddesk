@@ -86,7 +86,7 @@ const AboutScreen = ({ data }) => {
             )}
 
             {/* Board's Perspective */}
-            {(data?.personnel || []).filter(p => (p.personType || '').toUpperCase() === 'BOARD').length > 0 && (
+            {(data?.personnel || []).filter(p => ['BOARD', 'CHAIRMAN'].includes((p.personType || '').toUpperCase())).length > 0 && (
                 <section className="py-24 bg-emerald-950 text-white">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                         <div className="text-center mb-16">
@@ -96,7 +96,7 @@ const AboutScreen = ({ data }) => {
                         </div>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                             {(data?.personnel || [])
-                                .filter(p => (p.personType || '').toUpperCase() === 'BOARD')
+                                .filter(p => ['BOARD', 'CHAIRMAN'].includes((p.personType || '').toUpperCase()))
                                 .map((member, idx) => (
                                     <div key={idx} className="bg-emerald-900/50 p-12 border border-emerald-800/50 relative group">
                                         <div className="absolute -top-4 -left-4 text-6xl text-emerald-400/20 serif italic">“</div>
@@ -122,7 +122,7 @@ const AboutScreen = ({ data }) => {
             {/* Leadership & Management */}
             {(data?.personnel || []).filter(p => {
                 const type = (p.personType || '').toUpperCase();
-                return type !== 'PRINCIPAL' && type !== 'FACULTY';
+                return type !== 'PRINCIPAL' && type !== 'FACULTY' && type !== 'BOARD' && type !== 'CHAIRMAN';
             }).length > 0 && (
                     <section className="py-24 bg-white border-b border-slate-100">
                         <div className="max-w-[1600px] mx-auto px-2 md:px-6">
@@ -134,7 +134,7 @@ const AboutScreen = ({ data }) => {
                                 {(data?.personnel || [])
                                     .filter(p => {
                                         const type = (p.personType || '').toUpperCase();
-                                        return type !== 'PRINCIPAL' && type !== 'FACULTY';
+                                        return type !== 'PRINCIPAL' && type !== 'FACULTY' && type !== 'BOARD' && type !== 'CHAIRMAN';
                                     })
                                     .map((member, idx) => (
                                         <div key={idx} className="text-center group">
