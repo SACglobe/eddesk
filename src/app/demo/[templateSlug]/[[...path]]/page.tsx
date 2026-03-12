@@ -19,6 +19,7 @@ import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { fetchDemoScreen, pathToScreenName } from '@/core/services/screenData.service';
 import { buildTenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
+import { isOwnerDomain } from '@/lib/proxy/domain-classifier';
 import type { TenantState } from '@/core/context/TenantContext';
 import TemplateRenderer from './TemplateRenderer';
 import {
@@ -35,8 +36,6 @@ import LeadCapturePopup from '@/components/lead/LeadCapturePopup';
 // Known valid template slugs
 const VALID_SLUGS = ['template_classic', 'template_modern', 'template_premium'];
 
-// Owner domains allowed to access demo routes
-const OWNER_DOMAINS = ['eddesk.in', 'localhost', '127.0.0.1', 'test.eddesk.in'];
 
 export async function generateMetadata({
     params,
@@ -73,7 +72,7 @@ export default async function TemplateDemoPage({
     const host = headersList.get('host') || '';
     const domainOnly = host.split(':')[0].toLowerCase();
 
-    const isOwner = OWNER_DOMAINS.includes(domainOnly);
+    const isOwner = isOwnerDomain(domainOnly);
     if (!isOwner) {
         return notFound();
     }

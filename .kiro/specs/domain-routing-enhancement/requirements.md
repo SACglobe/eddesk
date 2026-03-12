@@ -2,11 +2,11 @@
 
 ## Introduction
 
-This document specifies requirements for enhancing the domain routing logic in the EdDesk middleware. The enhancement changes how owner domains are identified (from exact match to contains check) and clarifies how template slugs are passed for demo templates versus customer tenants.
+This document specifies requirements for enhancing the domain routing logic in the EdDesk proxy. The enhancement changes how owner domains are identified (from exact match to contains check) and clarifies how template slugs are passed for demo templates versus customer tenants.
 
 ## Glossary
 
-- **Middleware**: The Next.js Edge middleware component that intercepts HTTP requests and performs domain-based routing
+- **proxy**: The Next.js Edge proxy component that intercepts HTTP requests and performs domain-based routing
 - **Owner_Domain**: A domain that belongs to the EdDesk platform itself (localhost or eddesk.in)
 - **Tenant_Domain**: A domain that belongs to a customer school
 - **Marketing_Page**: The main EdDesk marketing website shown to visitors on owner domains
@@ -23,10 +23,10 @@ This document specifies requirements for enhancing the domain routing logic in t
 
 #### Acceptance Criteria
 
-1. WHEN a request hostname contains "localhost", THE Middleware SHALL identify it as an Owner_Domain
-2. WHEN a request hostname contains "eddesk", THE Middleware SHALL identify it as an Owner_Domain
-3. WHEN a request hostname does not contain "localhost" or "eddesk", THE Middleware SHALL identify it as a Tenant_Domain
-4. THE Middleware SHALL perform case-insensitive matching when checking if hostname contains "localhost" or "eddesk"
+1. WHEN a request hostname contains "localhost", THE proxy SHALL identify it as an Owner_Domain
+2. WHEN a request hostname contains "eddesk", THE proxy SHALL identify it as an Owner_Domain
+3. WHEN a request hostname does not contain "localhost" or "eddesk", THE proxy SHALL identify it as a Tenant_Domain
+4. THE proxy SHALL perform case-insensitive matching when checking if hostname contains "localhost" or "eddesk"
 
 ### Requirement 2: Owner Domain Routing
 
@@ -34,8 +34,8 @@ This document specifies requirements for enhancing the domain routing logic in t
 
 #### Acceptance Criteria
 
-1. WHEN a request is from an Owner_Domain, THE Middleware SHALL allow the request to proceed to the Marketing_Page
-2. WHEN a request is from an Owner_Domain and the path starts with "/demo", THE Middleware SHALL allow the request to proceed to the demo route
+1. WHEN a request is from an Owner_Domain, THE proxy SHALL allow the request to proceed to the Marketing_Page
+2. WHEN a request is from an Owner_Domain and the path starts with "/demo", THE proxy SHALL allow the request to proceed to the demo route
 
 ### Requirement 3: Tenant Domain Routing
 
@@ -43,9 +43,9 @@ This document specifies requirements for enhancing the domain routing logic in t
 
 #### Acceptance Criteria
 
-1. WHEN a request is from a Tenant_Domain, THE Middleware SHALL look up the domain configuration in the School_Array
-2. WHEN a domain configuration is found in the School_Array, THE Middleware SHALL rewrite the request to /tenant/[...path] with the template_id from the configuration
-3. WHEN a domain configuration is not found in the School_Array, THE Middleware SHALL return an error response
+1. WHEN a request is from a Tenant_Domain, THE proxy SHALL look up the domain configuration in the School_Array
+2. WHEN a domain configuration is found in the School_Array, THE proxy SHALL rewrite the request to /tenant/[...path] with the template_id from the configuration
+3. WHEN a domain configuration is not found in the School_Array, THE proxy SHALL return an error response
 
 ### Requirement 4: Demo Template Slug Handling
 
@@ -53,9 +53,9 @@ This document specifies requirements for enhancing the domain routing logic in t
 
 #### Acceptance Criteria
 
-1. WHEN a request path starts with "/demo" and is from an Owner_Domain, THE Middleware SHALL pass the Template_Slug parameter to the demo route
-2. THE Middleware SHALL extract the Template_Slug from the request path or query parameters for demo routes
-3. WHEN no Template_Slug is specified in a demo request, THE Middleware SHALL return an error response
+1. WHEN a request path starts with "/demo" and is from an Owner_Domain, THE proxy SHALL pass the Template_Slug parameter to the demo route
+2. THE proxy SHALL extract the Template_Slug from the request path or query parameters for demo routes
+3. WHEN no Template_Slug is specified in a demo request, THE proxy SHALL return an error response
 
 ### Requirement 5: Customer Tenant Slug Handling
 
@@ -63,9 +63,9 @@ This document specifies requirements for enhancing the domain routing logic in t
 
 #### Acceptance Criteria
 
-1. WHEN a request is rewritten to /tenant/[...path] for a Customer_Tenant, THE Middleware SHALL pass null as the Template_Slug parameter
-2. THE Middleware SHALL distinguish between Demo_Template requests and Customer_Tenant requests based on the request path
-3. WHEN a request path does not start with "/demo" and is from a Tenant_Domain, THE Middleware SHALL treat it as a Customer_Tenant request
+1. WHEN a request is rewritten to /tenant/[...path] for a Customer_Tenant, THE proxy SHALL pass null as the Template_Slug parameter
+2. THE proxy SHALL distinguish between Demo_Template requests and Customer_Tenant requests based on the request path
+3. WHEN a request path does not start with "/demo" and is from a Tenant_Domain, THE proxy SHALL treat it as a Customer_Tenant request
 
 ### Requirement 6: Demo Route Access Control
 
@@ -73,17 +73,17 @@ This document specifies requirements for enhancing the domain routing logic in t
 
 #### Acceptance Criteria
 
-1. WHEN a request path starts with "/demo" and is from a Tenant_Domain, THE Middleware SHALL return a 404 Not Found response
-2. WHEN a request path starts with "/demo" and is from an Owner_Domain, THE Middleware SHALL allow the request to proceed
-3. THE Middleware SHALL log blocked demo access attempts from Tenant_Domains
+1. WHEN a request path starts with "/demo" and is from a Tenant_Domain, THE proxy SHALL return a 404 Not Found response
+2. WHEN a request path starts with "/demo" and is from an Owner_Domain, THE proxy SHALL allow the request to proceed
+3. THE proxy SHALL log blocked demo access attempts from Tenant_Domains
 
 ### Requirement 7: School Array Lookup
 
-**User Story:** As a developer, I want the middleware to use the school array for domain lookups, so that routing decisions are based on the centralized domain configuration.
+**User Story:** As a developer, I want the proxy to use the school array for domain lookups, so that routing decisions are based on the centralized domain configuration.
 
 #### Acceptance Criteria
 
-1. THE Middleware SHALL read domain configurations from the School_Array (domain_data in constants.js)
-2. WHEN looking up a domain, THE Middleware SHALL match against the "domain" field in the School_Array
-3. WHEN a match is found, THE Middleware SHALL use the "template_id" field for routing decisions
-4. THE Middleware SHALL support both exact domain matching and hostname matching (without www prefix)
+1. THE proxy SHALL read domain configurations from the School_Array (domain_data in constants.js)
+2. WHEN looking up a domain, THE proxy SHALL match against the "domain" field in the School_Array
+3. WHEN a match is found, THE proxy SHALL use the "template_id" field for routing decisions
+4. THE proxy SHALL support both exact domain matching and hostname matching (without www prefix)

@@ -16,10 +16,10 @@ Create: src/app/core/data/supabase/tenant.service.ts
 - Returns typed TenantConfig object
 - Falls back to local data if Supabase returns null
 
-### Step 3 — Update middleware OR page
-Decide: resolve domain in middleware (edge) or in page (server component)?
+### Step 3 — Update proxy OR page
+Decide: resolve domain in proxy (edge) or in page (server component)?
 Recommended: resolve in the Server Component page for full data access.
-Keep middleware only for URL rewriting.
+Keep proxy only for URL rewriting.
 
 ### Step 4 — Feed data into templates
 In app/tenant/[...path]/page.tsx and app/demo/[templateSlug]/page.tsx:

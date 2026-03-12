@@ -17,7 +17,7 @@ Safely import a new template without affecting existing templates.
 ## Forbidden Actions
 - Modify other template folders
 - Modify global styles
-- Modify middleware
+- Modify proxy
 - Modify database schema
 - Modify workflows or agents
 

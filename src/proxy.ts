@@ -1,5 +1,5 @@
-// src/middleware.ts
-// Next.js Edge Middleware — domain-based routing
+// src/proxy.ts
+// Next.js Edge proxy — domain-based routing
 //
 // Routes:
 //   Owner domains (localhost:3000, eddesk.in) → marketing page (NextResponse.next())
@@ -13,10 +13,10 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import domain_data from '@/lib/constants/constants';
-import { isOwnerDomain } from '@/lib/middleware/domain-classifier';
-import { findDomainConfig } from '@/lib/middleware/domain-lookup';
+import { isOwnerDomain } from '@/lib/proxy/domain-classifier';
+import { findDomainConfig } from '@/lib/proxy/domain-lookup';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
     const url = request.nextUrl.clone();
     const host = request.headers.get('host') || '';
     // A3 FIX: preserve port so 'localhost:3000' matches domain_data entries
@@ -62,7 +62,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
 }
 
-export default middleware;
+export default proxy;
 
 export const config = {
     matcher: [

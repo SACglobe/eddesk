@@ -1,5 +1,5 @@
 /**
- * Domain lookup utilities for middleware routing
+ * Domain lookup utilities for proxy routing
  */
 
 import domain_data from '../constants/constants';
@@ -46,12 +46,12 @@ function normalizeHostname(hostname: string): string {
  */
 export function findDomainConfig(hostname: string): DomainConfig | null {
   const normalized = normalizeHostname(hostname);
-  
+
   // Search domain_data array for exact match
   const config = domain_data.find((entry) => {
     const entryDomain = normalizeHostname(entry.domain);
     return entryDomain === normalized;
   });
-  
+
   return config ? (config as DomainConfig) : null;
 }
