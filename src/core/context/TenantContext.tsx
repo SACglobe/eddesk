@@ -15,7 +15,7 @@ import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type TenantStatus = 'success' | 'empty' | 'error' | 'idle';
+export type TenantStatus = 'success' | 'empty' | 'error' | 'idle' | 'template_not_found';
 
 export interface TenantState {
     /** Normalized school data from the API */

@@ -30,9 +30,10 @@ import {
     generateAboutMetadata,
     generateAboutJsonLd,
 } from '@/core/utils/seo';
+import { templateRegistry } from '@/lib/template/registry';
 import TemplateRenderer from '../../demo/[templateSlug]/[[...path]]/TemplateRenderer';
 import { TenantState } from '@/core/context/TenantContext';
-import SystemPopup from '@/components/system/SystemPopup';
+import SystemPopupProvider from '@/components/system/SystemPopupProvider';
 
 export async function generateMetadata({
     params,
@@ -153,16 +154,19 @@ export default async function TenantPage({
         );
     }
 
+    // Check if template exists in registry
+    const templateExists = !!templateRegistry[viewModel.school.templateId];
+
     // Step 6: Build TenantState for context + TemplateRenderer
     const tenantState: TenantState = {
-        status: 'success',
+        status: templateExists ? 'success' : 'template_not_found',
         data: viewModel,
-        message: '',
+        message: templateExists ? '' : `Template "${viewModel.school.templateId}" is not available in the system.`,
     };
 
     // Step 7: Render — templateSlug now comes from viewModel (not schoolConfig)
     return (
-        <>
+        <SystemPopupProvider tenantState={tenantState}>
             {tenantState.data && (
                 <>
                     {/* 1. School / EducationalOrganization — always present */}
@@ -211,6 +215,6 @@ export default async function TenantPage({
                 path={path}
                 tenantState={tenantState}
             />
-        </>
+        </SystemPopupProvider>
     );
 }

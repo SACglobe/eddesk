@@ -1,6 +1,6 @@
 
 const BroadcastTicker = ({ announcements }) => {
-    const tickerNews = announcements;
+    const tickerNews = [...announcements, ...announcements, ...announcements, ...announcements];
 
     return (
         <section className="bg-emerald-900 text-white overflow-hidden py-2.5 border-t border-emerald-800">

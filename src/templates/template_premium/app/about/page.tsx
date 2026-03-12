@@ -1,26 +1,87 @@
-"use client";
-
 import React from 'react';
 import { SectionHeader } from '../../components/Shared';
 import LayoutWrapper from '../../components/LayoutWrapper';
+import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
+import { resolveImageUrl } from '@/core/utils/url';
+import SectionWarning from '@/components/system/SectionWarning';
 
 // Static metadata — used only in standalone Next.js mode
 // Dynamic metadata is handled at the demo/tenant page.tsx level
 
-export default function About({ data }: { data?: any }) {
+export default function About({ data }: { data?: TenantViewModel }) {
     const sections = data?.homepageSections ?? [];
-    const identityEnabled = sections.find((s: any) => s.sectionKey === 'identity')?.isEnabled ?? true;
-    const principalEnabled = sections.find((s: any) => s.sectionKey === 'principal')?.isEnabled ?? true;
+
+    // Identity Section Validation
+    const identitySection = sections.find((s: any) => s.sectionKey === 'identity');
+    const identityEnabled = identitySection?.isEnabled ?? true;
+    const identityRequired = identitySection?.isRequired ?? false;
+    const hasIdentityData = !!(data?.identity?.aboutTitle || data?.identity?.aboutDescription || data?.identity?.vision || data?.identity?.mission);
+
+    if (identityEnabled && identityRequired && !hasIdentityData) {
+        return (
+            <SectionWarning sectionKey="identity" />
+        );
+    }
+
+    // Principal Section Validation
+    const principalSection = sections.find((s: any) => s.sectionKey === 'principal');
+    const principalEnabled = principalSection?.isEnabled ?? true;
+    const principalRequired = principalSection?.isRequired ?? false;
+    const principal = data?.personnel?.find((p: any) => p.personType === 'principal');
+    const hasPrincipalData = !!(principal?.name || principal?.bio || principal?.photoUrl);
+
+    if (principalEnabled && principalRequired && !hasPrincipalData) {
+        return (
+            <SectionWarning sectionKey="principal" />
+        );
+    }
+
+    // Leadership Section Validation
+    const leadershipSection = sections.find((s: any) => s.sectionKey === 'leadership');
+    const leadershipEnabled = leadershipSection?.isEnabled ?? true;
+    const leadershipRequired = leadershipSection?.isRequired ?? false;
+    
+    // Management team: All personnel EXCEPT principal and faculty
+    const managementTeam = (data?.personnel ?? []).filter((p: any) => {
+        const type = (p.personType || '').toUpperCase();
+        return type !== 'PRINCIPAL' && type !== 'FACULTY' && type !== 'BOARD' && type !== 'CHAIRMAN';
+    });
+
+    // Board messages: All personnel with type BOARD
+    const boardMembers = (data?.personnel ?? []).filter((p: any) =>
+        ['BOARD', 'CHAIRMAN'].includes((p.personType || '').toUpperCase())
+    );
+
+    const hasLeadershipData = managementTeam.length > 0 || boardMembers.length > 0;
+
+    if (leadershipEnabled && leadershipRequired && !hasLeadershipData) {
+        return (
+            <SectionWarning sectionKey="leadership" />
+        );
+    }
+
+    // Why Choose Us Section Validation
+    const whyChooseUsSection = sections.find((s: any) => s.sectionKey === 'whychooseus');
+    const whyChooseUsEnabled = whyChooseUsSection?.isEnabled ?? true;
+    const whyChooseUsRequired = whyChooseUsSection?.isRequired ?? false;
+    const whyChooseUsData = data?.identity?.whyChooseUs ?? [];
+    const hasWhyChooseUsData = whyChooseUsData.length > 0;
+
+    if (whyChooseUsEnabled && whyChooseUsRequired && !hasWhyChooseUsData) {
+        return (
+            <SectionWarning sectionKey="why" />
+        );
+    }
 
     const vision = data?.identity?.vision ?? '';
     const mission = data?.identity?.mission ?? '';
     const motto = data?.identity?.motto ?? '';
     const aboutTitle = data?.identity?.aboutTitle ?? '';
     const aboutDescription = data?.identity?.aboutDescription ?? '';
-    const whyChooseUs: Array<{ id: string; title: string; description: string; icon: string }> = data?.identity?.whyChooseUs ?? [];
-    const principalPhoto = data?.personnel?.find((p: any) => p.personType === 'principal')?.photoUrl ?? '';
-    const principalMsg = data?.personnel?.find((p: any) => p.personType === 'principal')?.bio ?? '';
-    const principalName = data?.personnel?.find((p: any) => p.personType === 'principal')?.name ?? '';
+    const whyChooseUs = whyChooseUsData;
+    const principalPhoto = resolveImageUrl(principal?.photoUrl);
+    const principalMsg = principal?.bio ?? '';
+    const principalName = principal?.name ?? '';
     const highlights = data?.achievements ?? [];
 
     return (
@@ -84,7 +145,7 @@ export default function About({ data }: { data?: any }) {
                     )}
 
                     {/* Board Message Section */}
-                    {(data?.personnel || []).filter((p: any) => ['BOARD', 'CHAIRMAN'].includes((p.personType || '').toUpperCase())).length > 0 && (
+                    {(leadershipEnabled && boardMembers.length > 0) && (
                         <section className="mb-40">
                             <SectionHeader title="Board's Vision" subtitle="Governance & Purpose" />
                             <div className="grid grid-cols-1 gap-12">
@@ -95,7 +156,7 @@ export default function About({ data }: { data?: any }) {
                                             <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 items-center">
                                                 <div className="lg:col-span-1">
                                                     <div className="relative">
-                                                        <img src={member.photoUrl || '/school/image/default-avatar.png'} className="w-48 h-48 object-cover grayscale border-2 border-signature-gold" alt={member.name} />
+                                                        <img src={resolveImageUrl(member.photoUrl) || '/school/image/default-avatar.png'} className="w-48 h-48 object-cover grayscale border-2 border-signature-gold" alt={member.name} />
                                                         <div className="absolute -bottom-4 -right-4 bg-signature-gold w-12 h-12 flex items-center justify-center text-white">
                                                             <span className="text-2xl italic">“</span>
                                                         </div>
@@ -118,10 +179,7 @@ export default function About({ data }: { data?: any }) {
                     )}
 
                     {/* Leadership & Management Team */}
-                    {(data?.personnel || []).filter((p: any) => {
-                        const type = (p.personType || '').toUpperCase();
-                        return type !== 'PRINCIPAL' && type !== 'FACULTY' && type !== 'BOARD' && type !== 'CHAIRMAN';
-                    }).length > 0 && (
+                    {(leadershipEnabled && managementTeam.length > 0) && (
                             <section className="mb-40">
                                 <SectionHeader title="Institutional Leadership" subtitle="Management & Strategy" />
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-24">
@@ -133,7 +191,7 @@ export default function About({ data }: { data?: any }) {
                                         .map((member: any, idx: number) => (
                                             <div key={idx} className="group">
                                                 <div className="relative mb-8 overflow-hidden aspect-[3/4]">
-                                                    <img src={member.photoUrl || '/school/image/default-avatar.png'} className="w-full h-full object-cover grayscale transition-transform duration-700 group-hover:scale-105" alt={member.name} />
+                                                    <img src={resolveImageUrl(member.photoUrl) || '/school/image/default-avatar.png'} className="w-full h-full object-cover grayscale transition-transform duration-700 group-hover:scale-105" alt={member.name} />
                                                     <div className="absolute inset-0 bg-signature-navy/10 group-hover:bg-transparent transition-colors duration-500"></div>
                                                 </div>
                                                 <h4 className="text-xl font-serif uppercase text-signature-navy mb-2 tracking-tight group-hover:text-signature-gold transition-colors">{member.name}</h4>
@@ -144,7 +202,8 @@ export default function About({ data }: { data?: any }) {
                             </section>
                         )}
 
-                    <section className="bg-signature-navy text-white py-32 px-12 md:px-24 relative overflow-hidden">
+                    {whyChooseUsEnabled && (
+                        <section className="bg-signature-navy text-white py-32 px-12 md:px-24 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-1/3 h-full bg-signature-gold opacity-5 skew-x-12 translate-x-1/2"></div>
                         <SectionHeader title="Why Choose Us" subtitle="A Trusted Legacy" light />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-24 gap-y-16 relative z-10">
@@ -167,6 +226,7 @@ export default function About({ data }: { data?: any }) {
                             ))}
                         </div>
                     </section>
+                    )}
                 </div>
             </div>
         </LayoutWrapper>

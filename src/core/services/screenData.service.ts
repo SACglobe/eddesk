@@ -43,8 +43,11 @@ export type ScreenDataTables = {
     infrastructure?: Record<string, unknown>[];
     admissionsteps?: Record<string, unknown>[];
     templatecomponents?: Record<string, unknown>[];
+    whychooseus?: Record<string, unknown>[];
+    boardmembers?: Record<string, unknown>[];
     academicresults?: Record<string, unknown> | null;
     contactdetails?: Record<string, unknown> | null;
+    schoolidentity?: Record<string, unknown> | null;
 };
 
 /** The full unwrapped payload from get_screen_data */

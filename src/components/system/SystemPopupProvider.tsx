@@ -52,7 +52,7 @@ export default function SystemPopupProvider({
 
     const showPopup =
         !dismissed &&
-        (tenantState.status === 'empty' || tenantState.status === 'error');
+        (tenantState.status === 'empty' || tenantState.status === 'error' || tenantState.status === 'template_not_found');
 
     return (
         <TenantProvider value={tenantState}>
@@ -62,7 +62,13 @@ export default function SystemPopupProvider({
             {/* System popup — rendered outside template tree */}
             {showPopup && (
                 <SystemPopup
-                    variant={tenantState.status === 'empty' ? 'empty' : 'error'}
+                    variant={
+                        tenantState.status === 'template_not_found'
+                            ? 'template_not_found'
+                            : tenantState.status === 'empty'
+                                ? 'empty'
+                                : 'error'
+                    }
                     errorMessage={tenantState.message}
                     onRetry={() => window.location.reload()}
                     onDismiss={tenantState.status === 'error' ? () => setDismissed(true) : undefined}

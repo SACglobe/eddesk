@@ -27,15 +27,7 @@ import { fetchTenantFromApi }  from '../services/tenantApi.service.js';
  * @returns {Promise<{ status: 'success'|'empty'|'error', data: object|null, error: string|null }>}
  */
 export async function getTenantData(domain, templateId) {
-  const useLocal = process.env.USE_LOCAL_DATA === 'true';
-
-  if (useLocal) {
-    return {
-      status: 'success',
-      data:   LOCAL_TENANT_DATA,
-      error:  null,
-    };
-  }
+  const useLocal = false; // process.env.USE_LOCAL_DATA === 'true';
 
   return await fetchTenantFromApi(domain, templateId);
 }

@@ -16,7 +16,7 @@ import React, { useEffect, useState } from 'react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type PopupVariant = 'empty' | 'error' | 'network_error' | 'inactive' | 'expired' | 'data_error';
+export type PopupVariant = 'empty' | 'error' | 'network_error' | 'inactive' | 'expired' | 'data_error' | 'template_not_found';
 
 interface SystemPopupProps {
     variant: PopupVariant;
@@ -120,6 +120,7 @@ export default function SystemPopup({
         inactive: { h: '239,68,68', hex: '#ef4444', dark: '#dc2626', light: '#fca5a5' }, // red
         expired: { h: '249,115,22', hex: '#f97316', dark: '#ea580c', light: '#fdba74' }, // orange
         data_error: { h: '99,102,241', hex: '#6366f1', dark: '#4f46e5', light: '#a5b4fc' }, // indigo
+        template_not_found: { h: '99,102,241', hex: '#6366f1', dark: '#4f46e5', light: '#a5b4fc' }, // indigo
     };
 
     const accent = ACCENT_MAP[variant];
@@ -131,6 +132,7 @@ export default function SystemPopup({
         inactive: 'ed-pulse-red    2.4s ease-in-out infinite',
         expired: 'ed-pulse-orange 2.4s ease-in-out infinite',
         data_error: 'ed-pulse-indigo 2.4s ease-in-out infinite',
+        template_not_found: 'ed-pulse-indigo 2.4s ease-in-out infinite',
     };
     const pulseAnim = PULSE_ANIM[variant];
 
@@ -177,6 +179,12 @@ export default function SystemPopup({
             badge: '⚠ Data Missing',
             heading: 'Required data is missing.',
             subtitle: 'Configure your school profile, personnel, and features from the EdDesk Admin Panel.',
+        },
+        template_not_found: {
+            icon: '🎨',
+            badge: '⚠ Template Error',
+            heading: 'Chosen template is not available.',
+            subtitle: 'The template assigned to this school does not exist in the EdDesk system. Please choose a correct template from the Admin Panel.',
         },
     };
 
@@ -368,8 +376,8 @@ export default function SystemPopup({
                     {config.subtitle}
                 </p>
 
-                {/* ── Admin link pill (shown for empty, inactive, expired) ── */}
-                {(variant === 'empty' || variant === 'inactive' || variant === 'expired') && (
+                {/* ── Admin link pill (shown for empty, inactive, expired, template_not_found) ── */}
+                {(variant === 'empty' || variant === 'inactive' || variant === 'expired' || variant === 'template_not_found') && (
                     <div style={{ marginBottom: '1.5rem' }}>
                         <a
                             href="https://admin.eddesk.in"
@@ -428,8 +436,8 @@ export default function SystemPopup({
                 {/* ── Buttons ── */}
                 <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
 
-                    {/* empty → Go to Admin Panel */}
-                    {variant === 'empty' && (
+                    {/* empty, template_not_found → Go to Admin Panel */}
+                    {(variant === 'empty' || variant === 'template_not_found') && (
                         <a href="https://admin.eddesk.in" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                             <button
                                 style={primaryButtonStyle(accent)}

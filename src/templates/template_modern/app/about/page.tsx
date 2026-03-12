@@ -1,10 +1,11 @@
-"use client";
-
 import React, { useRef } from 'react';
+import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
+import { resolveImageUrl } from '@/core/utils/url';
+import SystemPopup from '@/components/system/SystemPopup';
 
 // Note: Dynamic title is set by the Renderer's parent page.tsx
 
-const About: React.FC<{ data?: any }> = ({ data }) => {
+const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const scrollRight = () => {
@@ -14,21 +15,43 @@ const About: React.FC<{ data?: any }> = ({ data }) => {
     };
 
     const sections = data?.homepageSections ?? [];
-    const identityEnabled = sections.find((s: any) => s.sectionKey === 'identity')?.isEnabled ?? true;
-    const principalEnabled = sections.find((s: any) => s.sectionKey === 'principal')?.isEnabled ?? true;
+    
+    // Identity Section Validation
+    const identitySection = sections.find((s: any) => s.sectionKey === 'identity');
+    const identityEnabled = identitySection?.isEnabled ?? true;
+    const identityRequired = identitySection?.isRequired ?? false;
+    const hasIdentityData = !!(data?.identity?.aboutTitle || data?.identity?.aboutDescription || data?.identity?.vision || data?.identity?.mission);
 
-    const schoolName = data?.school?.name ?? 'Our School';
-    const vision = data?.identity?.vision ?? '';
-    const mission = data?.identity?.mission ?? '';
-    const motto = data?.identity?.motto ?? '';
-    const aboutTitle = data?.identity?.aboutTitle ?? '';
-    const aboutDescription = data?.identity?.aboutDescription ?? '';
-    const whyChooseUs: Array<{ id: string; title: string; description: string; icon: string }> = data?.identity?.whyChooseUs ?? [];
-    const principalPhoto = data?.personnel?.find((p: any) => p.personType === 'principal')?.photoUrl ?? '';
-    const principalMsg = data?.personnel?.find((p: any) => p.personType === 'principal')?.bio ?? '';
-    const principalName = data?.personnel?.find((p: any) => p.personType === 'principal')?.name ?? '';
-    const highlights = data?.achievements ?? [];
+    if (identityEnabled && identityRequired && !hasIdentityData) {
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="About Screen: Identity section is required but no specific data is found. Please add about/identity data in the admin panel."
+            />
+        );
+    }
 
+    // Principal Section Validation
+    const principalSection = sections.find((s: any) => s.sectionKey === 'principal');
+    const principalEnabled = principalSection?.isEnabled ?? true;
+    const principalRequired = principalSection?.isRequired ?? false;
+    const principal = data?.personnel?.find((p: any) => p.personType === 'principal');
+    const hasPrincipalData = !!(principal?.name || principal?.bio || principal?.photoUrl);
+
+    if (principalEnabled && principalRequired && !hasPrincipalData) {
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="About Screen: Principal section is required but no specific data is found. Please add principal data in the admin panel."
+            />
+        );
+    }
+
+    // Leadership Section Validation
+    const leadershipSection = sections.find((s: any) => s.sectionKey === 'leadership');
+    const leadershipEnabled = leadershipSection?.isEnabled ?? true;
+    const leadershipRequired = leadershipSection?.isRequired ?? false;
+    
     // Management team: All personnel EXCEPT principal and faculty
     const managementTeam = (data?.personnel ?? []).filter((p: any) => {
         const type = (p.personType || '').toUpperCase();
@@ -39,6 +62,45 @@ const About: React.FC<{ data?: any }> = ({ data }) => {
     const boardMessages = (data?.personnel ?? []).filter((p: any) =>
         ['BOARD', 'CHAIRMAN'].includes((p.personType || '').toUpperCase())
     );
+
+    const hasLeadershipData = managementTeam.length > 0 || boardMessages.length > 0;
+
+    if (leadershipEnabled && leadershipRequired && !hasLeadershipData) {
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="About Screen: Leadership section is required but no personnel data is found. Please add leadership/board data in the admin panel."
+            />
+        );
+    }
+
+    // Why Choose Us Section Validation
+    const whyChooseUsSection = sections.find((s: any) => s.sectionKey === 'whychooseus');
+    const whyChooseUsEnabled = whyChooseUsSection?.isEnabled ?? true;
+    const whyChooseUsRequired = whyChooseUsSection?.isRequired ?? false;
+    const whyChooseUsData = data?.identity?.whyChooseUs ?? [];
+    const hasWhyChooseUsData = whyChooseUsData.length > 0;
+
+    if (whyChooseUsEnabled && whyChooseUsRequired && !hasWhyChooseUsData) {
+        return (
+            <SystemPopup
+                variant="data_error"
+                errorMessage="About Screen: Why Choose Us section is required but no data is found. Please add Why Choose Us data in the admin panel."
+            />
+        );
+    }
+
+    const schoolName = data?.school?.name ?? 'Our School';
+    const vision = data?.identity?.vision ?? '';
+    const mission = data?.identity?.mission ?? '';
+    const motto = data?.identity?.motto ?? '';
+    const aboutTitle = data?.identity?.aboutTitle ?? '';
+    const aboutDescription = data?.identity?.aboutDescription ?? '';
+    const whyChooseUs = whyChooseUsData;
+    const principalPhoto = resolveImageUrl(principal?.photoUrl);
+    const principalMsg = principal?.bio ?? '';
+    const principalName = principal?.name ?? '';
+    const highlights = data?.achievements ?? [];
 
     return (
         <div className="pb-24">
@@ -138,7 +200,7 @@ const About: React.FC<{ data?: any }> = ({ data }) => {
             )}
 
             {/* Message from the Board of Management */}
-            {boardMessages.length > 0 && (
+            {(leadershipEnabled && boardMessages.length > 0) && (
                 <section className="bg-primary-dark py-32 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-accent/10 rounded-full translate-x-1/2 -translate-y-1/2 blur-[120px]"></div>
                     <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-400/10 rounded-full -translate-x-1/2 translate-y-1/2 blur-[120px]"></div>
@@ -171,7 +233,7 @@ const About: React.FC<{ data?: any }> = ({ data }) => {
             )}
 
             {/* Meet the Management Section */}
-            {(managementTeam.length > 0) && (
+            {(leadershipEnabled && managementTeam.length > 0) && (
                 <section className="max-w-[100vw] overflow-hidden py-32 bg-gray-50/50 relative">
                     <div className="max-w-7xl mx-auto px-4 mb-20 space-y-4 text-center">
                         <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-xs">Leadership</span>
@@ -185,7 +247,7 @@ const About: React.FC<{ data?: any }> = ({ data }) => {
                             className="management-scroll flex overflow-x-auto gap-12 px-6 md:px-[calc((100vw-80rem)/2+1rem)] pb-12 snap-x snap-mandatory cursor-grab active:cursor-grabbing"
                         >
                             {managementTeam.map((member: any, i: number) => {
-                                const photo = member.photoUrl;
+                                const photo = resolveImageUrl(member.photoUrl);
                                 const role = member.designation || member.personType;
                                 return (
                                     <div key={i} className="min-w-[300px] md:min-w-[420px] snap-center group">
@@ -243,7 +305,8 @@ const About: React.FC<{ data?: any }> = ({ data }) => {
             )}
 
             {/* Why Parents Choose Our School */}
-            <section className="bg-white py-32">
+            {whyChooseUsEnabled && (
+                <section className="bg-white py-32">
                 <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-24 items-center">
                     <div className="space-y-12">
                         <div className="space-y-4">
@@ -276,6 +339,7 @@ const About: React.FC<{ data?: any }> = ({ data }) => {
                     </div>
                 </div>
             </section>
+            )}
         </div>
     );
 };

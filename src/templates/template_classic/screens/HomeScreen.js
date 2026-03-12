@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { isValidImageUrl } from '@/core/utils/url';
-import SystemPopup from '@/components/system/SystemPopup';
+import SectionWarning from '@/components/system/SectionWarning';
 
 const HomeScreen = ({ data }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -17,8 +17,13 @@ const HomeScreen = ({ data }) => {
     };
 
     // --- Visibility and Data Extraction ---
-    const getSectionConfig = (key) =>
-        (data?.homepageSections ?? []).find(s => s.sectionKey === key);
+    const getSectionConfig = (key) => {
+        const sections = data?.homepageSections ?? [];
+        if (key === 'facilities' || key === 'infrastructure') {
+            return sections.find(s => s.sectionKey === 'facilities' || s.sectionKey === 'infrastructure');
+        }
+        return sections.find(s => s.sectionKey === key);
+    };
 
     const isSectionEnabled = (key) => getSectionConfig(key)?.isEnabled ?? true;
     const isSectionRequired = (key) => getSectionConfig(key)?.isRequired ?? false;
@@ -32,10 +37,7 @@ const HomeScreen = ({ data }) => {
 
     if (heroRequired && heroSlides.length === 0) {
         return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Hero section is required but no specific data is found. Please add hero data in the admin panel."
-            />
+            <SectionWarning sectionKey="hero" />
         );
     }
 
@@ -59,10 +61,7 @@ const HomeScreen = ({ data }) => {
 
     if (academicResultsRequired && !latestResult) {
         return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Academic Results section is required but no specific data is found. Please add academic results in the admin panel."
-            />
+            <SectionWarning sectionKey="academic" />
         );
     }
 
@@ -74,10 +73,7 @@ const HomeScreen = ({ data }) => {
 
     if (achievementsRequired && academicAchievements.length === 0) {
         return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Achievements section is required but no specific data is found. Please add achievements in the admin panel."
-            />
+            <SectionWarning sectionKey="achievements" />
         );
     }
 
@@ -88,10 +84,7 @@ const HomeScreen = ({ data }) => {
 
     if (leadershipEnabled && leadershipRequired && leadership.length === 0) {
         return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Leadership section is required but no specific data is found. Please add leadership data in the admin panel."
-            />
+            <SectionWarning sectionKey="leadership" />
         );
     }
 
@@ -103,10 +96,7 @@ const HomeScreen = ({ data }) => {
 
     if (statsRequired && statisticsList.length === 0) {
         return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Statistics section is required but no specific data is found. Please add statistics data in the admin panel."
-            />
+            <SectionWarning sectionKey="statistics" />
         );
     }
 
@@ -118,10 +108,7 @@ const HomeScreen = ({ data }) => {
 
     if (facultyRequired && allFaculty.length === 0) {
         return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Faculty section is required but no specific data is found. Please add faculty data in the admin panel."
-            />
+            <SectionWarning sectionKey="faculty" />
         );
     }
 
@@ -134,16 +121,14 @@ const HomeScreen = ({ data }) => {
 
     if (sportsRequired && sportsAchievements.length === 0) {
         return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Sports section is required but no specific data is found. Please add sports data in the admin panel."
-            />
+            <SectionWarning sectionKey="sports" />
         );
     }
 
-    // 7. Facilities
-    const facilitiesEnabled = isSectionEnabled('facilities');
-    const facilitiesRequired = isSectionRequired('facilities');
+    // 7. Facilities / Infrastructure
+    const facilitiesSection = getSectionConfig('facilities');
+    const facilitiesEnabled = facilitiesSection?.isEnabled ?? true;
+    const facilitiesRequired = facilitiesSection?.isRequired ?? false;
     const groupedFacilities = (data?.facilities ?? []).reduce((acc, facility) => {
         const category = facility.categoryName || 'Common Facilities';
         if (!acc[category]) acc[category] = [];
@@ -154,10 +139,7 @@ const HomeScreen = ({ data }) => {
 
     if (facilitiesRequired && groupedFacilitiesKeys.length === 0) {
         return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Facilities section is required but no specific data is found. Please add facilities data in the admin panel."
-            />
+            <SectionWarning sectionKey="infrastructure" />
         );
     }
 
@@ -170,10 +152,7 @@ const HomeScreen = ({ data }) => {
 
     if (galleryRequired && campusGallery.length === 0) {
         return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Gallery section is required but no specific data is found. Please add gallery items in the admin panel."
-            />
+            <SectionWarning sectionKey="gallery" />
         );
     }
 
@@ -197,10 +176,7 @@ const HomeScreen = ({ data }) => {
 
     if (eventsRequired && eventsToShow.length === 0) {
         return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Events section is required but no specific data is found. Please add events data in the admin panel."
-            />
+            <SectionWarning sectionKey="events" />
         );
     }
 
@@ -244,8 +220,12 @@ const HomeScreen = ({ data }) => {
                             className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === currentSlide ? 'opacity-100 scale-105' : 'opacity-0 scale-100'}`}
                             style={{ transition: 'opacity 1s ease-in-out, transform 10s linear' }}
                         >
-                            <div className="absolute inset-0 bg-emerald-950/40 z-10" />
-                            {slide.mediaUrl && isValidImageUrl(slide.mediaUrl) && <img src={slide.mediaUrl} alt={`Slide ${idx + 1}`} className="w-full h-full object-cover" />}
+                            {slide.mediaUrl && isValidImageUrl(slide.mediaUrl) ? (
+                                <>
+                                    <img src={slide.mediaUrl} alt={`Slide ${idx + 1}`} className="w-full h-full object-cover" />
+                                    <div className="absolute inset-0 bg-emerald-950/40 z-10" />
+                                </>
+                            ) : null}
                         </div>
                     ))}
 
@@ -547,17 +527,26 @@ const HomeScreen = ({ data }) => {
                             </div>
                             <p className="text-slate-500 text-sm max-w-md mt-4 md:mt-0 italic">State-of-the-art facilities designed for academic rigor and holistic development.</p>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 border border-slate-200">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             {Object.entries(groupedFacilities).map(([category, items]) => (
-                                <div key={category} className="p-10 bg-white hover:bg-emerald-50 transition-colors">
-                                    <h3 className="font-bold text-lg mb-4 serif uppercase text-emerald-900">{category}</h3>
-                                    <ul className="space-y-3">
-                                        {items.map(item => (
-                                            <li key={item} className="text-sm text-slate-600 flex items-center gap-2">
-                                                <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full"></span> {item}
-                                            </li>
-                                        ))}
-                                    </ul>
+                                <div key={category} className="bg-white p-10 border border-slate-100 shadow-sm hover:shadow-2xl hover:border-emerald-200 transition-all group relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 w-24 h-24 -mr-12 -mt-12 bg-emerald-50 rounded-full opacity-50 transition-transform group-hover:scale-150"></div>
+                                    <div className="relative z-10">
+                                        <div className="text-emerald-900 mb-6 inline-block p-4 bg-emerald-50 rounded-lg group-hover:bg-emerald-900 group-hover:text-white transition-colors">
+                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                            </svg>
+                                        </div>
+                                        <h3 className="text-lg font-bold text-slate-900 serif uppercase tracking-[0.2em] mb-6 border-b border-emerald-50 pb-4 group-hover:border-emerald-900 transition-colors">{category}</h3>
+                                        <ul className="space-y-3">
+                                            {items.map(item => (
+                                                <li key={item} className="text-xs text-slate-600 flex items-start gap-3 group/item uppercase tracking-widest font-bold">
+                                                    <span className="w-1.5 h-1.5 bg-emerald-300 rounded-full mt-1 group-hover/item:bg-emerald-600 transition-colors"></span>
+                                                    <span className="group-hover/item:text-slate-900 transition-colors">{item}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
                                 </div>
                             ))}
                         </div>

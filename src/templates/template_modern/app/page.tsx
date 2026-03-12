@@ -288,7 +288,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
 
             {/* Broadcast Ticker */}
             {announcementsEnabled && (announcementsRequired || activeAnnouncements.length > 0) && (
-                <section className="sticky top-20 z-40 flex items-center h-12 overflow-hidden bg-accent shadow-[0_4px_20px_rgba(0,0,0,0.1)] border-y border-yellow-500/20">
+                <section className="sticky top-20 z-40 flex items-center h-12 overflow-hidden bg-accent shadow-[0_4px_20px_rgba(0,0,0,0.1)] border-y border-yellow-500/20 w-full">
                     <div className="absolute left-0 top-0 bottom-0 bg-[#1e293b] text-accent px-6 flex items-center z-30 shadow-[4px_0_15px_rgba(0,0,0,0.3)]">
                         <div className="flex items-center gap-3">
                             <span className="relative flex h-3 w-3">
@@ -300,8 +300,8 @@ export default function Home({ data }: { data: TenantViewModel }) {
                     </div>
 
                     <div className="flex-1 flex items-center overflow-hidden h-full">
-                        <div className="animate-marquee flex items-center ml-48">
-                            {[...activeAnnouncements, ...activeAnnouncements, ...activeAnnouncements].map((news, idx) => (
+                        <div className="animate-marquee flex items-center">
+                            {[...activeAnnouncements, ...activeAnnouncements, ...activeAnnouncements, ...activeAnnouncements, ...activeAnnouncements, ...activeAnnouncements].map((news, idx) => (
                                 <div key={`news-${idx}`} className="flex items-center px-8 whitespace-nowrap group">
                                     <span className="text-[#1e293b] text-sm md:text-base antialiased">
                                         <span className="font-bold">{news.title}:</span> <span className="font-medium opacity-90">{news.message}</span>
