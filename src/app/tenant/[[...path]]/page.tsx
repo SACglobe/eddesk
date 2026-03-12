@@ -34,6 +34,7 @@ import { templateRegistry } from '@/lib/template/registry';
 import TemplateRenderer from '../../demo/[templateSlug]/[[...path]]/TemplateRenderer';
 import { TenantState } from '@/core/context/TenantContext';
 import SystemPopupProvider from '@/components/system/SystemPopupProvider';
+import SystemPopup from '@/components/system/SystemPopup';
 
 export async function generateMetadata({
     params,
