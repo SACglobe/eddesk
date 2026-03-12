@@ -72,7 +72,7 @@ export function checkSubscription(data: TenantViewModel): SubscriptionCheckResul
     // plan.gracePeriod      → plandetails table graceperiod column (number of days)
     //
     // Formula: access allowed if currentDate <= endDate + gracePeriod days
-    const endDateStr = data.subscription?.endDate;
+    const endDateStr = data.subscription?.endDate || data.school?.expirationDate;
     const gracePeriod = data.plan?.gracePeriod ?? 0;
 
     if (endDateStr) {

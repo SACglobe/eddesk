@@ -1,10 +1,11 @@
-// src/templates/template_classic/index.tsx
+"use client";
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import HomeScreen from './screens/HomeScreen';
 import AboutScreen from './screens/AboutScreen';
 import AdmissionScreen from './screens/AdmissionScreen';
 import ContactScreen from './screens/ContactScreen';
+import InfrastructureScreen from './screens/InfrastructureScreen';
 import BroadcastScreen from './screens/BroadcastScreen';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -48,6 +49,8 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
                 return <AdmissionScreen data={data} />;
             case '/contact':
                 return <ContactScreen data={data} />;
+            case '/infrastructure':
+                return <InfrastructureScreen data={data} />;
             case '/notices':
             case '/broadcast':
                 return <BroadcastScreen data={data} />;

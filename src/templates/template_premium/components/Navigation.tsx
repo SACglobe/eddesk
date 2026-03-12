@@ -8,11 +8,11 @@ import { schoolData } from '../data';
 interface BroadcastBarProps { announcements: Array<{ title: string; message: string }> }
 const BroadcastBar: React.FC<BroadcastBarProps> = ({ announcements: items }) => {
     if (items.length === 0) return null;
-    const announcements = [...items, ...items];
+    const announcements = [...items, ...items, ...items, ...items, ...items, ...items];
 
     return (
-        <div className="w-full flex justify-center py-0 animate-in fade-in duration-1000 slide-in-from-top-4">
-            <div className="w-[92%] max-w-7xl h-[48px] bg-signature-navy/50 backdrop-blur-2xl border border-white/10 rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden relative group pause-on-hover animate-float transition-all duration-700 hover:scale-[1.01] hover:bg-signature-navy/60">
+        <div className="w-full flex py-0 animate-in fade-in duration-1000 slide-in-from-top-4">
+        <div className="w-full h-[48px] bg-signature-navy/50 backdrop-blur-2xl border-y border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden relative group pause-on-hover animate-float transition-all duration-700 hover:bg-signature-navy/60">
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent pointer-events-none"></div>
                 <div className="absolute inset-0 ticker-mask pointer-events-none z-10"></div>
 

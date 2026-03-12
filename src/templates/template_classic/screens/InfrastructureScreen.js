@@ -1,8 +1,33 @@
-import React from 'react';
-import { MOCK_DATA } from '../constants/mockData';
+import SectionWarning from '@/components/system/SectionWarning';
+import { isValidImageUrl } from '@/core/utils/url';
 
-const InfrastructureScreen = () => {
-    const { INFRASTRUCTURE } = MOCK_DATA;
+const InfrastructureScreen = ({ data }) => {
+    const infrastructureSection = data?.homepageSections?.find(s => s.sectionKey === 'infrastructure' || s.sectionKey === 'facilities');
+    const isEnabled = infrastructureSection?.isEnabled ?? true;
+    const isRequired = infrastructureSection?.isRequired ?? false;
+
+    const grouped = (data?.facilities ?? []).reduce((acc, f) => {
+        const key = f.categoryName || 'General';
+        if (!acc[key]) acc[key] = { categoryName: key, items: [] };
+        acc[key].items.push(f.name);
+        return acc;
+    }, {});
+    const facilityGroups = Object.values(grouped);
+
+    if (isEnabled && isRequired && facilityGroups.length === 0) {
+        return (
+            <SectionWarning sectionKey="section" />
+        );
+    }
+
+    if (!isEnabled) return null;
+
+    const campusImages = (data?.mediaLibrary ?? [])
+        .filter(m => m.mediaType === 'image')
+        .map(m => m.url)
+        .filter(isValidImageUrl);
+
+    const fallbackImage = "https://images.unsplash.com/photo-1541339907198-e08756ebafe3?auto=format&fit=crop&q=80";
 
     const FacilityCard = ({ title, items, icon, color }) => (
         <div className="bg-white border border-slate-200 p-10 hover:shadow-2xl hover:border-emerald-300 transition-all group relative overflow-hidden">
@@ -53,33 +78,24 @@ const InfrastructureScreen = () => {
                         </div>
                         <div className="w-full md:w-1/2">
                             <div className="relative group">
-                                <img src={INFRASTRUCTURE.campus_images[0]} alt="Campus Aerial" className="w-full aspect-video object-cover shadow-2xl rounded-sm group-hover:scale-105 transition-transform duration-700" />
+                                <img src={campusImages[0] || fallbackImage} alt="Campus Aerial" className="w-full aspect-video object-cover shadow-2xl rounded-sm group-hover:scale-105 transition-transform duration-700" />
                                 <div className="absolute -bottom-6 -right-6 bg-emerald-900 text-white p-6 hidden lg:block shadow-xl">
-                                    <span className="text-xs uppercase font-bold tracking-widest text-emerald-400">Master Plan 2024</span>
+                                    <span className="text-xs uppercase font-bold tracking-widest text-emerald-400">Master Plan {new Date().getFullYear()}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <FacilityCard
-                            title="Science & Tech Labs"
-                            items={INFRASTRUCTURE.labs}
-                            color="bg-emerald-900"
-                            icon={<svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.673.337a4 4 0 01-2.506.326l-1.838-.307a2 2 0 00-1.022.547l-2.387 2.387a2 2 0 102.828 2.828l3.182-3.182h3.182l3.182 3.182a2 2 0 102.828-2.828l-2.387-2.387zM8 11V7a4 4 0 118 0v4M12 11v4" /></svg>}
-                        />
-                        <FacilityCard
-                            title="Learning Spaces"
-                            items={INFRASTRUCTURE.classrooms}
-                            color="bg-emerald-900"
-                            icon={<svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>}
-                        />
-                        <FacilityCard
-                            title="Athletic Grounds"
-                            items={INFRASTRUCTURE.playground}
-                            color="bg-emerald-900"
-                            icon={<svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
-                        />
+                        {facilityGroups.map((group, idx) => (
+                            <FacilityCard
+                                key={idx}
+                                title={group.categoryName}
+                                items={group.items}
+                                color="bg-emerald-900"
+                                icon={<svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.673.337a4 4 0 01-2.506.326l-1.838-.307a2 2 0 00-1.022.547l-2.387 2.387a2 2 0 102.828 2.828l3.182-3.182h3.182l3.182 3.182a2 2 0 102.828-2.828l-2.387-2.387zM8 11V7a4 4 0 118 0v4M12 11v4" /></svg>}
+                            />
+                        ))}
                     </div>
                 </div>
             </section>
@@ -92,7 +108,7 @@ const InfrastructureScreen = () => {
                         <div className="h-1 w-20 bg-emerald-900 mx-auto"></div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {INFRASTRUCTURE.campus_images.map((img, idx) => (
+                        {(campusImages.length > 0 ? campusImages : [fallbackImage, fallbackImage, fallbackImage, fallbackImage]).slice(0, 4).map((img, idx) => (
                             <div key={idx} className="aspect-[4/3] overflow-hidden border border-white shadow-lg group">
                                 <img
                                     src={img}

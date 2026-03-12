@@ -31,6 +31,7 @@ import {
     COL_SCHOOLS_TEMPLATE_ID,
     COL_SCHOOLS_THEME_CONFIG,
     COL_SCHOOLS_PAYMENTGATEWAY_URL,
+    COL_SCHOOLS_EXPIRATION_DATE,
     COL_SCHOOLS_SLOGAN,
     COL_SCHOOLS_DESCRIPTION,
 
@@ -138,6 +139,26 @@ import {
     COL_CONTACT_DETAILS_EMAIL,
     COL_CONTACT_DETAILS_ADDRESS,
     COL_CONTACT_DETAILS_MAP_URL,
+
+    COL_WHY_CHOOSE_US_ID,
+    COL_WHY_CHOOSE_US_TITLE,
+    COL_WHY_CHOOSE_US_DESCRIPTION,
+    COL_WHY_CHOOSE_US_ICON,
+
+    COL_SCHOOL_IDENTITY_VISION,
+    COL_SCHOOL_IDENTITY_MISSION,
+    COL_SCHOOL_IDENTITY_MOTTO,
+    COL_SCHOOL_IDENTITY_HISTORY,
+    COL_SCHOOL_IDENTITY_FOUNDED_YEAR,
+
+    COL_BOARD_MEMBERS_ID,
+    COL_BOARD_MEMBERS_NAME,
+    COL_BOARD_MEMBERS_DESIGNATION,
+    COL_BOARD_MEMBERS_QUALIFICATION,
+    COL_BOARD_MEMBERS_PROFILE,
+    COL_BOARD_MEMBERS_IMAGE_URL,
+    COL_BOARD_MEMBERS_DISPLAY_ORDER,
+    COL_BOARD_MEMBERS_IS_ACTIVE,
     COL_CONTACT_DETAILS_FACEBOOK,
     COL_CONTACT_DETAILS_INSTAGRAM,
     COL_CONTACT_DETAILS_TWITTER,
@@ -178,6 +199,7 @@ export interface TenantViewModel {
         themeConfig: Record<string, unknown>;
         paymentGatewayUrl: string;  // kept for compat — may be empty string
         gracePeriodDays: number;
+        expirationDate: string;
     };
 
     // ── Subscription ──────────────────────────────────────────────────────────
@@ -215,6 +237,7 @@ export interface TenantViewModel {
         motto: string;
         aboutTitle: string;
         aboutDescription: string;
+        whyChooseUs: Array<{ id: string; title: string; description: string; icon: string }>;
     };
 
     // ── Hero ─────────────────────────────────────────────────────────────────
@@ -454,14 +477,17 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
     const statsRows = (d.schoolstats ?? []) as Record<string, unknown>[];
     const achievementRows = (d.achievements ?? []) as Record<string, unknown>[];
     const eventRows = (d.events ?? []) as Record<string, unknown>[];
-    const galleryRows = (d.gallery ?? []) as Record<string, unknown>[];
-    const activityRows = (d.activities ?? []) as Record<string, unknown>[];
+    const galleriesRows = (d.gallery ?? []) as Record<string, unknown>[];
+    const activitiesRows = (d.activities ?? []) as Record<string, unknown>[];
     const infraRows = (d.infrastructure ?? []) as Record<string, unknown>[];
     const componentRows = (d.templatecomponents ?? []) as Record<string, unknown>[];
+    const whyChooseUsRows = (d.whychooseus ?? []) as Record<string, unknown>[];
+    const boardMembersRows = (d.boardmembers ?? []) as Record<string, unknown>[];
 
     // 3. Extract single objects — default to null if missing
     const academicResultRow = (d.academicresults ?? null) as Record<string, unknown> | null;
     const contactDetailsRow = (d.contactdetails ?? null) as Record<string, unknown> | null;
+    const schoolIdentityRow = (d.schoolidentity ?? null) as Record<string, unknown> | null;
 
     // 4. Deduplicate templatecomponents by componentcode
     const seenCodes = new Set<string>();
@@ -472,18 +498,30 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
         return true;
     });
 
-    // 5. Map leadership into typed array
-    const mappedLeadership = leadershipRows.map(r => ({
-        key: str(r[COL_LEADERSHIP_ID]),
-        name: str(r[COL_LEADERSHIP_NAME]),
-        role: str(r[COL_LEADERSHIP_ROLE]),
-        designation: str(r[COL_LEADERSHIP_DESIGNATION]),
-        message: str(r[COL_LEADERSHIP_MESSAGE]),
-        imageUrl: resolveImageUrl(str(r[COL_LEADERSHIP_IMAGE_URL])),
-        signatureUrl: resolveImageUrl(str(r[COL_LEADERSHIP_SIGNATURE_URL])),
-        isActive: bool(r[COL_LEADERSHIP_IS_ACTIVE]),
-        displayOrder: num(r[COL_LEADERSHIP_DISPLAY_ORDER]),
-    }));
+    const mappedLeadership = [
+        ...leadershipRows.map(r => ({
+            key: str(r[COL_LEADERSHIP_ID]),
+            name: str(r[COL_LEADERSHIP_NAME]),
+            role: str(r[COL_LEADERSHIP_ROLE]),
+            designation: str(r[COL_LEADERSHIP_DESIGNATION]),
+            message: str(r[COL_LEADERSHIP_MESSAGE]),
+            imageUrl: resolveImageUrl(str(r[COL_LEADERSHIP_IMAGE_URL])),
+            signatureUrl: resolveImageUrl(str(r[COL_LEADERSHIP_SIGNATURE_URL])),
+            isActive: bool(r[COL_LEADERSHIP_IS_ACTIVE]),
+            displayOrder: num(r[COL_LEADERSHIP_DISPLAY_ORDER]),
+        })),
+        ...boardMembersRows.map(r => ({
+            key: str(r[COL_BOARD_MEMBERS_ID]),
+            name: str(r[COL_BOARD_MEMBERS_NAME]),
+            role: 'board', // Explicitly board for boardmembers table
+            designation: str(r[COL_BOARD_MEMBERS_DESIGNATION]),
+            message: str(r[COL_BOARD_MEMBERS_PROFILE]), // Bio/Profile maps to message for combined personnel
+            imageUrl: resolveImageUrl(str(r[COL_BOARD_MEMBERS_IMAGE_URL])),
+            signatureUrl: '', // Board members typically don't have electronic signatures in this schema
+            isActive: bool(r[COL_BOARD_MEMBERS_IS_ACTIVE]),
+            displayOrder: num(r[COL_BOARD_MEMBERS_DISPLAY_ORDER]),
+        }))
+    ].sort((a, b) => a.displayOrder - b.displayOrder);
 
     // 6. Derive principal from leadership array
     const principal = mappedLeadership.find(l => l.role === 'principal') ?? null;
@@ -562,7 +600,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
     }));
 
     // 11. Map gallery
-    const mappedGallery = galleryRows.map(r => ({
+    const mappedGallery = galleriesRows.map(r => ({
         key: str(r[COL_MEDIA_LIBRARY_ID]),
         url: resolveImageUrl(str(r[COL_MEDIA_LIBRARY_URL])),
         imageUrl: resolveImageUrl(str(r[COL_MEDIA_LIBRARY_URL])),
@@ -639,6 +677,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             themeConfig: (school[COL_SCHOOLS_THEME_CONFIG] as Record<string, unknown>) ?? {},
             paymentGatewayUrl: str(school[COL_SCHOOLS_PAYMENTGATEWAY_URL]),
             gracePeriodDays: num(plan[COL_PLAN_GRACE_PERIOD]),
+            expirationDate: str(school[COL_SCHOOLS_EXPIRATION_DATE]),
         },
 
         subscription: {
@@ -655,11 +694,17 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
         homepageSections,
 
         identity: {
-            vision: '',   // not in RPC response — kept for seo.ts compat
-            mission: '',
-            motto: '',
-            aboutTitle: '',
-            aboutDescription: '',
+            vision: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_VISION]) : '',
+            mission: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_MISSION]) : '',
+            motto: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_MOTTO]) : '',
+            aboutTitle: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_VISION]) : '', // Using vision as title if specifically missing
+            aboutDescription: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_MISSION]) : '',
+            whyChooseUs: whyChooseUsRows.map(r => ({
+                id: str(r[COL_WHY_CHOOSE_US_ID]),
+                title: str(r[COL_WHY_CHOOSE_US_TITLE]),
+                description: str(r[COL_WHY_CHOOSE_US_DESCRIPTION]),
+                icon: str(r[COL_WHY_CHOOSE_US_ICON]),
+            })),
         },
 
         heroMedia: heroRows.map(r => ({
@@ -728,7 +773,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             legacyQuote: academicResult.legacyQuote,
         }] : [],
 
-        activities: activityRows,
+        activities: activitiesRows,
         infrastructure: infraRows,
 
         facilities: infraRows.map(r => ({
@@ -743,241 +788,4 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
     return vm;
 }
 
-/**
- * Transforms a structured LOCAL_TENANT_DATA object into a normalized TenantViewModel.
- * Kept for backward compatibility during transition.
- */
-export function buildTenantViewModelFromLocal(data: any): TenantViewModel {
-    const school = data.school || {};
-    // This is a minimal shim to keep types happy during transition
-    // It will be removed in a later step.
-    return {
-        mode: 'demo',
-        screen: 'home',
-        school: {
-            key: str(school.key),
-            name: str(school.name),
-            slug: str(school.slug),
-            customDomain: str(school.customdomain),
-            templateSlug: str(school.templatekey),
-            templateId: str(school.templatekey),
-            isActive: bool(school.isactive),
-            isDemo: true,
-            logoUrl: str(school.logo_url),
-            slogan: str(school.slogan),
-            description: str(school.description),
-            email: str(school.email),
-            phone: str(school.phone),
-            address: str(school.address),
-            city: str(school.city),
-            state: str(school.state),
-            country: str(school.country),
-            postalCode: str(school.postal_code),
-            // Fallback for fullAddress if available
-            fullAddress: [str(school.address), str(school.city), str(school.state)].filter(Boolean).join(', '),
-            themeConfig: (school.theme_config as Record<string, unknown>) ?? {},
-            paymentGatewayUrl: str(school.paymentgateway_url),
-            gracePeriodDays: 7,
-        },
-        subscription: { status: str(school.subscription_status) || 'active', endDate: str(school.expirationdate) || '' },
-        plan: { name: str(school.plan_type) || 'Free', gracePeriod: 7 },
-        components: [],
 
-        // Map the sections array to homepageSections
-        homepageSections: (data.sections || []).map((s: any) => ({
-            id: str(s.key),
-            sectionKey: str(s.componentkey),
-            isEnabled: bool(s.isactive),
-            displayOrder: num(s.displayorder),
-            isRequired: false,
-            validationConfig: s.validationconfig || {},
-        })),
-
-        identity: {
-            vision: str(data.school_identity?.vision),
-            mission: str(data.school_identity?.mission),
-            motto: str(data.school_identity?.motto),
-            aboutTitle: str(data.school_identity?.about_title),
-            aboutDescription: str(data.school_identity?.about_description)
-        },
-
-        // Map media arrays
-        heroMedia: (data.hero_media || []).map((h: any) => ({
-            key: str(h.key),
-            mediaType: str(h.mediatype),
-            mediaUrl: resolveImageUrl(str(h.mediaurl)),
-            headline: str(h.headline),
-            subHeadline: str(h.subheadline),
-            primaryButtonText: str(h.primarybuttontext),
-            primaryButtonUrl: str(h.primarybuttonurl),
-            secondaryButtonText: str(h.secondarybuttontext),
-            secondaryButtonUrl: str(h.secondarybuttonurl),
-            displayOrder: num(h.displayorder),
-            isActive: bool(h.isactive),
-        })),
-
-        broadcast: (data.announcements || []).map((a: any) => ({
-            key: str(a.key),
-            title: str(a.title),
-            message: str(a.message),
-            linkUrl: str(a.linkurl),
-            expiresAt: str(a.expiresat),
-            isActive: bool(a.isactive),
-            priority: num(a.priority),
-        })),
-
-        announcements: (data.announcements || []).map((a: any) => ({
-            key: str(a.key),
-            title: str(a.title),
-            message: str(a.message),
-            linkUrl: str(a.linkurl),
-            expiresAt: str(a.expiresat),
-            isActive: bool(a.isactive),
-            priority: num(a.priority),
-        })),
-
-        // Map personnel arrays
-        personnel: (data.personnel || []).map((p: any) => ({
-            key: str(p.key),
-            name: str(p.name),
-            designation: str(p.designation),
-            bio: str(p.description),
-            photoUrl: resolveImageUrl(str(p.imageurl)),
-            personType: str(p.person_type),
-            isFeatured: bool(p.isfeatured),
-            displayOrder: num(p.displayorder),
-        })),
-
-        faculty: (data.personnel || [])
-            .filter((p: any) => p.person_type === 'faculty')
-            .map((p: any) => ({
-                key: str(p.key),
-                name: str(p.name),
-                designation: str(p.designation),
-                bio: str(p.description),
-                photoUrl: resolveImageUrl(str(p.imageurl)),
-                personType: 'faculty',
-                isFeatured: bool(p.isfeatured),
-                displayOrder: num(p.displayorder),
-            })),
-
-        leadership: (data.personnel || [])
-            .filter((p: any) => p.person_type === 'board')
-            .map((p: any) => ({
-                key: str(p.key),
-                name: str(p.name),
-                designation: str(p.designation),
-                bio: str(p.description),
-                photoUrl: resolveImageUrl(str(p.imageurl)),
-                personType: 'board',
-                isFeatured: bool(p.isfeatured),
-                displayOrder: num(p.displayorder),
-            })),
-
-        principal: (data.personnel || [])
-            .filter((p: any) => p.person_type === 'principal')
-            .map((p: any) => ({
-                key: str(p.key),
-                name: str(p.name),
-                designation: str(p.designation),
-                bio: str(p.description),
-                photoUrl: resolveImageUrl(str(p.imageurl)),
-                personType: 'principal',
-                isFeatured: bool(p.isfeatured),
-                displayOrder: num(p.displayorder),
-            }))[0] || null,
-
-        stats: (data.campus_statistics || []).map((s: any) => ({
-            key: str(s.key),
-            label: str(s.label),
-            value: str(s.value),
-            icon: str(s.icon),
-            displayOrder: num(s.displayorder),
-        })),
-
-        statistics: (data.campus_statistics || []).map((s: any) => ({
-            key: str(s.key),
-            label: str(s.label),
-            value: str(s.value),
-            icon: str(s.icon),
-            displayOrder: num(s.displayorder),
-        })),
-
-        achievements: (data.achievements || []).map((a: any) => ({
-            key: str(a.key),
-            year: num(a.year),
-            category: str(a.category),
-            title: str(a.title),
-            description: str(a.description),
-            photoUrl: resolveImageUrl(str(a.imageurl)),
-            achievementType: str(a.achievement_type),
-            displayOrder: num(a.displayorder),
-        })),
-
-        events: (data.events || []).map((e: any) => ({
-            key: str(e.key),
-            title: str(e.title),
-            description: str(e.description),
-            category: str(e.category),
-            location: str(e.location),
-            eventDate: str(e.eventdate),
-            date: str(e.eventdate),
-            startTime: str(e.starttime),
-            endTime: str(e.endtime),
-            imageUrl: resolveImageUrl(str(e.imageurl)),
-            isFeatured: bool(e.isfeatured),
-        })),
-
-        gallery: (data.media_library || []).map((m: any) => ({
-            key: str(m.key),
-            url: resolveImageUrl(str(m.url)),
-            caption: str(m.caption),
-            category: str(m.category),
-            mediaType: str(m.mediatype),
-            isFeatured: bool(m.isfeatured),
-            displayOrder: num(m.displayorder),
-        })),
-
-        mediaLibrary: (data.media_library || []).map((m: any) => ({
-            key: str(m.key),
-            url: resolveImageUrl(str(m.url)),
-            caption: str(m.caption),
-            category: str(m.category),
-            mediaType: str(m.mediatype),
-            isFeatured: bool(m.isfeatured),
-            displayOrder: num(m.displayorder),
-        })),
-
-        academicResult: (data.academic_results || [])[0] ? {
-            key: str(data.academic_results[0].key),
-            year: num(data.academic_results[0].year),
-            passPercentage: num(data.academic_results[0].passpercentage),
-            distinctions: num(data.academic_results[0].distinctions),
-            firstClass: num(data.academic_results[0].firstclass),
-            legacyQuote: str(data.academic_results[0].legacyquote),
-        } : null,
-
-        academicResults: (data.academic_results || []).map((a: any) => ({
-            key: str(a.key),
-            year: num(a.year),
-            passPercentage: num(a.passpercentage),
-            distinctions: num(a.distinctions),
-            firstClass: num(a.firstclass),
-            legacyQuote: str(a.legacyquote),
-        })),
-
-        facilities: (data.facilities || []).map((f: any) => {
-            const cat = (data.facility_categories || []).find((c: any) => c.key === f.category_id);
-            return {
-                name: str(f.title),
-                description: str(f.description),
-                categoryName: str(cat?.name || f.tag),
-            };
-        }),
-
-        activities: [],
-        infrastructure: [],
-        contactDetails: null,
-        admissionSteps: [],
-    };
-}

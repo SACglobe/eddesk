@@ -1,4 +1,4 @@
-// src/templates/template_modern/index.tsx
+"use client";
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Home from './app/page';

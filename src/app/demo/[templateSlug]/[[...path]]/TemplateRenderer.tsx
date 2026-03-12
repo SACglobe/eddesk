@@ -3,9 +3,8 @@
 import React, { use } from 'react';
 import { notFound } from 'next/navigation';
 import { templateRegistry } from '@/lib/template/registry';
-import { LOCAL_TENANT_DATA } from '@/core/data/local/tenant.data';
-import { buildTenantViewModelFromLocal } from '@/core/viewmodels/tenant.viewmodel';
 import SystemPopupProvider from '@/components/system/SystemPopupProvider';
+import SystemPopup from '@/components/system/SystemPopup';
 import type { TenantState } from '@/core/context/TenantContext';
 import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 
@@ -19,17 +18,16 @@ export default function TemplateRenderer({ templateSlug, path, tenantState }: Te
     const template = templateRegistry[templateSlug];
 
     if (!template) {
-        return notFound();
+        return null; // SystemPopupProvider will handle showing the template_not_found variant
     }
 
     const Renderer = template.Renderer as any as React.ComponentType<{ data: TenantViewModel; path: string }>;
 
-    // For real tenants: use API data if available, fall back to demo data
-    const fallbackData = buildTenantViewModelFromLocal(LOCAL_TENANT_DATA);
-
-    const data: TenantViewModel = (tenantState.status === 'success' && tenantState.data)
+    const data: TenantViewModel | null = (tenantState.status === 'success' && tenantState.data)
         ? tenantState.data
-        : fallbackData;
+        : null;
+
+    if (!data) return null;
 
     return (
         <SystemPopupProvider tenantState={tenantState}>

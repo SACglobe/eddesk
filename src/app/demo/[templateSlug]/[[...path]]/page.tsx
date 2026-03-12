@@ -14,6 +14,7 @@
 //   - No subscription checks — checkSubscription returns demo_bypass for mode='demo'
 //   - No getSchoolByDomain call — demo does not have a registered domain
 //   - templateSlug comes from URL param — validated against VALID_SLUGS server-side
+//
 
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
@@ -21,6 +22,7 @@ import { fetchDemoScreen, pathToScreenName } from '@/core/services/screenData.se
 import { buildTenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import { isOwnerDomain } from '@/lib/proxy/domain-classifier';
 import type { TenantState } from '@/core/context/TenantContext';
+import { templateRegistry } from '@/lib/template/registry';
 import TemplateRenderer from './TemplateRenderer';
 import {
     generateTenantMetadata,
@@ -32,10 +34,7 @@ import {
 } from '@/core/utils/seo';
 import { Metadata } from 'next';
 import LeadCapturePopup from '@/components/lead/LeadCapturePopup';
-
-// Known valid template slugs
-const VALID_SLUGS = ['template_classic', 'template_modern', 'template_premium'];
-
+import SystemPopupProvider from '@/components/system/SystemPopupProvider';
 
 export async function generateMetadata({
     params,
@@ -62,10 +61,8 @@ export default async function TemplateDemoPage({
     const path = '/' + (pathSegments?.join('/') ?? '');
     const screenName = pathSegments?.[0] || 'home';
 
-    // 1. Validate template slug
-    if (!VALID_SLUGS.includes(templateSlug)) {
-        return notFound();
-    }
+    // 1. Validate template slug — Removed hardcoded check to allow TemplateRenderer 
+    // to handle invalid slugs with a premium SystemPopup.
 
     // 2. Domain guard: Only allow owner domains
     const headersList = await headers();
@@ -83,7 +80,16 @@ export default async function TemplateDemoPage({
 
     let tenantState: TenantState;
 
-    if (result.status === 'success') {
+    // Check if template exists in registry
+    const templateExists = !!templateRegistry[templateSlug];
+
+    if (!templateExists) {
+        tenantState = {
+            status: 'template_not_found',
+            data: null,
+            message: `Template "${templateSlug}" is not available in the system.`,
+        };
+    } else if (result.status === 'success') {
         tenantState = {
             status: 'success',
             data: buildTenantViewModel(result.payload),
@@ -105,7 +111,7 @@ export default async function TemplateDemoPage({
     }
 
     return (
-        <>
+        <SystemPopupProvider tenantState={tenantState}>
             {tenantState.data && (
                 <>
                     {/* 1. School / EducationalOrganization — always present */}
@@ -155,7 +161,7 @@ export default async function TemplateDemoPage({
                 path={path}
                 tenantState={tenantState}
             />
-            <LeadCapturePopup templateSlug={templateSlug} />
-        </>
+            {templateExists && <LeadCapturePopup templateSlug={templateSlug} />}
+        </SystemPopupProvider>
     );
 }

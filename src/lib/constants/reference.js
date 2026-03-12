@@ -152,6 +152,18 @@ export const COL_LEADERSHIP_IMAGE_URL = "imageurl";
 export const COL_LEADERSHIP_SIGNATURE_URL = "signatureurl";
 export const COL_LEADERSHIP_IS_ACTIVE = "isactive";
 export const COL_LEADERSHIP_DISPLAY_ORDER = "displayorder";
+export const COL_LEADERSHIP_CREATED_AT = "createdat";
+
+// --- Columns: boardmembers ---
+export const COL_BOARD_MEMBERS_ID = "key";
+export const COL_BOARD_MEMBERS_SCHOOL_ID = "schoolkey";
+export const COL_BOARD_MEMBERS_NAME = "name";
+export const COL_BOARD_MEMBERS_DESIGNATION = "designation";
+export const COL_BOARD_MEMBERS_QUALIFICATION = "qualification";
+export const COL_BOARD_MEMBERS_PROFILE = "profile";
+export const COL_BOARD_MEMBERS_IMAGE_URL = "imageurl";
+export const COL_BOARD_MEMBERS_DISPLAY_ORDER = "displayorder";
+export const COL_BOARD_MEMBERS_IS_ACTIVE = "isactive";
 
 // --- Columns: schoolstats (TABLE_CAMPUS_STATISTICS) ---
 export const COL_CAMPUS_STATISTICS_ID = "key";
@@ -328,14 +340,24 @@ export const COL_PLAN_CODE = "code";
 export const COL_PLAN_GRACE_PERIOD = "graceperiod"; // number of days
 export const COL_PLAN_IS_ACTIVE = "isactive";
 
-// --- Columns: school_identity (Mapped back for compatibility) ---
-// Note: Many of these were previously in school_identity table but are now scattered.
-// Mapping to 'academics' or 'schools' columns where appropriate.
-export const COL_SCHOOL_IDENTITY_VISION = "vision"; // Might be in themeconfig or contactdetails?
+export const COL_FACILITY_CATEGORIES_NAME = "tag"; // Compatibility mapping
+
+// --- Columns: whychooseus ---
+export const COL_WHY_CHOOSE_US_ID = "key";
+export const COL_WHY_CHOOSE_US_SCHOOL_ID = "schoolkey";
+export const COL_WHY_CHOOSE_US_TITLE = "title";
+export const COL_WHY_CHOOSE_US_DESCRIPTION = "description";
+export const COL_WHY_CHOOSE_US_ICON = "icon";
+export const COL_WHY_CHOOSE_US_DISPLAY_ORDER = "displayorder";
+export const COL_WHY_CHOOSE_US_IS_ACTIVE = "isactive";
+
+// --- Columns: schoolidentity ---
+export const COL_SCHOOL_IDENTITY_ID = "key";
+export const COL_SCHOOL_IDENTITY_SCHOOL_ID = "schoolkey";
+export const COL_SCHOOL_IDENTITY_VISION = "vision";
 export const COL_SCHOOL_IDENTITY_MISSION = "mission";
 export const COL_SCHOOL_IDENTITY_MOTTO = "motto";
-export const COL_SCHOOL_IDENTITY_ABOUT_TITLE = "about_title";
-export const COL_SCHOOL_IDENTITY_ABOUT_DESCRIPTION = "about_description";
-export const COL_SCHOOL_IDENTITY_WHY_CHOOSE_US = "why_choose_us"; // This was likely a JSON array?
-
-export const COL_FACILITY_CATEGORIES_NAME = "tag"; // Compatibility mapping
+export const COL_SCHOOL_IDENTITY_HISTORY = "history";
+export const COL_SCHOOL_IDENTITY_FOUNDED_YEAR = "founded_year";
+export const COL_SCHOOL_IDENTITY_CREATED_AT = "createdat";
+export const COL_SCHOOL_IDENTITY_UPDATED_AT = "updatedat";

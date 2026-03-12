@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { isValidImageUrl } from '@/core/utils/url';
 import LayoutWrapper from '../components/LayoutWrapper';
 import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
-import SystemPopup from '@/components/system/SystemPopup';
+import SectionWarning from '@/components/system/SectionWarning';
 
 interface HeroSlide {
   mediaType: string;
@@ -33,29 +33,31 @@ const Hero: React.FC<{ heroSlide: HeroSlide | null }> = ({ heroSlide }) => {
     <section className="h-screen relative overflow-hidden bg-signature-navy">
       <div className="absolute inset-0 z-0">
         {heroSlide?.mediaUrl && isValidImageUrl(heroSlide.mediaUrl) && (
-          heroSlide.mediaType === 'video' ? (
-            <video
-              ref={videoRef}
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="w-full h-full object-cover scale-110"
-            >
-              <source
+          <>
+            {heroSlide.mediaType === 'video' ? (
+              <video
+                ref={videoRef}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-full object-cover scale-110"
+              >
+                <source
+                  src={heroSlide.mediaUrl}
+                  type="video/mp4"
+                />
+              </video>
+            ) : (
+              <img
                 src={heroSlide.mediaUrl}
-                type="video/mp4"
+                alt={""}
+                className="w-full h-full object-cover scale-110"
               />
-            </video>
-          ) : (
-            <img
-              src={heroSlide.mediaUrl}
-              alt={""}
-              className="w-full h-full object-cover scale-110"
-            />
-          )
+            )}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-transparent z-[1]"></div>
+          </>
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-signature-navy/80 via-signature-navy/40 to-signature-navy z-[1]"></div>
       </div>
 
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-6">
@@ -82,20 +84,9 @@ const Hero: React.FC<{ heroSlide: HeroSlide | null }> = ({ heroSlide }) => {
             </Link>
 
             {heroSlide?.secondaryButtonText && (
-              <button
-                onClick={() => setIsFilmOpen(true)}
-                className="group flex items-center gap-6 text-white/80 hover:text-white transition-all"
-              >
-                <div className="w-16 h-16 rounded-full border border-white/20 flex items-center justify-center group-hover:border-signature-gold group-hover:bg-signature-gold/10 transition-all duration-700">
-                  <svg className="w-5 h-5 fill-current translate-x-0.5" viewBox="0 0 24 24">
-                    <path d="M3 22V2l18 10L3 22z" />
-                  </svg>
-                </div>
-                <div className="text-left">
-                  <span className="block text-[10px] uppercase tracking-[0.4em] font-bold text-signature-gold">{heroSlide.secondaryButtonText}</span>
-                  <span className="block text-sm font-serif italic text-white/40 group-hover:text-white/80 transition-colors">The Sterling Story</span>
-                </div>
-              </button>
+              <Link href={heroSlide.secondaryButtonUrl || '#'}>
+                <Button variant="outline">{heroSlide.secondaryButtonText}</Button>
+              </Link>
             )}
           </div>
         </div>
@@ -277,10 +268,7 @@ const SchoolDashboard: React.FC<DashboardProps> = ({ statistics, statsEnabled, s
   if (!statsEnabled) return null;
   if (statsRequired && statistics.length === 0) {
     return (
-      <SystemPopup
-        variant="data_error"
-        errorMessage="Home Screen: Statistics section is required but no specific data is found. Please add statistics data in the admin panel."
-      />
+      <SectionWarning sectionKey="statistics" />
     );
   }
   if (!statsRequired && statistics.length === 0) return null;
@@ -329,10 +317,7 @@ const FacultyHighlights: React.FC<FacultyHighlightsProps> = ({ faculty, facultyE
   if (!facultyEnabled) return null;
   if (facultyRequired && faculty.length === 0) {
     return (
-      <SystemPopup
-        variant="data_error"
-        errorMessage="Home Screen: Faculty section is required but no specific data is found. Please add faculty data in the admin panel."
-      />
+      <SectionWarning sectionKey="faculty" />
     );
   }
   if (!facultyRequired && faculty.length === 0) return null;
@@ -394,10 +379,7 @@ const AthleticExcellence: React.FC<AthleticExcellenceProps> = ({ sportsAchieveme
   if (!sportsEnabled) return null;
   if (sportsRequired && sportsAchievements.length === 0) {
     return (
-      <SystemPopup
-        variant="data_error"
-        errorMessage="Home Screen: Sports section is required but no specific data is found. Please add sports data in the admin panel."
-      />
+      <SectionWarning sectionKey="sports" />
     );
   }
   if (!sportsRequired && sportsAchievements.length === 0) return null;
@@ -470,10 +452,7 @@ const CampusFacilities: React.FC<CampusFacilitiesProps> = ({ facilityGroups, fac
   if (!facilitiesEnabled) return null;
   if (facilitiesRequired && facilityGroups.length === 0) {
     return (
-      <SystemPopup
-        variant="data_error"
-        errorMessage="Home Screen: Facilities section is required but no specific data is found. Please add facilities data in the admin panel."
-      />
+      <SectionWarning sectionKey="facilities" />
     );
   }
   if (!facilitiesRequired && facilityGroups.length === 0) return null;
@@ -529,10 +508,7 @@ const UpcomingEvents: React.FC<{ eventsToShow: any[], eventsEnabled: boolean, ev
   if (!eventsEnabled) return null;
   if (eventsRequired && eventsToShow.length === 0) {
     return (
-      <SystemPopup
-        variant="data_error"
-        errorMessage="Home Screen: Events section is required but no specific data is found. Please add events data in the admin panel."
-      />
+      <SectionWarning sectionKey="events" />
     );
   }
   if (!eventsRequired && eventsToShow.length === 0) return null;
@@ -602,10 +578,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
 
   if (heroEnabled && heroRequired && heroMedia.length === 0) {
     return (
-      <SystemPopup
-        variant="data_error"
-        errorMessage="Home Screen: Hero section is required but no specific data is found. Please add hero data in the admin panel."
-      />
+      <SectionWarning sectionKey="hero" />
     );
   }
   const heroSlide = heroMedia[0] ?? null;
@@ -617,10 +590,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
   const academicResults = [...(data?.academicResults ?? [])].sort((a, b) => b.year - a.year);
   if (academicResultsEnabled && academicResultsRequired && academicResults.length === 0) {
     return (
-      <SystemPopup
-        variant="data_error"
-        errorMessage="Home Screen: Academics section is required but no specific data is found. Please add academic results in the admin panel."
-      />
+      <SectionWarning sectionKey="academics" />
     );
   }
   const latestAcademicResult = academicResults[0] ?? null;
@@ -633,10 +603,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
     .sort((a, b) => b.year - a.year || (a.displayOrder || 0) - (b.displayOrder || 0));
   if (achievementsEnabled && achievementsRequired && academicAchievements.length === 0) {
     return (
-      <SystemPopup
-        variant="data_error"
-        errorMessage="Home Screen: Achievements section is required but no specific data is found. Please add achievements in the admin panel."
-      />
+      <SectionWarning sectionKey="achievements" />
     );
   }
 
@@ -648,10 +615,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
 
   if (leadershipEnabled && leadershipRequired && leadership.length === 0) {
     return (
-      <SystemPopup
-        variant="data_error"
-        errorMessage="Home Screen: Leadership section is required but no specific data is found. Please add leadership data in the admin panel."
-      />
+      <SectionWarning sectionKey="leadership" />
     );
   }
 
@@ -708,10 +672,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
     .slice(0, 3);
   if (galleryEnabled && galleryRequired && galleryItems.length === 0) {
     return (
-      <SystemPopup
-        variant="data_error"
-        errorMessage="Home Screen: Gallery section is required but no specific data is found. Please add gallery items in the admin panel."
-      />
+      <SectionWarning sectionKey="gallery" />
     );
   }
 
@@ -836,9 +797,9 @@ export default function Home({ data }: { data: TenantViewModel }) {
                             </div>
                           ) : (
                             <video
-                                src={item.url}
-                                autoPlay muted loop playsInline
-                                className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000 ease-out"
+                              src={item.url}
+                              autoPlay muted loop playsInline
+                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000 ease-out"
                             />
                           )}
                           <div className="absolute inset-0 bg-signature-navy/10 group-hover:bg-transparent transition-colors duration-700"></div>
