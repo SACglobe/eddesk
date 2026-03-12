@@ -2,7 +2,7 @@
 
 ## Overview
 
-This design specifies the implementation of enhanced domain routing logic in the EdDesk Next.js middleware. The enhancement changes the owner domain detection from exact matching to a "contains" check, enabling flexible identification of localhost and eddesk domains regardless of port or subdomain. Additionally, it clarifies the template slug parameter passing mechanism for demo templates versus customer tenants.
+This design specifies the implementation of enhanced domain routing logic in the EdDesk Next.js proxy. The enhancement changes the owner domain detection from exact matching to a "contains" check, enabling flexible identification of localhost and eddesk domains regardless of port or subdomain. Additionally, it clarifies the template slug parameter passing mechanism for demo templates versus customer tenants.
 
 ### Goals
 
@@ -39,7 +39,7 @@ graph TD
 
 ### Domain Classification Algorithm
 
-The middleware classifies domains into two categories:
+The proxy classifies domains into two categories:
 
 1. **Owner Domains**: Domains containing "localhost" or "eddesk" (case-insensitive)
 2. **Tenant Domains**: All other domains
@@ -142,7 +142,7 @@ function handleRoute(
 - Pass `null` or omit template slug parameter
 - Tenant system loads template from database using template_id from config
 
-**Implementation Note**: The current middleware uses URL rewriting. Template slug for demos can be extracted from the path pattern `/demo/[template_slug]` and passed via query parameters if needed by the demo route handler.
+**Implementation Note**: The current proxy uses URL rewriting. Template slug for demos can be extracted from the path pattern `/demo/[template_slug]` and passed via query parameters if needed by the demo route handler.
 
 ## Data Models
 
@@ -174,7 +174,7 @@ interface RequestContext {
 }
 ```
 
-This context is built during middleware execution and used for routing decisions.
+This context is built during proxy execution and used for routing decisions.
 
 
 ## Correctness Properties
@@ -183,79 +183,79 @@ This context is built during middleware execution and used for routing decisions
 
 ### Property 1: Owner Domain Classification
 
-*For any* hostname, the middleware should identify it as an owner domain if and only if it contains "localhost" or "eddesk" (case-insensitive), and as a tenant domain otherwise.
+*For any* hostname, the proxy should identify it as an owner domain if and only if it contains "localhost" or "eddesk" (case-insensitive), and as a tenant domain otherwise.
 
 **Validates: Requirements 1.1, 1.2, 1.3, 1.4**
 
 ### Property 2: Owner Domain Marketing Route
 
-*For any* request from an owner domain with a path that does not start with "/demo", the middleware should allow the request to proceed to the marketing page (NextResponse.next()).
+*For any* request from an owner domain with a path that does not start with "/demo", the proxy should allow the request to proceed to the marketing page (NextResponse.next()).
 
 **Validates: Requirements 2.1**
 
 ### Property 3: Owner Domain Demo Route Access
 
-*For any* request from an owner domain with a path starting with "/demo", the middleware should allow the request to proceed to the demo route.
+*For any* request from an owner domain with a path starting with "/demo", the proxy should allow the request to proceed to the demo route.
 
 **Validates: Requirements 2.2, 6.2**
 
 ### Property 4: Tenant Domain Lookup
 
-*For any* request from a tenant domain, the middleware should perform a lookup in the school array to find the domain configuration.
+*For any* request from a tenant domain, the proxy should perform a lookup in the school array to find the domain configuration.
 
 **Validates: Requirements 3.1**
 
 ### Property 5: Tenant Domain Rewrite
 
-*For any* tenant domain that exists in the school array, the middleware should rewrite the request to `/tenant/[...path]` with the template_id from the matched configuration.
+*For any* tenant domain that exists in the school array, the proxy should rewrite the request to `/tenant/[...path]` with the template_id from the matched configuration.
 
 **Validates: Requirements 3.2, 7.3**
 
 ### Property 6: Unknown Domain Error
 
-*For any* tenant domain that does not exist in the school array, the middleware should return an error response.
+*For any* tenant domain that does not exist in the school array, the proxy should return an error response.
 
 **Validates: Requirements 3.3**
 
 ### Property 7: Demo Template Slug Extraction
 
-*For any* demo route request from an owner domain, the middleware should extract the template slug from the request path or query parameters.
+*For any* demo route request from an owner domain, the proxy should extract the template slug from the request path or query parameters.
 
 **Validates: Requirements 4.1, 4.2**
 
 ### Property 8: Tenant Template Slug Null
 
-*For any* tenant domain request rewritten to `/tenant/[...path]`, the middleware should not pass a template slug parameter (or pass null), allowing the tenant system to load the template from the database.
+*For any* tenant domain request rewritten to `/tenant/[...path]`, the proxy should not pass a template slug parameter (or pass null), allowing the tenant system to load the template from the database.
 
 **Validates: Requirements 5.1**
 
 ### Property 9: Demo vs Tenant Classification
 
-*For any* request, the middleware should classify it as a demo request if the path starts with "/demo" and it's from an owner domain, otherwise classify it as a tenant request if it's from a tenant domain.
+*For any* request, the proxy should classify it as a demo request if the path starts with "/demo" and it's from an owner domain, otherwise classify it as a tenant request if it's from a tenant domain.
 
 **Validates: Requirements 5.2, 5.3**
 
 ### Property 10: Tenant Demo Access Blocked
 
-*For any* request from a tenant domain with a path starting with "/demo", the middleware should return a 404 Not Found response.
+*For any* request from a tenant domain with a path starting with "/demo", the proxy should return a 404 Not Found response.
 
 **Validates: Requirements 6.1**
 
 ### Property 11: Demo Access Logging
 
-*For any* blocked demo access attempt from a tenant domain, the middleware should create a log entry.
+*For any* blocked demo access attempt from a tenant domain, the proxy should create a log entry.
 
 **Validates: Requirements 6.3**
 
 ### Property 12: Domain Field Matching
 
-*For any* domain lookup, the middleware should match against the "domain" field in the school array entries.
+*For any* domain lookup, the proxy should match against the "domain" field in the school array entries.
 
 **Validates: Requirements 7.2**
 
 ### Property 13: WWW Prefix Normalization
 
-*For any* hostname with or without a "www." prefix, the middleware should match the same domain configuration in the school array.
+*For any* hostname with or without a "www." prefix, the proxy should match the same domain configuration in the school array.
 
 **Validates: Requirements 7.4**
 
@@ -273,7 +273,7 @@ This context is built during middleware execution and used for routing decisions
 **Implementation**:
 ```typescript
 if (!config && !isOwner) {
-  console.error(`[Middleware] Unknown domain: ${hostname}`);
+  console.error(`[proxy] Unknown domain: ${hostname}`);
   return new NextResponse('Domain not configured', { status: 500 });
 }
 ```
@@ -290,7 +290,7 @@ if (!config && !isOwner) {
 **Implementation**:
 ```typescript
 if (pathname.startsWith('/demo') && !isOwner) {
-  console.warn(`[Middleware] Demo access blocked: ${hostname} -> ${pathname}`);
+  console.warn(`[proxy] Demo access blocked: ${hostname} -> ${pathname}`);
   return new NextResponse('Not Found', { status: 404 });
 }
 ```
@@ -307,7 +307,7 @@ if (pathname.startsWith('/demo') && !isOwner) {
 **Implementation**:
 ```typescript
 if (pathname === '/demo' || pathname === '/demo/') {
-  console.error(`[Middleware] Demo route missing template slug: ${pathname}`);
+  console.error(`[proxy] Demo route missing template slug: ${pathname}`);
   return new NextResponse('Template slug required', { status: 400 });
 }
 ```
@@ -406,36 +406,36 @@ test('www prefix normalization', () => {
 **Focus Areas**:
 1. Specific domain examples (localhost:3000, eddesk.in, crescentthoothukudi.in)
 2. Edge cases (empty hostname, malformed URLs, special characters)
-3. Integration between middleware and Next.js routing
+3. Integration between proxy and Next.js routing
 4. Error response formats and status codes
 
 **Unit Test Examples**:
 
 ```typescript
-describe('Middleware Domain Routing', () => {
+describe('proxy Domain Routing', () => {
   test('localhost:3000 routes to marketing page', () => {
     const request = createMockRequest('localhost:3000', '/');
-    const response = middleware(request);
+    const response = proxy(request);
     expect(response.status).toBe(200);
-    expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    expect(response.headers.get('x-proxy-rewrite')).toBeNull();
   });
 
   test('tenant domain not in school array returns error', () => {
     const request = createMockRequest('unknown-school.com', '/');
-    const response = middleware(request);
+    const response = proxy(request);
     expect(response.status).toBe(500);
     expect(response.statusText).toContain('not configured');
   });
 
   test('demo route on tenant domain returns 404', () => {
     const request = createMockRequest('crescentthoothukudi.in', '/demo/template_classic');
-    const response = middleware(request);
+    const response = proxy(request);
     expect(response.status).toBe(404);
   });
 
   test('static files bypass routing logic', () => {
     const request = createMockRequest('localhost:3000', '/_next/static/chunk.js');
-    const response = middleware(request);
+    const response = proxy(request);
     expect(response.status).toBe(200);
   });
 });
@@ -443,7 +443,7 @@ describe('Middleware Domain Routing', () => {
 
 ### Test Coverage Goals
 
-- **Line Coverage**: Minimum 90% for middleware.ts
+- **Line Coverage**: Minimum 90% for proxy.ts
 - **Branch Coverage**: Minimum 85% for all routing decision branches
 - **Property Coverage**: 100% of design properties must have corresponding property tests
 - **Edge Case Coverage**: All error conditions must have unit tests
@@ -470,7 +470,7 @@ Before deployment, manually verify:
 
 ### Migration Strategy
 
-The implementation will modify the existing `src/middleware.ts` file with the following changes:
+The implementation will modify the existing `src/proxy.ts` file with the following changes:
 
 1. **Extract Owner Domain Check**: Create `isOwnerDomain()` helper function
 2. **Simplify Routing Logic**: Remove dependency on `config.type` for owner domain detection
@@ -481,11 +481,11 @@ The implementation will modify the existing `src/middleware.ts` file with the fo
 
 ```
 src/
-├── middleware.ts              # Main middleware with routing logic
+├── proxy.ts              # Main proxy with routing logic
 ├── lib/
 │   ├── constants/
 │   │   └── constants.js      # Domain data (unchanged)
-│   └── middleware/
+│   └── proxy/
 │       ├── domain-classifier.ts    # isOwnerDomain() helper
 │       ├── domain-lookup.ts        # findDomainConfig() helper
 │       └── route-handler.ts        # Routing decision logic
@@ -496,7 +496,7 @@ src/
 - **Owner Domain Check**: O(1) string contains operation
 - **Domain Lookup**: O(n) linear search through domain_data array
 - **Caching**: Consider caching domain lookups if array grows large
-- **Edge Runtime**: Middleware runs on Edge, keep bundle size minimal
+- **Edge Runtime**: proxy runs on Edge, keep bundle size minimal
 
 ### Future Enhancements
 

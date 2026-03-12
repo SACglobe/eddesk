@@ -55,8 +55,8 @@ phase/2       → next phase (created after phase/1 merges)
 
 ```
 src/
-├── middleware.ts                          ← CRITICAL: domain routing (was proxy.ts — must be middleware.ts)
-├── proxy.ts                               ← OLD NAME — Next.js ignores this, rename to middleware.ts
+├── proxy.ts                          ← CRITICAL: domain routing (was proxy.ts — must be proxy.ts)
+├── proxy.ts                               ← OLD NAME — Next.js ignores this, rename to proxy.ts
 │
 ├── app/
 │   ├── page.tsx                           ← EdDesk marketing homepage (localhost:3000, eddesk.in)
@@ -99,9 +99,9 @@ src/
 
 ## Domain Routing — How It Works
 
-### The Middleware (src/middleware.ts)
+### The proxy (src/proxy.ts)
 
-⚠️ CRITICAL BUG — currently named `src/proxy.ts`. Next.js ONLY runs `src/middleware.ts`.
+⚠️ CRITICAL BUG — currently named `src/proxy.ts`. Next.js ONLY runs `src/proxy.ts`.
 The file must be renamed for tenant routing to work in production.
 
 **Routing decision tree:**
@@ -143,7 +143,7 @@ Request comes in
 { domain: 'thearun.dev',           type: 'tenant', template_id: 'template_premium' }
 ```
 
-**Known bug in middleware hostname normalization:**
+**Known bug in proxy hostname normalization:**
 ```ts
 // WRONG — strips port before matching, breaks localhost:3001
 const hostname = host.split(':')[0].toLowerCase().replace(/^www\./, '');
@@ -201,7 +201,7 @@ It is NOT wrapped in `[{ get_screen_data: {...} }]`.
 Browser Request
       │
       ▼
-middleware.ts         — routes domain to /tenant or passes through for demo/marketing
+proxy.ts         — routes domain to /tenant or passes through for demo/marketing
       │
       ▼
 tenant/page.tsx       — OR — demo/page.tsx
@@ -417,8 +417,8 @@ subscription     — school subscription (status, startdate, enddate, plankey)
 
 ### 🔴 Critical — Must Fix
 
-1. **src/proxy.ts must be renamed to src/middleware.ts**
-   Next.js only runs middleware.ts. proxy.ts is completely ignored.
+1. **src/proxy.ts must be renamed to src/proxy.ts**
+   Next.js only runs proxy.ts. proxy.ts is completely ignored.
    All the routing logic is written correctly — just wrong filename.
    Also fix the import: `'./app/lib/constants'` → `'@/lib/constants/constants'`
    Also fix hostname normalization: remove `.split(':')[0]` to keep port.
@@ -443,7 +443,7 @@ subscription     — school subscription (status, startdate, enddate, plankey)
    `fetchTenantScreenData()` is marked @deprecated — delete once all callers updated.
 
 6. **Domain routing needs Supabase migration**
-   constants.js is a hardcoded local file. Production needs middleware to
+   constants.js is a hardcoded local file. Production needs proxy to
    query Supabase's schools table for domain → school lookup.
    This is Phase 2 work — do not attempt without a caching strategy.
 
@@ -472,7 +472,7 @@ subscription     — school subscription (status, startdate, enddate, plankey)
 
 - Wire SectionWarning into all three templates
 - Complete inner page data binding (about, faculty, events, etc.)
-- Migrate middleware domain lookup from constants.js → Supabase
+- Migrate proxy domain lookup from constants.js → Supabase
 - Admin panel integration (team member building this separately)
 - Production tenant onboarding flow
 

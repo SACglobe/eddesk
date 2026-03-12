@@ -57,7 +57,7 @@ So we can see the response shape for each domain type.
 - Do NOT feed any data into templates
 - Do NOT modify the template files
 - Do NOT delete or update anything in Supabase
-- Do NOT change middleware.ts
+- Do NOT change proxy.ts
 - Do NOT change constants/contants.js
 
 When done, tell me exactly what files you created or modified.

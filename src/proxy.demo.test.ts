@@ -1,9 +1,9 @@
-// src/middleware.demo.test.ts
-// Tests for demo route access control in middleware
+// src/proxy.demo.test.ts
+// Tests for demo route access control in proxy
 // Task 2.3: Verify demo route access control implementation
 
 import { NextRequest } from 'next/server';
-import { middleware } from './middleware';
+import { proxy } from './proxy';
 
 // Mock the constants module
 jest.mock('@/lib/constants/constants', () => [
@@ -13,15 +13,15 @@ jest.mock('@/lib/constants/constants', () => [
 ]);
 
 // Mock the domain-classifier module
-jest.mock('@/lib/middleware/domain-classifier', () => ({
+jest.mock('@/lib/proxy/domain-classifier', () => ({
   isOwnerDomain: jest.fn((hostname: string) => {
-    return hostname.toLowerCase().includes('localhost') || 
-           hostname.toLowerCase().includes('eddesk');
+    return hostname.toLowerCase().includes('localhost') ||
+      hostname.toLowerCase().includes('eddesk');
   })
 }));
 
 // Mock the domain-lookup module
-jest.mock('@/lib/middleware/domain-lookup', () => ({
+jest.mock('@/lib/proxy/domain-lookup', () => ({
   findDomainConfig: jest.fn()
 }));
 
@@ -29,22 +29,22 @@ jest.mock('@/lib/middleware/domain-lookup', () => ({
 function createMockRequest(host: string, pathname: string): NextRequest {
   const url = `https://${host}${pathname}`;
   const request = new NextRequest(url);
-  
+
   // Set the host header
   Object.defineProperty(request, 'headers', {
     value: new Map([['host', host]]),
     writable: false
   });
-  
+
   return request;
 }
 
-describe('Middleware Demo Route Access Control', () => {
+describe('proxy Demo Route Access Control', () => {
   describe('Owner domain demo access', () => {
     it('should allow owner domain to access demo routes', () => {
       const request = createMockRequest('localhost:3000', '/demo/template_classic');
-      const response = middleware(request);
-      
+      const response = proxy(request);
+
       // Should allow through (NextResponse.next())
       expect(response).toBeDefined();
       expect(response.status).not.toBe(404);
@@ -52,8 +52,8 @@ describe('Middleware Demo Route Access Control', () => {
 
     it('should allow eddesk.in to access demo routes', () => {
       const request = createMockRequest('eddesk.in', '/demo/template_modern');
-      const response = middleware(request);
-      
+      const response = proxy(request);
+
       // Should allow through
       expect(response).toBeDefined();
       expect(response.status).not.toBe(404);
@@ -63,11 +63,11 @@ describe('Middleware Demo Route Access Control', () => {
   describe('Tenant domain demo access blocked', () => {
     it('should return 404 for tenant domain attempting demo access', async () => {
       const request = createMockRequest('crescentthoothukudi.in', '/demo/template_classic');
-      const response = middleware(request);
-      
+      const response = proxy(request);
+
       // Should return 404
       expect(response.status).toBe(404);
-      
+
       // Should return "Not Found" message per design specification (Requirement 6.1)
       const text = await response.text();
       expect(text).toBe('Not Found');
@@ -75,8 +75,8 @@ describe('Middleware Demo Route Access Control', () => {
 
     it('should return 404 for any tenant domain demo route', async () => {
       const request = createMockRequest('crescentthoothukudi.in', '/demo/any-template');
-      const response = middleware(request);
-      
+      const response = proxy(request);
+
       expect(response.status).toBe(404);
       const text = await response.text();
       expect(text).toBe('Not Found');
@@ -99,8 +99,8 @@ describe('Middleware Demo Route Access Control', () => {
 
     it('should log blocked demo access attempts', () => {
       const request = createMockRequest('crescentthoothukudi.in', '/demo/template_classic');
-      middleware(request);
-      
+      proxy(request);
+
       // Should log warning for blocked attempt (Requirement 6.3)
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         expect.stringContaining('Non-owner blocked for demo route')
@@ -109,8 +109,8 @@ describe('Middleware Demo Route Access Control', () => {
 
     it('should log allowed demo access for owner domains', () => {
       const request = createMockRequest('localhost:3000', '/demo/template_classic');
-      middleware(request);
-      
+      proxy(request);
+
       // Should log that owner was detected
       expect(consoleLogSpy).toHaveBeenCalledWith(
         expect.stringContaining('Owner detected for demo route')
@@ -137,11 +137,11 @@ describe('Property-Based Tests: Demo Route Access Control', () => {
           (hostname, demoPath) => {
             // Construct a valid demo path
             const path = `/demo/${demoPath}`;
-            
+
             // Create request with owner domain
             const request = createMockRequest(hostname, path);
-            const response = middleware(request);
-            
+            const response = proxy(request);
+
             // Owner domains should be allowed through (not 404)
             expect(response.status).not.toBe(404);
           }
@@ -165,11 +165,11 @@ describe('Property-Based Tests: Demo Route Access Control', () => {
           (hostname, demoPath) => {
             // Construct a valid demo path
             const path = `/demo/${demoPath}`;
-            
+
             // Create request with tenant domain
             const request = createMockRequest(hostname, path);
-            const response = middleware(request);
-            
+            const response = proxy(request);
+
             // Tenant domains should receive 404
             expect(response.status).toBe(404);
           }

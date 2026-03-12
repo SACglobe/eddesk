@@ -2,13 +2,13 @@
 
 ## Overview
 
-This plan implements enhanced domain routing logic in the EdDesk Next.js middleware. The implementation replaces exact domain matching with substring-based owner domain detection, adds proper error handling, and clarifies template slug parameter passing for demo vs tenant routes. The plan includes comprehensive property-based testing using fast-check and unit testing with Jest.
+This plan implements enhanced domain routing logic in the EdDesk Next.js proxy. The implementation replaces exact domain matching with substring-based owner domain detection, adds proper error handling, and clarifies template slug parameter passing for demo vs tenant routes. The plan includes comprehensive property-based testing using fast-check and unit testing with Jest.
 
 ## Tasks
 
 - [ ] 1. Create helper functions for domain classification and lookup
   - [x] 1.1 Create isOwnerDomain() helper function
-    - Implement in src/lib/middleware/domain-classifier.ts
+    - Implement in src/lib/proxy/domain-classifier.ts
     - Use case-insensitive contains check for "localhost" and "eddesk"
     - Export function with TypeScript type signature
     - _Requirements: 1.1, 1.2, 1.3, 1.4_
@@ -20,7 +20,7 @@ This plan implements enhanced domain routing logic in the EdDesk Next.js middlew
     - Test that function returns true iff hostname contains "localhost" or "eddesk"
   
   - [x] 1.3 Create findDomainConfig() helper function
-    - Implement in src/lib/middleware/domain-lookup.ts
+    - Implement in src/lib/proxy/domain-lookup.ts
     - Normalize hostname (lowercase, remove www prefix)
     - Search domain_data array for exact match
     - Return DomainConfig interface or null
@@ -31,7 +31,7 @@ This plan implements enhanced domain routing logic in the EdDesk Next.js middlew
     - **Validates: Requirements 7.4**
     - Test that domains with/without www prefix match same config
 
-- [ ] 2. Refactor middleware.ts routing logic
+- [ ] 2. Refactor proxy.ts routing logic
   - [x] 2.1 Import helper functions and update domain classification
     - Import isOwnerDomain() and findDomainConfig()
     - Replace config.type checks with isOwnerDomain() calls
@@ -166,7 +166,7 @@ This plan implements enhanced domain routing logic in the EdDesk Next.js middlew
 - [ ] 9. Verify test coverage and add missing tests
   - [ ] 9.1 Run test coverage report
     - Execute Jest with --coverage flag
-    - Verify line coverage >= 90% for middleware.ts
+    - Verify line coverage >= 90% for proxy.ts
     - Verify branch coverage >= 85% for routing logic
   
   - [ ] 9.2 Add tests for uncovered branches
@@ -188,5 +188,5 @@ This plan implements enhanced domain routing logic in the EdDesk Next.js middlew
 - Unit tests use Jest with Next.js testing utilities
 - All 13 correctness properties from design must have property tests
 - Target coverage: 90% line coverage, 85% branch coverage
-- Helper functions should be created in src/lib/middleware/ directory
-- Main implementation modifies src/middleware.ts
+- Helper functions should be created in src/lib/proxy/ directory
+- Main implementation modifies src/proxy.ts

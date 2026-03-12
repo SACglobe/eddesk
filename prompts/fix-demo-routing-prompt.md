@@ -1,6 +1,6 @@
 # EdDesk — Fix Demo Routing (3 files)
 # Demo shows dummy data instead of Supabase data
-# Middleware never executes because it's named wrong
+# proxy never executes because it's named wrong
 # ─────────────────────────────────────────────────────────────
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -20,7 +20,7 @@ ROOT CAUSE SUMMARY — THREE BUGS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 BUG 1 — src/proxy.ts is NEVER executed
-  Next.js only runs a file named exactly middleware.ts at src/middleware.ts.
+  Next.js only runs a file named exactly proxy.ts at src/proxy.ts.
   src/proxy.ts is ignored entirely. Tenant domains are never rewritten.
   Fix: rename the file AND fix two bugs inside it.
 
@@ -59,28 +59,28 @@ PHASE 0 — AUDIT (answer before writing code)
       Does it use Supabase data or LOCAL_TENANT_DATA?
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-FIX A — Move and fix src/proxy.ts → src/middleware.ts
+FIX A — Move and fix src/proxy.ts → src/proxy.ts
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-CREATE: src/middleware.ts
+CREATE: src/proxy.ts
 DELETE: src/proxy.ts
 
-The content of src/middleware.ts is the full content of src/proxy.ts
+The content of src/proxy.ts is the full content of src/proxy.ts
 with the following FOUR changes applied:
 
 ─────────────────────────────────────────────────────────────
-A1. Rename the export function from 'proxy' to 'middleware'
+A1. Rename the export function from 'proxy' to 'proxy'
 ─────────────────────────────────────────────────────────────
 
 BEFORE:
   export function proxy(request: NextRequest) {
 
 AFTER:
-  export function middleware(request: NextRequest) {
+  export function proxy(request: NextRequest) {
 
 Also update the default export at the bottom:
   BEFORE: export default proxy;
-  AFTER:  export default middleware;
+  AFTER:  export default proxy;
 
 ─────────────────────────────────────────────────────────────
 A2. Fix the import path for domain_data
@@ -92,7 +92,7 @@ BEFORE:
 AFTER:
   import domain_data from '@/lib/constants/constants';
 
-Reason: The file is moving from src/proxy.ts to src/middleware.ts.
+Reason: The file is moving from src/proxy.ts to src/proxy.ts.
 The relative path './app/lib/constants' was already wrong (the file
 doesn't exist there). The correct location is src/lib/constants/constants.js
 which maps to '@/lib/constants/constants' via the tsconfig path alias.
@@ -118,8 +118,8 @@ A4. Update the comment header
 
 Replace the existing console.log at the top with a comment:
 
-  // src/middleware.ts
-  // Next.js Edge Middleware — domain-based routing
+  // src/proxy.ts
+  // Next.js Edge proxy — domain-based routing
   //
   // Routes:
   //   Owner domains (localhost:3000, eddesk.in) → marketing page (NextResponse.next())
@@ -339,14 +339,14 @@ VALIDATE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Files created:
-  [ ] src/middleware.ts exists
+  [ ] src/proxy.ts exists
 
 Files deleted:
   [ ] src/proxy.ts no longer exists
 
-middleware.ts:
-  [ ] Function is named 'middleware' (not 'proxy')
-  [ ] Default export is 'middleware'
+proxy.ts:
+  [ ] Function is named 'proxy' (not 'proxy')
+  [ ] Default export is 'proxy'
   [ ] Import uses '@/lib/constants/constants' (not './app/lib/constants')
   [ ] hostname does NOT call .split(':')[0] — port is preserved
   [ ] config.matcher export is still present at the bottom
@@ -399,11 +399,11 @@ After making changes, restart the dev server and test:
 REPORT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  Files created:  src/middleware.ts
+  Files created:  src/proxy.ts
   Files deleted:  src/proxy.ts
   Files modified: src/core/services/screenData.service.ts
                   src/app/demo/[templateSlug]/[[...path]]/page.tsx
 
-  Bug A fixed: middleware.ts now executes (was proxy.ts — ignored by Next.js)
+  Bug A fixed: proxy.ts now executes (was proxy.ts — ignored by Next.js)
   Bug B fixed: fetchDemoScreen always uses eddesk.in (was using localhost:3000)
   Bug C fixed: empty/error RPC results show SystemPopup (was silently using dummy data)

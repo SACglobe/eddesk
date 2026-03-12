@@ -1,5 +1,5 @@
 /**
- * Domain classification utilities for middleware routing
+ * Domain classification utilities for proxy routing
  */
 
 /**

@@ -29,7 +29,7 @@ Safely integrate a new school template into EdDesk.
 ## Forbidden Actions
 - Modify other templates
 - Modify global styles
-- Modify middleware
+- Modify proxy
 - Modify database schema
 
 ## Steps
