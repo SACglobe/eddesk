@@ -3,8 +3,20 @@
 import React from 'react';
 import { schoolData } from '../../data';
 import LayoutWrapper from '../../components/LayoutWrapper';
+import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
+import { resolveImageUrl } from '@/core/utils/url';
 
-export default function Infrastructure() {
+export default function Infrastructure({ data }: { data?: TenantViewModel }) {
+    const sections = data?.homepageSections ?? [];
+    const section = sections.find((s: any) => s.sectionKey === 'infrastructure');
+    const isEnabled = section?.isEnabled ?? true;
+    const isRequired = section?.isRequired ?? false;
+    const facilities = data?.facilities ?? [];
+
+    if (!isEnabled) return null;
+
+    const itemsToShow = facilities.length > 0 ? facilities : schoolData.infrastructure;
+
     return (
         <LayoutWrapper>
             <div className="fade-in pb-24 pt-48">
@@ -16,11 +28,11 @@ export default function Infrastructure() {
                 </div>
 
                 <div className="space-y-32">
-                    {schoolData.infrastructure.map((item, i) => (
+                    {itemsToShow.map((item, i) => (
                         <section key={i} className="group">
                             <div className={`flex flex-col ${i % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center`}>
                                 <div className="w-full lg:w-2/3 overflow-hidden">
-                                    <img src={item.image} alt={item.name} className="w-full h-[70vh] object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" />
+                                    <img src={resolveImageUrl(item.image)} alt={item.name} className="w-full h-[70vh] object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" />
                                 </div>
                                 <div className="w-full lg:w-1/3 p-12 lg:p-24 bg-signature-ivory flex flex-col justify-center">
                                     <div className="text-signature-gold font-bold tracking-[0.4em] uppercase text-[10px] mb-6">Facility {i + 1}</div>

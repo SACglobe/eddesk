@@ -22,6 +22,7 @@ import { getSchoolByDomain } from '@/core/services/school.service';
 import { fetchTenantScreen, pathToScreenName, normalizeDomain } from '@/core/services/screenData.service';
 import { buildTenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import { checkSubscription } from '@/core/business/subscription';
+import { validateRequiredSections } from '@/core/utils/sectionValidator';
 import {
     generateTenantMetadata,
     generateSchoolJsonLd,
@@ -115,7 +116,6 @@ export default async function TenantPage({
     const screenName = pathToScreenName(path);
     const result = await fetchTenantScreen(hostname, screenName);
 
-    // Step 3: Handle RPC failure states BEFORE subscription check
     if (result.status === 'error') {
         return (
             <SystemPopup
@@ -125,19 +125,12 @@ export default async function TenantPage({
         );
     }
 
-    if (result.status === 'empty') {
-        return (
-            <SystemPopup
-                variant="empty"
-                errorMessage={result.message}
-            />
-        );
-    }
+    // Build viewModel: use payload if success, empty object if empty
+    const viewModel = buildTenantViewModel(
+        result.status === 'success' ? result.payload : ({} as any)
+    );
 
-    // Step 4: Build viewModel from the correctly unwrapped payload
-    const viewModel = buildTenantViewModel(result.payload);
-
-    // Step 5: Subscription check (reads mode, subscription.endDate, plan.gracePeriod)
+    // Step 5: Subscription check
     const subscriptionCheck = checkSubscription(viewModel);
 
     if (!subscriptionCheck.isAccessAllowed) {
@@ -154,13 +147,24 @@ export default async function TenantPage({
             />
         );
     }
+    
+    // Step 5.1: Validation check (NEW)
+    const validation = validateRequiredSections(viewModel);
+    if (!validation.isValid) {
+        return (
+            <SystemPopup
+                variant="content_missing"
+                missingSection={validation.missingSection}
+            />
+        );
+    }
 
     // Check if template exists in registry
     const templateExists = !!templateRegistry[viewModel.school.templateId];
 
     // Step 6: Build TenantState for context + TemplateRenderer
     const tenantState: TenantState = {
-        status: templateExists ? 'success' : 'template_not_found',
+        status: (result.status === 'empty') ? 'success' : (templateExists ? 'success' : 'template_not_found'),
         data: viewModel,
         message: templateExists ? '' : `Template "${viewModel.school.templateId}" is not available in the system.`,
     };

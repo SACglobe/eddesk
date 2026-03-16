@@ -130,9 +130,17 @@ import {
     COL_ACADEMIC_RESULTS_FIRST_CLASS,
     COL_ACADEMIC_RESULTS_LEGACY_QUOTE,
 
+    COL_INFRASTRUCTURE_ID,
     COL_INFRASTRUCTURE_TITLE,
     COL_INFRASTRUCTURE_DESCRIPTION,
     COL_INFRASTRUCTURE_TAG,
+    COL_INFRASTRUCTURE_IMAGE_URL,
+    COL_INFRASTRUCTURE_ICON,
+    COL_INFRASTRUCTURE_DISPLAY_ORDER,
+
+    COL_FACILITIES_NAME,
+    COL_FACILITIES_DESCRIPTION,
+    COL_FACILITIES_CATEGORY_NAME,
 
     COL_CONTACT_DETAILS_ID,
     COL_CONTACT_DETAILS_PHONE,
@@ -163,6 +171,15 @@ import {
     COL_CONTACT_DETAILS_INSTAGRAM,
     COL_CONTACT_DETAILS_TWITTER,
     COL_CONTACT_DETAILS_YOUTUBE,
+
+    COL_TESTIMONIALS_ID,
+    COL_TESTIMONIALS_RATING,
+    COL_TESTIMONIALS_MESSAGE,
+    COL_TESTIMONIALS_AUTHOR,
+    COL_TESTIMONIALS_DESIGNATION,
+    COL_TESTIMONIALS_PHOTO_URL,
+    COL_TESTIMONIALS_IS_ACTIVE,
+    COL_TESTIMONIALS_DISPLAY_ORDER,
 
     COL_IS_ACTIVE,
 } from '@/lib/constants/reference';
@@ -214,12 +231,18 @@ export interface TenantViewModel {
         gracePeriod: number;   // days — replaces hardcoded gracePeriodDays: 7
     };
 
-    // ── Section visibility (from templatecomponents, deduplicated) ────────────
+    // ── Section visibility (from templatecomponents) ──────────────────────────
     components: Array<{
         componentCode: string;   // 'hero' | 'broadcast' | 'faculty' | etc.
         isActive: boolean;
         isRequired: boolean;
         displayOrder: number;
+        config: {
+            filters?: { category?: string; type?: string; designation?: string; contenttype?: string } | null;
+            datasource?: string;
+            variant?: string | null;
+            itemcount?: number | null;
+        } | null;
     }>;
 
     // ── Also kept as homepageSections for template backward compatibility ──────
@@ -359,6 +382,31 @@ export interface TenantViewModel {
         photoUrl: string;     // kept for template compat — same as imageUrl
     }>;
 
+    schoolAchievements: Array<{
+        key: string;
+        title: string;
+        category: string;      // 'academic' | 'sports'
+        year: number;
+        awardLevel: string;
+        description: string;
+        imageUrl: string;
+        isFeatured: boolean;
+        isActive: boolean;
+        displayOrder: number;
+    }>;
+
+    // ── Testimonials ───────────────────────────────────────────────────────────
+    testimonials: Array<{
+        key: string;
+        rating: number;
+        message: string;
+        authorName: string;
+        designation: string;
+        photoUrl: string;
+        isActive: boolean;
+        displayOrder: number;
+    }>;
+
     // ── Events ────────────────────────────────────────────────────────────────
     events: Array<{
         key: string;
@@ -378,21 +426,25 @@ export interface TenantViewModel {
     // ── Gallery ───────────────────────────────────────────────────────────────
     gallery: Array<{
         key: string;
+        url: string;
         imageUrl: string;
         caption: string;
         category: string;
         mediaType: string;
         isFeatured: boolean;
+        isActive: boolean;
         displayOrder: number;
     }>;
 
     // ── Also kept as mediaLibrary for template backward compatibility ──────────
     mediaLibrary: Array<{
         url: string;
+        imageUrl: string;
         mediaType: string;
         category: string;
         caption: string;
         isFeatured: boolean;
+        isActive: boolean;
     }>;
 
     // ── Academic Results (SINGLE OBJECT — nullable) ───────────────────────────
@@ -416,10 +468,31 @@ export interface TenantViewModel {
     }>;
 
     // ── Activities ────────────────────────────────────────────────────────────
-    activities: Array<Record<string, unknown>>;
+    activities: Array<{
+        key: string;
+        title: string;
+        tag: string;
+        description: string;
+        imageUrl: string;
+        isActive: boolean;
+        displayOrder: number;
+        highlightTag: string;
+        highlightStat: string;
+    }>;
 
     // ── Infrastructure ────────────────────────────────────────────────────────
-    infrastructure: Array<Record<string, unknown>>;
+    infrastructure: Array<{
+        key: string;
+        title: string;
+        description: string;
+        tag: string;
+        icon: string;
+        imageUrl: string;
+        isActive: boolean;
+        displayOrder: number;
+        highlightTitle: string;
+        highlightDescription: string;
+    }>;
 
     // ── Also kept as facilities for template backward compatibility ────────────
     facilities: Array<{
@@ -442,6 +515,14 @@ export interface TenantViewModel {
     } | null;
     admissionSteps: Array<Record<string, unknown>>;
 }
+
+const COMPONENT_ALIASES: Record<string, string> = {
+    'schoolstats': 'stats',
+    'studentachievements': 'achievements',
+    'schoolachievements': 'achievements',
+    'academicresults': 'academics',
+    'broadcast': 'announcements',
+};
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
 
@@ -475,7 +556,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
     const facultyRows = (d.faculty ?? []) as Record<string, unknown>[];
     const leadershipRows = (d.leadership ?? []) as Record<string, unknown>[];
     const statsRows = (d.schoolstats ?? []) as Record<string, unknown>[];
-    const achievementRows = (d.achievements ?? []) as Record<string, unknown>[];
+    const achievementRows = (d.schoolachievements ?? []) as Record<string, unknown>[];
     const eventRows = (d.events ?? []) as Record<string, unknown>[];
     const galleriesRows = (d.gallery ?? []) as Record<string, unknown>[];
     const activitiesRows = (d.activities ?? []) as Record<string, unknown>[];
@@ -483,20 +564,36 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
     const componentRows = (d.templatecomponents ?? []) as Record<string, unknown>[];
     const whyChooseUsRows = (d.whychooseus ?? []) as Record<string, unknown>[];
     const boardMembersRows = (d.boardmembers ?? []) as Record<string, unknown>[];
+    const testimonialRows = (d.testimonial ?? []) as Record<string, unknown>[];
 
     // 3. Extract single objects — default to null if missing
-    const academicResultRow = (d.academicresults ?? null) as Record<string, unknown> | null;
-    const contactDetailsRow = (d.contactdetails ?? null) as Record<string, unknown> | null;
+    // 3. Extract single objects — default to null if missing
+    const academicResultRows = (Array.isArray(d.academicresults)
+        ? d.academicresults
+        : d.academicresults ? [d.academicresults] : []
+    ) as Record<string, unknown>[];
+
+    const academicResultRow = academicResultRows
+        .filter(r => r['isactive'] !== false)
+        .sort((a, b) => num(b['year']) - num(a['year']))[0] ?? null;
+
+    const contactDetailsArr = (Array.isArray(d.contactdetails)
+        ? d.contactdetails
+        : d.contactdetails ? [d.contactdetails] : []
+    ) as Record<string, unknown>[];
+    const contactDetailsRow = contactDetailsArr[0] ?? null;
+
     const schoolIdentityRow = (d.schoolidentity ?? null) as Record<string, unknown> | null;
 
     // 4. Deduplicate templatecomponents by componentcode
-    const seenCodes = new Set<string>();
-    const dedupedComponents = componentRows.filter(r => {
-        const code = str(r[COL_TEMPLATE_COMPONENTS_CODE]);
-        if (seenCodes.has(code)) return false;
-        seenCodes.add(code);
-        return true;
-    });
+    // 4. Mapped components — no deduplication, supporting multiple instances (e.g., sports vs academic achievements)
+    const mappedComponents = componentRows.map(r => ({
+        componentCode: str(r[COL_TEMPLATE_COMPONENTS_CODE]),
+        isActive: bool(r[COL_TEMPLATE_COMPONENTS_IS_ACTIVE]),
+        isRequired: bool(r[COL_TEMPLATE_COMPONENTS_REQUIRED]),
+        displayOrder: num(r[COL_TEMPLATE_COMPONENTS_ORDER]),
+        config: (r['config'] as any) ?? null,
+    }));
 
     const mappedLeadership = [
         ...leadershipRows.map(r => ({
@@ -552,24 +649,54 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
     const personnel = [...personnelFromLeadership, ...personnelFromFaculty];
 
     // 8. Map components for both new (components) and old (homepageSections) shape
-    const mappedComponents = dedupedComponents.map(r => ({
-        componentCode: str(r[COL_TEMPLATE_COMPONENTS_CODE]),
-        isActive: bool(r[COL_TEMPLATE_COMPONENTS_IS_ACTIVE]),
-        isRequired: bool(r[COL_TEMPLATE_COMPONENTS_REQUIRED]),
-        displayOrder: num(r[COL_TEMPLATE_COMPONENTS_ORDER]),
-    }));
+    // Handled above in mappedComponents.
 
-    const homepageSections = mappedComponents.map(c => ({
-        sectionKey: c.componentCode,
-        isEnabled: c.isActive,
-        isRequired: c.isRequired,
-        displayOrder: c.displayOrder,
-        settings: {}, // Empty for now as validationconfig isn't used by templates yet
-    }));
+    // ── Old homepageSections for backward visibility ────────────
+
+    // Build homepageSections with aliasing and merging for backward compatibility
+    const sectionMap = new Map<string, any>();
+
+    mappedComponents.forEach(c => {
+        const sectionKey = COMPONENT_ALIASES[c.componentCode] || c.componentCode;
+
+        if (sectionMap.has(sectionKey)) {
+            const existing = sectionMap.get(sectionKey);
+            // Merge logic: enable if any is active, require if any is required
+            sectionMap.set(sectionKey, {
+                ...existing,
+                isEnabled: existing.isEnabled || c.isActive,
+                isRequired: existing.isRequired || c.isRequired,
+                displayOrder: Math.min(existing.displayOrder, c.displayOrder),
+            });
+        } else {
+            sectionMap.set(sectionKey, {
+                sectionKey,
+                isEnabled: c.isActive,
+                isRequired: c.isRequired,
+                displayOrder: c.displayOrder,
+                settings: {}, // Empty for now as validationconfig isn't used by templates yet
+            });
+        }
+    });
+
+    const homepageSections = Array.from(sectionMap.values()).sort((a, b) => a.displayOrder - b.displayOrder);
 
     // 9. Map achievements
-    const mappedAchievements = achievementRows.map(r => ({
-        key: str(r[COL_ACHIEVEMENTS_ID]),
+    const schoolAchievements = achievementRows.map(r => ({
+        key: str(r[COL_ACHIEVEMENTS_ID] || r['key']),
+        title: str(r[COL_ACHIEVEMENTS_TITLE]),
+        category: str(r[COL_ACHIEVEMENTS_CATEGORY]),
+        year: num(r[COL_ACHIEVEMENTS_YEAR]),
+        awardLevel: str(r[COL_ACHIEVEMENTS_AWARD_LEVEL]),
+        description: str(r[COL_ACHIEVEMENTS_DESCRIPTION]),
+        imageUrl: resolveImageUrl(str(r[COL_ACHIEVEMENTS_IMAGE_URL])),
+        isFeatured: bool(r[COL_ACHIEVEMENTS_IS_FEATURED]),
+        isActive: bool(r[COL_IS_ACTIVE] || r['isactive']),
+        displayOrder: num(r[COL_ACHIEVEMENTS_DISPLAY_ORDER]),
+    }));
+
+    const achievements = achievementRows.map(r => ({
+        key: str(r[COL_ACHIEVEMENTS_ID] || r['key']),
         title: str(r[COL_ACHIEVEMENTS_TITLE]),
         description: str(r[COL_ACHIEVEMENTS_DESCRIPTION]),
         category: str(r[COL_ACHIEVEMENTS_CATEGORY]),
@@ -577,9 +704,9 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
         awardLevel: str(r[COL_ACHIEVEMENTS_AWARD_LEVEL]),
         imageUrl: resolveImageUrl(str(r[COL_ACHIEVEMENTS_IMAGE_URL])),
         isFeatured: bool(r[COL_ACHIEVEMENTS_IS_FEATURED]),
-        isActive: bool(r[COL_IS_ACTIVE]),
+        isActive: bool(r[COL_IS_ACTIVE] || r['isactive']),
         displayOrder: num(r[COL_ACHIEVEMENTS_DISPLAY_ORDER]),
-        achievementType: str(r[COL_ACHIEVEMENTS_CATEGORY]),
+        achievementType: str(r[COL_ACHIEVEMENTS_CATEGORY]), // was COL_ACHIEVEMENTS_TYPE in some contexts, category is the new source
         photoUrl: resolveImageUrl(str(r[COL_ACHIEVEMENTS_IMAGE_URL])),
     }));
 
@@ -608,6 +735,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
         category: str(r[COL_MEDIA_LIBRARY_CATEGORY]),
         mediaType: str(r[COL_MEDIA_LIBRARY_TYPE]),
         isFeatured: bool(r[COL_MEDIA_LIBRARY_IS_FEATURED]),
+        isActive: bool(r['isactive'] ?? true),
         displayOrder: num(r[COL_MEDIA_LIBRARY_DISPLAY_ORDER]),
     }));
 
@@ -642,6 +770,18 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
         twitter: str(contactDetailsRow[COL_CONTACT_DETAILS_TWITTER]),
         youtube: str(contactDetailsRow[COL_CONTACT_DETAILS_YOUTUBE]),
     } : null;
+
+    // 14b. Map Testimonials
+    const testimonials = testimonialRows.map(r => ({
+        key: str(r[COL_TESTIMONIALS_ID]),
+        rating: num(r[COL_TESTIMONIALS_RATING]),
+        message: str(r[COL_TESTIMONIALS_MESSAGE]),
+        authorName: str(r[COL_TESTIMONIALS_AUTHOR]),
+        designation: str(r[COL_TESTIMONIALS_DESIGNATION]),
+        photoUrl: resolveImageUrl(str(r[COL_TESTIMONIALS_PHOTO_URL])),
+        isActive: bool(r[COL_TESTIMONIALS_IS_ACTIVE]),
+        displayOrder: num(r[COL_TESTIMONIALS_DISPLAY_ORDER]),
+    })).filter(t => t.isActive).sort((a, b) => a.displayOrder - b.displayOrder);
 
     const templateSlug = str(school[COL_SCHOOLS_TEMPLATE_SLUG]);
 
@@ -758,11 +898,24 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
         stats: mappedStats,
         statistics: mappedStats,
 
-        achievements: mappedAchievements,
+        achievements,
+        schoolAchievements,
+
         events: mappedEvents,
 
         gallery: mappedGallery,
         mediaLibrary: mappedGallery,
+
+        testimonials: testimonialRows.map(r => ({
+            key: str(r['key']),
+            rating: num(r['rating']),
+            message: str(r['message']),
+            authorName: str(r['authorname']),
+            designation: str(r['designation']),
+            photoUrl: resolveImageUrl(str(r['photo_url'])),
+            isActive: bool(r['isactive']),
+            displayOrder: num(r['displayorder']),
+        })),
 
         academicResult,
         academicResults: academicResult ? [{
@@ -773,13 +926,37 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             legacyQuote: academicResult.legacyQuote,
         }] : [],
 
-        activities: activitiesRows,
-        infrastructure: infraRows,
+        activities: activitiesRows.map(r => ({
+            key: str(r['key']),
+            title: str(r['title']),
+            tag: str(r['tag']),
+            description: str(r['description']),
+            imageUrl: resolveImageUrl(str(r['imageurl'])),
+            isActive: bool(r['isactive']),
+            displayOrder: num(r['displayorder']),
+            highlightTag: str(r['highlighttag']),
+            highlightStat: str(r['highlightstat']),
+        })),
+
+        infrastructure: infraRows.map(r => ({
+            key: str(r[COL_INFRASTRUCTURE_ID] || r['key']),
+            title: str(r[COL_INFRASTRUCTURE_TITLE]),
+            tag: str(r[COL_INFRASTRUCTURE_TAG]),
+            description: str(r[COL_INFRASTRUCTURE_DESCRIPTION]),
+            imageUrl: resolveImageUrl(str(r[COL_INFRASTRUCTURE_IMAGE_URL])),
+            icon: str(r[COL_INFRASTRUCTURE_ICON]),
+            isActive: bool(r['isactive'] ?? true),
+            displayOrder: num(r[COL_INFRASTRUCTURE_DISPLAY_ORDER]),
+            highlightTitle: str(r['highlighttitle']),
+            highlightDescription: str(r['highlightdescription']),
+        })),
 
         facilities: infraRows.map(r => ({
-            name: str(r[COL_INFRASTRUCTURE_TITLE] ?? r['title'] ?? ''),
-            description: str(r[COL_INFRASTRUCTURE_DESCRIPTION] ?? r['description'] ?? ''),
-            categoryName: str(r[COL_INFRASTRUCTURE_TAG] ?? r['tag'] ?? ''),
+            name: str(r[COL_INFRASTRUCTURE_TITLE] ?? r[COL_FACILITIES_NAME] ?? ''),
+            description: str(r[COL_INFRASTRUCTURE_DESCRIPTION] ?? r[COL_FACILITIES_DESCRIPTION] ?? ''),
+            categoryName: str(r[COL_INFRASTRUCTURE_TAG] ?? r[COL_FACILITIES_CATEGORY_NAME] ?? ''),
+            imageUrl: resolveImageUrl(str(r[COL_INFRASTRUCTURE_IMAGE_URL])),
+            icon: str(r[COL_INFRASTRUCTURE_ICON]),
         })),
 
         contactDetails,

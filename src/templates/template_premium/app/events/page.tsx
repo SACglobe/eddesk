@@ -1,10 +1,10 @@
 "use client";
 
 import React from 'react';
-import { schoolData } from '../../data';
+import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import LayoutWrapper from '../../components/LayoutWrapper';
 
-const MiniCalendar: React.FC = () => {
+const MiniCalendar: React.FC<{ events: any[] }> = ({ events }) => {
     const monthName = "November";
     const year = 2023;
     const daysInMonth = 30;
@@ -15,8 +15,8 @@ const MiniCalendar: React.FC = () => {
 
     const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-    const eventDates = schoolData.events
-        .filter(e => e.date.includes('Nov'))
+    const eventDates = events
+        .filter(e => e.date && typeof e.date === 'string' && e.date.includes('Nov'))
         .map(e => parseInt(e.date.match(/\d+/)?.[0] || '0'));
 
     return (
@@ -68,7 +68,17 @@ const MiniCalendar: React.FC = () => {
     );
 };
 
-export default function Events() {
+export default function Events({ data }: { data?: TenantViewModel }) {
+    const sections = data?.homepageSections ?? [];
+    const section = sections.find((s: any) => s.sectionKey === 'events');
+    const isEnabled = section?.isEnabled ?? true;
+    const isRequired = section?.isRequired ?? false;
+    const eventsData = data?.events ?? [];
+
+    if (!isEnabled) return null;
+
+    const events = eventsData.length > 0 ? eventsData : []; // schoolData fallback if needed? Let's stick to dynamic
+
     return (
         <LayoutWrapper>
             <div className="fade-in py-24 pt-48">
@@ -79,15 +89,15 @@ export default function Events() {
                         <div className="lg:col-span-8">
                             <h2 className="text-[11px] uppercase tracking-[0.3em] font-bold text-signature-gold mb-12">Upcoming Occasions</h2>
                             <div className="space-y-0">
-                                {schoolData.events.map((event) => (
-                                    <div key={event.id} className="grid grid-cols-1 md:grid-cols-4 gap-8 py-12 border-t border-signature-navy/10 group cursor-pointer">
+                                {events.map((event: any) => (
+                                    <div key={event.id || event.key} className="grid grid-cols-1 md:grid-cols-4 gap-8 py-12 border-t border-signature-navy/10 group cursor-pointer">
                                         <div className="md:col-span-1">
-                                            <div className="text-3xl font-serif mb-2">{event.date.split(',')[0]}</div>
+                                            <div className="text-3xl font-serif mb-2">{(event.date || '').split(',')[0]}</div>
                                             <div className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">{event.category}</div>
                                         </div>
                                         <div className="md:col-span-3">
                                             <h3 className="text-2xl font-bold mb-4 group-hover:text-signature-gold transition-colors">{event.title}</h3>
-                                            <p className="text-gray-500 leading-relaxed mb-8">{event.description}</p>
+                                            <p className="text-gray-500 leading-relaxed mb-8">{event.description || event.content}</p>
                                             <div className="flex gap-4">
                                                 <button className="w-10 h-10 rounded-full border border-signature-navy flex items-center justify-center hover:bg-signature-navy hover:text-white transition-all">
                                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
@@ -102,7 +112,7 @@ export default function Events() {
 
                         <aside className="lg:col-span-4">
                             <div className="bg-signature-ivory p-10 lg:p-12 border border-signature-navy/5 sticky top-32">
-                                <MiniCalendar />
+                                <MiniCalendar events={events} />
                             </div>
                         </aside>
                     </div>

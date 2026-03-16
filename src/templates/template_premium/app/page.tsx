@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { isValidImageUrl } from '@/core/utils/url';
 import LayoutWrapper from '../components/LayoutWrapper';
 import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
-import SectionWarning from '@/components/system/SectionWarning';
 
 interface HeroSlide {
   mediaType: string;
@@ -265,13 +264,7 @@ const SchoolDashboard: React.FC<DashboardProps> = ({ statistics, statsEnabled, s
 
   const getSvgIcon = (name: string) => SVG_ICON_MAP[name] ?? DEFAULT_SVG;
 
-  if (!statsEnabled) return null;
-  if (statsRequired && statistics.length === 0) {
-    return (
-      <SectionWarning sectionKey="statistics" />
-    );
-  }
-  if (!statsRequired && statistics.length === 0) return null;
+  if (!statsEnabled || statistics.length === 0) return null;
 
   return (
     <section ref={containerRef} className="bg-[#F0F7FF] py-24 px-8 border-b border-signature-navy/5">
@@ -314,13 +307,7 @@ interface FacultyHighlightsProps {
 const FacultyHighlights: React.FC<FacultyHighlightsProps> = ({ faculty, facultyEnabled, facultyRequired }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
 
-  if (!facultyEnabled) return null;
-  if (facultyRequired && faculty.length === 0) {
-    return (
-      <SectionWarning sectionKey="faculty" />
-    );
-  }
-  if (!facultyRequired && faculty.length === 0) return null;
+  if (!facultyEnabled || faculty.length === 0) return null;
 
 
   return (
@@ -376,13 +363,7 @@ interface AthleticExcellenceProps {
 const AthleticExcellence: React.FC<AthleticExcellenceProps> = ({ sportsAchievements, sportsEnabled, sportsRequired }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
 
-  if (!sportsEnabled) return null;
-  if (sportsRequired && sportsAchievements.length === 0) {
-    return (
-      <SectionWarning sectionKey="sports" />
-    );
-  }
-  if (!sportsRequired && sportsAchievements.length === 0) return null;
+  if (!sportsEnabled || sportsAchievements.length === 0) return null;
 
   return (
     <section ref={containerRef} className="py-48 px-8 bg-signature-ivory border-b border-signature-navy/5 overflow-hidden">
@@ -449,13 +430,7 @@ interface CampusFacilitiesProps {
 const CampusFacilities: React.FC<CampusFacilitiesProps> = ({ facilityGroups, facilitiesEnabled, facilitiesRequired }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
 
-  if (!facilitiesEnabled) return null;
-  if (facilitiesRequired && facilityGroups.length === 0) {
-    return (
-      <SectionWarning sectionKey="facilities" />
-    );
-  }
-  if (!facilitiesRequired && facilityGroups.length === 0) return null;
+  if (!facilitiesEnabled || facilityGroups.length === 0) return null;
 
   return (
     <section ref={containerRef} className="py-48 px-8 bg-white border-b border-signature-navy/5">
@@ -505,13 +480,7 @@ const CampusFacilities: React.FC<CampusFacilitiesProps> = ({ facilityGroups, fac
 const UpcomingEvents: React.FC<{ eventsToShow: any[], eventsEnabled: boolean, eventsRequired: boolean }> = ({ eventsToShow, eventsEnabled, eventsRequired }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
 
-  if (!eventsEnabled) return null;
-  if (eventsRequired && eventsToShow.length === 0) {
-    return (
-      <SectionWarning sectionKey="events" />
-    );
-  }
-  if (!eventsRequired && eventsToShow.length === 0) return null;
+  if (!eventsEnabled || eventsToShow.length === 0) return null;
 
   const formatEventDate = (dateStr: string) => {
     const d = new Date(dateStr + 'T00:00:00');
@@ -569,117 +538,98 @@ export default function Home({ data }: { data: TenantViewModel }) {
   const { containerRef: introRef, isVisible: introVisible } = useIntersectionObserver({ threshold: 0.1 });
 
   // 1. Hero
-  const heroSection = data?.homepageSections?.find(s => s.sectionKey === 'hero');
-  const heroEnabled = heroSection?.isEnabled ?? true;
-  const heroRequired = heroSection?.isRequired ?? false;
-  const heroMedia = (data?.heroMedia ?? [])
-    .filter(s => s.isActive)
-    .sort((a, b) => a.displayOrder - b.displayOrder);
-
-  if (heroEnabled && heroRequired && heroMedia.length === 0) {
-    return (
-      <SectionWarning sectionKey="hero" />
+  const getComponent = (code: string) => {
+    return data?.components?.find(c =>
+      c.componentCode?.toLowerCase() === code.toLowerCase()
     );
-  }
-  const heroSlide = heroMedia[0] ?? null;
+  };
 
-  // 2. Institutional Stats (Academics + Achievements)
-  const academicSection = data?.homepageSections?.find(s => s.sectionKey === 'academics');
-  const academicResultsEnabled = academicSection?.isEnabled ?? true;
-  const academicResultsRequired = academicSection?.isRequired ?? false;
-  const academicResults = [...(data?.academicResults ?? [])].sort((a, b) => b.year - a.year);
-  if (academicResultsEnabled && academicResultsRequired && academicResults.length === 0) {
-    return (
-      <SectionWarning sectionKey="academics" />
-    );
-  }
+  // 1. Hero
+  const heroComp = getComponent('hero');
+  const heroEnabled = heroComp?.isActive ?? true;
+  const heroRequired = heroComp?.isRequired ?? false;
+  const heroSlide = data?.heroMedia?.[0] ?? null;
+
+  // 2. Academic Results
+  const academicComp = getComponent('academics') || getComponent('academicresults');
+  const academicResultsEnabled = academicComp?.isActive ?? true;
+  const academicResultsRequired = academicComp?.isRequired ?? false;
+  const academicResults = (data?.academicResults ?? []).sort((a, b) => b.year - a.year);
   const latestAcademicResult = academicResults[0] ?? null;
 
-  const achievementsSection = data?.homepageSections?.find(s => s.sectionKey === 'achievements');
-  const achievementsEnabled = achievementsSection?.isEnabled ?? true;
-  const achievementsRequired = achievementsSection?.isRequired ?? false;
-  const academicAchievements = (data?.achievements ?? [])
-    .filter(a => a.achievementType === 'academic')
+  // 3. Achievements (Split into Academic and Sports)
+  const achievementsComp = getComponent('achievements') || getComponent('schoolachievements');
+  const achievementsEnabled = achievementsComp?.isActive ?? true;
+  const achievementsRequired = achievementsComp?.isRequired ?? false;
+  const academicAchievements = (data?.schoolAchievements ?? [])
+    .filter(a => a.category?.toLowerCase() === 'academic')
     .sort((a, b) => b.year - a.year || (a.displayOrder || 0) - (b.displayOrder || 0));
-  if (achievementsEnabled && achievementsRequired && academicAchievements.length === 0) {
-    return (
-      <SectionWarning sectionKey="achievements" />
-    );
-  }
 
-  // 3. Leadership
-  const leadershipSection = data?.homepageSections?.find(s => s.sectionKey === 'leadership');
-  const leadershipEnabled = leadershipSection?.isEnabled ?? true;
-  const leadershipRequired = leadershipSection?.isRequired ?? false;
-  const leadership = (data?.leadership ?? []).filter(l => l.isActive);
+  // 4. Leadership
+  const leadershipComp = getComponent('leadership') || getComponent('governance');
+  const leadershipEnabled = leadershipComp?.isActive ?? true;
+  const leadershipRequired = leadershipComp?.isRequired ?? false;
+  const leadership = (data?.leadership ?? []).filter(l => 
+    l.isActive && 
+    (l.role?.toLowerCase() === 'principal' || l.designation?.toLowerCase() === 'principal')
+  );
 
-  if (leadershipEnabled && leadershipRequired && leadership.length === 0) {
-    return (
-      <SectionWarning sectionKey="leadership" />
-    );
-  }
+  // 5. Statistics Dashboard
+  const statsComp = getComponent('stats') || getComponent('schoolstats') || getComponent('stats_premium');
+  const statsEnabled = statsComp?.isActive ?? true;
+  const statsRequired = statsComp?.isRequired ?? false;
+  const statisticsList = (data?.stats ?? []).sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
-  // 4. Statistics Dashboard
-  const statsSection = data?.homepageSections?.find(s => s.sectionKey === 'stats');
-  const statsEnabled = statsSection?.isEnabled ?? true;
-  const statsRequired = statsSection?.isRequired ?? false;
-  const statistics = (data?.statistics ?? []).sort((a, b) => a.displayOrder - b.displayOrder);
-  if (statsEnabled && statsRequired && statistics.length === 0) {
-    // Handled in SchoolDashboard component
-  }
-
-  // 5. Faculty
-  const facultySection = data?.homepageSections?.find(s => s.sectionKey === 'faculty');
-  const facultyEnabled = facultySection?.isEnabled ?? true;
-  const facultyRequired = facultySection?.isRequired ?? false;
-  const faculty = (data?.personnel ?? [])
-    .filter(p => p.personType === 'faculty');
-  if (facultyEnabled && facultyRequired && faculty.length === 0) {
-    // Handled in FacultyHighlights component
-  }
-
-  // 6. Sports (Athletic Excellence)
-  const sportsSection = data?.homepageSections?.find(s => s.sectionKey === 'sports');
-  const sportsEnabled = sportsSection?.isEnabled ?? true;
-  const sportsRequired = sportsSection?.isRequired ?? false;
-  const sportsAchievements = (data?.achievements ?? [])
-    .filter(a => a.achievementType?.toLowerCase().trim() === 'sports')
+  // 6. Faculty
+  const facultyComp = getComponent('faculty');
+  const facultyEnabled = facultyComp?.isActive ?? true;
+  const facultyRequired = facultyComp?.isRequired ?? false;
+  const facultyList = (data?.faculty ?? [])
+    .filter(p => p.isActive)
     .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
-  if (sportsEnabled && sportsRequired && sportsAchievements.length === 0) {
-    // Handled in AthleticExcellence component
-  }
 
-  // 7. Facilities
-  const facilitiesSection = data?.homepageSections?.find(s => s.sectionKey === 'infrastructure' || s.sectionKey === 'facilities');
-  const facilitiesEnabled = facilitiesSection?.isEnabled ?? true;
-  const facilitiesRequired = facilitiesSection?.isRequired ?? false;
-  const groupedFacilities = (data?.facilities ?? []).reduce((acc: any, f: any) => {
+  // 7. Sports (Athletic Excellence)
+  const sportsComp = getComponent('sports');
+  const sportsEnabled = sportsComp?.isActive ?? true;
+  const sportsRequired = sportsComp?.isRequired ?? false;
+  const sportsAchievements = (data?.schoolAchievements ?? [])
+    .filter(a => a.category?.toLowerCase() === 'sports')
+    .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+    .map(a => ({
+      ...a,
+      photoUrl: a.imageUrl // Fix type mismatch for SportAchievement
+    })) as any;
+
+  // 8. Facilities
+  const facilitiesComp = getComponent('infrastructure') || getComponent('facilities');
+  const facilitiesEnabled = facilitiesComp?.isActive ?? true;
+  const facilitiesRequired = facilitiesComp?.isRequired ?? false;
+  const infrastructure = (data?.infrastructure ?? []).filter(i => i.isActive);
+
+  const groupedFacilities = infrastructure.reduce((acc: any, f: any) => {
     const key = f.categoryName;
     if (!acc[key]) acc[key] = { categoryName: key, items: [] };
     acc[key].items.push(f);
     return acc;
   }, {});
   const facilityGroups = Object.values(groupedFacilities) as any[];
-  if (facilitiesEnabled && facilitiesRequired && facilityGroups.length === 0) {
-    // Handled in CampusFacilities component
-  }
 
-  // 8. Gallery (Campus Masterpiece)
-  const gallerySection = data?.homepageSections?.find(s => s.sectionKey === 'gallery');
-  const galleryEnabled = gallerySection?.isEnabled ?? true;
-  const galleryRequired = gallerySection?.isRequired ?? false;
-  const galleryItems = (data?.mediaLibrary ?? [])
+  // 9. Gallery
+  const galleryComp = getComponent('gallery');
+  const galleryEnabled = galleryComp?.isActive ?? true;
+  const galleryRequired = galleryComp?.isRequired ?? false;
+  const galleryItems = (data?.gallery ?? data?.mediaLibrary ?? [])
+    .filter(m => 
+      m.isActive && 
+      (m.imageUrl || m.url) &&
+      (!galleryComp?.config?.filters?.contenttype || m.mediaType?.toLowerCase() === galleryComp.config.filters.contenttype.toLowerCase())
+    )
     .slice(0, 3);
-  if (galleryEnabled && galleryRequired && galleryItems.length === 0) {
-    return (
-      <SectionWarning sectionKey="gallery" />
-    );
-  }
 
-  // 9. Events
-  const eventsSection = data?.homepageSections?.find(s => s.sectionKey === 'events');
-  const eventsEnabled = eventsSection?.isEnabled ?? true;
-  const eventsRequired = eventsSection?.isRequired ?? false;
+  // 10. Events
+  const eventsComp = getComponent('events');
+  const eventsEnabled = eventsComp?.isActive ?? true;
+  const eventsRequired = eventsComp?.isRequired ?? false;
   const now = new Date();
   const eventsToShow = (data?.events ?? [])
     .filter((e: any) => {
@@ -691,25 +641,26 @@ export default function Home({ data }: { data: TenantViewModel }) {
       new Date(`${b.eventDate}T${b.startTime || '00:00:00'}Z`).getTime()
     )
     .slice(0, 3);
-  if (eventsEnabled && eventsRequired && eventsToShow.length === 0) {
-    // Handled in UpcomingEvents component
-  }
 
   return (
     <LayoutWrapper>
       <div className="fade-in bg-signature-ivory">
-        {heroEnabled && (heroRequired || heroSlide) && (
+        {heroEnabled && heroSlide && (
           <Hero heroSlide={heroSlide} />
         )}
 
-        <InstitutionalStats
-          academicResultsEnabled={academicResultsEnabled}
-          latestAcademicResult={latestAcademicResult}
-          achievementsEnabled={achievementsEnabled}
-          academicAchievements={academicAchievements}
-        />
+        <div className="flex flex-col">
+          {((academicResultsEnabled && latestAcademicResult) || (achievementsEnabled && academicAchievements.length > 0)) && (
+            <InstitutionalStats
+              academicResultsEnabled={academicResultsEnabled}
+              latestAcademicResult={latestAcademicResult}
+              achievementsEnabled={achievementsEnabled}
+              academicAchievements={academicAchievements}
+            />
+          )}
+        </div>
 
-        {leadershipEnabled && (leadershipRequired || leadership.length > 0) && (
+        {leadershipEnabled && leadership.length > 0 && (
           <div className="space-y-48 bg-white">
             {leadership.map((member, idx) => (
               <section key={member.key || idx} className="py-48 px-8 grid lg:grid-cols-2 gap-24 items-center max-w-[1400px] mx-auto border-b border-signature-navy/5">
@@ -740,32 +691,41 @@ export default function Home({ data }: { data: TenantViewModel }) {
           </div>
         )}
 
-        <SchoolDashboard
-          statistics={statistics}
-          statsEnabled={statsEnabled}
-          statsRequired={statsRequired}
-        />
+        <div className="flex flex-col">
+          <SchoolDashboard
+            statistics={statisticsList}
+            statsEnabled={statsEnabled}
+            statsRequired={statsRequired}
+          />
+        </div>
 
-        <FacultyHighlights
-          faculty={faculty}
-          facultyEnabled={facultyEnabled}
-          facultyRequired={facultyRequired}
-        />
+        <div className="flex flex-col">
+          <FacultyHighlights
+            faculty={facultyList as any}
+            facultyEnabled={facultyEnabled}
+            facultyRequired={facultyRequired}
+          />
+        </div>
 
-        <AthleticExcellence
-          sportsAchievements={sportsAchievements}
-          sportsEnabled={sportsEnabled}
-          sportsRequired={sportsRequired}
-        />
+        <div className="flex flex-col">
+          <AthleticExcellence
+            sportsAchievements={sportsAchievements}
+            sportsEnabled={sportsEnabled}
+            sportsRequired={sportsRequired}
+          />
+        </div>
 
-        <CampusFacilities
-          facilityGroups={facilityGroups}
-          facilitiesEnabled={facilitiesEnabled}
-          facilitiesRequired={facilitiesRequired}
-        />
+        <div className="flex flex-col">
+          <CampusFacilities
+            facilityGroups={facilityGroups}
+            facilitiesEnabled={facilitiesEnabled}
+            facilitiesRequired={facilitiesRequired}
+          />
+        </div>
 
-        {galleryEnabled && (galleryRequired || galleryItems.length > 0) && (
-          <section className="py-48 px-8 bg-white">
+        <div className="flex flex-col">
+          {galleryEnabled && galleryItems.length > 0 && (
+            <section className="py-48 px-8 bg-white">
             <div className="max-w-[1400px] mx-auto">
               <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12">
                 <SectionHeader title="Gallery" subtitle="The Sterling Experience" />
@@ -819,12 +779,15 @@ export default function Home({ data }: { data: TenantViewModel }) {
             </div>
           </section>
         )}
+        </div>
 
-        <UpcomingEvents
-          eventsToShow={eventsToShow}
-          eventsEnabled={eventsEnabled}
-          eventsRequired={eventsRequired}
-        />
+        <div className="flex flex-col">
+          <UpcomingEvents
+            eventsToShow={eventsToShow}
+            eventsEnabled={eventsEnabled}
+            eventsRequired={eventsRequired}
+          />
+        </div>
 
         <section className="py-48 bg-signature-gold text-white text-center px-8 relative overflow-hidden">
           <div className="absolute inset-0 bg-signature-navy/10"></div>

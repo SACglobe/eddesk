@@ -1,7 +1,8 @@
 import React from 'react';
-import { BOARD_MEMBERS } from '../../constants';
+import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 
-const Faculty: React.FC = () => {
+const Faculty: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
+    const faculty = data?.faculty || [];
     return (
         <div className="pb-24">
             {/* 1. Immersive Hero Section - Styled like About/Contact page */}
@@ -25,21 +26,21 @@ const Faculty: React.FC = () => {
             {/* 2. Faculty Listing */}
             <div className="max-w-7xl mx-auto px-4 py-24">
                 <div className="space-y-32">
-                    {BOARD_MEMBERS.map((member, i) => (
-                        <div key={i} className={`flex flex-col ${i % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-16 items-center`}>
+                    {faculty.map((member, i) => (
+                        <div key={member.key} className={`flex flex-col ${i % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-16 items-center`}>
                             <div className="lg:w-1/2 relative group">
                                 <div className="absolute inset-0 bg-accent rounded-[3rem] rotate-6 translate-x-4 translate-y-4 -z-10 transition-transform group-hover:rotate-3"></div>
-                                <img src={member.image} className="rounded-[3rem] shadow-2xl w-full h-[600px] object-cover grayscale hover:grayscale-0 transition-all duration-700" alt={member.name} />
+                                <img src={member.imageUrl} className="rounded-[3rem] shadow-2xl w-full h-[600px] object-cover grayscale hover:grayscale-0 transition-all duration-700" alt={member.name} />
                             </div>
                             <div className="lg:w-1/2 space-y-8">
                                 <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-xs bg-white border border-blue-100 px-6 py-2 rounded-full shadow-sm inline-block">
-                                    {member.position}
+                                    {member.designation}
                                 </span>
                                 <h2 className="text-5xl font-bold text-primary leading-tight font-playfair">{member.name}</h2>
-                                <p className="text-gray-600 text-xl leading-relaxed italic">"{member.bio}"</p>
+                                <p className="text-gray-600 text-xl leading-relaxed italic">"{member.description}"</p>
                                 <div className="pt-8 border-t border-gray-100 space-y-4">
                                     <p className="text-gray-500 leading-relaxed text-lg">
-                                        With an unwavering commitment to institutional growth, {member.name.split(' ')[0]} has been instrumental in shaping the academic culture of St. Andrews. Their focus on empathetic leadership and innovative curriculum development has earned the school multiple global awards.
+                                        {member.description || `Expert in their field with years of experience in educational leadership and student development.`}
                                     </p>
                                     <div className="flex gap-4 pt-4">
                                         <button className="bg-primary text-white px-8 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-accent hover:text-primary transition-all">Full Profile</button>
@@ -49,6 +50,11 @@ const Faculty: React.FC = () => {
                             </div>
                         </div>
                     ))}
+                    {faculty.length === 0 && (
+                        <div className="text-center py-20 text-gray-500">
+                            No faculty members found.
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

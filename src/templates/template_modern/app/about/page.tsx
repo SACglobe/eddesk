@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import { resolveImageUrl } from '@/core/utils/url';
-import SystemPopup from '@/components/system/SystemPopup';
 
 // Note: Dynamic title is set by the Renderer's parent page.tsx
 
@@ -14,81 +13,40 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
         }
     };
 
-    const sections = data?.homepageSections ?? [];
-    
+    // Help helper
+    const getComponent = (code: string) => {
+        return data?.components?.find(c =>
+            c.componentCode?.toLowerCase() === code.toLowerCase()
+        );
+    };
+
     // Identity Section Validation
-    const identitySection = sections.find((s: any) => s.sectionKey === 'identity');
-    const identityEnabled = identitySection?.isEnabled ?? true;
-    const identityRequired = identitySection?.isRequired ?? false;
+    const identityComp = getComponent('identity');
+    const identityEnabled = identityComp?.isActive ?? true;
     const hasIdentityData = !!(data?.identity?.aboutTitle || data?.identity?.aboutDescription || data?.identity?.vision || data?.identity?.mission);
 
-    if (identityEnabled && identityRequired && !hasIdentityData) {
-        return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="About Screen: Identity section is required but no specific data is found. Please add about/identity data in the admin panel."
-            />
-        );
-    }
-
     // Principal Section Validation
-    const principalSection = sections.find((s: any) => s.sectionKey === 'principal');
-    const principalEnabled = principalSection?.isEnabled ?? true;
-    const principalRequired = principalSection?.isRequired ?? false;
-    const principal = data?.personnel?.find((p: any) => p.personType === 'principal');
-    const hasPrincipalData = !!(principal?.name || principal?.bio || principal?.photoUrl);
+    const principalComp = getComponent('principal');
+    const principalEnabled = principalComp?.isActive ?? true;
+    const principal = data?.leadership?.find((p: any) => 
+        p.role?.toLowerCase() === 'principal' || p.designation?.toLowerCase() === 'principal'
+    );
+    const hasPrincipalData = !!(principal?.name || principal?.message || principal?.imageUrl);
 
-    if (principalEnabled && principalRequired && !hasPrincipalData) {
-        return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="About Screen: Principal section is required but no specific data is found. Please add principal data in the admin panel."
-            />
-        );
-    }
-
-    // Leadership Section Validation
-    const leadershipSection = sections.find((s: any) => s.sectionKey === 'leadership');
-    const leadershipEnabled = leadershipSection?.isEnabled ?? true;
-    const leadershipRequired = leadershipSection?.isRequired ?? false;
+    // Leadership Section
+    const leadershipComp = getComponent('leadership') || getComponent('governance');
+    const leadershipEnabled = leadershipComp?.isActive ?? true;
     
-    // Management team: All personnel EXCEPT principal and faculty
-    const managementTeam = (data?.personnel ?? []).filter((p: any) => {
-        const type = (p.personType || '').toUpperCase();
-        return type !== 'PRINCIPAL' && type !== 'FACULTY' && type !== 'BOARD' && type !== 'CHAIRMAN';
+    // Management team: All leadership EXCEPT principal
+    const leadershipTeam = (data?.leadership ?? []).filter((p: any) => {
+        const role = (p.role || p.designation || '').toLowerCase();
+        return role !== 'principal';
     });
 
-    // Board messages: All personnel with type BOARD
-    const boardMessages = (data?.personnel ?? []).filter((p: any) =>
-        ['BOARD', 'CHAIRMAN'].includes((p.personType || '').toUpperCase())
-    );
-
-    const hasLeadershipData = managementTeam.length > 0 || boardMessages.length > 0;
-
-    if (leadershipEnabled && leadershipRequired && !hasLeadershipData) {
-        return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="About Screen: Leadership section is required but no personnel data is found. Please add leadership/board data in the admin panel."
-            />
-        );
-    }
-
-    // Why Choose Us Section Validation
-    const whyChooseUsSection = sections.find((s: any) => s.sectionKey === 'whychooseus');
-    const whyChooseUsEnabled = whyChooseUsSection?.isEnabled ?? true;
-    const whyChooseUsRequired = whyChooseUsSection?.isRequired ?? false;
+    const whyChooseUsComp = getComponent('whychooseus');
+    const whyChooseUsEnabled = whyChooseUsComp?.isActive ?? true;
     const whyChooseUsData = data?.identity?.whyChooseUs ?? [];
     const hasWhyChooseUsData = whyChooseUsData.length > 0;
-
-    if (whyChooseUsEnabled && whyChooseUsRequired && !hasWhyChooseUsData) {
-        return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="About Screen: Why Choose Us section is required but no data is found. Please add Why Choose Us data in the admin panel."
-            />
-        );
-    }
 
     const schoolName = data?.school?.name ?? 'Our School';
     const vision = data?.identity?.vision ?? '';
@@ -97,10 +55,10 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
     const aboutTitle = data?.identity?.aboutTitle ?? '';
     const aboutDescription = data?.identity?.aboutDescription ?? '';
     const whyChooseUs = whyChooseUsData;
-    const principalPhoto = resolveImageUrl(principal?.photoUrl);
-    const principalMsg = principal?.bio ?? '';
+    const principalPhoto = principal?.imageUrl ?? '';
+    const principalMsg = principal?.message ?? '';
     const principalName = principal?.name ?? '';
-    const highlights = data?.achievements ?? [];
+    const highlights = data?.schoolAchievements ?? [];
 
     return (
         <div className="pb-24">
@@ -118,7 +76,7 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
             </section>
 
             {/* Philosophy Section */}
-            {identityEnabled && (
+            {identityEnabled && hasIdentityData && (
                 <section className="max-w-7xl mx-auto px-4 py-24 grid lg:grid-cols-3 gap-8">
                     <div className="bg-white p-12 rounded-[3rem] shadow-xl border-t-8 border-accent space-y-6">
                         <div className="w-16 h-16 bg-yellow-50 rounded-2xl flex items-center justify-center text-4xl shadow-inner">👁️</div>
@@ -145,7 +103,7 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
             )}
 
             {/* Principal's Message Board */}
-            {principalEnabled && (
+            {principalEnabled && hasPrincipalData && (
                 <section className="max-w-7xl mx-auto px-4 py-24 border-t border-gray-100">
                     <div className="grid lg:grid-cols-2 gap-20 items-center">
                         <div className="relative group">
@@ -199,41 +157,8 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                 </section>
             )}
 
-            {/* Message from the Board of Management */}
-            {(leadershipEnabled && boardMessages.length > 0) && (
-                <section className="bg-primary-dark py-32 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-accent/10 rounded-full translate-x-1/2 -translate-y-1/2 blur-[120px]"></div>
-                    <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-400/10 rounded-full -translate-x-1/2 translate-y-1/2 blur-[120px]"></div>
-
-                    <div className="max-w-5xl mx-auto px-4 relative z-10 space-y-12">
-                        {boardMessages.map((member: any, idx: number) => (
-                            <div key={idx} className="bg-white/5 backdrop-blur-xl rounded-[4rem] p-12 md:p-20 border border-white/10 shadow-2xl">
-                                <div className="flex flex-col items-center text-center space-y-10">
-                                    <div className="inline-block px-6 py-2 bg-accent text-primary rounded-full text-xs font-black uppercase tracking-[0.3em]">
-                                        Board of Management
-                                    </div>
-                                    <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight font-playfair">Message from {member.name}</h2>
-                                    <div className="relative">
-                                        <span className="absolute -top-12 -left-8 text-8xl text-accent/20 font-serif">“</span>
-                                        <p className="text-blue-100/90 text-xl md:text-3xl font-medium leading-relaxed italic">
-                                            {member.bio || `At ${schoolName}, our collective vision is to cultivate an environment where every student feels seen, heard, and empowered. We are dedicated to maintaining the highest standards of educational integrity while embracing the innovations of the future.`}
-                                        </p>
-                                        <span className="absolute -bottom-16 -right-8 text-8xl text-accent/20 font-serif rotate-180">“</span>
-                                    </div>
-                                    <div className="pt-8 border-t border-white/10 w-full flex flex-col items-center">
-                                        <div className="w-24 h-px bg-accent mb-6"></div>
-                                        <p className="text-white font-bold text-2xl mb-1">{member.name}</p>
-                                        <p className="text-accent/60 font-medium uppercase tracking-[0.2em] text-sm uppercase">{member.designation || 'Board Member'}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-            )}
-
-            {/* Meet the Management Section */}
-            {(leadershipEnabled && managementTeam.length > 0) && (
+            {/* Leadership Section */}
+            {(leadershipEnabled && leadershipTeam.length > 0) && (
                 <section className="max-w-[100vw] overflow-hidden py-32 bg-gray-50/50 relative">
                     <div className="max-w-7xl mx-auto px-4 mb-20 space-y-4 text-center">
                         <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-xs">Leadership</span>
@@ -246,9 +171,9 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                             ref={scrollRef}
                             className="management-scroll flex overflow-x-auto gap-12 px-6 md:px-[calc((100vw-80rem)/2+1rem)] pb-12 snap-x snap-mandatory cursor-grab active:cursor-grabbing"
                         >
-                            {managementTeam.map((member: any, i: number) => {
-                                const photo = resolveImageUrl(member.photoUrl);
-                                const role = member.designation || member.personType;
+                            {leadershipTeam.map((member: any, i: number) => {
+                                const photo = member.imageUrl;
+                                const role = member.designation || member.role;
                                 return (
                                     <div key={i} className="min-w-[300px] md:min-w-[420px] snap-center group">
                                         <div className="relative mb-8 overflow-hidden rounded-[4rem] aspect-[4/5] shadow-2xl transition-all duration-500 group-hover:-translate-y-4">
@@ -261,7 +186,7 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                                             ) : (
                                                 <div className="w-full h-full bg-primary/10 flex items-center justify-center">
                                                     <span className="text-6xl text-primary/30 font-bold uppercase">
-                                                        {member.name?.charAt(0) || 'M'}
+                                                        {member.name?.charAt(0) || 'L'}
                                                     </span>
                                                 </div>
                                             )}
@@ -269,7 +194,7 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                                             <div className="absolute bottom-10 left-10 right-10 translate-y-6 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-100">
                                                 <p className="text-accent font-black uppercase tracking-[0.3em] text-[10px] mb-2">Executive Profile</p>
                                                 <p className="text-white text-sm leading-relaxed line-clamp-4 font-medium italic">
-                                                    {member.bio}
+                                                    {member.message}
                                                 </p>
                                             </div>
                                         </div>
@@ -305,7 +230,7 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
             )}
 
             {/* Why Parents Choose Our School */}
-            {whyChooseUsEnabled && (
+            {whyChooseUsEnabled && hasWhyChooseUsData && (
                 <section className="bg-white py-32">
                 <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-24 items-center">
                     <div className="space-y-12">

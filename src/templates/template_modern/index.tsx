@@ -49,21 +49,21 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
             case '/about':
                 return <About data={data} />;
             case '/admissions':
-                return <Admissions />;
+                return <Admissions data={data} />;
             case '/contact':
-                return <Contact />;
+                return <Contact data={data} />;
             case '/events':
-                return <Broadcast />;
+                return <Broadcast data={data} />;
             case '/gallery':
-                return <Gallery />;
+                return <Gallery data={data} />;
             case '/academics':
-                return <Academics />;
+                return <Academics data={data} />;
             case '/activities':
-                return <Activities />;
+                return <Activities data={data} />;
             case '/infrastructure':
-                return <Infrastructure />;
+                return <Infrastructure data={data} />;
             case '/faculty':
-                return <Faculty />;
+                return <Faculty data={data} />;
             default:
                 return <Home data={data} />;
         }

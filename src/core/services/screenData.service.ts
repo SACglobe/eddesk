@@ -36,7 +36,8 @@ export type ScreenDataTables = {
     faculty?: Record<string, unknown>[];
     leadership?: Record<string, unknown>[];
     schoolstats?: Record<string, unknown>[];
-    achievements?: Record<string, unknown>[];
+    schoolachievements?: Record<string, unknown>[];
+    testimonial?: Record<string, unknown>[];
     events?: Record<string, unknown>[];
     gallery?: Record<string, unknown>[];
     activities?: Record<string, unknown>[];
@@ -45,8 +46,8 @@ export type ScreenDataTables = {
     templatecomponents?: Record<string, unknown>[];
     whychooseus?: Record<string, unknown>[];
     boardmembers?: Record<string, unknown>[];
-    academicresults?: Record<string, unknown> | null;
-    contactdetails?: Record<string, unknown> | null;
+    academicresults?: Record<string, unknown> | Record<string, unknown>[] | null;
+    contactdetails?: Record<string, unknown> | Record<string, unknown>[] | null;
     schoolidentity?: Record<string, unknown> | null;
 };
 
@@ -138,14 +139,6 @@ async function callRPC(
             return {
                 status: 'error',
                 error: 'Unexpected response shape from get_screen_data RPC',
-            };
-        }
-
-        if (!payload.data) {
-            console.warn('[screenData] payload.data is empty', { domain, screen });
-            return {
-                status: 'empty',
-                message: `School data is empty for domain="${domain}" screen="${screen}"`,
             };
         }
 

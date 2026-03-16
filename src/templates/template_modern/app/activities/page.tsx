@@ -1,7 +1,8 @@
 import React from 'react';
-import { ACTIVITIES } from '../../constants';
+import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 
-const Activities: React.FC = () => {
+const Activities: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
+    const activities = data?.activities || [];
     return (
         <div className="pb-24">
             {/* 1. Immersive Hero Section - Styled like About page */}
@@ -25,16 +26,16 @@ const Activities: React.FC = () => {
             {/* Main Activities Grid */}
             <section className="max-w-7xl mx-auto px-4 py-24">
                 <div className="grid md:grid-cols-2 gap-12 lg:gap-16">
-                    {ACTIVITIES.map((activity, i) => (
-                        <div key={i} className="group flex flex-col md:flex-row bg-white rounded-[3rem] overflow-hidden shadow-xl hover:shadow-2xl transition-all border border-gray-100">
+                    {activities.map((activity, i) => (
+                        <div key={activity.key} className="group flex flex-col md:flex-row bg-white rounded-[3rem] overflow-hidden shadow-xl hover:shadow-2xl transition-all border border-gray-100">
                             <div className="md:w-1/2 h-72 md:h-auto overflow-hidden relative">
                                 <img
-                                    src={activity.image}
+                                    src={activity.imageUrl}
                                     alt={activity.title}
                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                 />
                                 <div className="absolute top-6 left-6 bg-accent text-primary px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">
-                                    {activity.category}
+                                    {activity.tag}
                                 </div>
                             </div>
                             <div className="md:w-1/2 p-10 flex flex-col justify-center space-y-6">
@@ -53,6 +54,11 @@ const Activities: React.FC = () => {
                             </div>
                         </div>
                     ))}
+                    {activities.length === 0 && (
+                        <div className="col-span-full text-center py-20 text-gray-500">
+                            No activities mapped yet.
+                        </div>
+                    )}
                 </div>
             </section>
 

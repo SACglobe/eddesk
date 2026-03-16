@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { isValidImageUrl } from '@/core/utils/url';
-import SectionWarning from '@/components/system/SectionWarning';
 
 const HomeScreen = ({ data }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -17,16 +16,14 @@ const HomeScreen = ({ data }) => {
     };
 
     // --- Visibility and Data Extraction ---
-    const getSectionConfig = (key) => {
-        const sections = data?.homepageSections ?? [];
-        if (key === 'facilities' || key === 'infrastructure') {
-            return sections.find(s => s.sectionKey === 'facilities' || s.sectionKey === 'infrastructure');
-        }
-        return sections.find(s => s.sectionKey === key);
+    const getComponent = (code) => {
+        return data?.components?.find(c =>
+            c.componentCode?.toLowerCase() === code.toLowerCase()
+        );
     };
 
-    const isSectionEnabled = (key) => getSectionConfig(key)?.isEnabled ?? true;
-    const isSectionRequired = (key) => getSectionConfig(key)?.isRequired ?? false;
+    const isSectionEnabled = (code) => getComponent(code)?.isActive ?? true;
+    const isSectionRequired = (code) => getComponent(code)?.isRequired ?? false;
 
     // 1. Hero
     const heroEnabled = isSectionEnabled('hero');
@@ -34,12 +31,6 @@ const HomeScreen = ({ data }) => {
     const heroSlides = (data?.heroMedia ?? [])
         .filter(s => s.isActive)
         .sort((a, b) => a.displayOrder - b.displayOrder);
-
-    if (heroRequired && heroSlides.length === 0) {
-        return (
-            <SectionWarning sectionKey="hero" />
-        );
-    }
 
     if (heroSlides.length === 0) {
         heroSlides.push({
@@ -54,82 +45,57 @@ const HomeScreen = ({ data }) => {
     }
 
     // 2. Academic Results & Achievements
-    const academicResultsEnabled = isSectionEnabled('academics');
-    const academicResultsRequired = isSectionRequired('academics');
+    const academicComp = getComponent('academics') || getComponent('academicresults');
+    const academicResultsEnabled = academicComp?.isActive ?? true;
+    const academicResultsRequired = academicComp?.isRequired ?? false;
     const latestResult = (data?.academicResults ?? [])
         .sort((a, b) => b.year - a.year)[0] ?? null;
 
-    if (academicResultsRequired && !latestResult) {
-        return (
-            <SectionWarning sectionKey="academic" />
-        );
-    }
-
-    const achievementsEnabled = isSectionEnabled('achievements');
-    const achievementsRequired = isSectionRequired('achievements');
-    const academicAchievements = (data?.achievements ?? [])
-        .filter(a => a.achievementType === 'academic')
-        .sort((a, b) => b.year - a.year || a.displayOrder - b.displayOrder);
-
-    if (achievementsRequired && academicAchievements.length === 0) {
-        return (
-            <SectionWarning sectionKey="achievements" />
-        );
-    }
+    const achievementsComp = getComponent('achievements') || getComponent('schoolachievements');
+    const achievementsEnabled = achievementsComp?.isActive ?? true;
+    const achievementsRequired = achievementsComp?.isRequired ?? false;
+    const academicAchievements = (data?.schoolAchievements ?? [])
+        .filter(a => a.category?.toLowerCase() === 'academic')
+        .sort((a, b) => b.year - a.year || (a.displayOrder || 0) - (b.displayOrder || 0));
 
     // 3. Leadership
-    const leadershipEnabled = isSectionEnabled('leadership');
-    const leadershipRequired = isSectionRequired('leadership');
-    const leadership = (data?.leadership ?? []).filter(l => l.isActive);
-
-    if (leadershipEnabled && leadershipRequired && leadership.length === 0) {
-        return (
-            <SectionWarning sectionKey="leadership" />
-        );
-    }
+    const leadershipComp = getComponent('leadership') || getComponent('governance');
+    const leadershipEnabled = leadershipComp?.isActive ?? true;
+    const leadershipRequired = leadershipComp?.isRequired ?? false;
+    const leadership = (data?.leadership ?? []).filter(l => 
+        l.isActive && 
+        (l.role?.toLowerCase() === 'principal' || l.designation?.toLowerCase() === 'principal')
+    );
 
     // 4. Statistics
-    const statsEnabled = isSectionEnabled('stats');
-    const statsRequired = isSectionRequired('stats');
-    const statisticsList = (data?.statistics ?? [])
-        .sort((a, b) => a.displayOrder - b.displayOrder);
-
-    if (statsRequired && statisticsList.length === 0) {
-        return (
-            <SectionWarning sectionKey="statistics" />
-        );
-    }
+    const statsComp = getComponent('stats') || getComponent('schoolstats');
+    const statsEnabled = statsComp?.isActive ?? true;
+    const statsRequired = statsComp?.isRequired ?? false;
+    const statisticsList = (data?.stats ?? [])
+        .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
     // 5. Faculty
-    const facultyEnabled = isSectionEnabled('faculty');
-    const facultyRequired = isSectionRequired('faculty');
-    const allFaculty = (data?.personnel ?? [])
-        .filter(p => p.personType === 'faculty');
-
-    if (facultyRequired && allFaculty.length === 0) {
-        return (
-            <SectionWarning sectionKey="faculty" />
-        );
-    }
+    const facultyComp = getComponent('faculty');
+    const facultyEnabled = facultyComp?.isActive ?? true;
+    const facultyRequired = facultyComp?.isRequired ?? false;
+    const allFaculty = (data?.faculty ?? [])
+        .filter(p => p.isActive);
 
     // 6. Sports
-    const sportsEnabled = isSectionEnabled('sports');
-    const sportsRequired = isSectionRequired('sports');
-    const sportsAchievements = (data?.achievements ?? [])
-        .filter(a => a.achievementType === 'sports')
+    const sportsComp = getComponent('sports');
+    const sportsEnabled = sportsComp?.isActive ?? true;
+    const sportsRequired = sportsComp?.isRequired ?? false;
+    const sportsAchievements = (data?.schoolAchievements ?? [])
+        .filter(a => a.category?.toLowerCase() === 'sports')
         .slice(0, 6);
 
-    if (sportsRequired && sportsAchievements.length === 0) {
-        return (
-            <SectionWarning sectionKey="sports" />
-        );
-    }
-
     // 7. Facilities / Infrastructure
-    const facilitiesSection = getSectionConfig('facilities');
-    const facilitiesEnabled = facilitiesSection?.isEnabled ?? true;
-    const facilitiesRequired = facilitiesSection?.isRequired ?? false;
-    const groupedFacilities = (data?.facilities ?? []).reduce((acc, facility) => {
+    const facilitiesComp = getComponent('infrastructure') || getComponent('facilities');
+    const facilitiesEnabled = facilitiesComp?.isActive ?? true;
+    const facilitiesRequired = facilitiesComp?.isRequired ?? false;
+    const infrastructure = (data?.infrastructure ?? []).filter(i => i.isActive);
+
+    const groupedFacilities = infrastructure.reduce((acc, facility) => {
         const category = facility.categoryName || 'Common Facilities';
         if (!acc[category]) acc[category] = [];
         acc[category].push(facility.name);
@@ -137,31 +103,25 @@ const HomeScreen = ({ data }) => {
     }, {});
     const groupedFacilitiesKeys = Object.keys(groupedFacilities);
 
-    if (facilitiesRequired && groupedFacilitiesKeys.length === 0) {
-        return (
-            <SectionWarning sectionKey="infrastructure" />
-        );
-    }
-
     // 8. Gallery
-    const galleryEnabled = isSectionEnabled('gallery');
-    const galleryRequired = isSectionRequired('gallery');
-    const campusGallery = (data?.mediaLibrary ?? [])
-        .filter(m => m.url)
-        .map(m => m.url);
-
-    if (galleryRequired && campusGallery.length === 0) {
-        return (
-            <SectionWarning sectionKey="gallery" />
-        );
-    }
+    const galleryComp = getComponent('gallery');
+    const galleryEnabled = galleryComp?.isActive ?? true;
+    const galleryRequired = galleryComp?.isRequired ?? false;
+    const campusGallery = (data?.gallery ?? [])
+        .filter(m => 
+            m.isActive && 
+            m.imageUrl &&
+            (!galleryComp?.config?.filters?.contenttype || m.mediaType?.toLowerCase() === galleryComp.config.filters.contenttype.toLowerCase())
+        )
+        .map(m => m.imageUrl);
 
     const displayCount = 4;
     const totalGalleryImages = campusGallery.length || 1;
 
     // 9. Events
-    const eventsEnabled = isSectionEnabled('events');
-    const eventsRequired = isSectionRequired('events');
+    const eventsComp = getComponent('events');
+    const eventsEnabled = eventsComp?.isActive ?? true;
+    const eventsRequired = eventsComp?.isRequired ?? false;
     const now = new Date();
     const eventsToShow = (data?.events ?? [])
         .filter(e => {
@@ -173,12 +133,6 @@ const HomeScreen = ({ data }) => {
             new Date(`${b.eventDate}T${b.startTime || '00:00:00'}Z`).getTime()
         )
         .slice(0, 3);
-
-    if (eventsRequired && eventsToShow.length === 0) {
-        return (
-            <SectionWarning sectionKey="events" />
-        );
-    }
 
     useEffect(() => {
         const heroTimer = setInterval(() => {
@@ -211,9 +165,9 @@ const HomeScreen = ({ data }) => {
 
     return (
         <div className="fade-in">
-            {/* 1. Full Screen Image Slider */}
-            {heroEnabled && (heroRequired || heroSlides.length > 0) && (
-                <section className="relative h-[85vh] w-full overflow-hidden bg-emerald-950">
+            <div className="flex flex-col">
+            {heroEnabled && heroSlides.length > 0 && (
+                <section className="h-[70vh] md:h-[85vh] relative overflow-hidden bg-slate-900">
                     {heroSlides.map((slide, idx) => (
                         <div
                             key={idx}
@@ -223,7 +177,7 @@ const HomeScreen = ({ data }) => {
                             {slide.mediaUrl && isValidImageUrl(slide.mediaUrl) ? (
                                 <>
                                     <img src={slide.mediaUrl} alt={`Slide ${idx + 1}`} className="w-full h-full object-cover" />
-                                    <div className="absolute inset-0 bg-emerald-950/40 z-10" />
+                                    <div className="absolute inset-0 bg-black/30 z-10" />
                                 </>
                             ) : null}
                         </div>
@@ -257,9 +211,8 @@ const HomeScreen = ({ data }) => {
             )}
 
             {/* 2. School Achievements & Academic Results Section */}
-            {((academicResultsEnabled && (academicResultsRequired || latestResult)) ||
-                (achievementsEnabled && (achievementsRequired || academicAchievements?.length > 0))) && (
-                    <section className="py-24 bg-white border-b border-slate-100">
+            {((academicResultsEnabled && latestResult) || (achievementsEnabled && academicAchievements?.length > 0)) && (
+                <section className="py-24 bg-white border-b border-slate-100">
                         <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                             <div className="text-center mb-16">
                                 <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.4em] block mb-4">Institutional Merit</span>
@@ -334,10 +287,10 @@ const HomeScreen = ({ data }) => {
                             </div>
                         </div>
                     </section>
-                )}
+            )}
 
             {/* 3. Leadership Section */}
-            {leadershipEnabled && (leadershipRequired || leadership.length > 0) && (
+            {leadershipEnabled && leadership.length > 0 && (
                 <div className="space-y-32">
                     {leadership.map((member, idx) => (
                         <section key={member.key || idx} className="py-32 bg-white relative overflow-hidden border-b border-slate-50 last:border-b-0">
@@ -393,7 +346,7 @@ const HomeScreen = ({ data }) => {
             )}
 
             {/* 4. Statistics Counter Section */}
-            {statsEnabled && (statsRequired || statisticsList.length > 0) && (
+            {statsEnabled && statisticsList.length > 0 && (
                 <section className="py-20 bg-emerald-900 text-white relative z-20 shadow-2xl">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
@@ -413,7 +366,7 @@ const HomeScreen = ({ data }) => {
             )}
 
             {/* 5. Our Distinguished Educators */}
-            {facultyEnabled && (facultyRequired || allFaculty.length > 0) && (
+            {facultyEnabled && allFaculty.length > 0 && (
                 <section className="py-24 bg-white">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                         <div className="text-center mb-16">
@@ -456,7 +409,7 @@ const HomeScreen = ({ data }) => {
             )}
 
             {/* 6. Sports Activities and Achievements Section (HORIZONTAL SCROLL) */}
-            {sportsEnabled && (sportsRequired || sportsAchievements.length > 0) && (
+            {sportsEnabled && sportsAchievements.length > 0 && (
                 <section className="py-24 bg-emerald-50/30 border-t border-slate-100">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                         <div className="flex flex-col md:flex-row justify-between items-end mb-12">
@@ -517,7 +470,7 @@ const HomeScreen = ({ data }) => {
             )}
 
             {/* 7. Campus Highlights (Infrastructure Grid) */}
-            {facilitiesEnabled && (facilitiesRequired || groupedFacilitiesKeys.length > 0) && (
+            {facilitiesEnabled && groupedFacilitiesKeys.length > 0 && (
                 <section className="py-24 bg-slate-50">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                         <div className="flex flex-col md:flex-row justify-between items-end mb-16">
@@ -555,7 +508,7 @@ const HomeScreen = ({ data }) => {
             )}
 
             {/* 8. Image Gallery Preview with Auto-Scrolling Infinite Carousel */}
-            {galleryEnabled && (galleryRequired || visibleGallery.length > 0) && (
+            {galleryEnabled && visibleGallery.length > 0 && (
                 <section className="py-12 px-2">
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-2 overflow-hidden">
                         {/* Slots 1-4: The Auto-Scrolling Carousel */}
@@ -591,7 +544,7 @@ const HomeScreen = ({ data }) => {
             )}
 
             {/* 9. Upcoming Events Section */}
-            {eventsEnabled && (eventsRequired || eventsToShow?.length > 0) && (
+            {eventsEnabled && eventsToShow?.length > 0 && (
                 <section className="py-24 bg-white border-t border-slate-100">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
 
@@ -674,6 +627,7 @@ const HomeScreen = ({ data }) => {
           scrollbar-width: none;
         }
       `}</style>
+            </div>
         </div>
     );
 };

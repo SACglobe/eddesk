@@ -1,9 +1,19 @@
 "use client";
 
 import React from 'react';
-import { SCHOOL_NAME } from '../../constants';
+import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 
-const Contact: React.FC = () => {
+const Contact: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
+    const schoolName = data?.school?.name ?? 'Our School';
+    const contact = data?.contactDetails;
+    
+    // Fallback data if contact is missing
+    const address = contact?.address || '123 Education Lane, Springfield, IL 62704';
+    const phone = contact?.phone || '+1 (555) 123-4567';
+    const email = contact?.email || 'office@school.edu';
+    const socialHandles = data?.contactDetails; 
+    const socialText = socialHandles?.facebook || socialHandles?.instagram || '@schooldaily';
+
     return (
         <div className="pb-24">
             {/* 1. Immersive Hero Section - Styled like About page */}
@@ -18,7 +28,7 @@ const Contact: React.FC = () => {
                     <span className="text-accent font-black uppercase tracking-[0.5em] text-sm animate-pulse">Global Communications</span>
                     <h1 className="text-5xl md:text-8xl font-bold text-white leading-tight font-playfair">Let's Connect</h1>
                     <p className="text-blue-100 text-xl md:text-2xl font-medium max-w-2xl mx-auto opacity-80 leading-relaxed">
-                        Whether you're a prospective parent, an alumnus, or a community member, your journey starts with a conversation.
+                        Whether you're a prospective parent, an alumnus, or a community member, your journey starts with a conversation at {schoolName}.
                     </p>
                 </div>
                 <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-gray-50 to-transparent"></div>
@@ -32,7 +42,7 @@ const Contact: React.FC = () => {
                             <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-xs">Reach Out</span>
                             <h2 className="text-4xl md:text-5xl font-bold text-primary font-playfair">Direct Channels</h2>
                             <p className="text-gray-500 text-lg leading-relaxed">
-                                Our administrative offices are open to assist you with admissions, academic inquiries, and general campus information.
+                                Our administrative offices are open to assist you with admissions, academic inquiries, and general campus information for {schoolName}.
                             </p>
                         </div>
 
@@ -40,12 +50,12 @@ const Contact: React.FC = () => {
                             <div className="space-y-4 group">
                                 <div className="w-14 h-14 bg-primary text-accent rounded-2xl flex items-center justify-center text-2xl shadow-xl transition-transform group-hover:scale-110">📍</div>
                                 <h4 className="font-bold text-primary text-xl font-playfair">Main Campus</h4>
-                                <p className="text-gray-500 leading-relaxed text-sm">123 Education Lane, Springfield, IL 62704</p>
+                                <p className="text-gray-500 leading-relaxed text-sm">{address}</p>
                             </div>
                             <div className="space-y-4 group">
                                 <div className="w-14 h-14 bg-accent text-primary rounded-2xl flex items-center justify-center text-2xl shadow-xl transition-transform group-hover:scale-110">📞</div>
                                 <h4 className="font-bold text-primary text-xl font-playfair">Contact</h4>
-                                <p className="text-gray-500 leading-relaxed text-sm">Admin: +1 (555) 123-4567<br />Email: office@standrews.edu</p>
+                                <p className="text-gray-500 leading-relaxed text-sm">Admin: {phone}<br />Email: {email}</p>
                             </div>
                             <div className="space-y-4 group">
                                 <div className="w-14 h-14 bg-white shadow-xl rounded-2xl flex items-center justify-center text-2xl text-primary transition-transform group-hover:scale-110">⏰</div>
@@ -55,7 +65,7 @@ const Contact: React.FC = () => {
                             <div className="space-y-4 group">
                                 <div className="w-14 h-14 bg-blue-50 text-blue-900 rounded-2xl flex items-center justify-center text-2xl shadow-sm transition-transform group-hover:scale-110">✉️</div>
                                 <h4 className="font-bold text-primary text-xl font-playfair">Connect Socially</h4>
-                                <p className="text-gray-500 leading-relaxed text-sm">Follow our daily updates<br />@standrewsacademy</p>
+                                <p className="text-gray-500 leading-relaxed text-sm">Follow our daily updates<br />{socialText}</p>
                             </div>
                         </div>
 

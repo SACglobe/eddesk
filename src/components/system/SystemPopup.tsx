@@ -16,11 +16,12 @@ import React, { useEffect, useState } from 'react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type PopupVariant = 'empty' | 'error' | 'network_error' | 'inactive' | 'expired' | 'data_error' | 'template_not_found';
+export type PopupVariant = 'empty' | 'error' | 'network_error' | 'inactive' | 'expired' | 'content_missing' | 'data_error' | 'template_not_found';
 
 interface SystemPopupProps {
     variant: PopupVariant;
     errorMessage?: string;
+    missingSection?: string;   // NEW: section name e.g. "hero", "faculty"
     onRetry?: () => void;
     onDismiss?: () => void;
 }
@@ -80,6 +81,7 @@ function injectKeyframes() {
 export default function SystemPopup({
     variant,
     errorMessage,
+    missingSection,
     onRetry,
     onDismiss,
 }: SystemPopupProps) {
@@ -119,6 +121,7 @@ export default function SystemPopup({
         network_error: { h: '234,179,8', hex: '#eab308', dark: '#ca8a04', light: '#fde047' }, // yellow
         inactive: { h: '239,68,68', hex: '#ef4444', dark: '#dc2626', light: '#fca5a5' }, // red
         expired: { h: '249,115,22', hex: '#f97316', dark: '#ea580c', light: '#fdba74' }, // orange
+        content_missing: { h: '234,179,8', hex: '#eab308', dark: '#ca8a04', light: '#fde047' }, // amber
         data_error: { h: '99,102,241', hex: '#6366f1', dark: '#4f46e5', light: '#a5b4fc' }, // indigo
         template_not_found: { h: '99,102,241', hex: '#6366f1', dark: '#4f46e5', light: '#a5b4fc' }, // indigo
     };
@@ -131,6 +134,7 @@ export default function SystemPopup({
         network_error: 'ed-pulse-yellow 2.4s ease-in-out infinite',
         inactive: 'ed-pulse-red    2.4s ease-in-out infinite',
         expired: 'ed-pulse-orange 2.4s ease-in-out infinite',
+        content_missing: 'ed-pulse-yellow 2.4s ease-in-out infinite',
         data_error: 'ed-pulse-indigo 2.4s ease-in-out infinite',
         template_not_found: 'ed-pulse-indigo 2.4s ease-in-out infinite',
     };
@@ -185,6 +189,12 @@ export default function SystemPopup({
             badge: '⚠ Template Error',
             heading: 'Chosen template is not available.',
             subtitle: 'The template assigned to this school does not exist in the EdDesk system. Please choose a correct template from the Admin Panel.',
+        },
+        content_missing: {
+            icon: '📋',
+            badge: '⚠ Content Required',
+            heading: 'Website content is missing.',
+            subtitle: `The "${missingSection || 'required'}" section needs content before visitors can access this website. Please add it from the EdDesk Admin Panel.`,
         },
     };
 
@@ -376,8 +386,8 @@ export default function SystemPopup({
                     {config.subtitle}
                 </p>
 
-                {/* ── Admin link pill (shown for empty, inactive, expired, template_not_found) ── */}
-                {(variant === 'empty' || variant === 'inactive' || variant === 'expired' || variant === 'template_not_found') && (
+                {/* ── Admin link pill (shown for empty, inactive, expired, template_not_found, content_missing) ── */}
+                {(variant === 'empty' || variant === 'inactive' || variant === 'expired' || variant === 'template_not_found' || variant === 'content_missing') && (
                     <div style={{ marginBottom: '1.5rem' }}>
                         <a
                             href="https://admin.eddesk.in"
@@ -436,8 +446,8 @@ export default function SystemPopup({
                 {/* ── Buttons ── */}
                 <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
 
-                    {/* empty, template_not_found → Go to Admin Panel */}
-                    {(variant === 'empty' || variant === 'template_not_found') && (
+                    {/* empty, template_not_found, content_missing → Go to Admin Panel */}
+                    {(variant === 'empty' || variant === 'template_not_found' || variant === 'content_missing') && (
                         <a href="https://admin.eddesk.in" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                             <button
                                 style={primaryButtonStyle(accent)}

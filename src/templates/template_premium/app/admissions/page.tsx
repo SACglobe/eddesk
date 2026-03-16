@@ -3,8 +3,23 @@
 import React from 'react';
 import { SectionHeader, Button } from '../../components/Shared';
 import LayoutWrapper from '../../components/LayoutWrapper';
+import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 
-export default function Admissions() {
+export default function Admissions({ data }: { data?: TenantViewModel }) {
+    const sections = data?.homepageSections ?? [];
+    const section = sections.find((s: any) => s.sectionKey === 'admissions');
+    const isEnabled = section?.isEnabled ?? true;
+    const isRequired = section?.isRequired ?? false;
+    const admissionSteps = data?.admissionSteps ?? [];
+
+    if (!isEnabled) return null;
+
+    const steps = admissionSteps.length > 0 ? admissionSteps : [
+        { title: "Portfolio Submission", description: "A comprehensive submission of academic transcripts, teacher recommendations, and a personal narrative that reveals the candidate's character." },
+        { title: "Signature Assessment", description: "A multi-disciplinary evaluation session focusing on critical reasoning, linguistic agility, and logical inquiry." },
+        { title: "The Registry Interview", description: "A formal dialogue with the Registry Board to assess institutional alignment and mutual aspirations." }
+    ];
+
     return (
         <LayoutWrapper>
             <div className="fade-in pt-48 pb-48 bg-signature-ivory">
@@ -21,18 +36,14 @@ export default function Admissions() {
                             </p>
 
                             <div className="space-y-16">
-                                {[
-                                    { n: "01", t: "Portfolio Submission", d: "A comprehensive submission of academic transcripts, teacher recommendations, and a personal narrative that reveals the candidate's character." },
-                                    { n: "02", t: "Signature Assessment", d: "A multi-disciplinary evaluation session focusing on critical reasoning, linguistic agility, and logical inquiry." },
-                                    { n: "03", t: "The Registry Interview", d: "A formal dialogue with the Registry Board to assess institutional alignment and mutual aspirations." }
-                                ].map((step) => (
-                                    <div key={step.n} className="flex gap-12 items-start group">
+                                {steps.map((step, i) => (
+                                    <div key={i} className="flex gap-12 items-start group">
                                         <div className="text-signature-gold font-serif text-5xl opacity-30 shrink-0 group-hover:opacity-100 transition-all duration-700">
-                                            {step.n}
+                                            {String(i + 1).padStart(2, '0')}
                                         </div>
                                         <div>
-                                            <h4 className="font-bold text-2xl mb-4 tracking-tight group-hover:text-signature-gold transition-colors">{step.t}</h4>
-                                            <p className="text-lg text-gray-500 font-light leading-relaxed">{step.d}</p>
+                                            <h4 className="font-bold text-2xl mb-4 tracking-tight group-hover:text-signature-gold transition-colors">{(step as any).title}</h4>
+                                            <p className="text-lg text-gray-500 font-light leading-relaxed">{(step as any).description}</p>
                                             <div className="mt-8 w-8 h-px bg-signature-navy/10 group-hover:w-16 transition-all duration-700"></div>
                                         </div>
                                     </div>

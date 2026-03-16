@@ -1,10 +1,25 @@
 "use client";
 
-import React from 'react';
+import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import { schoolData } from '../../data';
 import LayoutWrapper from '../../components/LayoutWrapper';
 
-export default function Academics() {
+export default function Academics({ data }: { data?: TenantViewModel }) {
+    const sections = data?.homepageSections ?? [];
+    const section = sections.find((s: any) => s.sectionKey === 'academics');
+    const isEnabled = section?.isEnabled ?? true;
+    const isRequired = section?.isRequired ?? false;
+    
+    // Academic Data from ViewModel
+    const academicData = (data as any)?.academics;
+
+    if (!isEnabled) return null;
+
+    // Fallback to static schoolData if no dynamic data
+    const curriculum = academicData?.curriculum || schoolData.academics.curriculum;
+    const levels = (academicData?.levels && academicData.levels.length > 0) ? academicData.levels : schoolData.academics.levels;
+    const philosophy = academicData?.philosophy || "Our world-class pedagogy focused on mastery, creativity, and critical inquiry.";
+
     return (
         <LayoutWrapper>
             <div className="fade-in py-24 pt-48">
@@ -12,12 +27,12 @@ export default function Academics() {
                     <header className="mb-32">
                         <h1 className="text-6xl md:text-8xl font-serif mb-12">Academic <br /><span className="italic text-signature-gold">Framework</span></h1>
                         <p className="text-2xl font-light text-gray-500 max-w-2xl border-l-2 border-signature-gold pl-8">
-                            {schoolData.academics.curriculum} — A world-class pedagogy focused on mastery, creativity, and critical inquiry.
+                            {curriculum} — {philosophy}
                         </p>
                     </header>
 
                     <section className="space-y-32">
-                        {schoolData.academics.levels.map((level, i) => (
+                        {levels.map((level: any, i: number) => (
                             <div key={i} className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start border-t border-signature-navy/10 pt-16">
                                 <div className="lg:col-span-4">
                                     <div className="text-signature-gold font-bold tracking-[0.5em] uppercase text-[10px] mb-4">Phase {i + 1}</div>
