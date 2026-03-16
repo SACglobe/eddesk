@@ -54,37 +54,64 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
         const normalizedPath = path === '' || path === '/' ? '/' : path;
 
         switch (normalizedPath) {
-            case '/':
-                return <Home data={data} />;
-            case '/about':
-                return <About data={data} />;
-            case '/academics':
-                return <Academics />;
-            case '/activities':
-                return <Activities />;
-            case '/admissions':
-                return <Admissions />;
-            case '/contact':
-                return <Contact />;
-            case '/events':
-                return <Events />;
-            case '/faculty':
-                return <Faculty />;
-            case '/infrastructure':
-                return <Infrastructure />;
-            case '/portrait':
-                return <Portrait />;
-            default:
-                return <Home data={data} />;
+            case '/': {
+                const Screen = Home as any;
+                return <Screen data={data} />;
+            }
+            case '/about': {
+                const Screen = About as any;
+                return <Screen data={data} />;
+            }
+            case '/academics': {
+                const Screen = Academics as any;
+                return <Screen data={data} />;
+            }
+            case '/activities': {
+                const Screen = Activities as any;
+                return <Screen data={data} />;
+            }
+            case '/admissions': {
+                const Screen = Admissions as any;
+                return <Screen data={data} />;
+            }
+            case '/contact': {
+                const Screen = Contact as any;
+                return <Screen data={data} />;
+            }
+            case '/events': {
+                const Screen = Events as any;
+                return <Screen data={data} />;
+            }
+            case '/faculty': {
+                const Screen = Faculty as any;
+                return <Screen data={data} />;
+            }
+            case '/infrastructure': {
+                const Screen = Infrastructure as any;
+                return <Screen data={data} />;
+            }
+            case '/portrait': {
+                const Screen = Portrait as any;
+                return <Screen data={data} />;
+            }
+            default: {
+                const Screen = Home as any;
+                return <Screen data={data} />;
+            }
         }
     };
 
-    const announcementsEnabled = (data?.homepageSections ?? [])
-        .find((s: any) => s.sectionKey === 'announcements')
-        ?.isEnabled ?? true;
+    const getComponent = (code: string) => {
+        return data?.components?.find(c =>
+            c.componentCode?.toLowerCase() === code.toLowerCase()
+        );
+    };
+
+    const announcementsComp = getComponent('broadcast') || getComponent('announcements');
+    const announcementsEnabled = announcementsComp?.isActive ?? true;
     const now = new Date();
     const activeAnnouncements = announcementsEnabled
-        ? (data?.announcements ?? []).filter((a: any) =>
+        ? (data?.broadcast ?? []).filter((a: any) =>
             a.isActive &&
             (!a.expiresAt || a.expiresAt === '' || new Date(a.expiresAt.endsWith('Z') ? a.expiresAt : `${a.expiresAt}Z`) > now)
         )

@@ -21,6 +21,7 @@ import { notFound } from 'next/navigation';
 import { fetchDemoScreen, pathToScreenName } from '@/core/services/screenData.service';
 import { buildTenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import { isOwnerDomain } from '@/lib/proxy/domain-classifier';
+import { validateRequiredSections } from '@/core/utils/sectionValidator';
 import type { TenantState } from '@/core/context/TenantContext';
 import { templateRegistry } from '@/lib/template/registry';
 import TemplateRenderer from './TemplateRenderer';
@@ -35,6 +36,7 @@ import {
 import { Metadata } from 'next';
 import LeadCapturePopup from '@/components/lead/LeadCapturePopup';
 import SystemPopupProvider from '@/components/system/SystemPopupProvider';
+import SystemPopup from '@/components/system/SystemPopup';
 
 export async function generateMetadata({
     params,
@@ -90,17 +92,31 @@ export default async function TemplateDemoPage({
             message: `Template "${templateSlug}" is not available in the system.`,
         };
     } else if (result.status === 'success') {
+        const viewModel = buildTenantViewModel(result.payload);
+
+        // Step 4.1: Validation check (NEW)
+        const validation = validateRequiredSections(viewModel);
+        if (!validation.isValid) {
+            return (
+                <SystemPopup
+                    variant="content_missing"
+                    missingSection={validation.missingSection}
+                />
+            );
+        }
+
         tenantState = {
             status: 'success',
-            data: buildTenantViewModel(result.payload),
+            data: viewModel,
             message: '',
         };
     } else if (result.status === 'empty') {
-        // C5: Pass real 'empty' status — do not pretend success
+        // C5: If empty, we still want to render the template so it can show SectionWarnings
+        // We'll treat it as success but with empty data
         tenantState = {
-            status: 'empty',
-            data: null,
-            message: result.message,
+            status: 'success',
+            data: buildTenantViewModel({} as any),
+            message: result.message || '',
         };
     } else {
         tenantState = {

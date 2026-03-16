@@ -1,7 +1,11 @@
 import React from 'react';
-import { ANNOUNCEMENTS, SCHOOL_NAME, UPCOMING_EVENTS } from '../../constants';
+import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 
-const Broadcast: React.FC = () => {
+const Broadcast: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
+    const schoolName = data?.school?.name ?? 'Our School';
+    const announcements = data?.broadcast || [];
+    const events = data?.events || [];
+    const featuredEvent = events.find((e: any) => e.isFeatured) || events[0];
     return (
         <div className="bg-white">
             {/* 1. Immersive Hero Section - Styled like Contact/About page */}
@@ -19,7 +23,7 @@ const Broadcast: React.FC = () => {
                         Events & Announcements
                     </h1>
                     <p className="text-blue-100 text-xl md:text-2xl font-medium max-w-2xl mx-auto opacity-80 leading-relaxed">
-                        Stay connected with the vibrant heartbeat of {SCHOOL_NAME}. From academic milestones to cultural celebrations.
+                        Stay connected with the vibrant heartbeat of {schoolName}. From academic milestones to cultural celebrations.
                     </p>
                 </div>
                 <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white to-transparent"></div>
@@ -45,29 +49,29 @@ const Broadcast: React.FC = () => {
                         </div>
 
                         <div className="space-y-12">
-                            {ANNOUNCEMENTS.map((ann, idx) => (
-                                <div key={ann.id} className="group relative grid md:grid-cols-[1fr_2.5fr] gap-12 p-10 bg-white rounded-[3rem] border border-gray-100 hover:border-accent hover:shadow-3xl hover:shadow-blue-900/5 transition-all duration-500">
+                            {announcements.map((ann, idx) => (
+                                <div key={ann.key} className="group relative grid md:grid-cols-[1fr_2.5fr] gap-12 p-10 bg-white rounded-[3rem] border border-gray-100 hover:border-accent hover:shadow-3xl hover:shadow-blue-900/5 transition-all duration-500">
                                     <div className="space-y-6">
                                         <div className="aspect-square bg-blue-50 rounded-[2.5rem] flex items-center justify-center text-4xl group-hover:bg-accent group-hover:scale-105 transition-all duration-500">
-                                            {idx === 0 ? '📢' : idx === 1 ? '📚' : '🌎'}
+                                            {ann.priority > 2 ? '📢' : ann.priority === 2 ? '📚' : '🌎'}
                                         </div>
                                         <div>
                                             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Posted On</p>
-                                            <p className="font-bold text-primary">{ann.date}</p>
+                                            <p className="font-bold text-primary">{ann.expiresAt ? new Date(ann.expiresAt).toLocaleDateString() : 'Active'}</p>
                                         </div>
                                     </div>
                                     <div className="space-y-6">
                                         <div className="flex items-center gap-4">
-                                            <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm ${ann.priority === 'High' ? 'bg-red-100 text-red-600 border border-red-200' : 'bg-blue-50 text-blue-600 border border-blue-100'
+                                            <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm ${ann.priority > 2 ? 'bg-red-100 text-red-600 border border-red-200' : 'bg-blue-50 text-blue-600 border border-blue-100'
                                                 }`}>
-                                                {ann.priority} Priority
+                                                {ann.priority > 2 ? 'High' : 'Normal'} Priority
                                             </span>
                                         </div>
                                         <h3 className="text-3xl font-bold text-primary group-hover:text-blue-700 transition-colors leading-tight font-playfair">
                                             {ann.title}
                                         </h3>
                                         <p className="text-gray-500 text-lg leading-relaxed">
-                                            {ann.content}
+                                            {ann.message}
                                         </p>
                                         <button className="flex items-center gap-3 text-primary font-black text-xs uppercase tracking-[0.2em] group/btn">
                                             Read Full Detail
@@ -76,6 +80,7 @@ const Broadcast: React.FC = () => {
                                     </div>
                                 </div>
                             ))}
+                            {announcements.length === 0 && <p className="text-gray-400 text-center py-10">No active announcements at the moment.</p>}
                         </div>
                     </div>
 
@@ -90,24 +95,31 @@ const Broadcast: React.FC = () => {
                                 <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/10 rounded-full -translate-x-1/2 translate-y-1/2 blur-3xl"></div>
 
                                 <div className="space-y-8 relative z-10">
-                                    {UPCOMING_EVENTS.map((event, i) => (
-                                        <div key={event.id} className="flex gap-8 group/item cursor-pointer">
-                                            <div className="text-center shrink-0">
-                                                <p className="text-[10px] font-black text-accent tracking-widest uppercase mb-1 opacity-70 group-hover/item:opacity-100 transition-opacity">
-                                                    {event.date.split(' ')[0]}
-                                                </p>
-                                                <p className="text-3xl font-black text-white leading-none">
-                                                    {event.date.split(' ')[1].replace(',', '')}
-                                                </p>
+                                    {events.map((event, i) => {
+                                        const dateObj = new Date(event.date);
+                                        const month = dateObj.toLocaleString('en-US', { month: 'short' });
+                                        const day = dateObj.getDate();
+                                        
+                                        return (
+                                            <div key={event.key} className="flex gap-8 group/item cursor-pointer">
+                                                <div className="text-center shrink-0">
+                                                    <p className="text-[10px] font-black text-accent tracking-widest uppercase mb-1 opacity-70 group-hover/item:opacity-100 transition-opacity">
+                                                        {month}
+                                                    </p>
+                                                    <p className="text-3xl font-black text-white leading-none">
+                                                        {day}
+                                                    </p>
+                                                </div>
+                                                <div className="flex-1 border-l border-white/10 pl-8 group-hover/item:border-accent/50 transition-colors">
+                                                    <p className="text-[9px] font-black text-blue-300 uppercase tracking-widest mb-1">{event.category}</p>
+                                                    <p className="font-bold text-white text-lg leading-tight group-hover/item:text-accent transition-colors font-playfair">
+                                                        {event.title}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div className="flex-1 border-l border-white/10 pl-8 group-hover/item:border-accent/50 transition-colors">
-                                                <p className="text-[9px] font-black text-blue-300 uppercase tracking-widest mb-1">{event.category}</p>
-                                                <p className="font-bold text-white text-lg leading-tight group-hover/item:text-accent transition-colors font-playfair">
-                                                    {event.title}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
+                                    {events.length === 0 && <p className="text-blue-200/50 text-center">No upcoming events scheduled.</p>}
                                 </div>
 
                                 <div className="space-y-4 relative z-10 pt-4">
@@ -143,37 +155,41 @@ const Broadcast: React.FC = () => {
             </div>
 
             {/* 3. Featured Highlight Spotlight */}
-            <section className="bg-primary-dark py-32 relative overflow-hidden">
-                <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-24 items-center relative z-10">
-                    <div className="relative group">
-                        <div className="absolute inset-0 bg-accent rounded-[4rem] rotate-3 translate-x-4 translate-y-4 transition-transform group-hover:rotate-6"></div>
-                        <img
-                            src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&q=80&w=1200"
-                            className="relative z-10 rounded-[4rem] shadow-2xl aspect-video object-cover"
-                            alt="Highlight Event"
-                        />
-                    </div>
-                    <div className="space-y-8 text-white">
-                        <span className="bg-accent text-primary px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">Event Spotlight</span>
-                        <h2 className="text-5xl font-bold leading-tight font-playfair">Annual Science & <br /> Innovation Fair 2024</h2>
-                        <p className="text-blue-100/70 text-lg leading-relaxed">
-                            Witness the power of youthful curiosity as our students present their year-long research projects in Robotics, AI, and Sustainability. Featuring guest lecturers from world-renowned tech institutes.
-                        </p>
-                        <div className="flex gap-8 pt-4">
-                            <div>
-                                <p className="text-accent font-black text-2xl">Oct 15</p>
-                                <p className="text-[10px] uppercase font-bold tracking-widest opacity-40">Main Auditorium</p>
-                            </div>
-                            <div className="w-px h-12 bg-white/10"></div>
-                            <div>
-                                <p className="text-accent font-black text-2xl">9:00 AM</p>
-                                <p className="text-[10px] uppercase font-bold tracking-widest opacity-40">Morning Session</p>
+            {featuredEvent && (
+                <section className="bg-primary-dark py-32 relative overflow-hidden">
+                    <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-24 items-center relative z-10">
+                        <div className="relative group">
+                            <div className="absolute inset-0 bg-accent rounded-[4rem] rotate-3 translate-x-4 translate-y-4 transition-transform group-hover:rotate-6"></div>
+                            <img
+                                src={featuredEvent.imageUrl || "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&q=80&w=1200"}
+                                className="relative z-10 rounded-[4rem] shadow-2xl aspect-video object-cover"
+                                alt={featuredEvent.title}
+                            />
+                        </div>
+                        <div className="space-y-8 text-white">
+                            <span className="bg-accent text-primary px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">Event Spotlight</span>
+                            <h2 className="text-5xl font-bold leading-tight font-playfair">{featuredEvent.title}</h2>
+                            <p className="text-blue-100/70 text-lg leading-relaxed">
+                                {featuredEvent.description}
+                            </p>
+                            <div className="flex gap-8 pt-4">
+                                <div>
+                                    <p className="text-accent font-black text-2xl">
+                                        {new Date(featuredEvent.date).toLocaleString('en-US', { month: 'short', day: 'numeric' })}
+                                    </p>
+                                    <p className="text-[10px] uppercase font-bold tracking-widest opacity-40">{featuredEvent.location || 'Campus'}</p>
+                                </div>
+                                <div className="w-px h-12 bg-white/10"></div>
+                                <div>
+                                    <p className="text-accent font-black text-2xl">{featuredEvent.startTime || '9:00 AM'}</p>
+                                    <p className="text-[10px] uppercase font-bold tracking-widest opacity-40">Timing</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="absolute -bottom-48 -right-48 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
-            </section>
+                    <div className="absolute -bottom-48 -right-48 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+                </section>
+            )}
 
             {/* 4. Final CTA */}
             <section className="py-32 bg-white text-center">

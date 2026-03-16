@@ -1,6 +1,4 @@
-import React from 'react';
 import { resolveImageUrl } from '@/core/utils/url';
-import SectionWarning from '@/components/system/SectionWarning';
 
 const AboutScreen = ({ data }) => {
     const sections = data?.homepageSections ?? [];
@@ -11,11 +9,7 @@ const AboutScreen = ({ data }) => {
     const identityRequired = identitySection?.isRequired ?? false;
     const hasIdentityData = !!(data?.identity?.aboutTitle || data?.identity?.aboutDescription || data?.identity?.vision || data?.identity?.mission);
 
-    if (identityEnabled && identityRequired && !hasIdentityData) {
-        return (
-            <SectionWarning sectionKey="identity" />
-        );
-    }
+
 
     // Principal Section Validation
     const principalSection = sections.find(s => s.sectionKey === 'principal');
@@ -24,11 +18,7 @@ const AboutScreen = ({ data }) => {
     const principal = data?.personnel?.find(p => p.personType === 'principal') ?? null;
     const hasPrincipalData = !!(principal?.name || principal?.bio || principal?.photoUrl);
 
-    if (principalEnabled && principalRequired && !hasPrincipalData) {
-        return (
-            <SectionWarning sectionKey="principal" />
-        );
-    }
+
 
     // Leadership Section Validation
     const leadershipSection = sections.find(s => s.sectionKey === 'leadership');
@@ -43,11 +33,7 @@ const AboutScreen = ({ data }) => {
 
     const hasLeadershipData = boardMembers.length > 0 || managementTeam.length > 0;
 
-    if (leadershipEnabled && leadershipRequired && !hasLeadershipData) {
-        return (
-            <SectionWarning sectionKey="leadership" />
-        );
-    }
+
 
     // Why Choose Us Section Validation
     const whyChooseUsSection = sections.find(s => s.sectionKey === 'whychooseus');
@@ -56,11 +42,7 @@ const AboutScreen = ({ data }) => {
     const whyChooseUsData = data?.identity?.whyChooseUs || [];
     const hasWhyChooseUsData = whyChooseUsData.length > 0;
 
-    if (whyChooseUsEnabled && whyChooseUsRequired && !hasWhyChooseUsData) {
-        return (
-            <SectionWarning sectionKey="why" />
-        );
-    }
+
 
     const schoolName = data?.school?.name || 'Our Institution';
     const vision = data?.identity?.vision || '';
@@ -88,7 +70,7 @@ const AboutScreen = ({ data }) => {
             </section>
 
             {/* 1. Identity / Heritage Section */}
-            {identityEnabled && (
+            {identityEnabled && hasIdentityData && (
                 <section className="py-24 bg-white">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
@@ -114,7 +96,7 @@ const AboutScreen = ({ data }) => {
                 </section>
             )}
             {/* Overview & Core Values */}
-            {identityEnabled && (
+            {identityEnabled && hasIdentityData && (
                 <section className="py-24 bg-white">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
@@ -144,7 +126,7 @@ const AboutScreen = ({ data }) => {
             )}
 
             {/* Why Parents Choose Section */}
-            {(whyChooseUsEnabled && (whyChooseUs.length > 0 || highlights.length > 0)) && (
+            {whyChooseUsEnabled && (whyChooseUs.length > 0 || highlights.length > 0) && (
                 <section className="py-24 bg-slate-50 border-y border-slate-200">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                         <div className="text-center mb-16">
@@ -166,7 +148,7 @@ const AboutScreen = ({ data }) => {
             )}
 
             {/* Board's Perspective */}
-            {(leadershipEnabled && boardMembers.length > 0) && (
+            {leadershipEnabled && boardMembers.length > 0 && (
                 <section className="py-24 bg-emerald-950 text-white">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                         <div className="text-center mb-16">
@@ -200,7 +182,7 @@ const AboutScreen = ({ data }) => {
             )}
 
             {/* Leadership & Management */}
-            {(leadershipEnabled && managementTeam.length > 0) && (
+            {leadershipEnabled && managementTeam.length > 0 && (
                     <section className="py-24 bg-white border-b border-slate-100">
                         <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                             <div className="text-center mb-16">
@@ -228,7 +210,7 @@ const AboutScreen = ({ data }) => {
                 )}
 
             {/* Principal detailed section */}
-            {principalEnabled && (
+            {principalEnabled && hasPrincipalData && (
                 <section className="py-24 bg-white">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                         <div className="flex flex-col md:flex-row-reverse gap-16 items-center">

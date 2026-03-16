@@ -6,7 +6,6 @@ import { SCHOOL_NAME, ACTIVITIES } from '../constants';
 import Link from 'next/link';
 import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import { isValidImageUrl } from '@/core/utils/url';
-import SystemPopup from '@/components/system/SystemPopup';
 
 const AnimatedNumber: React.FC<{ value: number; suffix?: string; duration?: number }> = ({ value, suffix = "", duration = 1500 }) => {
     const [count, setCount] = useState(0);
@@ -62,115 +61,68 @@ const AnimatedNumber: React.FC<{ value: number; suffix?: string; duration?: numb
 export default function Home({ data }: { data: TenantViewModel }) {
     const now = new Date();
 
+    // Helper to get component config by code (handles aliases)
+    const getComponent = (code: string) => {
+        return data.components?.find(c =>
+            c.componentCode?.toLowerCase() === code.toLowerCase()
+        );
+    };
+
     // 1. Hero
-    const heroSection = data?.homepageSections?.find(s => s.sectionKey === 'hero');
-    const heroEnabled = heroSection?.isEnabled ?? true;
-    const heroRequired = heroSection?.isRequired ?? false;
+    const heroComp = getComponent('hero');
+    const heroEnabled = heroComp?.isActive ?? true;
+    const heroRequired = heroComp?.isRequired ?? false;
     const heroMedia = (data?.heroMedia ?? [])
         .filter(s => s.isActive)
         .sort((a, b) => a.displayOrder - b.displayOrder);
-    if (heroEnabled && heroRequired && heroMedia.length === 0) {
-        return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Hero section is required but no specific data is found. Please add hero data in the admin panel."
-            />
-        );
-    }
 
     // 2. Announcements
-    const announcementsSection = data?.homepageSections?.find(s => s.sectionKey === 'announcements');
-    const announcementsEnabled = announcementsSection?.isEnabled ?? true;
-    const announcementsRequired = announcementsSection?.isRequired ?? false;
-    const activeAnnouncements = (data?.announcements ?? []).filter(a =>
+    const announcementsComp = getComponent('broadcast') || getComponent('announcements');
+    const announcementsEnabled = announcementsComp?.isActive ?? true;
+    const announcementsRequired = announcementsComp?.isRequired ?? false;
+    const activeAnnouncements = (data?.broadcast ?? []).filter(a =>
         a.isActive &&
         (!a.expiresAt || a.expiresAt === '' || new Date(a.expiresAt.endsWith('Z') ? a.expiresAt : `${a.expiresAt}Z`) > now)
     );
-    if (announcementsEnabled && announcementsRequired && activeAnnouncements.length === 0) {
-        return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Announcements section is required but no specific data is found. Please add announcements data in the admin panel."
-            />
-        );
-    }
 
     // 3. Academic Results
-    const academicSection = data?.homepageSections?.find(s => s.sectionKey === 'academics');
-    const academicResultsEnabled = academicSection?.isEnabled ?? true;
-    const academicResultsRequired = academicSection?.isRequired ?? false;
+    const academicComp = getComponent('academics') || getComponent('academicresults');
+    const academicResultsEnabled = academicComp?.isActive ?? true;
+    const academicResultsRequired = academicComp?.isRequired ?? false;
     const academicResults = [...(data?.academicResults ?? [])].sort((a, b) => b.year - a.year);
-    if (academicResultsEnabled && academicResultsRequired && academicResults.length === 0) {
-        return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Academics section is required but no specific data is found. Please add academic results in the admin panel."
-            />
-        );
-    }
     const latestAcademicResult = academicResults[0] ?? null;
 
     // 4. Achievements (Split into Academic and Sports)
-    const achievementsSection = data?.homepageSections?.find(s => s.sectionKey === 'achievements');
-    const achievementsEnabled = achievementsSection?.isEnabled ?? true;
-    const achievementsRequired = achievementsSection?.isRequired ?? false;
+    const achievementsComp = getComponent('achievements') || getComponent('schoolachievements');
+    const achievementsEnabled = achievementsComp?.isActive ?? true;
+    const achievementsRequired = achievementsComp?.isRequired ?? false;
 
-    const academicAchievements = (data?.achievements ?? [])
-        .filter(a => a.achievementType === 'academic')
+    const academicAchievements = (data?.schoolAchievements ?? [])
+        .filter(a => a.category?.toLowerCase().startsWith('academic'))
         .sort((a, b) => b.year - a.year || (a.displayOrder || 0) - (b.displayOrder || 0));
-    if (achievementsEnabled && achievementsRequired && academicAchievements.length === 0) {
-        return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Achievements section is required but no specific data is found. Please add achievements in the admin panel."
-            />
-        );
-    }
 
-    const sportsSection = data?.homepageSections?.find(s => s.sectionKey === 'sports');
-    const sportsEnabled = sportsSection?.isEnabled ?? true;
-    const sportsRequired = sportsSection?.isRequired ?? false;
-    const sportsAchievements = (data?.achievements ?? [])
-        .filter(a => a.achievementType?.toLowerCase().trim() === 'sports')
+    const sportsComp = getComponent('sports');
+    const sportsEnabled = sportsComp?.isActive ?? true;
+    const sportsRequired = sportsComp?.isRequired ?? false;
+    const sportsAchievements = (data?.schoolAchievements ?? [])
+        .filter(a => a.category?.toLowerCase() === 'sports')
         .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
-    if (sportsEnabled && sportsRequired && sportsAchievements.length === 0) {
-        return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Sports section is required but no specific data is found. Please add sports data in the admin panel."
-            />
-        );
-    }
 
     // 5. Leadership
-    const leadershipSection = data?.homepageSections?.find(s => s.sectionKey === 'leadership');
-    const leadershipEnabled = leadershipSection?.isEnabled ?? true;
-    const leadershipRequired = leadershipSection?.isRequired ?? false;
-    const leadership = (data?.leadership ?? []).filter(l => l.isActive);
-
-    if (leadershipEnabled && leadershipRequired && leadership.length === 0) {
-        return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Leadership section is required but no specific data is found. Please add leadership data in the admin panel."
-            />
-        );
-    }
+    const leadershipComp = getComponent('leadership') || getComponent('governance');
+    const leadershipEnabled = leadershipComp?.isActive ?? true;
+    const leadershipRequired = leadershipComp?.isRequired ?? false;
+    const leadership = (data?.leadership ?? []).filter(l => 
+        l.isActive && 
+        (l.role?.toLowerCase() === 'principal' || l.designation?.toLowerCase() === 'principal')
+    );
 
     // 6. Statistics
-    const statsSection = data?.homepageSections?.find(s => s.sectionKey === 'stats');
-    const statsEnabled = statsSection?.isEnabled ?? true;
-    const statsRequired = statsSection?.isRequired ?? false;
-    const statistics = (data?.statistics ?? [])
+    const statsComp = getComponent('stats') || getComponent('schoolstats') || getComponent('stats_premium');
+    const statsEnabled = statsComp?.isActive ?? true;
+    const statsRequired = statsComp?.isRequired ?? false;
+    const statistics = (data?.stats ?? [])
         .sort((a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0));
-    if (statsEnabled && statsRequired && statistics.length === 0) {
-        return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Statistics section is required but no specific data is found. Please add statistics data in the admin panel."
-            />
-        );
-    }
 
     const parseStat = (val: string) => {
         const num = parseInt(val.replace(/[^0-9]/g, '')) || 0;
@@ -189,41 +141,26 @@ export default function Home({ data }: { data: TenantViewModel }) {
     const getIcon = (name: string) => ICON_MAP[name] ?? '📊';
 
     // 7. Faculty
-    const facultySection = data?.homepageSections?.find(s => s.sectionKey === 'faculty');
-    const facultyEnabled = facultySection?.isEnabled ?? true;
-    const facultyRequired = facultySection?.isRequired ?? false;
-    const faculty = (data?.personnel as any[] ?? [])
-        .filter((p: any) => p.personType === 'faculty')
+    const facultyComp = getComponent('faculty');
+    const facultyEnabled = facultyComp?.isActive ?? true;
+    const facultyRequired = facultyComp?.isRequired ?? false;
+    const faculty = (data?.faculty ?? [])
+        .filter((p: any) => p.isActive)
         .sort((a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0));
-    if (facultyEnabled && facultyRequired && faculty.length === 0) {
-        return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Faculty section is required but no specific data is found. Please add faculty data in the admin panel."
-            />
-        );
-    }
 
     // 8. Facilities
-    const facilitiesSection = data?.homepageSections?.find(s => s.sectionKey === 'infrastructure' || s.sectionKey === 'facilities');
-    const facilitiesEnabled = facilitiesSection?.isEnabled ?? true;
-    const facilitiesRequired = facilitiesSection?.isRequired ?? false;
+    const facilitiesComp = getComponent('infrastructure') || getComponent('facilities');
+    const facilitiesEnabled = facilitiesComp?.isActive ?? true;
+    const facilitiesRequired = facilitiesComp?.isRequired ?? false;
+    const infrastructure = (data?.infrastructure ?? []).filter(i => i.isActive);
 
-    const grouped = (data?.facilities ?? []).reduce((acc: any, f: any) => {
-        const key = f.categoryName;
+    const grouped = infrastructure.reduce((acc: any, f: any) => {
+        const key = f.tag || 'Infrastructure';
         if (!acc[key]) acc[key] = { categoryName: key, items: [] };
         acc[key].items.push(f);
         return acc;
     }, {});
     const facilityGroups = Object.values(grouped) as any[];
-    if (facilitiesEnabled && facilitiesRequired && facilityGroups.length === 0) {
-        return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Facilities section is required but no specific data is found. Please add facilities data in the admin panel."
-            />
-        );
-    }
 
     const FACILITY_ICON_MAP: Record<string, { icon: string; color: string }> = {
         'Academics': { icon: '🔬', color: 'bg-primary' },
@@ -236,23 +173,18 @@ export default function Home({ data }: { data: TenantViewModel }) {
         FACILITY_ICON_MAP[cat] ?? { icon: '🏫', color: 'bg-primary' };
 
     // 9. Gallery
-    const gallerySection = data?.homepageSections?.find(s => s.sectionKey === 'gallery');
-    const galleryEnabled = gallerySection?.isEnabled ?? true;
-    const galleryRequired = gallerySection?.isRequired ?? false;
-    const galleryItems = (data?.mediaLibrary ?? []);
-    if (galleryEnabled && galleryRequired && galleryItems.length === 0) {
-        return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Gallery section is required but no specific data is found. Please add gallery items in the admin panel."
-            />
-        );
-    }
+    const galleryComp = getComponent('gallery');
+    const galleryEnabled = galleryComp?.isActive ?? true;
+    const galleryRequired = galleryComp?.isRequired ?? false;
+    const galleryItems = (data?.gallery ?? []).filter(g => 
+        g.isActive && 
+        (!galleryComp?.config?.filters?.contenttype || g.mediaType?.toLowerCase() === galleryComp.config.filters.contenttype.toLowerCase())
+    );
 
     // 10. Events
-    const eventsSection = data?.homepageSections?.find(s => s.sectionKey === 'events');
-    const eventsEnabled = eventsSection?.isEnabled ?? true;
-    const eventsRequired = eventsSection?.isRequired ?? false;
+    const eventsComp = getComponent('events');
+    const eventsEnabled = eventsComp?.isActive ?? true;
+    const eventsRequired = eventsComp?.isRequired ?? false;
 
     const eventsToShow = (data?.events ?? [])
         .filter((e: any) => {
@@ -264,14 +196,6 @@ export default function Home({ data }: { data: TenantViewModel }) {
             new Date(`${b.eventDate}T${b.startTime || '00:00:00'}Z`).getTime()
         )
         .slice(0, 3);
-    if (eventsEnabled && eventsRequired && eventsToShow.length === 0) {
-        return (
-            <SystemPopup
-                variant="data_error"
-                errorMessage="Home Screen: Events section is required but no specific data is found. Please add events data in the admin panel."
-            />
-        );
-    }
 
     const formatEventDate = (dateStr: string) => {
         const d = new Date(dateStr + 'T00:00:00');
@@ -282,12 +206,12 @@ export default function Home({ data }: { data: TenantViewModel }) {
     };
     return (
         <div className="space-y-24 pb-24">
-            {heroEnabled && (heroRequired || heroMedia.length > 0) && (
+            {heroEnabled && heroMedia.length > 0 && (
                 <HeroSlider slides={heroMedia} />
             )}
 
             {/* Broadcast Ticker */}
-            {announcementsEnabled && (announcementsRequired || activeAnnouncements.length > 0) && (
+            {announcementsEnabled && activeAnnouncements.length > 0 && (
                 <section className="sticky top-20 z-40 flex items-center h-12 overflow-hidden bg-accent shadow-[0_4px_20px_rgba(0,0,0,0.1)] border-y border-yellow-500/20 w-full">
                     <div className="absolute left-0 top-0 bottom-0 bg-[#1e293b] text-accent px-6 flex items-center z-30 shadow-[4px_0_15px_rgba(0,0,0,0.3)]">
                         <div className="flex items-center gap-3">
@@ -314,8 +238,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                 </section>
             )}
 
-            {((academicResultsEnabled && (academicResultsRequired || latestAcademicResult)) ||
-                (achievementsEnabled && (achievementsRequired || academicAchievements.length > 0))) ? (
+            {(academicResultsEnabled || achievementsEnabled) ? (
                 <section className="max-w-7xl mx-auto px-6 py-8 text-left">
                     <div className="grid lg:grid-cols-12 gap-16 lg:gap-24">
                         {academicResultsEnabled && latestAcademicResult && (
@@ -461,7 +384,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
             )}
 
             {/* Creative Statistics Section */}
-            {statsEnabled && (statsRequired || statistics.length > 0) && (
+            {statsEnabled && statistics.length > 0 && (
                 <section className="bg-primary py-32 relative z-20">
                     <div className="max-w-7xl mx-auto px-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -505,7 +428,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
             )}
 
 
-            {facultyEnabled && (facultyRequired || faculty.length > 0) && (
+            {facultyEnabled && faculty.length > 0 && (
                 <section className="max-w-7xl mx-auto px-4 py-24">
                     <div className="text-center mb-16 space-y-4">
                         <div className="inline-block px-4 py-1.5 bg-blue-50 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.3em] mb-4">
@@ -519,9 +442,9 @@ export default function Home({ data }: { data: TenantViewModel }) {
                             <div key={i} className="group text-center">
                                 <div className="relative inline-block mb-8 overflow-hidden rounded-[2.5rem]">
                                     <div className="absolute inset-0 bg-primary rounded-[2.5rem] rotate-6 scale-95 group-hover:rotate-12 transition-transform duration-500"></div>
-                                    {member.photoUrl && isValidImageUrl(member.photoUrl) && (
+                                    {member.imageUrl && isValidImageUrl(member.imageUrl) && (
                                         <img
-                                            src={member.photoUrl}
+                                            src={member.imageUrl}
                                             alt={""}
                                             className="relative w-full aspect-[4/5] object-cover object-top rounded-[2.5rem] shadow-xl border-4 border-white grayscale group-hover:grayscale-0 transition-all duration-500"
                                         />
@@ -529,7 +452,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                 </div>
                                 <h3 className="text-2xl font-bold text-primary group-hover:text-blue-600 transition-colors">{member.name ?? ''}</h3>
                                 <p className="text-yellow-600 font-bold uppercase tracking-widest text-xs mb-4">{member.designation ?? ''}</p>
-                                <p className="text-gray-500 leading-relaxed px-4">{member.bio ?? ''}</p>
+                                <p className="text-gray-500 leading-relaxed px-4">{member.description ?? ''}</p>
                             </div>
                         ))}
                     </div>
@@ -537,7 +460,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                 </section>
             )}
 
-            {sportsEnabled && (sportsRequired || sportsAchievements.length > 0) && (
+            {sportsEnabled && sportsAchievements.length > 0 && (
                 <section className="max-w-[100vw] overflow-hidden py-24 bg-gray-50/50 border-y border-gray-100">
                     <div className="max-w-7xl mx-auto px-4 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
                         <div className="space-y-4">
@@ -556,9 +479,9 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                     key={i}
                                     className="min-w-[320px] md:min-w-[450px] snap-center group relative overflow-hidden rounded-[3rem] aspect-[16/10] shadow-2xl transition-all duration-500 hover:shadow-primary/10"
                                 >
-                                    {achievement.photoUrl && isValidImageUrl(achievement.photoUrl) ? (
+                                    {achievement.imageUrl && isValidImageUrl(achievement.imageUrl) ? (
                                         <img
-                                            src={achievement.photoUrl}
+                                            src={achievement.imageUrl}
                                             alt={achievement.title}
                                             className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
                                         />
@@ -609,7 +532,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
             )}
 
             {/* Campus highlights Section */}
-            {facilitiesEnabled && (facilitiesRequired || facilityGroups.length > 0) && (
+            {facilitiesEnabled && facilityGroups.length > 0 && (
                 <section className="max-w-7xl mx-auto px-4 py-24">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
                         <div className="space-y-4">
@@ -665,7 +588,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
             <section className="bg-gray-50 py-24">
                 <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-3 gap-16">
                     <div className="lg:col-span-2 space-y-12">
-                        {galleryEnabled && (galleryRequired || galleryItems.length > 0) && (
+                        {galleryEnabled && galleryItems.length > 0 && (
                             <>
                                 <div className="flex items-center justify-between">
                                     <h2 className="text-4xl font-bold text-primary">Gallery</h2>
@@ -679,7 +602,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     {galleryItems.map((item, i) => (
                                         <div key={i} className="group overflow-hidden rounded-[2rem] relative h-80 shadow-2xl">
-                                            {!item?.url ? (
+                                            {!item?.imageUrl ? (
                                                 <div className="w-full h-full flex items-center justify-center bg-gray-200">
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 text-gray-400"
                                                         fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1">
@@ -691,13 +614,13 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                                 </div>
                                             ) : item.mediaType === 'video' ? (
                                                 <video
-                                                    src={item.url}
+                                                    src={item.imageUrl}
                                                     autoPlay muted loop playsInline
                                                     className="w-full h-full object-cover object-center"
                                                 />
-                                            ) : (item.url && isValidImageUrl(item.url)) ? (
+                                            ) : (item.imageUrl && isValidImageUrl(item.imageUrl)) ? (
                                                 <img
-                                                    src={item.url}
+                                                    src={item.imageUrl}
                                                     alt={item.caption ?? 'Gallery highlight'}
                                                     className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
                                                 />
@@ -716,7 +639,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                         )}
                     </div>
 
-                    {eventsEnabled && (eventsRequired || eventsToShow.length > 0) ? (
+                    {eventsEnabled && eventsToShow.length > 0 ? (
                         <div className="space-y-12 text-left">
                             <h2 className="text-4xl font-bold text-primary">Upcoming Events</h2>
                             <div className="space-y-6">

@@ -1,9 +1,16 @@
 "use client";
 
 import React, { useState } from 'react';
-import { SCHOOL_NAME } from '../../constants';
+import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 
-const Admissions: React.FC = () => {
+const Admissions: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
+    const schoolName = data?.school?.name ?? 'Our School';
+    const contact = data?.contactDetails;
+    
+    // Fallback data if contact is missing
+    const phone = contact?.phone || '+1 (555) 999-0000';
+    const email = contact?.email || 'admissions@school.edu';
+
     const [formData, setFormData] = useState({
         studentName: '',
         parentName: '',
@@ -32,7 +39,7 @@ const Admissions: React.FC = () => {
                     <span className="text-accent font-black uppercase tracking-[0.5em] text-sm animate-pulse">Admissions 2025-26</span>
                     <h1 className="text-5xl md:text-8xl font-bold text-white leading-tight font-playfair">Enroll for the Future</h1>
                     <p className="text-blue-100 text-xl md:text-2xl font-medium max-w-2xl mx-auto opacity-80 leading-relaxed">
-                        Start your journey with {SCHOOL_NAME} today. We invite you to be part of a legacy that values character and competence.
+                        Start your journey with {schoolName} today. We invite you to be part of a legacy that values character and competence.
                     </p>
                 </div>
                 <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white to-transparent"></div>
@@ -149,11 +156,11 @@ const Admissions: React.FC = () => {
                         <div className="space-y-4 pt-4 relative z-10">
                             <div className="flex items-center gap-4">
                                 <span className="text-accent">📞</span>
-                                <span className="font-bold">+1 (555) 999-0000</span>
+                                <span className="font-bold">{phone}</span>
                             </div>
                             <div className="flex items-center gap-4">
                                 <span className="text-accent">✉️</span>
-                                <span className="font-bold">admissions@standrews.edu</span>
+                                <span className="font-bold">{email}</span>
                             </div>
                         </div>
                         <button className="w-full py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-xl font-bold text-xs uppercase tracking-widest transition-all">Schedule a Call</button>

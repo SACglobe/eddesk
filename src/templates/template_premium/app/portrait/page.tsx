@@ -4,10 +4,22 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { schoolData } from '../../data';
 import { SectionHeader } from '../../components/Shared';
 import LayoutWrapper from '../../components/LayoutWrapper';
+import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 
-export default function Portrait() {
+export default function Portrait({ data }: { data?: TenantViewModel }) {
+    const sections = data?.homepageSections ?? [];
+    const section = sections.find((s: any) => s.sectionKey === 'gallery');
+    const isEnabled = section?.isEnabled ?? true;
+    const isRequired = section?.isRequired ?? false;
+    const galleryItems = data?.gallery ?? [];
+
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
     const [isLoaded, setIsLoaded] = useState(false);
+
+    if (!isEnabled) return null;
+
+    const gallery = galleryItems.length > 0 ? galleryItems : schoolData.gallery;
+
 
     const openLightbox = (index: number) => {
         setSelectedIndex(index);
@@ -22,7 +34,7 @@ export default function Portrait() {
     const navigateNext = useCallback((e?: React.MouseEvent | KeyboardEvent) => {
         e?.stopPropagation();
         if (selectedIndex !== null) {
-            setSelectedIndex((selectedIndex + 1) % schoolData.gallery.length);
+            setSelectedIndex((selectedIndex + 1) % gallery.length);
             setIsLoaded(false);
         }
     }, [selectedIndex]);
@@ -30,7 +42,7 @@ export default function Portrait() {
     const navigatePrev = useCallback((e?: React.MouseEvent | KeyboardEvent) => {
         e?.stopPropagation();
         if (selectedIndex !== null) {
-            setSelectedIndex((selectedIndex - 1 + schoolData.gallery.length) % schoolData.gallery.length);
+            setSelectedIndex((selectedIndex - 1 + gallery.length) % gallery.length);
             setIsLoaded(false);
         }
     }, [selectedIndex]);
@@ -48,7 +60,6 @@ export default function Portrait() {
     }, [selectedIndex, navigateNext, navigatePrev]);
 
     // Handle safely if no gallery data
-    const gallery = schoolData.gallery || [];
     const selectedItem = selectedIndex !== null ? gallery[selectedIndex] : null;
 
     return (
@@ -74,9 +85,9 @@ export default function Portrait() {
                             >
                                 <div className="overflow-hidden aspect-auto">
                                     <img
-                                        src={item.url}
+                                        src={(item as any).imageUrl || (item as any).url}
                                         className="w-full grayscale group-hover:grayscale-0 scale-100 group-hover:scale-110 transition-all duration-1000 ease-out opacity-80 group-hover:opacity-100"
-                                        alt={item.caption}
+                                        alt={(item as any).caption}
                                         loading="lazy"
                                     />
                                 </div>
@@ -94,7 +105,7 @@ export default function Portrait() {
                                 {/* Caption Bar */}
                                 <div className="p-5 bg-white border-t border-black/5 flex justify-between items-center relative z-10">
                                     <span className="text-[9px] uppercase tracking-widest text-gray-400 font-bold">Registry No. {1000 + i}</span>
-                                    <span className="text-[10px] font-serif italic text-signature-navy/60">{item.caption.split(' ').slice(0, 3).join(' ')}...</span>
+                                    <span className="text-[10px] font-serif italic text-signature-navy/60">{((item as any).caption || '').split(' ').slice(0, 3).join(' ')}...</span>
                                 </div>
                             </div>
                         ))}
@@ -172,9 +183,9 @@ export default function Portrait() {
                                     </div>
                                 )}
                                 <img
-                                    key={selectedItem.url}
-                                    src={selectedItem.url}
-                                    alt={selectedItem.caption}
+                                    key={(selectedItem as any).imageUrl || (selectedItem as any).url}
+                                    src={(selectedItem as any).imageUrl || (selectedItem as any).url}
+                                    alt={(selectedItem as any).caption}
                                     onLoad={() => setIsLoaded(true)}
                                     className={`max-w-full max-h-[65vh] object-contain shadow-[0_0_150px_rgba(0,0,0,0.8)] border border-white/5 transition-all duration-1000 ${isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
                                 />
@@ -194,11 +205,11 @@ export default function Portrait() {
                                 </div>
 
                                 <h4 className="text-white font-serif italic text-3xl md:text-5xl mb-6 leading-tight tracking-tight">
-                                    {selectedItem.caption}
+                                    {(selectedItem as any).caption}
                                 </h4>
 
                                 <p className="text-white/40 text-base md:text-lg leading-loose font-light max-w-2xl mx-auto mb-10 italic">
-                                    {selectedItem.description || "Captured within the historic grounds of Sterling Academy, reflecting the intersection of rigorous thought and architectural beauty."}
+                                    {(selectedItem as any).description || "Captured within the historic grounds of Sterling Academy, reflecting the intersection of rigorous thought and architectural beauty."}
                                 </p>
 
                                 <div className="text-white/20 text-[10px] uppercase tracking-[0.5em] font-bold flex flex-col items-center gap-4">

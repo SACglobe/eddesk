@@ -1,11 +1,26 @@
 "use client";
 
 import React from 'react';
-import { schoolData } from '../../data';
+import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import { SectionHeader } from '../../components/Shared';
 import LayoutWrapper from '../../components/LayoutWrapper';
+import { schoolData } from '../../data';
 
-export default function Contact() {
+
+export default function Contact({ data }: { data?: TenantViewModel }) {
+    const sections = data?.homepageSections ?? [];
+    const section = sections.find((s: any) => s.sectionKey === 'contact');
+    const isEnabled = section?.isEnabled ?? true;
+    const isRequired = section?.isRequired ?? false;
+    const contact = data?.contactDetails;
+
+    if (!isEnabled) return null;
+
+    const email = contact?.email || schoolData.contact.email;
+    const phone = contact?.phone || schoolData.contact.phone;
+    const address = contact?.address || schoolData.contact.address;
+    const hours = schoolData.contact.hours; // Hours usually static or not in schema yet
+
     return (
         <LayoutWrapper>
             <div className="fade-in pt-48 pb-32">
@@ -16,16 +31,16 @@ export default function Contact() {
                             <div className="space-y-16 mt-24">
                                 <div>
                                     <h4 className="text-[10px] uppercase tracking-[0.4em] font-bold text-signature-gold mb-4">The Address</h4>
-                                    <p className="text-3xl font-serif text-signature-navy leading-tight">{schoolData.contact.address}</p>
+                                    <p className="text-3xl font-serif text-signature-navy leading-tight">{address}</p>
                                 </div>
                                 <div className="grid grid-cols-2 gap-12">
                                     <div>
                                         <h4 className="text-[10px] uppercase tracking-[0.4em] font-bold text-signature-gold mb-4">Direct Dial</h4>
-                                        <p className="text-xl font-serif">{schoolData.contact.phone}</p>
+                                        <p className="text-xl font-serif">{phone}</p>
                                     </div>
                                     <div>
                                         <h4 className="text-[10px] uppercase tracking-[0.4em] font-bold text-signature-gold mb-4">Institutional Hours</h4>
-                                        <p className="text-xl font-serif">{schoolData.contact.hours}</p>
+                                        <p className="text-xl font-serif">{hours}</p>
                                     </div>
                                 </div>
                             </div>

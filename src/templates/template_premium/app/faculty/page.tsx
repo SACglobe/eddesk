@@ -1,11 +1,21 @@
 "use client";
 
 import React from 'react';
-import { schoolData } from '../../data';
+import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import { SectionHeader } from '../../components/Shared';
 import LayoutWrapper from '../../components/LayoutWrapper';
 
-export default function Faculty() {
+export default function Faculty({ data }: { data?: TenantViewModel }) {
+    const sections = data?.homepageSections ?? [];
+    const section = sections.find((s: any) => s.sectionKey === 'faculty');
+    const isEnabled = section?.isEnabled ?? true;
+    const isRequired = section?.isRequired ?? false;
+    const facultyData = data?.faculty ?? [];
+
+    if (!isEnabled) return null;
+
+    const members = facultyData.length > 0 ? facultyData : [];
+
     return (
         <LayoutWrapper>
             <div className="fade-in pt-48 pb-32">
@@ -19,12 +29,12 @@ export default function Faculty() {
                     </header>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-32">
-                        {schoolData.boardMembers.map((member, i) => (
+                        {members.map((member: any, i) => (
                             <div key={i} className="group grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
                                 <div className="lg:col-span-5 relative overflow-hidden">
                                     <div className="aspect-[4/5] bg-signature-navy">
                                         <img
-                                            src={member.image}
+                                            src={member.imageUrl || member.photoUrl || member.image}
                                             alt={member.name}
                                             className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000"
                                         />
@@ -32,10 +42,10 @@ export default function Faculty() {
                                     <div className="absolute top-0 right-0 w-16 h-16 border-t border-r border-signature-gold/30"></div>
                                 </div>
                                 <div className="lg:col-span-7 flex flex-col justify-center h-full">
-                                    <span className="text-[10px] uppercase tracking-[0.4em] text-signature-gold font-bold mb-4">{member.role}</span>
+                                    <span className="text-[10px] uppercase tracking-[0.4em] text-signature-gold font-bold mb-4">{member.role || member.designation}</span>
                                     <h3 className="text-4xl font-serif mb-8 group-hover:text-signature-gold transition-colors">{member.name}</h3>
                                     <p className="text-lg text-gray-500 font-light leading-relaxed mb-8">
-                                        {member.description}
+                                        {member.bio || member.description}
                                     </p>
                                     <div className="w-12 h-px bg-signature-navy/10 group-hover:w-24 group-hover:bg-signature-gold transition-all duration-700"></div>
                                 </div>

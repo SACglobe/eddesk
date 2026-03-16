@@ -1,23 +1,53 @@
 "use client";
 
 import React from 'react';
-import { schoolData } from '../../data';
+import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import { SectionHeader, Card } from '../../components/Shared';
 import LayoutWrapper from '../../components/LayoutWrapper';
 
-const ActivitySection: React.FC<{ title: string; items: any[] }> = ({ title, items }) => (
-    <div className="mb-32 last:mb-0">
-        <SectionHeader title={title} subtitle="Enrichment Programs" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {items.map((item, i) => (
-                <Card key={i} title={item.title} description={item.description} image={item.image} />
-            ))}
+const ActivitySection: React.FC<{ title: string; items: any[] }> = ({ title, items }) => {
+    if (items.length === 0) return null;
+    return (
+        <div className="mb-32 last:mb-0">
+            <SectionHeader title={title} subtitle="Enrichment Programs" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {items.map((item, i) => (
+                    <Card
+                        key={i}
+                        title={item.title || item.name}
+                        description={item.description || item.bio}
+                        image={item.imageUrl || item.image || item.photoUrl}
+                    />
+                ))}
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
-export default function Activities() {
-    const { activities } = schoolData;
+export default function Activities({ data }: { data?: TenantViewModel }) {
+    const sections = data?.homepageSections ?? [];
+    const section = sections.find((s: any) => s.sectionKey === 'activities');
+    const isEnabled = section?.isEnabled ?? true;
+    const isRequired = section?.isRequired ?? false;
+    const activitiesData = (data?.activities ?? []) as any[];
+
+    if (!isEnabled) return null;
+
+    // Map activities to categories based on tag
+    const getByCategory = (tag: string) =>
+        activitiesData.filter(a => (a.tag || '').toLowerCase().includes(tag.toLowerCase()));
+
+    const academic = getByCategory('academic');
+    const clubs = getByCategory('club');
+    const sports = getByCategory('sport');
+    const extraCurricular = getByCategory('extra');
+    const arts = getByCategory('art');
+    const leadership = getByCategory('leadership');
+
+    // If no tags match, show all in a general section if none of the above have items
+    const hasCategorized = academic.length > 0 || clubs.length > 0 || sports.length > 0 ||
+                          extraCurricular.length > 0 || arts.length > 0 || leadership.length > 0;
+
     return (
         <LayoutWrapper>
             <div className="fade-in pt-48 pb-32">
@@ -29,12 +59,18 @@ export default function Activities() {
                         </p>
                     </header>
 
-                    <ActivitySection title="Academic Enrichment" items={activities.academic} />
-                    <ActivitySection title="Our Active Clubs" items={activities.clubs} />
-                    <ActivitySection title="Sports & Development" items={activities.sports} />
-                    <ActivitySection title="Extra Curricular Activities" items={activities.extraCurricular} />
-                    <ActivitySection title="Arts, Culture & Creativity" items={activities.arts} />
-                    <ActivitySection title="Life Skills & Leadership" items={activities.leadership} />
+                    {hasCategorized ? (
+                        <>
+                            <ActivitySection title="Academic Enrichment" items={academic} />
+                            <ActivitySection title="Our Active Clubs" items={clubs} />
+                            <ActivitySection title="Sports & Development" items={sports} />
+                            <ActivitySection title="Extra Curricular Activities" items={extraCurricular} />
+                            <ActivitySection title="Arts, Culture & Creativity" items={arts} />
+                            <ActivitySection title="Life Skills & Leadership" items={leadership} />
+                        </>
+                    ) : (
+                        <ActivitySection title="Enrichment Programs" items={activitiesData} />
+                    )}
                 </div>
             </div>
         </LayoutWrapper>

@@ -1,4 +1,3 @@
-import SectionWarning from '@/components/system/SectionWarning';
 import { isValidImageUrl } from '@/core/utils/url';
 
 const InfrastructureScreen = ({ data }) => {
@@ -13,12 +12,6 @@ const InfrastructureScreen = ({ data }) => {
         return acc;
     }, {});
     const facilityGroups = Object.values(grouped);
-
-    if (isEnabled && isRequired && facilityGroups.length === 0) {
-        return (
-            <SectionWarning sectionKey="section" />
-        );
-    }
 
     if (!isEnabled) return null;
 

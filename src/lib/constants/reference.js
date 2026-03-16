@@ -79,7 +79,7 @@ export const COL_SCHOOLS_DESCRIPTION = "description"; // longer description show
 export const COL_HERO_MEDIA_ID = "key";
 export const COL_HERO_MEDIA_SCHOOL_ID = "schoolkey";
 export const COL_HERO_MEDIA_PAGE_TYPE = "pagetype";
-export const COL_HERO_MEDIA_TYPE = "mediatype";
+export const COL_HERO_MEDIA_TYPE = "contenttype";
 export const COL_HERO_MEDIA_URL = "mediaurl";
 export const COL_HERO_MEDIA_HEADLINE = "headline";
 export const COL_HERO_MEDIA_SUBHEADLINE = "subheadline";
@@ -193,7 +193,7 @@ export const COL_FACILITIES_CATEGORY_NAME = "tag";
 // --- Columns: gallery (TABLE_MEDIA_LIBRARY) ---
 export const COL_MEDIA_LIBRARY_ID = "key";
 export const COL_MEDIA_LIBRARY_SCHOOL_ID = "schoolkey";
-export const COL_MEDIA_LIBRARY_TYPE = "mediatype";
+export const COL_MEDIA_LIBRARY_TYPE = "contenttype";
 export const COL_MEDIA_LIBRARY_URL = "url";
 export const COL_MEDIA_LIBRARY_CAPTION = "caption";
 export const COL_MEDIA_LIBRARY_CATEGORY = "category";
