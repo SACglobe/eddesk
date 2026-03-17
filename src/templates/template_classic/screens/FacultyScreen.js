@@ -1,132 +1,174 @@
 import React from 'react';
-import { MOCK_DATA } from '../constants/mockData';
+import { validateRequiredSections } from '../../../core/utils/sectionValidator';
+import { isValidImageUrl } from '../../../core/utils/url';
 
-const FacultyScreen = () => {
-    const { FACULTY, ACHIEVEMENTS } = MOCK_DATA;
+const FacultyScreen = ({ data }) => {
+    // 1. Validation
+    const validation = validateRequiredSections(data);
+    if (!validation.isValid) return null;
+
+    // 2. Data Extraction
+    const getComponent = (code) => data.components?.find(c => c.componentCode?.toLowerCase() === code.toLowerCase());
+
+    const heroComp = getComponent('hero');
+    const heroMedia = (data?.heroMedia || []).filter(h => h.isActive).sort((a, b) => a.displayOrder - b.displayOrder);
+    const heroEnabled = heroComp?.isActive ?? true;
+
+    const facultyComp = getComponent('faculty');
+    const facultyEnabled = facultyComp?.isActive ?? true;
+    const facultyMembers = (data?.faculty || []).filter(f => f.isActive).sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+
+    const contactComp = getComponent('contactdetails');
+    const contactEnabled = contactComp?.isActive ?? true;
+    const contactData = data?.contactDetails?.[0];
 
     return (
-        <div className="max-w-[1600px] mx-auto px-2 md:px-6 py-20 fade-in">
-            {/* Page Header */}
-            <div className="text-center mb-16">
-                <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.5em] block mb-4">Institutional Personnel</span>
-                <h1 className="text-4xl md:text-5xl font-bold text-slate-900 uppercase tracking-widest serif">Our Educators & Mentors</h1>
-                <div className="h-1 w-20 bg-emerald-900 mx-auto mt-6"></div>
-            </div>
-
-            {/* Governing Board Section */}
-            <section className="mb-32">
-                <div className="flex items-center gap-4 mb-12">
-                    <div className="h-[1px] w-12 bg-emerald-900"></div>
-                    <h2 className="text-2xl font-bold text-emerald-900 uppercase tracking-widest serif">Governing Board</h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-                    {FACULTY.board_members.map((member, idx) => (
-                        <div key={idx} className="text-center group">
-                            <div className="aspect-[3/4] overflow-hidden group-hover:shadow-2xl transition-all duration-700 mb-6 border border-slate-200">
-                                <img src={member.photo} alt={member.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                            </div>
-                            <h3 className="text-lg font-bold text-slate-900 serif uppercase tracking-tight group-hover:text-emerald-900 transition-colors">{member.name}</h3>
-                            <p className="text-[10px] text-emerald-600 uppercase tracking-[0.3em] mt-2 font-bold">{member.role}</p>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Teaching Faculty Section (Round Photos) */}
-            <section className="mb-32">
-                <div className="flex items-center gap-4 mb-12">
-                    <div className="h-[1px] w-12 bg-emerald-900"></div>
-                    <h2 className="text-2xl font-bold text-emerald-900 uppercase tracking-widest serif">Teaching Faculty</h2>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-12">
-                    {FACULTY.teachers.map((teacher, idx) => (
-                        <div key={idx} className="flex flex-col items-center group p-8 bg-white border border-slate-50 hover:border-emerald-100 hover:shadow-xl transition-all duration-500">
-                            <div className="w-40 h-40 rounded-full overflow-hidden mb-6 border-4 border-white shadow-lg group-hover:border-emerald-500 transition-all duration-500">
-                                <img src={teacher.photo} alt={teacher.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                            </div>
-                            <h3 className="text-lg font-bold text-slate-900 serif text-center group-hover:text-emerald-900 transition-colors">{teacher.name}</h3>
-                            <div className="h-[1px] w-6 bg-emerald-200 my-3 group-hover:w-12 transition-all"></div>
-                            <p className="text-[10px] text-emerald-600 uppercase font-bold tracking-[0.2em] text-center leading-tight">
-                                {teacher.subject}
-                            </p>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Sports Activities and Achievements Section (HORIZONTAL SCROLL) */}
-            <section className="mt-40 pt-20 border-t border-slate-100 bg-slate-50 -mx-2 md:-mx-6 px-2 md:px-6 pb-24">
-                <div className="flex flex-col md:flex-row justify-between items-end mb-12">
-                    <div className="text-left">
-                        <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.4em] block mb-4">Athletic Merit</span>
-                        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Sports & Athletic Excellence</h2>
-                        <div className="h-1 w-20 bg-emerald-900 mt-6"></div>
+        <div className="faculty-screen bg-white">
+            {/* 1. Hero Section */}
+            {heroEnabled && heroMedia.length > 0 && (
+                <section className="classic-hero" style={{
+                    height: '350px',
+                    position: 'relative',
+                    background: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${heroMedia[0].mediaUrl})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    textAlign: 'center'
+                }}>
+                    <div className="container">
+                        <h1 style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '1rem' }}>
+                            {heroMedia[0].headline || 'Our Faculty'}
+                        </h1>
+                        <p style={{ fontSize: '1.2rem', opacity: 0.9, maxWidth: '600px', margin: '0 auto' }}>
+                            {heroMedia[0].subheadline || 'A legacy of excellence in education and leadership.'}
+                        </p>
                     </div>
-                    <div className="hidden md:flex items-center gap-3 text-slate-400">
-                        <span className="text-[10px] uppercase font-bold tracking-widest">Swipe for more</span>
-                        <div className="flex gap-1">
-                            <div className="w-8 h-px bg-slate-300"></div>
-                            <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
-                        </div>
-                    </div>
-                </div>
+                </section>
+            )}
 
-                {/* Horizontal Scroll Wrapper */}
-                <div className="relative">
-                    <div className="flex gap-8 overflow-x-auto pb-12 pt-4 no-scrollbar snap-x snap-mandatory">
-                        {ACHIEVEMENTS.student_achievements.map((item, idx) => (
-                            <div
-                                key={idx}
-                                className="min-w-[320px] md:min-w-[420px] bg-white border border-slate-100 shadow-md snap-start group/card hover:shadow-2xl transition-all duration-500 flex flex-col"
-                            >
-                                {/* Image Section with Overlay */}
-                                <div className="relative h-64 overflow-hidden">
-                                    <img
-                                        src={item.image}
-                                        alt={item.title}
-                                        className="w-full h-full object-cover transition-transform duration-1000 group-hover/card:scale-110"
-                                    />
-                                    <div className="absolute top-0 left-0 w-full h-full bg-emerald-950/20 group-hover/card:bg-emerald-950/0 transition-colors"></div>
-                                    <div className="absolute top-6 right-6 bg-emerald-900 text-white px-4 py-1 text-[10px] font-bold uppercase tracking-widest shadow-xl">
-                                        {item.year}
+            {/* 2. Faculty Section (Classic Asymmetrical Profile) */}
+            {facultyEnabled && (
+                <section style={{ padding: '80px 0' }}>
+                    <div className="container" style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 20px' }}>
+                        {facultyMembers.map((member, index) => (
+                            <div key={member.key} style={{ 
+                                display: 'flex', 
+                                flexDirection: index % 2 !== 0 ? 'row-reverse' : 'row',
+                                alignItems: 'center',
+                                gap: '60px',
+                                marginBottom: '100px'
+                            }} className="faculty-row">
+                                {/* Image Container */}
+                                <div style={{ flex: '0 0 400px', position: 'relative' }}>
+                                    <div style={{ 
+                                        borderRadius: '60px', 
+                                        overflow: 'hidden', 
+                                        aspectRatio: '4/5',
+                                        boxShadow: '0 25px 50px rgba(0,0,0,0.1)',
+                                        border: '5px solid #f8f9fa'
+                                    }}>
+                                        {isValidImageUrl(member.imageUrl) ? (
+                                            <img 
+                                                src={member.imageUrl} 
+                                                alt={member.name} 
+                                                style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(30%)' }}
+                                            />
+                                        ) : (
+                                            <div style={{ width: '100%', height: '100%', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '6rem' }}>
+                                                👨‍🏫
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Floating Designation Card */}
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '30px',
+                                        right: index % 2 !== 0 ? 'auto' : '-20px',
+                                        left: index % 2 !== 0 ? '-20px' : 'auto',
+                                        background: 'white',
+                                        padding: '15px 25px',
+                                        borderRadius: '20px',
+                                        boxShadow: '0 15px 30px rgba(0,0,0,0.1)',
+                                        borderLeft: '4px solid #f97316'
+                                    }}>
+                                        <p style={{ fontSize: '0.75rem', fontWeight: '800', color: '#003366', textTransform: 'uppercase', letterSpacing: '1px', margin: 0 }}>
+                                            {member.designation || 'Faculty'}
+                                        </p>
                                     </div>
                                 </div>
 
-                                {/* Content Section */}
-                                <div className="p-10 flex-grow border-t-4 border-emerald-900">
-                                    <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.2em] block mb-3 italic">
-                                        {item.category}
-                                    </span>
-                                    <h3 className="text-xl md:text-2xl font-bold text-slate-900 serif leading-tight mb-6 group-hover/card:text-emerald-900 transition-colors">
-                                        {item.title}
-                                    </h3>
+                                {/* Content Container */}
+                                <div style={{ flex: 1 }}>
+                                    <h2 style={{ fontSize: '3.5rem', fontWeight: '800', color: '#003366', marginBottom: '10px', lineHeight: 1.1 }}>
+                                        {member.name}
+                                    </h2>
+                                    <h4 style={{ fontSize: '1.2rem', fontWeight: '700', color: '#f97316', marginBottom: '25px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                        {member.qualification}
+                                    </h4>
+                                    <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#555', marginBottom: '35px' }}>
+                                        {member.description}
+                                    </p>
 
-                                    <div className="pt-8 border-t border-slate-100 flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-4 h-4 text-emerald-900">
-                                                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                                            </div>
-                                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Official Record</span>
-                                        </div>
-                                        <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.5)]"></span>
+                                    <div style={{ display: 'flex', gap: '15px' }}>
+                                        <button style={{ 
+                                            padding: '12px 30px', 
+                                            background: '#003366', 
+                                            color: 'white', 
+                                            border: 'none', 
+                                            borderRadius: '12px', 
+                                            fontWeight: '700',
+                                            textTransform: 'uppercase',
+                                            fontSize: '0.85rem',
+                                            cursor: 'pointer'
+                                        }}>
+                                            Full Profile
+                                        </button>
+                                        <button style={{ 
+                                            padding: '12px 30px', 
+                                            background: 'transparent', 
+                                            color: '#003366', 
+                                            border: '2px solid #003366', 
+                                            borderRadius: '12px', 
+                                            fontWeight: '700',
+                                            textTransform: 'uppercase',
+                                            fontSize: '0.85rem',
+                                            cursor: 'pointer'
+                                        }}>
+                                            Contact Office
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         ))}
                     </div>
-                </div>
-            </section>
+                </section>
+            )}
 
-            {/* Internal Custom CSS for the Horizontal Scroller */}
-            <style>{`
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .no-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
+            {/* 3. Contact Details Section */}
+            {contactEnabled && contactData && (
+                <section style={{ background: '#f8f9fa', padding: '60px 0', borderTop: '1px solid #eee' }}>
+                    <div className="container" style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 20px', display: 'flex', justifyContent: 'space-between', gap: '40px' }}>
+                        <div style={{ flex: 1 }}>
+                            <h5 style={{ color: '#f97316', fontSize: '0.9rem', fontWeight: '800', textTransform: 'uppercase' }}>Visit Us</h5>
+                            <p style={{ color: '#003366', marginTop: '10px', fontWeight: '600' }}>{contactData.address}</p>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <h5 style={{ color: '#f97316', fontSize: '0.9rem', fontWeight: '800', textTransform: 'uppercase' }}>Inquire</h5>
+                            <p style={{ color: '#003366', marginTop: '10px', fontWeight: '600' }}>{contactData.email}<br/>{contactData.phone}</p>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <h5 style={{ color: '#f97316', fontSize: '0.9rem', fontWeight: '800', textTransform: 'uppercase' }}>Locate</h5>
+                            <a href={contactData.mapEmbedUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', marginTop: '10px', fontWeight: '800', color: '#003366', textDecoration: 'none', borderBottom: '2px solid #f97316' }}>
+                                VIEW ON MAP →
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            )}
         </div>
     );
 };

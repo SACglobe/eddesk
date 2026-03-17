@@ -10,6 +10,43 @@
 # Location: guardrails/SCREEN-DATA-REFERENCE.md
 # ─────────────────────────────────────────────────────────────────────────────
 
+---
+
+## HOME SCREEN — LOCKED (DO NOT MODIFY)
+> [!IMPORTANT]
+> The Home Screen for all three templates is considered COMPLETE. 
+> Do not modify home screen files (Section 1.2) unless specifically requested by the user.
+
+---
+
+## ABOUT SCREEN — LOCKED (DO NOT MODIFY)
+> [!IMPORTANT]
+> The About Screen for all three templates is considered COMPLETE. 
+> Do not modify about screen files (Section 1.4) unless specifically requested by the user.
+
+---
+ 
+ ## GALLERY SCREEN — LOCKED (DO NOT MODIFY)
+ > [!IMPORTANT]
+ > The Gallery Screen for all three templates is considered COMPLETE. 
+ > Do not modify gallery screen files (Section 11.2) unless specifically requested by the user.
+ 
+ ---
+
+ ## ACTIVITIES SCREEN — LOCKED (DO NOT MODIFY)
+ > [!IMPORTANT]
+ > The Activities Screen for all three templates is considered COMPLETE. 
+ > Do not modify activities screen files (Section 12) unless specifically requested by the user.
+ 
+  ---
+
+ ## INFRASTRUCTURE SCREEN — LOCKED (DO NOT MODIFY)
+ > [!IMPORTANT]
+ > The Infrastructure Screen for all three templates is considered COMPLETE. 
+ > Do not modify infrastructure screen files (Section 13) unless specifically requested by the user.
+
+ ---
+
 ## HOW TO USE THIS FILE
 
 When the database changes:
@@ -55,6 +92,27 @@ template_premium:  src/templates/template_premium/app/page.tsx
 | 10th     | Gallery (left) + Events (right) | Gallery only | Gallery + Events |
 | 11th     | ContactDetails  | ContactDetails  | ContactDetails  |
 | Footer   | Footer uses contactdetails | Footer uses contactdetails | Footer uses contactdetails |
+
+### Template About screen files
+```
+template_modern:   src/templates/template_modern/app/about/page.tsx
+template_classic:  src/templates/template_classic/screens/AboutScreen.js
+template_premium:  src/templates/template_premium/app/about/page.tsx
+```
+
+### About screen layout order (section top → bottom)
+
+| Position | template_modern | template_classic | template_premium |
+|----------|----------------|-----------------|-----------------|
+| 1st      | Header/Navbar   | Header/Navbar   | Header/Navbar   |
+| 2nd      | Hero            | Hero            | Hero            |
+| 3rd      | Vision/Mission/Motto | Vision/Mission/Motto | Vision/Mission/Motto |
+| 4th      | Principal Message | Principal Message | Principal Message |
+| 5th      | Chairman Message  | Chairman Message  | Chairman Message  |
+| 6th      | Board Members     | Board Members     | Board Members     |
+| 7th      | Why Choose Us     | Why Choose Us     | Why Choose Us     |
+| 8th      | ContactDetails    | ContactDetails    | ContactDetails    |
+| Footer   | Footer            | Footer            | Footer            |
 
 ### Header data source
 ```
@@ -102,6 +160,8 @@ All keys are lowercase (Supabase convention).
     events:            []   ← array of events
     contactdetails:    []   ← ARRAY (take index [0])
     testimonial:       []   ← array of testimonials
+    boardmembers:      []   ← array of board members
+    schoolidentity:    []   ← vision/mission/motto (take index [0])
     templatecomponents:[]   ← section visibility config
   }
 }
@@ -192,6 +252,16 @@ twitter, youtube, isactive, schoolkey, createdat
 ```
 key, rating, message, isactive, photo_url, authorname,
 designation, displayorder, schoolkey, createdat
+
+### boardmembers[] item fields
+```
+key, name, profile, qualification, imageurl, designation, isactive, displayorder, schoolkey, createdat
+```
+
+### schoolidentity[] item fields ← ARRAY, use [0]
+```
+key, motto, vision, mission, history, founded_year, isactive, schoolkey, createdat
+```
 ```
 
 ### templatecomponents[] item fields  ← section visibility config
@@ -231,6 +301,9 @@ config shape: {
 | events             | events              | none                        | data.events (upcoming only, isFeatured)            | true              | modern + premium    |
 | contactdetails     | contactdetails      | none                        | data.contactDetails                                | true              | all 3               |
 | testimonial        | testimonialcontent  | none                        | data.testimonials (optional)                       | false             | all 3               |
+| boardmembers       | boardmembers        | none                        | data.boardMembers                                  | true              | all 3               |
+| schoolidentity     | schoolidentity      | none                        | data.identity                                      | true              | all 3               |
+| leadership (Chairman)| leadership        | { designation: "Chairman"}  | data.leadership.find(role==="chairman")            | true              | all 3               |
 
 ### Section visibility decision rule (MANDATORY for every section)
 ```
@@ -528,7 +601,8 @@ function checkDataEmpty(vm: TenantViewModel, comp: TemplateComponent): boolean {
       if (filterType === 'sports')   return vm.schoolAchievements.filter(a => a.category === 'sports').length === 0;
       return vm.schoolAchievements.length === 0;
     case 'leadership':
-      if (filterDesignation === 'Principal') return !vm.principal;
+      if (filterDesignation === 'Principal') return vm.principal.filter(a => a.designation === 'Principal').length === 0;
+      if (filterDesignation === 'Chairman') return vm.chairman.filter(a => a.designation === 'Chairman').length === 0;
       return vm.leadership.length === 0;
     case 'schoolstats':       return vm.stats.length === 0;
     case 'faculty':           return vm.faculty.filter(f => f.isActive).length === 0;
@@ -592,9 +666,157 @@ const logoSrc = data?.school?.logoUrl;  // if empty string → show school name 
 
 ---
 
-## SECTION 8 — Changelog
+---
 
-| Version | Date       | Change Summary |
-|---------|-----------|----------------|
-| 1.0     | 2026-03-02 | Initial version |
+## SECTION 9 — About Screen Specific Rules
+
+### 1. Hero Section
+- **Condition**: `templatecomponents("hero").isactive === true`.
+- **Data**: `data.hero[]`.
+- **Note**: Position is below header for all templates.
+
+### 2. Vision, Mission and Motto
+- **Condition**: `templatecomponents("schoolidentity").isactive === true`.
+- **Data**: `data.schoolidentity[0]`.
+- **Note**: Mapped to `identity` in ViewModel. Positioned below Hero.
+
+### 3. Principal's Message Board
+- **Condition**: `templatecomponents("leadership").isactive === true` AND `filters.designation === "Principal"`.
+- **Required**: If `isrequired` is true, block page if data is missing.
+- **Data**: `data.leadership[]` where `role === "principal"`.
+- **Note**: Positioned below Vision/Mission/Motto.
+
+### 4. Chairman Message
+- **Condition**: `templatecomponents("leadership").isactive === true` AND `filters.designation === "Chairman"`.
+- **Required**: If `isrequired` is true, block page if data is missing.
+- **Data**: `data.leadership[]` where `role === "chairman"`.
+- **Note**: Positioned below Principal Section. Shows "A Message from the Board".
+
+### 5. Board Members (Academic Leadership & Management)
+- **Condition**: `templatecomponents("boardmembers").isactive === true`.
+- **Data**: `data.boardmembers[]`.
+- **Note**: Positioned below Chairman Section.
+
+### 6. Why Choose Us
+- **Condition**: `templatecomponents("whychooseus").isactive === true`.
+- **Data**: `data.whychooseus[]`.
+- **Note**: Positioned below Board Members section.
+
+---
+
+## SECTION 10 — Changelog
+
 | 2.0     | 2026-03-15 | schoolachievements replaces achievements; academicresults now array; contactdetails now array; testimonial added; activities typed; templatecomponents dedup rule changed; SectionWarning → full-page block for required sections |
+
+---
+
+## SECTION 11 — Gallery Screen Specific Rules
+
+### 1. Hero Section
+- **Condition**: `templatecomponents("hero").isactive === true`.
+- **Data**: `data.hero[]`.
+- **Modern / Classic**: Top position.
+- **Premium**: Below header.
+
+### 2. Gallery Section (Main)
+- **Condition**: `templatecomponents("gallery").isactive === true`.
+- **Data**: `data.gallery[]`.
+- **CRITICAL**: For the Gallery Screen, **IGNORE** `config.filters`. Show ALL active items (images and videos).
+- **Functionality**: Clicking an item must open a lightbox/popup.
+- **Position**: Below Hero for all templates.
+
+### 3. Layout Order (section top → bottom)
+
+| Position | template_modern | template_classic | template_premium |
+|----------|----------------|-----------------|-----------------|
+| 1st      | Header/Navbar   | Header/Navbar   | Header/Navbar   |
+| 2nd      | Hero            | Hero            | Hero            |
+| 3rd      | Gallery (All)   | Gallery (All)   | Gallery (All)   |
+| Footer   | Footer          | Footer          | Footer          |
+
+---
+
+## SECTION 12 — Activities Screen Specific Rules
+
+### 1. Hero Section
+- **Condition**: `templatecomponents("hero").isactive === true`.
+- **Data**: `data.hero[]`.
+- **Modern / Classic**: Top position.
+- **Premium**: Below header.
+
+### 2. Activities Section (Main)
+- **Condition**: `templatecomponents("activities").isactive === true`.
+- **Data**: `data.activities[]`.
+- **Functionality**: Detailed cards for activities. Supports images and videos. Clicking an item must open a lightbox/popup.
+- **Position**: Below Hero for all templates.
+
+### 3. Layout Order (section top → bottom)
+
+| Position | template_modern | template_classic | template_premium |
+|----------|----------------|-----------------|-----------------|
+| 1st      | Header/Navbar   | Header/Navbar   | Header/Navbar   |
+| 2nd      | Hero            | Hero            | Hero            |
+| 3rd      | Activities      | Activities      | Activities      |
+| Footer   | Footer          | Footer          | Footer          |
+
+---
+
+## SECTION 13 — Infrastructure Screen Specific Rules — LOCKED
+
+### 1. Hero Section
+- **Condition**: `templatecomponents("hero").isactive === true`.
+- **Data**: `data.hero[]`.
+- **Modern / Classic**: Top position.
+- **Premium**: Below header.
+
+### 2. Infrastructure Section (Main)
+- **Condition**: `templatecomponents("infrastructure").isactive === true`.
+- **Data**: `data.infrastructure[]`.
+- **Design**: Show image/video with content. Use existing design tokens. Supports both image and video.
+- **Position**: Below Hero for all templates.
+
+### 3. Contact Details Section
+- **Condition**: `templatecomponents("contactdetails").isactive === true`.
+- **Data**: `data.contactdetails[0]`.
+- **Position**: Below Infrastructure section.
+
+### 4. Layout Order (section top → bottom)
+
+| Position | template_modern   | template_classic  | template_premium  |
+|----------|-------------------|-------------------|-------------------|
+| 1st      | Header/Navbar     | Header/Navbar     | Header/Navbar     |
+| 2nd      | Hero              | Hero              | Hero              |
+| 3rd      | Infrastructure    | Infrastructure    | Infrastructure    |
+| Footer   | Footer            | Footer            | Footer            |
+
+---
+
+## SECTION 14 — Faculty Screen Specific Rules
+
+### 1. Hero Section
+- **Condition**: `templatecomponents("hero").isactive === true`.
+- **Data**: `data.hero[]`.
+- **Modern / Classic**: Top position.
+- **Premium**: Below header.
+
+### 2. Faculty Section (Main)
+- **Condition**: `templatecomponents("faculty").isactive === true`.
+- **Data**: `data.faculty[]`.
+- **Design**: Show image with content. Use the "Asymmetrical Profile" design layout.
+- **Layout Order**: Large Profile Image (side) + Dynamic Background + Floating Tag (designation/qualification) + Name (Large Typography) + Bio (description) + Action Buttons.
+- **Position**: Below Hero for all templates.
+
+### 3. Contact Details Section
+- **Condition**: `templatecomponents("contactdetails").isactive === true`.
+- **Data**: `data.contactdetails[0]`.
+- **Position**: Below Faculty section.
+
+### 4. Layout Order (section top → bottom)
+
+| Position | template_modern     | template_classic    | template_premium    |
+|----------|---------------------|---------------------|---------------------|
+| 1st      | Header/Navbar       | Header/Navbar       | Header/Navbar       |
+| 2nd      | Hero                | Hero                | Hero                |
+| 3rd      | Faculty             | Faculty             | Faculty             |
+| 4th      | Contact Details     | Contact Details     | Contact Details     |
+| Footer   | Footer              | Footer              | Footer              |

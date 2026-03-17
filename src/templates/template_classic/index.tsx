@@ -5,8 +5,11 @@ import HomeScreen from './screens/HomeScreen';
 import AboutScreen from './screens/AboutScreen';
 import AdmissionScreen from './screens/AdmissionScreen';
 import ContactScreen from './screens/ContactScreen';
+import FacultyScreen from './screens/FacultyScreen';
 import InfrastructureScreen from './screens/InfrastructureScreen';
 import BroadcastScreen from './screens/BroadcastScreen';
+import GalleryScreen from './screens/GalleryScreen';
+import ActivitiesScreen from './screens/ActivitiesScreen';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import BroadcastTicker from './components/BroadcastTicker';
@@ -54,6 +57,13 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
             case '/notices':
             case '/broadcast':
                 return <BroadcastScreen data={data} />;
+            case '/gallery':
+            case '/portrait':
+                return <GalleryScreen data={data} />;
+            case '/faculty':
+                return <FacultyScreen data={data} />;
+            case '/activities':
+                return <ActivitiesScreen data={data} />;
             default:
                 return <HomeScreen data={data} />;
         }

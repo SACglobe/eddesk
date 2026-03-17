@@ -21,5 +21,10 @@
  */
 export function isOwnerDomain(hostname: string): boolean {
   const lowerHostname = hostname.toLowerCase();
-  return lowerHostname.includes('localhost') || lowerHostname.includes('eddesk');
+  return (
+    lowerHostname.includes('localhost') || 
+    lowerHostname.includes('eddesk') || 
+    lowerHostname.includes('127.0.0.1') || 
+    lowerHostname.includes('::1')
+  );
 }

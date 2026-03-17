@@ -12,6 +12,7 @@ import Events from './app/events/page';
 import Faculty from './app/faculty/page';
 import Infrastructure from './app/infrastructure/page';
 import Portrait from './app/portrait/page';
+import Gallery from './app/gallery/page';
 import { Header, Footer } from './components/Navigation';
 import './app/globals.css';
 
@@ -90,8 +91,9 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
                 const Screen = Infrastructure as any;
                 return <Screen data={data} />;
             }
-            case '/portrait': {
-                const Screen = Portrait as any;
+            case '/portrait':
+            case '/gallery': {
+                const Screen = Gallery as any;
                 return <Screen data={data} />;
             }
             default: {

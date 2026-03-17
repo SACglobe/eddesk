@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
-import { resolveImageUrl } from '@/core/utils/url';
 
 // Note: Dynamic title is set by the Renderer's parent page.tsx
 
@@ -20,45 +19,26 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
         );
     };
 
-    // Identity Section Validation
-    const identityComp = getComponent('identity');
-    const identityEnabled = identityComp?.isActive ?? true;
-    const hasIdentityData = !!(data?.identity?.aboutTitle || data?.identity?.aboutDescription || data?.identity?.vision || data?.identity?.mission);
-
-    // Principal Section Validation
-    const principalComp = getComponent('principal');
-    const principalEnabled = principalComp?.isActive ?? true;
-    const principal = data?.leadership?.find((p: any) => 
-        p.role?.toLowerCase() === 'principal' || p.designation?.toLowerCase() === 'principal'
-    );
-    const hasPrincipalData = !!(principal?.name || principal?.message || principal?.imageUrl);
-
-    // Leadership Section
-    const leadershipComp = getComponent('leadership') || getComponent('governance');
-    const leadershipEnabled = leadershipComp?.isActive ?? true;
-    
-    // Management team: All leadership EXCEPT principal
-    const leadershipTeam = (data?.leadership ?? []).filter((p: any) => {
-        const role = (p.role || p.designation || '').toLowerCase();
-        return role !== 'principal';
-    });
-
-    const whyChooseUsComp = getComponent('whychooseus');
-    const whyChooseUsEnabled = whyChooseUsComp?.isActive ?? true;
-    const whyChooseUsData = data?.identity?.whyChooseUs ?? [];
-    const hasWhyChooseUsData = whyChooseUsData.length > 0;
-
     const schoolName = data?.school?.name ?? 'Our School';
     const vision = data?.identity?.vision ?? '';
     const mission = data?.identity?.mission ?? '';
     const motto = data?.identity?.motto ?? '';
     const aboutTitle = data?.identity?.aboutTitle ?? '';
     const aboutDescription = data?.identity?.aboutDescription ?? '';
-    const whyChooseUs = whyChooseUsData;
-    const principalPhoto = principal?.imageUrl ?? '';
-    const principalMsg = principal?.message ?? '';
-    const principalName = principal?.name ?? '';
-    const highlights = data?.schoolAchievements ?? [];
+    const whyChooseUs = data?.whyChooseUs ?? [];
+    
+    // Leadership data from standardized properties
+    const principal = data?.principal?.[0] ?? null;
+    const chairman = data?.chairman?.[0] ?? null;
+    const boardMembers = data?.boardMembers ?? [];
+    
+    const hasPrincipalData = !!(principal?.name || principal?.message || principal?.imageUrl);
+    const hasChairmanData = !!(chairman?.name || chairman?.message || chairman?.imageUrl);
+    const hasBoardData = boardMembers.length > 0;
+    
+    const identityComp = getComponent('identity');
+    const identityEnabled = identityComp?.isActive ?? true;
+    const hasIdentityData = !!(data?.identity?.aboutTitle || data?.identity?.aboutDescription || data?.identity?.vision || data?.identity?.mission);
 
     return (
         <div className="pb-24">
@@ -103,29 +83,26 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
             )}
 
             {/* Principal's Message Board */}
-            {principalEnabled && hasPrincipalData && (
+            {getComponent('leadership')?.isActive && hasPrincipalData && (
                 <section className="max-w-7xl mx-auto px-4 py-24 border-t border-gray-100">
                     <div className="grid lg:grid-cols-2 gap-20 items-center">
                         <div className="relative group">
                             <div className="absolute inset-0 bg-primary rounded-[4rem] rotate-3 translate-x-4 translate-y-4 transition-transform group-hover:rotate-6"></div>
                             <div className="relative overflow-hidden rounded-[4rem] shadow-2xl aspect-[4/5]">
-                                {principalPhoto ? (
+                                {principal?.imageUrl ? (
                                     <img
-                                        src={principalPhoto}
-                                        alt={principalName}
+                                        src={principal.imageUrl}
+                                        alt={principal.name}
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
                                 ) : (
                                     <div className="w-full h-full bg-primary/10 flex items-center justify-center">
                                         <span className="text-8xl text-primary/30 font-bold uppercase">
-                                            {principalName.charAt(0) || 'P'}
+                                            {principal?.name?.charAt(0) || 'P'}
                                         </span>
                                     </div>
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-primary/40 via-transparent to-transparent"></div>
-                            </div>
-                            <div className="absolute -bottom-10 -right-6 bg-accent p-8 rounded-[2.5rem] shadow-2xl z-20 hidden md:block border-4 border-white">
-                                <p className="font-serif italic text-blue-950 text-lg uppercase">"Lead with purpose, learn for life."</p>
                             </div>
                         </div>
 
@@ -137,31 +114,64 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
 
                             <div className="space-y-6 text-gray-600 text-lg leading-relaxed">
                                 <p>
-                                    As the Principal of {schoolName}, I am honored to lead an institution that prioritizes the holistic development of every child. We don't just teach subjects; we nurture souls, spark imaginations, and build resilience.
+                                    As the Principal of {schoolName}, I am honored to lead an institution that prioritizes the holistic development of every child.
                                 </p>
                                 <p>
-                                    {principalMsg || "Our classrooms are vibrant ecosystems of inquiry where students are encouraged to challenge the status quo. We believe that true education is about finding one's purpose and using that knowledge to positively impact the world."}
+                                    {principal?.message || "Our classrooms are vibrant ecosystems of inquiry where students are encouraged to challenge the status quo. We believe that true education is about finding one's purpose and using that knowledge to positively impact the world."}
                                 </p>
                             </div>
 
                             <div className="pt-8 flex items-center gap-8">
                                 <div className="space-y-1">
-                                    <p className="font-serif italic text-3xl text-primary font-playfair uppercase">{principalName || "School Principal"}</p>
-                                    <p className="text-yellow-600 font-black uppercase tracking-widest text-xs">Principal & Academic Dean</p>
+                                    <p className="font-serif italic text-3xl text-primary font-playfair uppercase">{principal?.name || "School Principal"}</p>
+                                    <p className="text-yellow-600 font-black uppercase tracking-widest text-xs">{principal?.designation || "Principal"}</p>
                                 </div>
-                                <div className="w-16 h-px bg-gray-200"></div>
-                                <button className="text-primary font-black uppercase tracking-widest text-[10px] border-b-2 border-accent pb-1 hover:border-primary transition-colors">View Annual Report</button>
                             </div>
                         </div>
                     </div>
                 </section>
             )}
 
-            {/* Leadership Section */}
-            {(leadershipEnabled && leadershipTeam.length > 0) && (
+            {/* Chairman Message */}
+            {getComponent('leadership')?.isActive && hasChairmanData && (
+                 <section className="bg-primary py-32 text-white relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-1/2 h-full bg-white/5 -skew-x-12 translate-x-1/2"></div>
+                    <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-24 items-center relative z-10">
+                        <div className="space-y-10 order-2 lg:order-1">
+                             <div className="space-y-4">
+                                <span className="text-accent font-black uppercase tracking-[0.4em] text-xs">Message from the Board</span>
+                                <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight font-playfair uppercase">A Message from the Board</h2>
+                            </div>
+                            <p className="text-blue-100 text-xl font-light leading-loose italic border-l-4 border-accent pl-8">
+                                "{chairman?.message || "Our commitment to excellence ensures that every student receives a world-class education focused on academic rigor and character development."}"
+                            </p>
+                            <div className="flex items-center gap-6">
+                                <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-accent/30">
+                                    <img src={chairman?.imageUrl || '/school/image/default-avatar.png'} alt={chairman?.name} className="w-full h-full object-cover" />
+                                </div>
+                                <div>
+                                    <p className="font-bold text-2xl font-playfair uppercase tracking-tight">{chairman?.name}</p>
+                                    <p className="text-accent font-black uppercase tracking-widest text-[10px]">{chairman?.designation || 'Chairman'}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="order-1 lg:order-2">
+                             <div className="relative group">
+                                <div className="absolute inset-0 bg-accent rounded-[4rem] translate-x-8 translate-y-8 opacity-20 transition-transform group-hover:translate-x-12"></div>
+                                <div className="relative overflow-hidden rounded-[4rem] aspect-video shadow-2xl">
+                                    <img src={chairman?.imageUrl || "https://images.unsplash.com/photo-1507679799987-c73774573b8a?auto=format&fit=crop&q=80&w=1200"} className="w-full h-full object-cover" alt="Chairman" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 </section>
+            )}
+
+            {/* Board Members Section */}
+            {getComponent('boardmembers')?.isActive && hasBoardData && (
                 <section className="max-w-[100vw] overflow-hidden py-32 bg-gray-50/50 relative">
                     <div className="max-w-7xl mx-auto px-4 mb-20 space-y-4 text-center">
-                        <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-xs">Leadership</span>
+                        <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-xs">Governance</span>
                         <h2 className="text-4xl md:text-6xl font-bold text-primary">Academic Leadership & Management</h2>
                         <p className="text-gray-500 max-w-2xl mx-auto text-lg">The visionary team steering our institution towards new horizons of academic brilliance.</p>
                     </div>
@@ -171,7 +181,7 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                             ref={scrollRef}
                             className="management-scroll flex overflow-x-auto gap-12 px-6 md:px-[calc((100vw-80rem)/2+1rem)] pb-12 snap-x snap-mandatory cursor-grab active:cursor-grabbing"
                         >
-                            {leadershipTeam.map((member: any, i: number) => {
+                            {boardMembers.map((member: any, i: number) => {
                                 const photo = member.imageUrl;
                                 const role = member.designation || member.role;
                                 return (
@@ -217,20 +227,19 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
                         </button>
-
-                        {/* Mobile Indicator */}
-                        <div className="max-w-7xl mx-auto px-4 mt-8 flex items-center justify-center gap-4 opacity-50 lg:hidden">
-                            <div className="h-1 w-24 bg-primary/10 rounded-full overflow-hidden">
-                                <div className="h-full bg-primary w-1/3 rounded-full animate-pulse"></div>
-                            </div>
-                            <span className="text-[10px] font-black text-primary uppercase tracking-widest">Swipe to view our team</span>
+                    </div>
+                    {/* Mobile Indicator */}
+                    <div className="max-w-7xl mx-auto px-4 mt-8 flex items-center justify-center gap-4 opacity-50 lg:hidden">
+                        <div className="h-1 w-24 bg-primary/10 rounded-full overflow-hidden">
+                            <div className="h-full bg-primary w-1/3 rounded-full animate-pulse"></div>
                         </div>
+                        <span className="text-[10px] font-black text-primary uppercase tracking-widest">Swipe to view our team</span>
                     </div>
                 </section>
             )}
 
             {/* Why Parents Choose Our School */}
-            {whyChooseUsEnabled && hasWhyChooseUsData && (
+            {getComponent('whychooseus')?.isActive && whyChooseUs.length > 0 && (
                 <section className="bg-white py-32">
                 <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-24 items-center">
                     <div className="space-y-12">
@@ -239,15 +248,9 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                             <h2 className="text-4xl md:text-5xl font-bold text-primary leading-tight font-playfair">Why Choose Us</h2>
                         </div>
                         <div className="space-y-12">
-                            {(whyChooseUs.length > 0 ? whyChooseUs.slice(0, 4).map((item, i) => ({
+                            {whyChooseUs.slice(0, 4).map((item, i) => ({
                                 t: item.title, d: item.description, i: (item.icon || ['✨', '🌍', '🛡️', '⭐'][i]) ?? '⭐'
-                            })) : highlights.length > 0 ? highlights.slice(0, 4).map((item: any, i: number) => ({
-                                t: item.title, d: item.description, i: ['✨', '🌍', '🛡️', '⭐'][i] ?? '⭐'
-                            })) : [
-                                { t: 'Personalized Learning', d: 'Small class ratios ensuring every child gets the attention they deserve.', i: '✨' },
-                                { t: 'Global Perspectives', d: 'Curriculum designed to make students comfortable anywhere in the world.', i: '🌍' },
-                                { t: 'Safety First', d: 'A secure campus with 24/7 monitoring and a nurturing environment.', i: '🛡️' }
-                            ]).map((item, i) => (
+                            })).map((item, i) => (
                                 <div key={i} className="flex gap-8 group">
                                     <div className="w-16 h-16 bg-blue-50 rounded-[1.5rem] flex items-center justify-center text-3xl shadow-sm group-hover:bg-accent transition-colors shrink-0">{item.i}</div>
                                     <div className="space-y-2">
@@ -270,4 +273,3 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
 };
 
 export default About;
-

@@ -1,165 +1,176 @@
+"use client";
+
 import React from 'react';
+import HeroSlider from '../../components/HeroSlider';
 import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
+import { validateRequiredSections } from '@/core/utils/sectionValidator';
+import { isValidImageUrl } from '@/core/utils/url';
 
-const Infrastructure: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
-    const infrastructure = data?.infrastructure || [];
-    const stats = data?.stats || [];
+const InfrastructurePage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
+    const schoolName = data?.school?.name ?? 'Our School';
+    
+    // 1. Validation for required sections
+    const validation = validateRequiredSections(data);
+    if (!validation.isValid) {
+        return null;
+    }
+
+    // 2. Helper to get component config
+    const getComponent = (code: string) => {
+        return data.components?.find(c =>
+            c.componentCode?.toLowerCase() === code.toLowerCase()
+        );
+    };
+
+    // 3. Hero Section Data
+    const heroComp = getComponent('hero');
+    const heroEnabled = heroComp?.isActive ?? true;
+    const heroMedia = (data?.heroMedia ?? [])
+        .filter(s => s.isActive)
+        .sort((a, b) => a.displayOrder - b.displayOrder);
+
+    // 4. Infrastructure Data
+    const infraComp = getComponent('infrastructure');
+    const infraEnabled = infraComp?.isActive ?? true;
+    const infraItems = (data?.infrastructure ?? [])
+        .filter(i => i.isActive)
+        .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+
     return (
-        <div className="bg-white overflow-hidden pb-24">
-            {/* 1. Immersive Hero Section - Styled like About/Contact page */}
-            <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
-                <img
-                    src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=2000"
-                    className="absolute inset-0 w-full h-full object-cover grayscale brightness-50"
-                    alt="Campus Architecture"
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-primary/70 to-primary/90"></div>
-                <div className="relative z-10 text-center space-y-8 max-w-5xl px-4">
-                    <span className="text-accent font-black uppercase tracking-[0.5em] text-sm animate-pulse">25 Acre Modern Estate</span>
-                    <h1 className="text-5xl md:text-8xl font-bold text-white leading-tight font-playfair">Spaces Built to Inspire</h1>
-                    <p className="text-blue-100 text-xl md:text-2xl font-medium max-w-2xl mx-auto opacity-80 leading-relaxed">
-                        Infrastructure that breathes life into imagination and turns curiosity into capability.
-                    </p>
-                </div>
-                <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white to-transparent"></div>
-            </section>
-
-            {/* 2. Metrics Ribbon */}
-            <section className="bg-white py-12 border-b border-gray-100">
-                <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
-                    {stats.map((item, idx) => (
-                        <div key={item.key} className="flex items-center gap-4 group">
-                            <span className="text-2xl grayscale group-hover:grayscale-0 transition-all">{item.icon}</span>
-                            <div>
-                                <p className="text-gray-400 font-black text-[9px] uppercase tracking-widest">{item.label}</p>
-                                <p className="text-primary font-bold text-sm">{item.value}</p>
-                            </div>
-                        </div>
-                    ))}
-                    {stats.length === 0 && [
-                        { l: 'Energy Source', v: '100% Solar', i: '☀️' },
-                        { l: 'Connectivity', v: '10 Gbps Fiber', i: '🌐' },
-                        { l: 'Security', v: 'AI-24/7 Monitoring', i: '🛡️' },
-                        { l: 'Green Space', v: '40% Of Campus', i: '🌳' }
-                    ].map((item, idx) => (
-                        <div key={idx} className="flex items-center gap-4 group">
-                            <span className="text-2xl grayscale group-hover:grayscale-0 transition-all">{item.i}</span>
-                            <div>
-                                <p className="text-gray-400 font-black text-[9px] uppercase tracking-widest">{item.l}</p>
-                                <p className="text-primary font-bold text-sm">{item.v}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* 3. Zone Explorer - Asymmetrical Editorial Layout */}
-            <section className="py-32 space-y-48">
-                {infrastructure.map((zone, i) => (
-                    <div key={zone.key} className="max-w-7xl mx-auto px-4">
-                        <div className={`flex flex-col ${i % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-16 lg:gap-24`}>
-                            {/* Image Side */}
-                            <div className="w-full lg:w-3/5 relative group">
-                                <div className={`absolute inset-0 bg-gray-100 rounded-[4rem] translate-x-6 translate-y-6 -z-10 group-hover:translate-x-8 group-hover:translate-y-8 transition-transform duration-700`}></div>
-                                <div className="relative overflow-hidden rounded-[4rem] shadow-2xl aspect-[16/10]">
-                                    <img
-                                        src={zone.imageUrl}
-                                        alt={zone.title}
-                                        className="w-full h-full object-cover scale-100 group-hover:scale-110 transition-transform duration-[2000ms]"
-                                    />
-                                    <div className="absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-colors duration-700"></div>
-                                </div>
-                                {/* Float Badge */}
-                                {zone.highlightTitle && (
-                                    <div className="absolute -top-6 -right-6 md:-right-12 bg-white p-8 rounded-[2.5rem] shadow-2xl border-t-8 border-accent max-w-[200px] hidden md:block">
-                                        <p className="text-[10px] font-black text-primary/40 uppercase tracking-widest mb-2">Technical Hub</p>
-                                        <p className="font-bold text-primary text-sm leading-tight">{zone.highlightTitle}</p>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Text Side */}
-                            <div className="w-full lg:w-2/5 space-y-8">
-                                <div className="space-y-4">
-                                    <span className="text-blue-600 font-black uppercase tracking-[0.4em] text-xs block">{zone.tag}</span>
-                                    <h2 className="text-4xl md:text-6xl font-bold text-primary leading-tight font-playfair">
-                                        {zone.title}
-                                    </h2>
-                                </div>
-                                <p className="text-gray-500 text-lg md:text-xl leading-relaxed font-medium">
-                                    {zone.description}
+        <div className="pb-20 bg-white">
+            {/* 1. Hero Section */}
+            {heroEnabled && heroMedia.length > 0 && (
+                <section className="relative">
+                    {heroMedia.length > 1 ? (
+                        <HeroSlider slides={heroMedia.map(m => ({
+                            ...m,
+                            mediaUrl: m.mediaUrl || '',
+                            mediaType: m.mediaType || 'image',
+                            headline: m.headline || 'World-Class Infrastructure',
+                            subheadline: m.subheadline || `Modern facilities at ${schoolName}`,
+                            primaryButtonText: m.primaryButtonText || 'View Admissions',
+                            primaryButtonUrl: m.primaryButtonUrl || '/admissions',
+                            secondaryButtonText: m.secondaryButtonText || 'Contact Us',
+                            secondaryButtonUrl: m.secondaryButtonUrl || '/contact',
+                            isActive: m.isActive,
+                            displayOrder: m.displayOrder
+                        }))} />
+                    ) : (
+                        <div className="relative h-[60vh] flex items-center justify-center overflow-hidden">
+                            {isValidImageUrl(heroMedia[0]?.mediaUrl) ? (
+                                <img
+                                    src={heroMedia[0]?.mediaUrl}
+                                    className="absolute inset-0 w-full h-full object-cover grayscale brightness-50"
+                                    alt="Infrastructure Hero"
+                                />
+                            ) : (
+                                <div className="absolute inset-0 bg-primary/20"></div>
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-b from-primary/70 to-primary/90"></div>
+                            <div className="relative z-10 text-center space-y-8 max-w-4xl px-4">
+                                <span className="text-accent font-black uppercase tracking-[0.5em] text-sm animate-pulse">Our Campus</span>
+                                <h1 className="text-5xl md:text-8xl font-bold text-white leading-tight font-playfair">
+                                    {heroMedia[0]?.headline || 'Campus Infrastructure'}
+                                </h1>
+                                <p className="text-blue-100 text-xl md:text-2xl font-medium max-w-2xl mx-auto opacity-80 leading-relaxed">
+                                    {heroMedia[0]?.subheadline || 'Modern facilities designed to foster innovation, collaboration, and excellence.'}
                                 </p>
+                            </div>
+                            <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white to-transparent"></div>
+                        </div>
+                    )}
+                </section>
+            )}
 
-                                {(zone.highlightTitle || zone.highlightDescription) && (
-                                    <div className="pt-8 border-t border-gray-100">
-                                        <ul className="grid grid-cols-1 gap-4">
-                                            {[zone.highlightTitle, zone.highlightDescription].filter(Boolean).map((spec, idx) => (
-                                                <li key={idx} className="flex items-center gap-4 text-primary/70 font-bold group/item">
-                                                    <div className="w-6 h-[2px] bg-accent group-hover/item:w-10 transition-all"></div>
-                                                    <span className="group-hover/item:text-primary transition-colors font-playfair">{spec}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
+            {/* 2. Refined Infrastructure Section (Matching Design Image) */}
+            {infraEnabled && (
+                <div className="max-w-7xl mx-auto px-6 py-24 space-y-32">
+                    {infraItems.map((item, index) => (
+                        <div key={item.key} className={`flex flex-col lg:flex-row items-center gap-16 ${index % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}>
+                            {/* Left Side: Image with floating card */}
+                            <div className="lg:w-1/2 relative">
+                                <div className="relative overflow-hidden rounded-[4rem] md:rounded-[6rem] lg:rounded-[8rem] aspect-[4/3] shadow-2xl">
+                                    {isValidImageUrl(item.imageUrl) ? (
+                                        <img
+                                            src={item.imageUrl}
+                                            alt={item.title}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full bg-gray-100 flex items-center justify-center text-7xl">🏢</div>
+                                    )}
+                                </div>
+                                
+                                {/* Floating Card Overlay */}
+                                <div className="absolute -top-4 -right-4 md:-top-8 md:-right-8 bg-white p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] shadow-2xl max-w-[240px] md:max-w-[280px] border-t-8 border-accent transform transition-transform hover:scale-105 duration-500">
+                                    <div className="space-y-2 md:space-y-4">
+                                        <p className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-[0.3em]">
+                                            {item.tag || 'Technical Hub'}
+                                        </p>
+                                        <h4 className="text-lg md:text-2xl font-bold text-primary leading-tight font-primary">
+                                            {item.title}
+                                        </h4>
                                     </div>
-                                )}
+                                </div>
+                            </div>
 
-                                <div className="pt-8">
-                                    <button className="flex items-center gap-4 group/btn">
-                                        <div className="bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center group-hover/btn:bg-accent group-hover/btn:text-primary transition-all duration-500">
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                            {/* Right Side: Typography and Details */}
+                            <div className="lg:w-1/2 space-y-10 lg:pl-12">
+                                <div className="space-y-6">
+                                    <h2 className="text-6xl md:text-8xl font-bold text-primary leading-[0.9] tracking-tighter">
+                                        {item.title.split(' ').map((word, i) => (
+                                            <span key={i} className="block">{word}</span>
+                                        ))}
+                                    </h2>
+                                    <p className="text-gray-500 text-lg md:text-xl font-medium leading-relaxed max-w-xl">
+                                        {item.description}
+                                    </p>
+                                </div>
+
+                                {/* Feature List (using bulletins/highlights) */}
+                                <div className="space-y-4 pt-8 border-t border-gray-100">
+                                    {[item.highlightTitle, item.highlightDescription].filter(Boolean).map((feat, i) => (
+                                        <div key={i} className="flex items-center gap-6 group">
+                                            <div className="h-0.5 w-8 bg-accent group-hover:w-12 transition-all duration-300"></div>
+                                            <p className="text-lg font-bold text-primary tracking-tight font-primary">{feat}</p>
                                         </div>
-                                        <span className="text-primary font-black uppercase tracking-[0.2em] text-[10px] border-b-2 border-transparent hover:border-accent transition-all pb-1">Request a guided tour</span>
+                                    ))}
+                                    {(!item.highlightTitle && !item.highlightDescription) && (
+                                        <>
+                                            <div className="flex items-center gap-6 group">
+                                                <div className="h-0.5 w-8 bg-accent group-hover:w-12 transition-all duration-300"></div>
+                                                <p className="text-lg font-bold text-primary tracking-tight font-primary">Advanced Equipment</p>
+                                            </div>
+                                            <div className="flex items-center gap-6 group">
+                                                <div className="h-0.5 w-8 bg-accent group-hover:w-12 transition-all duration-300"></div>
+                                                <p className="text-lg font-bold text-primary tracking-tight font-primary">Collaborative Space</p>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+
+                                {/* Guided Tour CTA */}
+                                <div className="pt-10 flex items-center gap-8">
+                                    <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white text-2xl shadow-xl hover:bg-accent hover:text-primary transition-all cursor-pointer group">
+                                        <span className="group-hover:translate-x-1 transition-transform">→</span>
+                                    </div>
+                                    <button className="text-[11px] font-black text-primary uppercase tracking-[0.4em] hover:text-accent transition-colors">
+                                        Request a Guided Tour
                                     </button>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                ))}
-            </section>
+                    ))}
 
-            {/* 4. Smart Campus / Future Proofing */}
-            <section className="bg-primary-dark py-32 relative">
-                <div className="max-w-7xl mx-auto px-4 relative z-10">
-                    <div className="text-center mb-20 space-y-4">
-                        <span className="text-accent font-black uppercase tracking-[0.3em] text-xs">Sustainability</span>
-                        <h2 className="text-4xl md:text-6xl font-bold text-white font-playfair">The Smart Campus Ecosystem</h2>
-                    </div>
-
-                    <div className="grid md:grid-cols-3 gap-12">
-                        {[
-                            { t: 'Zero-Waste Initiative', d: 'Our smart waste management system recycles 90% of campus refuse into compost and raw materials.', i: '♻️' },
-                            { t: 'Digital Backbone', v: 'Every corner of our campus is blanketed with secure, high-speed Wi-Fi 6 for seamless learning.', i: '📡' },
-                            { t: 'Bio-Climatic Design', d: 'Buildings are oriented to optimize natural airflow and sunlight, reducing cooling needs by 30%.', i: '🍃' }
-                        ].map((card, i) => (
-                            <div key={i} className="bg-white/5 backdrop-blur-xl p-12 rounded-[3rem] border border-white/10 hover:bg-white/10 transition-all group">
-                                <div className="text-5xl mb-8 group-hover:scale-125 transition-transform duration-500 inline-block">{card.i}</div>
-                                <h4 className="text-2xl font-bold text-white mb-4 font-playfair">{card.t}</h4>
-                                <p className="text-blue-100/60 leading-relaxed">{card.d || 'Advanced infrastructure designed for the 21st century learner.'}</p>
-                            </div>
-                        ))}
-                    </div>
+                    {infraItems.length === 0 && (
+                        <div className="py-24 text-center border-t border-gray-100">
+                             <p className="text-gray-400 font-playfair italic text-xl">Information about campus infrastructure is being updated.</p>
+                        </div>
+                    )}
                 </div>
-
-                {/* Background glow */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none"></div>
-            </section>
-
-            {/* 5. Final CTA */}
-            <section className="py-32 bg-white text-center">
-                <div className="max-w-4xl mx-auto px-4 space-y-12">
-                    <div className="w-24 h-24 bg-blue-50 text-primary rounded-[2.5rem] flex items-center justify-center text-4xl mx-auto shadow-inner">🏫</div>
-                    <h2 className="text-5xl md:text-7xl font-bold text-primary leading-tight font-playfair">Seeing is Believing.</h2>
-                    <p className="text-gray-500 text-xl leading-relaxed">
-                        While photos capture the space, nothing beats the feeling of standing in our Innovation Hub or walking the Knowledge Nexus. We host tours every Tuesday and Thursday.
-                    </p>
-                    <div className="pt-10 flex flex-col sm:flex-row gap-6 justify-center">
-                        <button className="bg-primary text-white px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-accent hover:text-primary transition-all shadow-2xl">Book Campus Tour</button>
-                        <button className="border-2 border-primary text-primary px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-blue-50 transition-all">Download Masterplan PDF</button>
-                    </div>
-                </div>
-            </section>
+            )}
         </div>
     );
 };
 
-export default Infrastructure;
+export default InfrastructurePage;

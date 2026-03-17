@@ -1,127 +1,155 @@
-import { isValidImageUrl } from '@/core/utils/url';
+import React from 'react';
+import { validateRequiredSections } from '../../../core/utils/sectionValidator';
+import { isValidImageUrl } from '../../../core/utils/url';
 
 const InfrastructureScreen = ({ data }) => {
-    const infrastructureSection = data?.homepageSections?.find(s => s.sectionKey === 'infrastructure' || s.sectionKey === 'facilities');
-    const isEnabled = infrastructureSection?.isEnabled ?? true;
-    const isRequired = infrastructureSection?.isRequired ?? false;
+    // 1. Validation
+    const validation = validateRequiredSections(data);
+    if (!validation.isValid) return null;
 
-    const grouped = (data?.facilities ?? []).reduce((acc, f) => {
-        const key = f.categoryName || 'General';
-        if (!acc[key]) acc[key] = { categoryName: key, items: [] };
-        acc[key].items.push(f.name);
-        return acc;
-    }, {});
-    const facilityGroups = Object.values(grouped);
+    // 2. Data Extraction
+    const getComponent = (code) => data.components?.find(c => c.componentCode?.toLowerCase() === code.toLowerCase());
 
-    if (!isEnabled) return null;
+    const heroComp = getComponent('hero');
+    const heroMedia = (data?.heroMedia || []).filter(h => h.isActive).sort((a, b) => a.displayOrder - b.displayOrder);
+    const heroEnabled = heroComp?.isActive ?? true;
 
-    const campusImages = (data?.mediaLibrary ?? [])
-        .filter(m => m.mediaType === 'image')
-        .map(m => m.url)
-        .filter(isValidImageUrl);
-
-    const fallbackImage = "https://images.unsplash.com/photo-1541339907198-e08756ebafe3?auto=format&fit=crop&q=80";
-
-    const FacilityCard = ({ title, items, icon, color }) => (
-        <div className="bg-white border border-slate-200 p-10 hover:shadow-2xl hover:border-emerald-300 transition-all group relative overflow-hidden">
-            <div className={`absolute top-0 right-0 w-24 h-24 -mr-12 -mt-12 transition-transform group-hover:scale-110 opacity-10 ${color}`}></div>
-            <div className="mb-6 text-emerald-900">{icon}</div>
-            <h3 className="text-xl font-bold text-slate-900 serif uppercase tracking-widest mb-6">{title}</h3>
-            <ul className="space-y-3">
-                {items.map((item, idx) => (
-                    <li key={idx} className="flex items-center gap-3 text-slate-600 text-sm">
-                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-                        {item}
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
+    const infraComp = getComponent('infrastructure');
+    const infraEnabled = infraComp?.isActive ?? true;
+    const infrastructure = (data?.infrastructure || []).filter(i => i.isActive).sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
     return (
-        <div className="fade-in">
-            {/* Hero Header */}
-            <section className="bg-emerald-900 py-24 text-center">
-                <div className="max-w-[1600px] mx-auto px-2 md:px-6">
-                    <span className="text-emerald-300 text-xs font-bold uppercase tracking-[0.5em] mb-4 block">Campus Environment</span>
-                    <h1 className="text-4xl md:text-6xl text-white font-bold serif uppercase tracking-widest">Institutional Infrastructure</h1>
-                    <div className="h-1 w-20 bg-emerald-400 mx-auto mt-8"></div>
-                </div>
-            </section>
-
-            {/* Overview Section */}
-            <section className="py-24 bg-white">
-                <div className="max-w-[1600px] mx-auto px-2 md:px-6">
-                    <div className="flex flex-col md:flex-row gap-16 items-center mb-24">
-                        <div className="w-full md:w-1/2">
-                            <h2 className="text-3xl font-bold text-slate-900 uppercase tracking-widest serif mb-8 border-b border-emerald-50 pb-4">Built for Brilliance</h2>
-                            <p className="text-slate-700 leading-relaxed text-lg serif italic">
-                                Our campus is a synthesis of traditional architectural integrity and modern educational technology. We provide an ecosystem where every square foot is optimized for cognitive growth and physical well-being.
-                            </p>
-                            <div className="mt-10 grid grid-cols-2 gap-8 border-t border-emerald-50 pt-10">
-                                <div>
-                                    <span className="block text-3xl font-bold text-emerald-900 serif mb-1">15+</span>
-                                    <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">Specialized Centers</span>
-                                </div>
-                                <div>
-                                    <span className="block text-3xl font-bold text-emerald-900 serif mb-1">100%</span>
-                                    <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">Smart-Enabled</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="w-full md:w-1/2">
-                            <div className="relative group">
-                                <img src={campusImages[0] || fallbackImage} alt="Campus Aerial" className="w-full aspect-video object-cover shadow-2xl rounded-sm group-hover:scale-105 transition-transform duration-700" />
-                                <div className="absolute -bottom-6 -right-6 bg-emerald-900 text-white p-6 hidden lg:block shadow-xl">
-                                    <span className="text-xs uppercase font-bold tracking-widest text-emerald-400">Master Plan {new Date().getFullYear()}</span>
-                                </div>
-                            </div>
-                        </div>
+        <div className="infrastructure-screen bg-white">
+            {/* 1. Hero Section */}
+            {heroEnabled && heroMedia.length > 0 && (
+                <section className="classic-hero" style={{
+                    height: '400px',
+                    position: 'relative',
+                    background: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${heroMedia[0].mediaUrl})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    textAlign: 'center'
+                }}>
+                    <div className="container">
+                        <h1 style={{ fontSize: '3.5rem', fontWeight: '800', marginBottom: '1rem' }}>
+                            {heroMedia[0].headline || 'Campus Infrastructure'}
+                        </h1>
+                        <p style={{ fontSize: '1.25rem', opacity: 0.9, maxWidth: '700px', margin: '0 auto' }}>
+                            {heroMedia[0].subheadline || 'Modern facilities providing an ideal environment for learning and growth.'}
+                        </p>
                     </div>
+                </section>
+            )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {facilityGroups.map((group, idx) => (
-                            <FacilityCard
-                                key={idx}
-                                title={group.categoryName}
-                                items={group.items}
-                                color="bg-emerald-900"
-                                icon={<svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.673.337a4 4 0 01-2.506.326l-1.838-.307a2 2 0 00-1.022.547l-2.387 2.387a2 2 0 102.828 2.828l3.182-3.182h3.182l3.182 3.182a2 2 0 102.828-2.828l-2.387-2.387zM8 11V7a4 4 0 118 0v4M12 11v4" /></svg>}
-                            />
+            {/* 2. Refined Infrastructure Section */}
+            {infraEnabled && (
+                <section style={{ padding: '100px 0' }}>
+                    <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+                        {infrastructure.map((item, index) => (
+                            <div key={item.key} style={{ 
+                                display: 'flex', 
+                                flexDirection: index % 2 !== 0 ? 'row-reverse' : 'row',
+                                alignItems: 'center',
+                                gap: '80px',
+                                marginBottom: '120px'
+                            }} className="infra-row">
+                                {/* Image Container */}
+                                <div style={{ flex: 1, position: 'relative' }}>
+                                    <div style={{ 
+                                        borderRadius: '80px', 
+                                        overflow: 'hidden', 
+                                        aspectSize: '4/3', 
+                                        height: '500px',
+                                        boxShadow: '0 30px 60px rgba(0,0,0,0.1)' 
+                                    }}>
+                                        {isValidImageUrl(item.imageUrl) ? (
+                                            <img 
+                                                src={item.imageUrl} 
+                                                alt={item.title} 
+                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            />
+                                        ) : (
+                                            <div style={{ width: '100%', height: '100%', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '5rem' }}>
+                                                🏢
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Small floating info card for Classic */}
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '-20px',
+                                        right: index % 2 !== 0 ? 'auto' : '-20px',
+                                        left: index % 2 !== 0 ? '-20px' : 'auto',
+                                        background: 'white',
+                                        padding: '30px',
+                                        borderRadius: '30px',
+                                        boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                                        maxWidth: '220px',
+                                        borderTop: '6px solid #007bff'
+                                    }}>
+                                        <p style={{ fontSize: '0.7rem', fontWeight: '800', color: '#999', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '10px' }}>
+                                            {item.tag || 'Facility'}
+                                        </p>
+                                        <h4 style={{ fontSize: '1.2rem', fontWeight: '700', color: '#333', margin: 0 }}>
+                                            {item.title}
+                                        </h4>
+                                    </div>
+                                </div>
+
+                                {/* Content Container */}
+                                <div style={{ flex: 1 }}>
+                                    <h2 style={{ fontSize: '4rem', fontWeight: '800', lineHeight: '1.1', color: '#222', marginBottom: '30px' }}>
+                                        {item.title}
+                                    </h2>
+                                    <p style={{ fontSize: '1.2rem', lineHeight: '1.8', color: '#666', marginBottom: '40px' }}>
+                                        {item.description}
+                                    </p>
+
+                                    <div style={{ marginBottom: '50px' }}>
+                                        {[item.highlightTitle, item.highlightDescription].filter(Boolean).map((feat, i) => (
+                                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '15px' }}>
+                                                <div style={{ height: '3px', width: '30px', background: '#007bff' }}></div>
+                                                <span style={{ fontWeight: '700', fontSize: '1.1rem', color: '#333' }}>{feat}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                        <div style={{ 
+                                            width: '60px', 
+                                            height: '60px', 
+                                            background: '#007bff', 
+                                            borderRadius: '50%', 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            justifyContent: 'center',
+                                            color: 'white',
+                                            fontSize: '1.5rem',
+                                            cursor: 'pointer'
+                                        }}>
+                                            →
+                                        </div>
+                                        <span style={{ fontWeight: '800', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '3px', color: '#007bff' }}>
+                                            Request a Guided Tour
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         ))}
-                    </div>
-                </div>
-            </section>
 
-            {/* Visual Catalog Section */}
-            <section className="py-24 bg-slate-50 border-t border-slate-200">
-                <div className="max-w-[1600px] mx-auto px-2 md:px-6">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Visual Catalog</h2>
-                        <div className="h-1 w-20 bg-emerald-900 mx-auto"></div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {(campusImages.length > 0 ? campusImages : [fallbackImage, fallbackImage, fallbackImage, fallbackImage]).slice(0, 4).map((img, idx) => (
-                            <div key={idx} className="aspect-[4/3] overflow-hidden border border-white shadow-lg group">
-                                <img
-                                    src={img}
-                                    alt={`Campus Detail ${idx}`}
-                                    className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700"
-                                />
+                        {infrastructure.length === 0 && (
+                            <div style={{ textAlign: 'center', padding: '100px 0', color: '#999' }}>
+                                <p style={{ fontSize: '1.2rem', fontStyle: 'italic' }}>Details about our facilities are being updated.</p>
                             </div>
-                        ))}
+                        )}
                     </div>
-                </div>
-            </section>
-
-            {/* Call to Action */}
-            <section className="py-20 bg-emerald-950 text-white text-center">
-                <div className="max-w-4xl mx-auto px-4">
-                    <h2 className="text-2xl font-bold serif uppercase tracking-[0.2em] mb-6">Experience it in Person</h2>
-                    <p className="text-emerald-400 mb-10 tracking-widest text-xs uppercase font-bold">Guided Institutional Tours available every Saturday</p>
-                    <button className="px-10 py-4 bg-white text-emerald-900 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-emerald-50 transition-all shadow-xl">Schedule a Campus Visit</button>
-                </div>
-            </section>
+                </section>
+            )}
         </div>
     );
 };
