@@ -13,7 +13,7 @@ export default function GalleryPage({ data }: { data?: TenantViewModel }) {
     const [activeFilter, setActiveFilter] = useState('all');
 
     // Validation
-    const validation = validateRequiredSections(data, ['gallery']);
+    const validation = validateRequiredSections(data!);
     if (!validation.isValid) {
         return null; 
     }
@@ -110,12 +110,12 @@ export default function GalleryPage({ data }: { data?: TenantViewModel }) {
                                 onClick={() => openLightbox(i)}
                             >
                                 <div className="overflow-hidden aspect-auto">
-                                    <img
-                                        src={item.imageUrl}
-                                        className="w-full grayscale group-hover:grayscale-0 scale-100 group-hover:scale-110 transition-all duration-[1.5s] ease-out opacity-90 group-hover:opacity-100"
-                                        alt={item.title}
-                                        loading="lazy"
-                                    />
+                                        <img
+                                            src={item.imageUrl}
+                                            className="w-full grayscale group-hover:grayscale-0 scale-100 group-hover:scale-110 transition-all duration-[1.5s] ease-out opacity-90 group-hover:opacity-100"
+                                            alt={item.caption}
+                                            loading="lazy"
+                                        />
                                 </div>
                                 {/* Hover Overlay */}
                                 <div className="absolute inset-0 bg-signature-navy/60 opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex items-center justify-center">
@@ -134,7 +134,7 @@ export default function GalleryPage({ data }: { data?: TenantViewModel }) {
                                 <div className="p-6 bg-white flex justify-between items-center relative z-10 border-t border-black/5">
                                     <div className="flex flex-col">
                                         <span className="text-[9px] uppercase tracking-widest text-signature-gold font-bold mb-1">{item.category || 'Portfolio'}</span>
-                                        <span className="text-sm font-serif italic text-signature-navy/80">{item.title}</span>
+                                        <span className="text-sm font-serif italic text-signature-navy/80">{item.caption}</span>
                                     </div>
                                     <span className="text-[9px] text-gray-300 font-bold">#{100 + i}</span>
                                 </div>
@@ -217,7 +217,7 @@ export default function GalleryPage({ data }: { data?: TenantViewModel }) {
                                 {selectedItem.mediaType === 'video' ? (
                                     <div className="aspect-video w-[80vw] max-w-full bg-black rounded shadow-2xl overflow-hidden border border-white/10">
                                         <iframe
-                                            src={selectedItem.mediaUrl?.replace('watch?v=', 'embed/')}
+                                            src={selectedItem.url?.replace('watch?v=', 'embed/')}
                                             className="w-full h-full"
                                             allowFullScreen
                                         />
@@ -232,7 +232,7 @@ export default function GalleryPage({ data }: { data?: TenantViewModel }) {
                                         <img
                                             key={selectedItem.imageUrl}
                                             src={selectedItem.imageUrl}
-                                            alt={selectedItem.title}
+                                            alt={selectedItem.caption}
                                             onLoad={() => setIsLoaded(true)}
                                             className={`max-w-full max-h-[60vh] object-contain shadow-[0_0_150px_rgba(0,0,0,0.8)] border border-white/5 transition-all duration-1000 ${isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
                                         />
@@ -253,11 +253,11 @@ export default function GalleryPage({ data }: { data?: TenantViewModel }) {
                                 </div>
 
                                 <h4 className="text-white font-serif italic text-3xl md:text-5xl mb-6 leading-tight tracking-tight">
-                                    {selectedItem.title}
+                                    {selectedItem.caption}
                                 </h4>
 
                                 <p className="text-white/40 text-base md:text-lg leading-loose font-light max-w-2xl mx-auto mb-10 italic">
-                                    {selectedItem.description || "Reflecting the intersection of rigorous thought and architectural beauty at our institution."}
+                                    {selectedItem.caption || "Reflecting the intersection of rigorous thought and architectural beauty at our institution."}
                                 </p>
 
                                 <div className="text-white/20 text-[10px] uppercase tracking-[0.5em] font-bold flex flex-col items-center gap-4">
