@@ -18,7 +18,7 @@ const GalleryScreen = ({ data }) => {
     const heroComp = getComponent('hero');
 
     // Validation
-    const validation = validateRequiredSections(data, ['gallery']);
+    const validation = validateRequiredSections(data);
     if (!validation.isValid) {
         return null; // The parent (TemplateRenderer) handles SystemPopup via TenantContext if state is set, 
                      // but here we just return null to avoid rendering incomplete UI.
