@@ -72,7 +72,10 @@ export default async function TemplateDemoPage({
     const domainOnly = host.split(':')[0].toLowerCase();
 
     const isOwner = isOwnerDomain(domainOnly);
+    console.log('[DemoPage] Guard check:', { host, domainOnly, isOwner });
+
     if (!isOwner) {
+        console.warn('[DemoPage] Access denied: not an owner domain', { host });
         return notFound();
     }
 

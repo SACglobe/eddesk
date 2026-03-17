@@ -1,48 +1,12 @@
 import { resolveImageUrl } from '@/core/utils/url';
 
 const AboutScreen = ({ data }) => {
-    const sections = data?.homepageSections ?? [];
-
-    // Identity Section Validation
-    const identitySection = sections.find(s => s.sectionKey === 'identity');
-    const identityEnabled = identitySection?.isEnabled ?? true;
-    const identityRequired = identitySection?.isRequired ?? false;
-    const hasIdentityData = !!(data?.identity?.aboutTitle || data?.identity?.aboutDescription || data?.identity?.vision || data?.identity?.mission);
-
-
-
-    // Principal Section Validation
-    const principalSection = sections.find(s => s.sectionKey === 'principal');
-    const principalEnabled = principalSection?.isEnabled ?? true;
-    const principalRequired = principalSection?.isRequired ?? false;
-    const principal = data?.personnel?.find(p => p.personType === 'principal') ?? null;
-    const hasPrincipalData = !!(principal?.name || principal?.bio || principal?.photoUrl);
-
-
-
-    // Leadership Section Validation
-    const leadershipSection = sections.find(s => s.sectionKey === 'leadership');
-    const leadershipEnabled = leadershipSection?.isEnabled ?? true;
-    const leadershipRequired = leadershipSection?.isRequired ?? false;
-    
-    const boardMembers = (data?.personnel || []).filter(p => ['BOARD', 'CHAIRMAN'].includes((p.personType || '').toUpperCase()));
-    const managementTeam = (data?.personnel || []).filter(p => {
-        const type = (p.personType || '').toUpperCase();
-        return type !== 'PRINCIPAL' && type !== 'FACULTY' && type !== 'BOARD' && type !== 'CHAIRMAN';
-    });
-
-    const hasLeadershipData = boardMembers.length > 0 || managementTeam.length > 0;
-
-
-
-    // Why Choose Us Section Validation
-    const whyChooseUsSection = sections.find(s => s.sectionKey === 'whychooseus');
-    const whyChooseUsEnabled = whyChooseUsSection?.isEnabled ?? true;
-    const whyChooseUsRequired = whyChooseUsSection?.isRequired ?? false;
-    const whyChooseUsData = data?.identity?.whyChooseUs || [];
-    const hasWhyChooseUsData = whyChooseUsData.length > 0;
-
-
+    // Helper to get component configuration
+    const getComponent = (code) => {
+        return data?.components?.find(c =>
+            c.componentCode?.toLowerCase() === code.toLowerCase()
+        );
+    };
 
     const schoolName = data?.school?.name || 'Our Institution';
     const vision = data?.identity?.vision || '';
@@ -50,13 +14,23 @@ const AboutScreen = ({ data }) => {
     const motto = data?.identity?.motto || '';
     const aboutTitle = data?.identity?.aboutTitle || '';
     const aboutDescription = data?.identity?.aboutDescription || '';
-    const whyChooseUs = whyChooseUsData;
+    const whyChooseUs = data?.whyChooseUs || [];
+    
+    // Leadership data from standardized properties
+    const principal = data?.principal?.[0] || null;
+    const chairman = data?.chairman?.[0] || null;
+    const boardMembers = data?.boardMembers || [];
+    
+    const hasPrincipalData = !!(principal?.name || principal?.message || principal?.imageUrl);
+    const hasChairmanData = !!(chairman?.name || chairman?.message || chairman?.imageUrl);
+    const hasBoardData = boardMembers.length > 0;
+    
+    const sections = data?.components || [];
+    const identityComp = getComponent('identity');
+    const identityEnabled = identityComp?.isActive ?? true;
+    const hasIdentityData = !!(aboutTitle || aboutDescription || vision || mission);
 
-    const principalName = principal?.name || '';
-    const principalMsg = principal?.bio || '';
-    const principalPhoto = resolveImageUrl(principal?.photoUrl);
-
-    const highlights = data?.achievements || [];
+    const highlights = data?.schoolAchievements || [];
 
     return (
         <div className="fade-in">
@@ -87,7 +61,7 @@ const AboutScreen = ({ data }) => {
                                     className="w-full h-[500px] object-cover grayscale group-hover:grayscale-0 transition-all duration-700 border border-emerald-900/10"
                                 />
                                 <div className="absolute top-8 right-8 bg-emerald-900 text-white p-6 shadow-2xl">
-                                    <span className="text-3xl font-bold block">1985</span>
+                                    <span className="text-3xl font-bold block">{data?.identity?.foundedYear || '1985'}</span>
                                     <span className="text-[10px] uppercase tracking-[0.3em] font-medium border-t border-emerald-700 mt-2 pt-2 block text-emerald-300">Foundation Year</span>
                                 </div>
                             </div>
@@ -95,6 +69,7 @@ const AboutScreen = ({ data }) => {
                     </div>
                 </section>
             )}
+
             {/* Overview & Core Values */}
             {identityEnabled && hasIdentityData && (
                 <section className="py-24 bg-white">
@@ -126,7 +101,7 @@ const AboutScreen = ({ data }) => {
             )}
 
             {/* Why Parents Choose Section */}
-            {whyChooseUsEnabled && (whyChooseUs.length > 0 || highlights.length > 0) && (
+            {getComponent('whychooseus')?.isActive && whyChooseUs.length > 0 && (
                 <section className="py-24 bg-slate-50 border-y border-slate-200">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                         <div className="text-center mb-16">
@@ -134,10 +109,9 @@ const AboutScreen = ({ data }) => {
                             <div className="h-1 w-20 bg-emerald-900 mx-auto"></div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                            {(whyChooseUs.length > 0 ? whyChooseUs : highlights).slice(0, 4).map((item, idx) => (
+                            {whyChooseUs.slice(0, 4).map((item, idx) => (
                                 <div key={idx} className="bg-white p-10 border border-slate-200 text-center hover:border-emerald-300 hover:shadow-xl transition-all group">
-                                    {item.icon && <div className="text-4xl mb-4">{item.icon}</div>}
-                                    {!item.icon && <div className="w-12 h-12 bg-emerald-900 mx-auto mb-6 flex items-center justify-center text-white font-bold group-hover:scale-110 transition-transform">{idx + 1}</div>}
+                                    <div className="text-4xl mb-4">{item.icon || (idx + 1)}</div>
                                     <h4 className="font-bold text-slate-900 serif uppercase text-sm mb-4 tracking-tight">{item.title}</h4>
                                     <p className="text-xs text-slate-500 leading-relaxed uppercase tracking-widest group-hover:text-emerald-600 transition-colors uppercase">{item.description}</p>
                                 </div>
@@ -147,80 +121,46 @@ const AboutScreen = ({ data }) => {
                 </section>
             )}
 
-            {/* Board's Perspective */}
-            {leadershipEnabled && boardMembers.length > 0 && (
+            {/* Chairman's Message */}
+            {getComponent('leadership')?.isActive && hasChairmanData && (
                 <section className="py-24 bg-emerald-950 text-white">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
-                        <div className="text-center mb-16">
-                            <span className="text-emerald-400 text-xs font-bold uppercase tracking-[0.5em] mb-4 block">Governance</span>
-                            <h2 className="text-3xl font-bold text-white uppercase tracking-widest serif mb-2">The Board's Perspective</h2>
-                            <div className="h-1 w-20 bg-emerald-400 mx-auto"></div>
-                        </div>
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                            {(data?.personnel || [])
-                                .filter(p => ['BOARD', 'CHAIRMAN'].includes((p.personType || '').toUpperCase()))
-                                .map((member, idx) => (
-                                    <div key={idx} className="bg-emerald-900/50 p-12 border border-emerald-800/50 relative group">
-                                        <div className="absolute -top-4 -left-4 text-6xl text-emerald-400/20 serif italic">“</div>
-                                        <p className="text-xl serif italic leading-relaxed text-emerald-50 mb-8 relative z-10">
-                                            {member.bio || "Our commitment to excellence ensures that every student receives a world-class education focused on academic rigor and character development."}
-                                        </p>
-                                        <div className="flex items-center gap-6 border-t border-emerald-800/50 pt-8">
-                                            <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-emerald-400/30">
-                                                <img src={resolveImageUrl(member.photoUrl) || '/school/image/default-avatar.png'} alt={member.name} className="w-full h-full object-cover" />
-                                            </div>
-                                            <div>
-                                                <p className="font-bold text-lg text-white uppercase tracking-tight">{member.name}</p>
-                                                <p className="text-xs text-emerald-400 font-bold uppercase tracking-widest">{member.designation || 'Board Member'}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
+                        <div className="flex flex-col md:flex-row gap-16 items-center">
+                            <div className="w-full md:w-5/12">
+                                <div className="relative group">
+                                    <div className="absolute inset-0 bg-emerald-400/20 translate-x-4 translate-y-4 transition-transform group-hover:translate-x-6"></div>
+                                    <img src={chairman.imageUrl || "https://images.unsplash.com/photo-1507679799987-c73774573b8a?auto=format&fit=crop&q=80&w=1200"} alt={chairman.name} className="relative z-10 w-full border border-emerald-800 shadow-2xl rounded-sm object-cover" />
+                                </div>
+                            </div>
+                            <div className="w-full md:w-7/12">
+                                <span className="text-emerald-400 text-xs font-bold uppercase tracking-[0.5em] mb-4 block">Chairman's Perspective</span>
+                                <h2 className="text-3xl font-bold text-white uppercase tracking-widest serif mb-2">Message from the Chairman</h2>
+                                <div className="h-1 w-20 bg-emerald-400 mb-10"></div>
+                                <div className="prose prose-invert prose-emerald prose-lg serif italic opacity-90">
+                                    <p>"{chairman.message || "Our commitment to excellence ensures that every student receives a world-class education focused on academic rigor and character development."}"</p>
+                                </div>
+                                <div className="mt-12">
+                                    <p className="font-bold text-2xl serif text-emerald-400 uppercase">{chairman.name}</p>
+                                    <p className="text-[10px] text-emerald-300/60 uppercase font-bold tracking-[0.3em]">{chairman.designation || 'Chairman'}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
             )}
 
-            {/* Leadership & Management */}
-            {leadershipEnabled && managementTeam.length > 0 && (
-                    <section className="py-24 bg-white border-b border-slate-100">
-                        <div className="max-w-[1600px] mx-auto px-2 md:px-6">
-                            <div className="text-center mb-16">
-                                <h2 className="text-3xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Leadership & Management</h2>
-                                <div className="h-1 w-20 bg-emerald-900 mx-auto"></div>
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
-                                {(data?.personnel || [])
-                                    .filter(p => {
-                                        const type = (p.personType || '').toUpperCase();
-                                        return type !== 'PRINCIPAL' && type !== 'FACULTY' && type !== 'BOARD' && type !== 'CHAIRMAN';
-                                    })
-                                    .map((member, idx) => (
-                                        <div key={idx} className="text-center group">
-                                            <div className="relative mb-6 mx-auto w-48 h-48 overflow-hidden rounded-full border-4 border-slate-50 group-hover:border-emerald-100 transition-all shadow-lg">
-                                                <img src={resolveImageUrl(member.photoUrl) || '/school/image/default-avatar.png'} alt={member.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                                            </div>
-                                            <h4 className="font-bold text-slate-900 serif uppercase text-lg mb-1 tracking-tight">{member.name}</h4>
-                                            <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.2em]">{member.designation}</p>
-                                        </div>
-                                    ))}
-                            </div>
-                        </div>
-                    </section>
-                )}
-
-            {/* Principal detailed section */}
-            {principalEnabled && hasPrincipalData && (
-                <section className="py-24 bg-white">
+            {/* Principal's Desk */}
+            {getComponent('leadership')?.isActive && hasPrincipalData && (
+                <section className="py-24 bg-white border-b border-slate-100">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                         <div className="flex flex-col md:flex-row-reverse gap-16 items-center">
                             <div className="w-full md:w-5/12">
-                                {principalPhoto ? (
-                                    <img src={principalPhoto} alt={principalName} className="w-full border border-slate-200 shadow-2xl rounded-sm object-cover object-top" />
+                                {principal.imageUrl ? (
+                                    <img src={principal.imageUrl} alt={principal.name} className="w-full border border-slate-200 shadow-2xl rounded-sm object-cover object-top" />
                                 ) : (
                                     <div className="w-full aspect-[4/5] bg-slate-100 border border-slate-200 flex items-center justify-center">
                                         <span className="text-6xl text-slate-400 font-bold uppercase">
-                                            {principalName.charAt(0) || 'P'}
+                                            {principal.name?.charAt(0) || 'P'}
                                         </span>
                                     </div>
                                 )}
@@ -229,13 +169,41 @@ const AboutScreen = ({ data }) => {
                                 <h2 className="text-3xl font-bold text-emerald-900 uppercase tracking-widest serif mb-2">From the Principal's Desk</h2>
                                 <div className="h-1 w-20 bg-emerald-900 mb-10"></div>
                                 <div className="prose prose-emerald prose-lg serif text-slate-700 italic">
-                                    <p>"{principalMsg}"</p>
+                                    <p>"{principal.message || "Welcome to our school, where we foster an environment of growth, learning, and character building."}"</p>
                                 </div>
                                 <div className="mt-12">
-                                    <p className="font-bold text-2xl serif text-slate-900 uppercase">{principalName}</p>
-                                    <p className="text-[10px] text-emerald-600 uppercase font-bold tracking-[0.3em]">Chief Academic Administrator</p>
+                                    <p className="font-bold text-2xl serif text-slate-900 uppercase">{principal.name}</p>
+                                    <p className="text-[10px] text-emerald-600 uppercase font-bold tracking-[0.3em]">{principal.designation || 'Principal'}</p>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {/* Board Members / Governance */}
+            {getComponent('boardmembers')?.isActive && hasBoardData && (
+                <section className="py-24 bg-slate-50">
+                    <div className="max-w-[1600px] mx-auto px-2 md:px-6">
+                        <div className="text-center mb-16">
+                            <span className="text-emerald-900/40 text-xs font-bold uppercase tracking-[0.5em] mb-4 block">Institutional Governance</span>
+                            <h2 className="text-3xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Our Board Members</h2>
+                            <div className="h-1 w-20 bg-emerald-900 mx-auto"></div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                            {boardMembers.map((member, idx) => (
+                                <div key={idx} className="bg-white p-10 border border-slate-200 shadow-sm hover:shadow-xl transition-all relative group overflow-hidden">
+                                     <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-bl-full -mr-16 -mt-16 group-hover:bg-emerald-100 transition-colors"></div>
+                                     <div className="relative z-10">
+                                        <div className="w-20 h-20 rounded-full overflow-hidden mb-6 border-2 border-emerald-100">
+                                            <img src={member.imageUrl || '/school/image/default-avatar.png'} alt={member.name} className="w-full h-full object-cover" />
+                                        </div>
+                                        <h4 className="font-bold text-slate-900 serif uppercase text-lg mb-1 tracking-tight">{member.name}</h4>
+                                        <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.2em] mb-4">{member.designation || member.role || 'Board Member'}</p>
+                                        <p className="text-xs text-slate-500 leading-relaxed italic line-clamp-3">"{member.message}"</p>
+                                     </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </section>

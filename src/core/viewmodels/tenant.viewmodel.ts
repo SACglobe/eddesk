@@ -258,10 +258,13 @@ export interface TenantViewModel {
         vision: string;
         mission: string;
         motto: string;
+        history: string;
+        foundedYear: number;
         aboutTitle: string;
         aboutDescription: string;
-        whyChooseUs: Array<{ id: string; title: string; description: string; icon: string }>;
     };
+
+    whyChooseUs: Array<{ id: string; title: string; description: string; icon: string }>;
 
     // ── Hero ─────────────────────────────────────────────────────────────────
     heroMedia: Array<{           // kept as heroMedia for template compat
@@ -324,8 +327,8 @@ export interface TenantViewModel {
         displayOrder: number;
     }>;
 
-    // ── Principal (convenience — derived from leadership) ─────────────────────
-    principal: {
+    // ── Leadership Roles (exposed as arrays per user request/validation) ──────
+    principal: Array<{
         key: string;
         name: string;
         role: string;
@@ -333,7 +336,27 @@ export interface TenantViewModel {
         message: string;
         imageUrl: string;
         signatureUrl: string;
-    } | null;
+    }>;
+
+    chairman: Array<{
+        key: string;
+        name: string;
+        role: string;
+        designation: string;
+        message: string;
+        imageUrl: string;
+        signatureUrl: string;
+    }>;
+
+    boardMembers: Array<{
+        key: string;
+        name: string;
+        role: string;
+        designation: string;
+        message: string;
+        imageUrl: string;
+        signatureUrl: string;
+    }>;
 
     // ── Also kept as personnel for template + seo.ts backward compatibility ────
     // Merges faculty + leadership into one array using personType field
@@ -620,8 +643,15 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
         }))
     ].sort((a, b) => a.displayOrder - b.displayOrder);
 
-    // 6. Derive principal from leadership array
-    const principal = mappedLeadership.find(l => l.role === 'principal') ?? null;
+    // 6. Derive principal and chairman from leadership array
+    // 6. Derive leadership roles as arrays (per user request)
+    const principal = mappedLeadership.filter(l => l.role?.toLowerCase() === 'principal');
+    const chairman = mappedLeadership.filter(l => l.role?.toLowerCase() === 'chairman');
+    const boardMembers = mappedLeadership.filter(l => 
+        l.role?.toLowerCase() === 'board' || 
+        l.designation?.toLowerCase()?.includes('board') ||
+        l.designation?.toLowerCase()?.includes('trustee')
+    );
 
     // 7. Build personnel array (merged faculty + leadership) for backward compat
     const personnelFromFaculty = facultyRows.map(r => ({
@@ -837,15 +867,18 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             vision: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_VISION]) : '',
             mission: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_MISSION]) : '',
             motto: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_MOTTO]) : '',
-            aboutTitle: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_VISION]) : '', // Using vision as title if specifically missing
+            history: schoolIdentityRow ? str(schoolIdentityRow['history']) : '',
+            foundedYear: schoolIdentityRow ? num(schoolIdentityRow['founded_year']) : 0,
+            aboutTitle: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_VISION]) : '', 
             aboutDescription: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_MISSION]) : '',
-            whyChooseUs: whyChooseUsRows.map(r => ({
-                id: str(r[COL_WHY_CHOOSE_US_ID]),
-                title: str(r[COL_WHY_CHOOSE_US_TITLE]),
-                description: str(r[COL_WHY_CHOOSE_US_DESCRIPTION]),
-                icon: str(r[COL_WHY_CHOOSE_US_ICON]),
-            })),
         },
+
+        whyChooseUs: whyChooseUsRows.map(r => ({
+            id: str(r[COL_WHY_CHOOSE_US_ID]),
+            title: str(r[COL_WHY_CHOOSE_US_TITLE]),
+            description: str(r[COL_WHY_CHOOSE_US_DESCRIPTION]),
+            icon: str(r[COL_WHY_CHOOSE_US_ICON]),
+        })),
 
         heroMedia: heroRows.map(r => ({
             key: str(r[COL_HERO_MEDIA_ID]),
@@ -893,6 +926,8 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
 
         leadership: mappedLeadership,
         principal,
+        chairman,
+        boardMembers,
         personnel,
 
         stats: mappedStats,
@@ -959,7 +994,17 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             icon: str(r[COL_INFRASTRUCTURE_ICON]),
         })),
 
-        contactDetails,
+        contactDetails: contactDetailsRow ? {
+            key: str(contactDetailsRow['key']),
+            email: str(contactDetailsRow['email']),
+            phone: str(contactDetailsRow['phone']),
+            address: str(contactDetailsRow['address']),
+            mapEmbedUrl: str(contactDetailsRow['map_embed_url']),
+            facebook: str(contactDetailsRow['facebook_url']),
+            instagram: str(contactDetailsRow['instagram_url']),
+            twitter: str(contactDetailsRow['twitter_url']),
+            youtube: str(contactDetailsRow['youtube_url']),
+        } : null,
         admissionSteps: (d.admissionsteps ?? []) as Array<Record<string, unknown>>,
     };
     return vm;

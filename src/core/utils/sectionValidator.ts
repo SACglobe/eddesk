@@ -56,8 +56,11 @@ export function validateRequiredSections(tenant: TenantViewModel): ValidationRes
             case 'governance': {
                 const results = tenant.leadership || [];
                 const designationFilter = comp.config?.filters?.designation;
-                if (designationFilter) {
-                    // Check both role and designation for Principal mapping
+                if (designationFilter === 'Principal') {
+                    data = tenant.principal;
+                } else if (designationFilter === 'Chairman') {
+                    data = tenant.chairman;
+                } else if (designationFilter) {
                     data = results.filter(l => 
                         l.role?.toLowerCase() === designationFilter.toLowerCase() ||
                         l.designation?.toLowerCase() === designationFilter.toLowerCase()
@@ -67,6 +70,10 @@ export function validateRequiredSections(tenant: TenantViewModel): ValidationRes
                 }
                 break;
             }
+            case 'schoolidentity':
+            case 'identity':
+                data = tenant.identity;
+                break;
             case 'stats':
             case 'stats_premium':
             case 'schoolstats':
@@ -100,8 +107,11 @@ export function validateRequiredSections(tenant: TenantViewModel): ValidationRes
             case 'testimonial':
                 data = tenant.testimonials;
                 break;
+            case 'boardmembers':
+                data = tenant.boardMembers;
+                break;
             case 'whychooseus':
-                data = tenant.identity?.whyChooseUs;
+                data = tenant.whyChooseUs;
                 break;
             default:
                 // Fallback: try to find it at top level if it's dynamic
