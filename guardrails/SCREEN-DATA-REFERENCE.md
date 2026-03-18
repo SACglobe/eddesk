@@ -47,6 +47,13 @@
 
  ---
 
+ ## FACULTY SCREEN — LOCKED (DO NOT MODIFY)
+ > [!IMPORTANT]
+ > The Faculty Screen for all three templates is considered COMPLETE. 
+ > Do not modify faculty screen files (Section 14) unless specifically requested by the user.
+
+ ---
+
 ## HOW TO USE THIS FILE
 
 When the database changes:
@@ -820,3 +827,31 @@ const logoSrc = data?.school?.logoUrl;  // if empty string → show school name 
 | 3rd      | Faculty             | Faculty             | Faculty             |
 | 4th      | Contact Details     | Contact Details     | Contact Details     |
 | Footer   | Footer              | Footer              | Footer              |
+
+---
+
+## SECTION 15 — Contact Screen Specific Rules
+
+### 1. Hero Section
+- **Condition**: `templatecomponents("hero").isactive === true`.
+- **Data**: `data.hero[]`.
+- **Modern / Classic**: Top position.
+- **Premium**: Below header.
+
+### 2. Contact Details Section
+- **Condition**: `templatecomponents("contactdetails").isactive === true`.
+- **Data**: `data.contactdetails[0]`.
+- **Position**: Below Hero section, to the left side of the contact form (where applicable).
+
+### 3. Contact Form Section
+- **Condition**: Always rendered on Contact Screen (internal logic manages state).
+- **Position**: To the right of or below Contact Details.
+
+### 4. Layout Order (section top → bottom)
+
+| Position | template_modern        | template_classic       | template_premium       |
+|----------|------------------------|------------------------|------------------------|
+| 1st      | Header/Navbar          | Header/Navbar          | Header/Navbar          |
+| 2nd      | Hero                   | Hero                   | Hero                   |
+| 3rd      | Contact Details + Form | Contact Details + Form | Contact Details + Form |
+| Footer   | Footer                 | Footer                 | Footer                 |

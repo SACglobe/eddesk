@@ -6,15 +6,19 @@ import { usePathname } from 'next/navigation';
 
 interface NavbarProps {
     school?: any;
+    activePath?: string;
 }
 
 import { isValidImageUrl } from '@/core/utils/url';
 
-const Navbar: React.FC<NavbarProps> = ({ school }) => {
+const Navbar: React.FC<NavbarProps> = ({ school, activePath }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isMoreOpen, setIsMoreOpen] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const pathname = usePathname();
+    
+    // Use the passed activePath if available (e.g. in demo mode), otherwise fallback to usePathname()
+    const currentPath = activePath || pathname;
 
     const showLogo = school.logoUrl && isValidImageUrl(school.logoUrl);
 
@@ -48,8 +52,8 @@ const Navbar: React.FC<NavbarProps> = ({ school }) => {
     };
 
     const isActive = (href: string) => {
-        if (href === '/' && pathname === '/') return true;
-        if (href !== '/' && pathname.startsWith(href)) return true;
+        if (href === '/' && currentPath === '/') return true;
+        if (href !== '/' && currentPath?.startsWith(href)) return true;
         return false;
     };
 
@@ -82,9 +86,9 @@ const Navbar: React.FC<NavbarProps> = ({ school }) => {
                                 key={item.href}
                                 href={item.href}
                                 className={`${isActive(item.href)
-                                    ? 'bg-accent text-primary'
+                                    ? 'bg-yellow-400 text-blue-950 shadow-md transform scale-105'
                                     : 'hover:bg-primary-light transition-colors'
-                                    } px-4 py-2 rounded-md text-sm font-semibold uppercase tracking-wider`}
+                                    } px-4 py-2 rounded-md text-sm font-bold uppercase tracking-wider transition-all duration-300`}
                             >
                                 {item.name}
                             </Link>
@@ -97,7 +101,7 @@ const Navbar: React.FC<NavbarProps> = ({ school }) => {
                             onMouseLeave={handleMouseLeave}
                         >
                             <button
-                                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold uppercase tracking-wider transition-colors ${moreItems.some(i => isActive(i.href)) ? 'bg-yellow-500 text-blue-950' : 'hover:bg-primary-light'
+                                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-bold uppercase tracking-wider transition-all duration-300 ${moreItems.some(i => isActive(i.href)) ? 'bg-yellow-400 text-blue-950 shadow-md scale-105' : 'hover:bg-primary-light'
                                     }`}
                             >
                                 More
@@ -114,7 +118,7 @@ const Navbar: React.FC<NavbarProps> = ({ school }) => {
                                                 key={item.href}
                                                 href={item.href}
                                                 onClick={() => setIsMoreOpen(false)}
-                                                className={`block w-full text-left px-6 py-3 text-sm font-bold uppercase tracking-widest ${isActive(item.href) ? 'text-primary bg-accent' : 'text-gray-600 hover:bg-blue-50 hover:text-primary'
+                                                className={`block w-full text-left px-6 py-3 text-sm font-bold uppercase tracking-widest transition-colors ${isActive(item.href) ? 'text-blue-950 bg-yellow-400 font-black' : 'text-gray-600 hover:bg-blue-50 hover:text-primary'
                                                     }`}
                                             >
                                                 {item.name}

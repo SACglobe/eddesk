@@ -71,7 +71,7 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
 
     return (
         <div className="modern-template-wrapper antialiased bg-white min-h-screen flex flex-col">
-            <Navbar school={data.school} />
+            <Navbar school={data.school} activePath={path} />
             <main className="flex-grow">
                 {renderScreen()}
             </main>

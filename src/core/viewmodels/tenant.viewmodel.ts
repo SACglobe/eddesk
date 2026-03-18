@@ -171,6 +171,8 @@ import {
     COL_CONTACT_DETAILS_INSTAGRAM,
     COL_CONTACT_DETAILS_TWITTER,
     COL_CONTACT_DETAILS_YOUTUBE,
+    COL_CONTACT_DETAILS_OFFICE_HOURS,
+    COL_CONTACT_DETAILS_HOURS,
 
     COL_TESTIMONIALS_ID,
     COL_TESTIMONIALS_RATING,
@@ -531,6 +533,7 @@ export interface TenantViewModel {
         phone: string;
         address: string;
         mapEmbedUrl: string;
+        officeHours: string;
         facebook: string;
         instagram: string;
         twitter: string;
@@ -795,6 +798,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
         phone: str(contactDetailsRow[COL_CONTACT_DETAILS_PHONE]),
         address: str(contactDetailsRow[COL_CONTACT_DETAILS_ADDRESS]),
         mapEmbedUrl: str(contactDetailsRow[COL_CONTACT_DETAILS_MAP_URL]),
+        officeHours: str(contactDetailsRow[COL_CONTACT_DETAILS_OFFICE_HOURS] || contactDetailsRow[COL_CONTACT_DETAILS_HOURS]),
         facebook: str(contactDetailsRow[COL_CONTACT_DETAILS_FACEBOOK]),
         instagram: str(contactDetailsRow[COL_CONTACT_DETAILS_INSTAGRAM]),
         twitter: str(contactDetailsRow[COL_CONTACT_DETAILS_TWITTER]),
@@ -999,11 +1003,12 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             email: str(contactDetailsRow['email']),
             phone: str(contactDetailsRow['phone']),
             address: str(contactDetailsRow['address']),
-            mapEmbedUrl: str(contactDetailsRow['map_embed_url']),
-            facebook: str(contactDetailsRow['facebook_url']),
-            instagram: str(contactDetailsRow['instagram_url']),
-            twitter: str(contactDetailsRow['twitter_url']),
-            youtube: str(contactDetailsRow['youtube_url']),
+            mapEmbedUrl: str(contactDetailsRow[COL_CONTACT_DETAILS_MAP_URL] || contactDetailsRow['map_embed_url']),
+            officeHours: str(contactDetailsRow[COL_CONTACT_DETAILS_OFFICE_HOURS] || contactDetailsRow[COL_CONTACT_DETAILS_HOURS] || contactDetailsRow['office_hours'] || contactDetailsRow['hours']),
+            facebook: str(contactDetailsRow[COL_CONTACT_DETAILS_FACEBOOK] || contactDetailsRow['facebook_url']),
+            instagram: str(contactDetailsRow[COL_CONTACT_DETAILS_INSTAGRAM] || contactDetailsRow['instagram_url']),
+            twitter: str(contactDetailsRow[COL_CONTACT_DETAILS_TWITTER] || contactDetailsRow['twitter_url']),
+            youtube: str(contactDetailsRow[COL_CONTACT_DETAILS_YOUTUBE] || contactDetailsRow['youtube_url']),
         } : null,
         admissionSteps: (d.admissionsteps ?? []) as Array<Record<string, unknown>>,
     };

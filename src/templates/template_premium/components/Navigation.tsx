@@ -38,15 +38,19 @@ const BroadcastBar: React.FC<BroadcastBarProps> = ({ announcements: items }) => 
 interface HeaderProps {
     announcements: Array<{ title: string; message: string; isActive: boolean; expiresAt: string | null }>;
     school: any;
+    activePath?: string;
 }
 import { isValidImageUrl } from '@/core/utils/url';
 
-const Header: React.FC<HeaderProps> = ({ announcements, school }) => {
+const Header: React.FC<HeaderProps> = ({ announcements, school, activePath }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isMoreOpen, setIsMoreOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
+
+    // Use the passed activePath if available (e.g. in demo mode), otherwise fallback to usePathname()
+    const currentPath = activePath || pathname;
 
     const showLogo = school.logoUrl && isValidImageUrl(school.logoUrl);
 
@@ -69,8 +73,9 @@ const Header: React.FC<HeaderProps> = ({ announcements, school }) => {
     const navItems = [
         { label: 'Home', path: '/' },
         { label: 'The School', path: '/about' },
+        { label: 'Gallery', href: '/gallery', path: '/gallery' },
         { label: 'Events', path: '/events' },
-        { label: 'Portrait', path: '/portrait' },
+        { label: 'Admissions', path: '/admissions' },
         { label: 'Contact', path: '/contact' },
     ];
 
@@ -80,6 +85,12 @@ const Header: React.FC<HeaderProps> = ({ announcements, school }) => {
         { label: 'Infrastructure', path: '/infrastructure' },
         { label: 'Meet Faculty', path: '/faculty' },
     ];
+
+    const isActive = (path: string) => {
+        if (path === '/' && currentPath === '/') return true;
+        if (path !== '/' && currentPath?.startsWith(path)) return true;
+        return false;
+    };
 
     return (
         <>
@@ -107,19 +118,25 @@ const Header: React.FC<HeaderProps> = ({ announcements, school }) => {
                                 <Link
                                     key={item.path}
                                     href={item.path}
-                                    className={`text-[10px] uppercase tracking-[0.4em] transition-all duration-500 relative group py-2 ${pathname === item.path ? 'text-signature-gold' : 'text-white/70 hover:text-white'
-                                        }`}
+                                    className={`text-[10px] uppercase tracking-[0.4em] transition-all duration-700 relative group py-2.5 px-4 rounded-full ${
+                                        isActive(item.path) 
+                                            ? 'text-white bg-signature-gold/20 shadow-[0_0_20px_rgba(212,175,55,0.2)]' 
+                                            : 'text-white/70 hover:text-white'
+                                    }`}
                                 >
                                     {item.label}
-                                    <span className={`absolute bottom-0 left-0 w-full h-px bg-signature-gold scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left ${pathname === item.path ? 'scale-x-100' : ''}`}></span>
+                                    <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-signature-gold transition-all duration-700 ${isActive(item.path) ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}></span>
                                 </Link>
                             ))}
 
                             <div className="relative" ref={dropdownRef}>
                                 <button
                                     onClick={() => setIsMoreOpen(!isMoreOpen)}
-                                    className={`text-[10px] uppercase tracking-[0.4em] transition-all duration-500 flex items-center gap-2 py-2 ${isMoreOpen || moreItems.some(item => pathname === item.path) ? 'text-signature-gold' : 'text-white/70 hover:text-white'
-                                        }`}
+                                    className={`text-[10px] uppercase tracking-[0.4em] transition-all duration-700 flex items-center gap-2 py-2.5 px-4 rounded-full ${
+                                        isMoreOpen || moreItems.some(item => isActive(item.path)) 
+                                            ? 'text-white bg-signature-gold/20 shadow-[0_0_20px_rgba(212,175,55,0.2)]' 
+                                            : 'text-white/70 hover:text-white'
+                                    }`}
                                 >
                                     More
                                     <svg className={`w-3 h-3 transition-transform duration-500 ${isMoreOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,8 +152,11 @@ const Header: React.FC<HeaderProps> = ({ announcements, school }) => {
                                                 key={item.path}
                                                 href={item.path}
                                                 onClick={() => setIsMoreOpen(false)}
-                                                className={`block text-[9px] uppercase tracking-[0.3em] transition-colors py-2 border-b border-signature-navy/5 last:border-0 ${pathname === item.path ? 'text-signature-gold' : 'text-signature-navy/70 hover:text-signature-gold'
-                                                    }`}
+                                                className={`block text-[9px] uppercase tracking-[0.3em] transition-colors py-3 px-4 rounded border-b border-signature-navy/5 last:border-0 ${
+                                                    isActive(item.path) 
+                                                        ? 'text-signature-gold bg-signature-navy/5 font-bold' 
+                                                        : 'text-signature-navy/70 hover:text-signature-gold'
+                                                }`}
                                             >
                                                 {item.label}
                                             </Link>
