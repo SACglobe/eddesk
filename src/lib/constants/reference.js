@@ -266,6 +266,8 @@ export const COL_CONTACT_DETAILS_FACEBOOK = "facebook";
 export const COL_CONTACT_DETAILS_INSTAGRAM = "instagram";
 export const COL_CONTACT_DETAILS_TWITTER = "twitter";
 export const COL_CONTACT_DETAILS_YOUTUBE = "youtube";
+export const COL_CONTACT_DETAILS_OFFICE_HOURS = "office_hours";
+export const COL_CONTACT_DETAILS_HOURS = "hours";
 
 // --- Columns: testimonialcontent ---
 export const COL_TESTIMONIALS_ID = "key";

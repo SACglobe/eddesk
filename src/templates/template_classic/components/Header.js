@@ -3,20 +3,26 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 
+import { usePathname } from 'next/navigation';
+
 import { isValidImageUrl } from '@/core/utils/url';
 
-const Header = ({ school }) => {
+const Header = ({ school, activePath }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isMoreOpen, setIsMoreOpen] = useState(false);
     const moreRef = useRef(null);
+    const pathname = usePathname();
+
+    // Use the passed activePath if available (e.g. in demo mode), otherwise fallback to usePathname()
+    const currentPath = activePath || pathname;
 
     const showLogo = school.logoUrl && isValidImageUrl(school.logoUrl);
 
     const mainLinks = [
         { name: 'Home', path: '/' },
         { name: 'About', path: '/about' },
-        { name: 'Events', path: '/broadcast' },
-        { name: 'Admissions', path: '/admission' },
+        { name: 'Events', path: '/events' },
+        { name: 'Admissions', path: '/admissions' },
         { name: 'Contact', path: '/contact' },
     ];
 
@@ -24,7 +30,15 @@ const Header = ({ school }) => {
         { name: 'Academics', path: '/academics' },
         { name: 'Activities', path: '/activities' },
         { name: 'Infrastructure', path: '/infrastructure' },
+        { name: 'Gallery', path: '/gallery' },
     ];
+
+    // Helper to check if a path is active
+    const isActive = (path) => {
+        if (path === '/' && currentPath === '/') return true;
+        if (path !== '/' && currentPath?.startsWith(path)) return true;
+        return false;
+    };
 
     // Handle clicking outside to close the "More" dropdown
     useEffect(() => {
@@ -63,12 +77,16 @@ const Header = ({ school }) => {
                         </div>
                     </Link>
 
-                    <nav className="hidden lg:flex items-center space-x-8">
+                    <nav className="hidden lg:flex items-center space-x-2">
                         {mainLinks.map((link) => (
                             <Link
                                 key={link.path}
                                 href={link.path}
-                                className="text-xs font-bold text-slate-600 hover:text-emerald-700 transition-colors uppercase tracking-widest"
+                                className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 ${
+                                    isActive(link.path)
+                                        ? 'bg-emerald-900 text-white shadow-lg scale-105'
+                                        : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50'
+                                }`}
                             >
                                 {link.name}
                             </Link>
@@ -82,7 +100,11 @@ const Header = ({ school }) => {
                             onMouseLeave={() => setIsMoreOpen(false)}
                         >
                             <button
-                                className={`flex items-center gap-1.5 text-xs font-bold transition-colors uppercase tracking-widest ${isMoreOpen ? 'text-emerald-700' : 'text-slate-600 hover:text-emerald-700'}`}
+                                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all duration-300 uppercase tracking-widest ${
+                                    isMoreOpen || moreLinks.some(l => isActive(l.path))
+                                        ? 'bg-emerald-900 text-white shadow-lg' 
+                                        : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50'
+                                }`}
                             >
                                 More
                                 <svg
@@ -98,13 +120,17 @@ const Header = ({ school }) => {
                             {/* Dropdown Menu - Wrapped in a container with padding to bridge the gap */}
                             {isMoreOpen && (
                                 <div className="absolute top-full right-0 pt-2 w-56 z-[60] animate-fade-in">
-                                    <div className="bg-white border border-slate-100 shadow-2xl py-2 border-t-2 border-t-emerald-900">
+                                    <div className="bg-white border border-slate-100 shadow-2xl py-2 border-t-2 border-t-emerald-900 rounded-lg overflow-hidden">
                                         {moreLinks.map((link) => (
                                             <Link
                                                 key={link.path}
                                                 href={link.path}
                                                 onClick={() => setIsMoreOpen(false)}
-                                                className="block px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] hover:bg-emerald-50 hover:text-emerald-900 transition-all border-b border-slate-50 last:border-0"
+                                                className={`block px-6 py-4 text-[10px] font-bold uppercase tracking-[0.2em] transition-all border-b border-slate-50 last:border-0 ${
+                                                    isActive(link.path)
+                                                        ? 'bg-emerald-900 text-white'
+                                                        : 'text-slate-500 hover:bg-emerald-50 hover:text-emerald-900'
+                                                }`}
                                             >
                                                 {link.name}
                                             </Link>
@@ -148,14 +174,18 @@ const Header = ({ school }) => {
                                 key={link.path}
                                 href={link.path}
                                 onClick={() => setIsMenuOpen(false)}
-                                className="block px-3 py-3 text-sm font-bold text-slate-600 border-b border-slate-50 uppercase tracking-widest hover:text-emerald-700"
+                                className={`block px-3 py-3 text-sm font-bold border-b border-slate-50 uppercase tracking-widest transition-colors ${
+                                    isActive(link.path)
+                                        ? 'text-emerald-900 bg-emerald-50'
+                                        : 'text-slate-600 hover:text-emerald-700'
+                                }`}
                             >
                                 {link.name}
                             </Link>
                         ))}
 
                         {/* "More" items as standard links on mobile */}
-                        <div className="pt-4 bg-slate-50 px-3 pb-4">
+                        <div className="pt-4 bg-slate-50 px-3 pb-4 rounded-xl mt-2">
                             <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest block mb-4 px-1">Discover More</span>
                             <div className="grid grid-cols-1 gap-1">
                                 {moreLinks.map((link) => (
@@ -163,7 +193,11 @@ const Header = ({ school }) => {
                                         key={link.path}
                                         href={link.path}
                                         onClick={() => setIsMenuOpen(false)}
-                                        className="block py-2.5 text-xs font-bold text-emerald-900 uppercase tracking-widest hover:text-emerald-700"
+                                        className={`block py-2.5 px-3 rounded-lg text-xs font-bold uppercase tracking-widest transition-colors ${
+                                            isActive(link.path)
+                                                ? 'bg-emerald-900 text-white shadow-md'
+                                                : 'text-emerald-900 hover:bg-emerald-100/50'
+                                        }`}
                                     >
                                         • {link.name}
                                     </Link>
