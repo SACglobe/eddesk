@@ -3,3 +3,4 @@ about
 Gallery
 Activites
 Infrastructure
+Contact
