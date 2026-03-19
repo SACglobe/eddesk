@@ -73,31 +73,29 @@ export async function submitContactAction(data: ContactFormData): Promise<Contac
       },
     });
 
-    // Call the Supabase RPC function
-    // Parameters must match EXACTLY: p_schoolkey, p_name, p_phone, p_message, p_email, p_subject
-    const { data: rpcData, error: rpcError } = await supabase.rpc('submit_contact_enquiry', {
-      p_schoolkey: schoolkey,
-      p_name: name,
-      p_phone: phone,
-      p_message: message,
-      p_email: email || null,
-      p_subject: subject || null
-    });
-
-    if (rpcError) {
-      console.error('[contact.action] RPC Error:', rpcError);
-      // Never expose raw Supabase errors to the client
+    // Insert into 'formsubmissions' table
+    const { error: insertError } = await supabase
+      .from('formsubmissions')
+      .insert({
+        schoolkey: schoolkey,
+        formtype: 'contact',
+        payload: {
+          name,
+          phone,
+          message,
+          email: email || null,
+          subject: subject || null
+        },
+        status: 'pending',
+        isactive: true
+      });
+    
+    if (insertError) {
+      console.error('[contact.action] Insert Error:', insertError);
       return { success: false, error: 'Failed to submit enquiry. Please try again later.' };
     }
 
-    // RPC returns JSON: { "success": true, "message": "..." } or { "success": false, "error": "..." }
-    const result = (rpcData as any) as { success: boolean; message?: string; error?: string };
-    
-    if (!result || result.success === false) {
-      return { success: false, error: result?.error || 'Submission failed' };
-    }
-
-    return { success: true, message: result.message || 'Enquiry submitted successfully' };
+    return { success: true, message: 'Enquiry submitted successfully' };
 
   } catch (error) {
     console.error('[contact.action] Unexpected Error:', error);
