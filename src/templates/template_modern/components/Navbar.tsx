@@ -27,7 +27,7 @@ const Navbar: React.FC<NavbarProps> = ({ school, activePath }) => {
         { name: 'About', href: '/about' },
         { name: 'Gallery', href: '/gallery' },
         { name: 'Events', href: '/events' },
-        { name: 'Admissions', href: '/admissions' },
+        { name: 'Admission', href: '/admission' },
         { name: 'Contact', href: '/contact' },
     ];
 

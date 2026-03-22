@@ -40,6 +40,7 @@ export default function RootLayout({
         <html lang="en" className="scroll-smooth" suppressHydrationWarning>
             <body
                 className={`${plusJakartaSans.variable} ${spaceGrotesk.variable} ${crimsonPro.variable} antialiased`}
+                suppressHydrationWarning
             >
                 <div id="eddesk-app">
                     {children}

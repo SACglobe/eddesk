@@ -72,7 +72,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ slides: rawSlides }) => {
                                 {slide.primaryButtonText || 'Explore'}
                             </Link>
                             {slide.secondaryButtonText && (
-                                <Link href={slide.secondaryButtonUrl || '/admissions'} className="border-2 border-white/50 backdrop-blur-sm text-white px-10 py-4 rounded-full font-black uppercase tracking-widest text-sm hover:bg-white hover:text-primary transition-all shadow-2xl">
+                                <Link href={slide.secondaryButtonUrl || '/admission'} className="border-2 border-white/50 backdrop-blur-sm text-white px-10 py-4 rounded-full font-black uppercase tracking-widest text-sm hover:bg-white hover:text-primary transition-all shadow-2xl">
                                     {slide.secondaryButtonText}
                                 </Link>
                             )}

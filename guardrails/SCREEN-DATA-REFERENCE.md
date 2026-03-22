@@ -166,6 +166,7 @@ All keys are lowercase (Supabase convention).
     gallery:           []   ← array of gallery images
     events:            []   ← array of events
     contactdetails:    []   ← ARRAY (take index [0])
+    admissioninstructions: [] ← array of admission steps/instructions
     testimonial:       []   ← array of testimonials
     boardmembers:      []   ← array of board members
     schoolidentity:    []   ← vision/mission/motto (take index [0])
@@ -269,6 +270,11 @@ key, name, profile, qualification, imageurl, designation, isactive, displayorder
 ```
 key, motto, vision, mission, history, founded_year, isactive, schoolkey, createdat
 ```
+
+### admissioninstructions[] item fields
+```
+key, description, contactemail, contactphone, isactive, componentkey, schoolkey, createdat
+```
 ```
 
 ### templatecomponents[] item fields  ← section visibility config
@@ -311,6 +317,7 @@ config shape: {
 | boardmembers       | boardmembers        | none                        | data.boardMembers                                  | true              | all 3               |
 | schoolidentity     | schoolidentity      | none                        | data.identity                                      | true              | all 3               |
 | leadership (Chairman)| leadership        | { designation: "Chairman"}  | data.leadership.find(role==="chairman")            | true              | all 3               |
+| admissioninstructions | admissioninstructions | none                    | data.admissionInstructions                         | true              | all 3               |
 
 ### Section visibility decision rule (MANDATORY for every section)
 ```
@@ -515,6 +522,15 @@ Filter for home screen: upcoming (eventDate > today) + isFeatured === true, limi
 | photo_url                     | photoUrl                                    |
 | isactive                      | isActive                                    |
 | displayorder                  | displayOrder                                |
+
+### Admission Instructions
+| RPC field (data.admissioninstructions[]) | TenantViewModel field (data.admissionInstructions[]) |
+|------------------------------------------|-------------------------------------------------------|
+| key                                      | key                                                   |
+| description                              | description                                           |
+| contactemail                             | contactEmail                                          |
+| contactphone                             | contactPhone                                          |
+| isactive                                 | isActive                                              |
 
 ---
 
@@ -797,6 +813,80 @@ const logoSrc = data?.school?.logoUrl;  // if empty string → show school name 
 | Footer   | Footer            | Footer            | Footer            |
 
 ---
+
+## SECTION 14 — Faculty Screen Specific Rules — LOCKED
+
+### 1. Hero Section
+- **Condition**: `templatecomponents("hero").isactive === true`.
+- **Data**: `data.hero[]`.
+- **Modern / Classic**: Top position.
+- **Premium**: Below header.
+
+### 2. Faculty Section (Main)
+- **Condition**: `templatecomponents("faculty").isactive === true`.
+- **Data**: `data.faculty[]`.
+- **Position**: Below Hero for all templates.
+
+### 3. Contact Details Section
+- **Condition**: `templatecomponents("contactdetails").isactive === true`.
+- **Data**: `data.contactdetails[0]`.
+- **Position**: Below Faculty section.
+
+### 4. Layout Order (section top → bottom)
+
+| Position | template_modern   | template_classic  | template_premium  |
+|----------|-------------------|-------------------|-------------------|
+| 1st      | Header/Navbar     | Header/Navbar     | Header/Navbar     |
+| 2nd      | Hero              | Hero              | Hero              |
+| 3rd      | Faculty           | Faculty           | Faculty           |
+| 4th      | ContactDetails    | ContactDetails    | ContactDetails    |
+| Footer   | Footer            | Footer            | Footer            |
+
+---
+
+## SECTION 15 — Admission Screen Specific Rules
+
+### 1. Hero Section
+- **Condition**: `templatecomponents("hero").isactive === true`.
+- **Data**: `data.hero[]`.
+- **Modern**: Top position.
+- **Classic / Premium**: Below header.
+
+### 2. Admission Instructions Section
+- **Condition**: `templatecomponents("admissioninstructions").isactive === true`.
+- **Data**: `data.admissioninstructions[]`.
+- **Position**: Below Hero for all templates.
+
+### 3. Admission Form Section
+- **Table**: `formsubmissions`
+- **Submission Mode**: Supabase SDK (Server Side) — NO RPC.
+- **Payload**: JSONB containing the following fields (extracted from registration form):
+    - **Student Info**: `studentName`, `dateOfBirth`, `bloodGroup`, `aadharNo`, `religion`, `seekingClass`, `emisNo`
+    - **Previous School**: `lastSchoolName`, `lastSchoolDistrict`, `lastSchoolBlock`
+    - **Documents**: `tcSubmitted` (bool), `attendanceCertificate` (bool), `markSheetSubmitted` (bool)
+    - **Reference**: `referredByName`, `referredByDesignation`, `referredByAddress`, `referredByCell`
+    - **History**: `breakOfStudy` (text)
+    - **Father Info**: `fatherName`, `fatherEducation`, `fatherProfession`, `fatherIncome`, `fatherLanguages`, `fatherOfficeAddress`, `fatherPhone`
+    - **Mother Info**: `motherName`, `motherEducation`, `motherProfession`, `motherIncome`, `motherLanguages`, `motherOfficeAddress`, `motherPhone`
+    - **General**: `residentialAddress`, `distanceFromSchool`, `conveyanceRequired` (bool)
+- **Form Type**: "admission"
+- **Position**: Below Instructions.
+
+### 4. Contact Details Section
+- **Condition**: `templatecomponents("contactdetails").isactive === true`.
+- **Data**: `data.contactdetails[0]`.
+- **Position**: Below Admission Form.
+
+### 5. Layout Order (section top → bottom)
+
+| Position | template_modern       | template_classic      | template_premium      |
+|----------|-----------------------|-----------------------|-----------------------|
+| 1st      | Header/Navbar         | Header/Navbar         | Header/Navbar         |
+| 2nd      | Hero                  | Hero                  | Hero                  |
+| 3rd      | AdmissionInstructions | AdmissionInstructions | AdmissionInstructions |
+| 4th      | AdmissionForm         | AdmissionForm         | AdmissionForm         |
+| 5th      | ContactDetails        | ContactDetails        | ContactDetails        |
+| Footer   | Footer                | Footer                | Footer                |
 
 ## SECTION 14 — Faculty Screen Specific Rules
 

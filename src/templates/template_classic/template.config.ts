@@ -6,7 +6,7 @@ export const routes = [
     '/',
     '/about',
     '/events',
-    '/admissions',
+    '/admission',
     '/contact',
 ]
 

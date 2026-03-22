@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Home from './app/page';
 import About from './app/about/page';
-import Admissions from './app/admissions/page';
+import Admissions from './app/admission/page';
 import Contact from './app/contact/page';
 import Broadcast from './app/events/page';
 import Gallery from './app/gallery/page';
@@ -48,7 +48,7 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
                 return <Home data={data} />;
             case '/about':
                 return <About data={data} />;
-            case '/admissions':
+            case '/admission':
                 return <Admissions data={data} />;
             case '/contact':
                 return <Contact data={data} />;

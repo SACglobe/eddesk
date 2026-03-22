@@ -21,7 +21,7 @@ const Footer: React.FC<FooterProps> = ({ school }) => {
                         <h4 className="text-white font-semibold mb-4">Quick Links</h4>
                         <ul className="space-y-2 text-sm">
                             <li><Link href="/events" className="hover:text-accent transition-colors">Academic Calendar</Link></li>
-                            <li><Link href="/admissions" className="hover:text-accent transition-colors">Admissions Portal</Link></li>
+                            <li><Link href="/admission" className="hover:text-accent transition-colors">Admission Portal</Link></li>
                             <li><Link href="/contact" className="hover:text-accent transition-colors">Career Opportunities</Link></li>
                             <li><Link href="/privacy" className="hover:text-accent transition-colors">Privacy Policy</Link></li>
                         </ul>

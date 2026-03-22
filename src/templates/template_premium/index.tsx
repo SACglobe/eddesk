@@ -6,7 +6,7 @@ import Home from './app/page';
 import About from './app/about/page';
 import Academics from './app/academics/page';
 import Activities from './app/activities/page';
-import Admissions from './app/admissions/page';
+import Admissions from './app/admission/page';
 import Contact from './app/contact/page';
 import Events from './app/events/page';
 import Faculty from './app/faculty/page';
@@ -71,7 +71,7 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
                 const Screen = Activities as any;
                 return <Screen data={data} />;
             }
-            case '/admissions': {
+            case '/admission': {
                 const Screen = Admissions as any;
                 return <Screen data={data} />;
             }

@@ -75,7 +75,7 @@ const Header: React.FC<HeaderProps> = ({ announcements, school, activePath }) =>
         { label: 'The School', path: '/about' },
         { label: 'Gallery', href: '/gallery', path: '/gallery' },
         { label: 'Events', path: '/events' },
-        { label: 'Admissions', path: '/admissions' },
+        { label: 'Admission', path: '/admission' },
         { label: 'Contact', path: '/contact' },
     ];
 
@@ -235,7 +235,7 @@ const Footer: React.FC<FooterProps> = ({ school }) => {
                         <ul className="space-y-6 text-sm text-white/50 font-light">
                             <li><Link href="/about" className="hover:text-signature-gold transition-colors">The School</Link></li>
                             <li><Link href="/academics" className="hover:text-signature-gold transition-colors">Academic Framework</Link></li>
-                            <li><Link href="/admissions" className="hover:text-signature-gold transition-colors">Admissions Protocol</Link></li>
+                            <li><Link href="/admission" className="hover:text-signature-gold transition-colors">Admission Protocol</Link></li>
                             <li><Link href="/contact" className="hover:text-signature-gold transition-colors">Reach the Academy</Link></li>
                         </ul>
                     </div>
