@@ -78,7 +78,7 @@ const Hero: React.FC<{ heroSlide: HeroSlide | null }> = ({ heroSlide }) => {
           </h1>
 
           <div className="flex flex-col sm:flex-row gap-12 justify-center items-center mt-12 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-500">
-            <Link href={heroSlide?.primaryButtonUrl || '/admissions'}>
+            <Link href={heroSlide?.primaryButtonUrl || '/admission'}>
               <Button variant="gold">{heroSlide?.primaryButtonText || 'Institutional Prospectus'}</Button>
             </Link>
 
@@ -795,7 +795,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
             <p className="text-[12px] uppercase tracking-[0.6em] font-bold mb-10">2024-2025 ADMISSIONS</p>
             <h2 className="text-6xl md:text-8xl font-serif mb-16 leading-tight">Start your <br /><span className="italic">Signature Journey.</span></h2>
             <div className="flex flex-col sm:flex-row gap-8 justify-center">
-              <Link href="/admissions">
+              <Link href="/admission">
                 <span className="inline-block px-16 py-6 bg-white text-signature-navy text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-signature-navy hover:text-white transition-all duration-500 shadow-2xl">
                   Begin Application
                 </span>

@@ -22,7 +22,7 @@ const Header = ({ school, activePath }) => {
         { name: 'Home', path: '/' },
         { name: 'About', path: '/about' },
         { name: 'Events', path: '/events' },
-        { name: 'Admissions', path: '/admissions' },
+        { name: 'Admission', path: '/admission' },
         { name: 'Contact', path: '/contact' },
     ];
 

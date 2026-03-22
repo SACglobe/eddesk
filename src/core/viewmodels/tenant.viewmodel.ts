@@ -539,7 +539,13 @@ export interface TenantViewModel {
         twitter: string;
         youtube: string;
     } | null;
-    admissionSteps: Array<Record<string, unknown>>;
+    admissionInstructions: Array<{
+        key: string;
+        description: string;
+        contactEmail: string;
+        contactPhone: string;
+        isActive: boolean;
+    }>;
 }
 
 const COMPONENT_ALIASES: Record<string, string> = {
@@ -1010,7 +1016,13 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             twitter: str(contactDetailsRow[COL_CONTACT_DETAILS_TWITTER] || contactDetailsRow['twitter_url']),
             youtube: str(contactDetailsRow[COL_CONTACT_DETAILS_YOUTUBE] || contactDetailsRow['youtube_url']),
         } : null,
-        admissionSteps: (d.admissionsteps ?? []) as Array<Record<string, unknown>>,
+        admissionInstructions: ((d.admissioninstructions || d.admissionsteps || []) as Record<string, unknown>[]).map(r => ({
+            key: str(r['key']),
+            description: str(r['description']),
+            contactEmail: str(r['contactemail'] || r['contactEmail']),
+            contactPhone: str(r['contactphone'] || r['contactPhone']),
+            isActive: bool(r['isactive'] ?? true),
+        })),
     };
     return vm;
 }

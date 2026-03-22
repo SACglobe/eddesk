@@ -48,7 +48,7 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
             case '/about':
                 return <AboutScreen data={data} />;
             case '/admission':
-            case '/admissions':
+            case '/admission':
                 return <AdmissionScreen data={data} />;
             case '/contact':
                 return <ContactScreen data={data} />;

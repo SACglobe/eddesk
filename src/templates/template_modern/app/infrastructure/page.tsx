@@ -49,7 +49,7 @@ const InfrastructurePage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                             headline: m.headline || 'World-Class Infrastructure',
                             subheadline: m.subheadline || `Modern facilities at ${schoolName}`,
                             primaryButtonText: m.primaryButtonText || 'View Admissions',
-                            primaryButtonUrl: m.primaryButtonUrl || '/admissions',
+                            primaryButtonUrl: m.primaryButtonUrl || '/admission',
                             secondaryButtonText: m.secondaryButtonText || 'Contact Us',
                             secondaryButtonUrl: m.secondaryButtonUrl || '/contact',
                             isActive: m.isActive,

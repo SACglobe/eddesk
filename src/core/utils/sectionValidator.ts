@@ -113,6 +113,9 @@ export function validateRequiredSections(tenant: TenantViewModel): ValidationRes
             case 'whychooseus':
                 data = tenant.whyChooseUs;
                 break;
+            case 'admissioninstructions':
+                data = tenant.admissionInstructions;
+                break;
             default:
                 // Fallback: try to find it at top level if it's dynamic
                 data = (tenant as any)[code];

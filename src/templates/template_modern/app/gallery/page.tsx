@@ -63,7 +63,7 @@ const Gallery: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                             headline: m.headline || 'Campus Gallery',
                             subheadline: m.subheadline || `Visual chronicles of life at ${schoolName}`,
                             primaryButtonText: m.primaryButtonText || 'View Admissions',
-                            primaryButtonUrl: m.primaryButtonUrl || '/admissions',
+                            primaryButtonUrl: m.primaryButtonUrl || '/admission',
                             secondaryButtonText: m.secondaryButtonText || 'Contact Us',
                             secondaryButtonUrl: m.secondaryButtonUrl || '/contact',
                             isActive: m.isActive,

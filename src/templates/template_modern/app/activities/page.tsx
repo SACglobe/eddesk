@@ -52,7 +52,7 @@ const Activities: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                             headline: m.headline || 'Beyond the Classroom',
                             subheadline: m.subheadline || `Co-curricular excellence at ${schoolName}`,
                             primaryButtonText: m.primaryButtonText || 'View Admissions',
-                            primaryButtonUrl: m.primaryButtonUrl || '/admissions',
+                            primaryButtonUrl: m.primaryButtonUrl || '/admission',
                             secondaryButtonText: m.secondaryButtonText || 'Events',
                             secondaryButtonUrl: m.secondaryButtonUrl || '/events',
                             isActive: m.isActive,
