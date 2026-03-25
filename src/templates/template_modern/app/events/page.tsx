@@ -1,211 +1,241 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect, useCallback } from 'react';
 import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
+import { getMonthEventsAction } from '@/app/actions/events';
+import HeroSlider from '../../components/HeroSlider';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const Broadcast: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
+const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
     const schoolName = data?.school?.name ?? 'Our School';
-    const announcements = data?.broadcast || [];
-    const events = data?.events || [];
+    const schoolKey = data?.school?.key;
+
+    // Hero Section Configuration
+    const getComponent = (code: string) => {
+        return data?.components?.find(c =>
+            c.componentCode?.toLowerCase() === code.toLowerCase()
+        );
+    };
+    const heroComp = getComponent('hero');
+    const heroEnabled = heroComp?.isActive ?? true;
+    const heroMedia = (data?.heroMedia ?? [])
+        .filter(s => s.isActive)
+        .sort((a, b) => a.displayOrder - b.displayOrder);
+
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const [events, setEvents] = useState<any[]>(data?.events || []);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const monthName = currentDate.toLocaleString('default', { month: 'long' });
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1;
+
+    const fetchEvents = useCallback(async (m: number, y: number) => {
+        if (!schoolKey) return;
+        setLoading(true);
+        setError(null);
+        try {
+            const result = await getMonthEventsAction(schoolKey, m, y);
+            if (result.status === 'success') {
+                setEvents(result.data);
+            } else {
+                setError(result.message);
+            }
+        } catch (err: any) {
+            setError(err.message || 'Failed to fetch events');
+        } finally {
+            setLoading(false);
+        }
+    }, [schoolKey]);
+
+    useEffect(() => {
+        // Fetch events on mount if empty, or if date changes
+        const initialDate = new Date();
+        const isDifferentMonth = currentDate.getMonth() !== initialDate.getMonth() || 
+                               currentDate.getFullYear() !== initialDate.getFullYear();
+        
+        if (events.length === 0 || isDifferentMonth) {
+            fetchEvents(month, year);
+        }
+    }, [currentDate, month, year, fetchEvents, events.length]);
+
+    const handlePrevMonth = () => {
+        setCurrentDate(prev => {
+            const d = new Date(prev);
+            d.setMonth(d.getMonth() - 1);
+            return d;
+        });
+    };
+
+    const handleNextMonth = () => {
+        setCurrentDate(prev => {
+            const d = new Date(prev);
+            d.setMonth(d.getMonth() + 1);
+            return d;
+        });
+    };
+
     const featuredEvent = events.find((e: any) => e.isFeatured) || events[0];
+
     return (
-        <div className="bg-white">
-            {/* 1. Immersive Hero Section - Styled like Contact/About page */}
-            <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
-                <img
-                    src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=2000"
-                    className="absolute inset-0 w-full h-full object-cover grayscale brightness-50"
-                    alt="Events Background"
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-primary/70 to-primary/90"></div>
+        <div className="bg-slate-50 min-h-screen">
+            {/* 1. Immersive Hero Section */}
+            {heroEnabled && heroMedia.length > 0 && (
+                <HeroSlider slides={heroMedia} />
+            )}
 
-                <div className="relative z-10 text-center space-y-8 max-w-5xl px-4">
-                    <span className="text-accent font-black uppercase tracking-[0.5em] text-sm animate-pulse">Live Campus Feed</span>
-                    <h1 className="text-5xl md:text-8xl font-bold text-white leading-tight font-playfair">
-                        Events & Announcements
-                    </h1>
-                    <p className="text-blue-100 text-xl md:text-2xl font-medium max-w-2xl mx-auto opacity-80 leading-relaxed">
-                        Stay connected with the vibrant heartbeat of {schoolName}. From academic milestones to cultural celebrations.
-                    </p>
-                </div>
-                <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white to-transparent"></div>
-            </section>
-
-            {/* 2. Main Content Grid */}
-            <div className="max-w-7xl mx-auto px-4 py-32 space-y-32">
-
-                <div className="grid lg:grid-cols-12 gap-20">
-
-                    {/* LEFT: Latest Announcements (Editorial Style) */}
-                    <div className="lg:col-span-8 space-y-16">
-                        <div className="flex items-end justify-between border-b-2 border-gray-100 pb-10">
-                            <div className="space-y-2">
-                                <span className="text-blue-600 font-black uppercase tracking-widest text-xs">Stay Informed</span>
-                                <h2 className="text-4xl md:text-5xl font-bold text-primary font-playfair">Campus Newsroom</h2>
-                            </div>
-                            <div className="hidden md:block">
-                                <button className="text-primary font-black text-[10px] uppercase tracking-widest border-2 border-primary px-6 py-3 rounded-xl hover:bg-primary hover:text-white transition-all">
-                                    Filter by Priority
-                                </button>
-                            </div>
+            {/* 2. Calendar Header / Month Selector */}
+            <div className="max-w-7xl mx-auto px-6 -mt-16 relative z-20">
+                <div className="bg-white rounded-[2.5rem] p-8 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8 border border-white/50 backdrop-blur-xl">
+                    <div className="flex items-center gap-6">
+                        <button 
+                            onClick={handlePrevMonth}
+                            className="p-4 rounded-2xl hover:bg-slate-100 transition-colors text-slate-400 hover:text-blue-600"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <div className="text-center min-w-[200px]">
+                            <h2 className="text-3xl font-bold text-slate-800 font-serif lowercase tracking-tight">
+                                {monthName} <span className="text-blue-500 font-sans italic font-normal text-2xl">{year}</span>
+                            </h2>
                         </div>
-
-                        <div className="space-y-12">
-                            {announcements.map((ann, idx) => (
-                                <div key={ann.key} className="group relative grid md:grid-cols-[1fr_2.5fr] gap-12 p-10 bg-white rounded-[3rem] border border-gray-100 hover:border-accent hover:shadow-3xl hover:shadow-blue-900/5 transition-all duration-500">
-                                    <div className="space-y-6">
-                                        <div className="aspect-square bg-blue-50 rounded-[2.5rem] flex items-center justify-center text-4xl group-hover:bg-accent group-hover:scale-105 transition-all duration-500">
-                                            {ann.priority > 2 ? '📢' : ann.priority === 2 ? '📚' : '🌎'}
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Posted On</p>
-                                            <p className="font-bold text-primary">{ann.expiresAt ? new Date(ann.expiresAt).toLocaleDateString() : 'Active'}</p>
-                                        </div>
-                                    </div>
-                                    <div className="space-y-6">
-                                        <div className="flex items-center gap-4">
-                                            <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm ${ann.priority > 2 ? 'bg-red-100 text-red-600 border border-red-200' : 'bg-blue-50 text-blue-600 border border-blue-100'
-                                                }`}>
-                                                {ann.priority > 2 ? 'High' : 'Normal'} Priority
-                                            </span>
-                                        </div>
-                                        <h3 className="text-3xl font-bold text-primary group-hover:text-blue-700 transition-colors leading-tight font-playfair">
-                                            {ann.title}
-                                        </h3>
-                                        <p className="text-gray-500 text-lg leading-relaxed">
-                                            {ann.message}
-                                        </p>
-                                        <button className="flex items-center gap-3 text-primary font-black text-xs uppercase tracking-[0.2em] group/btn">
-                                            Read Full Detail
-                                            <span className="group-hover/btn:translate-x-2 transition-transform">→</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                            {announcements.length === 0 && <p className="text-gray-400 text-center py-10">No active announcements at the moment.</p>}
-                        </div>
+                        <button 
+                            onClick={handleNextMonth}
+                            className="p-4 rounded-2xl hover:bg-slate-100 transition-colors text-slate-400 hover:text-blue-600"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>
+                        </button>
                     </div>
 
-                    {/* RIGHT: Academic Calendar & Quick Actions */}
-                    <div className="lg:col-span-4 space-y-16">
-                        <div className="space-y-10">
-                            <h2 className="text-3xl font-bold text-primary font-playfair">Academic Calendar</h2>
-
-                            <div className="bg-primary rounded-[3.5rem] p-10 space-y-12 shadow-2xl relative overflow-hidden group">
-                                {/* Decorative Elements */}
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full translate-x-1/2 -translate-y-1/2 blur-2xl"></div>
-                                <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/10 rounded-full -translate-x-1/2 translate-y-1/2 blur-3xl"></div>
-
-                                <div className="space-y-8 relative z-10">
-                                    {events.map((event, i) => {
-                                        const dateObj = new Date(event.date);
-                                        const month = dateObj.toLocaleString('en-US', { month: 'short' });
-                                        const day = dateObj.getDate();
-                                        
-                                        return (
-                                            <div key={event.key} className="flex gap-8 group/item cursor-pointer">
-                                                <div className="text-center shrink-0">
-                                                    <p className="text-[10px] font-black text-accent tracking-widest uppercase mb-1 opacity-70 group-hover/item:opacity-100 transition-opacity">
-                                                        {month}
-                                                    </p>
-                                                    <p className="text-3xl font-black text-white leading-none">
-                                                        {day}
-                                                    </p>
-                                                </div>
-                                                <div className="flex-1 border-l border-white/10 pl-8 group-hover/item:border-accent/50 transition-colors">
-                                                    <p className="text-[9px] font-black text-blue-300 uppercase tracking-widest mb-1">{event.category}</p>
-                                                    <p className="font-bold text-white text-lg leading-tight group-hover/item:text-accent transition-colors font-playfair">
-                                                        {event.title}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                    {events.length === 0 && <p className="text-blue-200/50 text-center">No upcoming events scheduled.</p>}
-                                </div>
-
-                                <div className="space-y-4 relative z-10 pt-4">
-                                    <button className="w-full py-5 bg-accent text-primary font-black uppercase tracking-widest text-xs rounded-[2rem] hover:bg-white hover:scale-[1.02] transition-all shadow-xl">
-                                        Download Master Calendar
-                                    </button>
-                                    <p className="text-center text-[10px] text-blue-100/40 font-bold uppercase tracking-widest">Version 2024.01 Updated</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Newsletter / Contact Card */}
-                        <div className="bg-gray-50 p-12 rounded-[3.5rem] border border-gray-100 space-y-8">
-                            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-3xl shadow-sm">✉️</div>
-                            <h3 className="text-2xl font-bold text-primary leading-tight font-playfair">Never miss a beat.</h3>
-                            <p className="text-gray-500 text-sm leading-relaxed">
-                                Subscribe to our monthly newsletter to get the highlights of campus life delivered to your inbox.
-                            </p>
-                            <div className="space-y-4">
-                                <input
-                                    type="email"
-                                    placeholder="email@example.com"
-                                    className="w-full px-6 py-4 bg-white rounded-2xl border-none focus:ring-2 focus:ring-accent outline-none transition-all placeholder:text-gray-300 shadow-inner"
-                                />
-                                <button className="w-full py-4 bg-primary text-white font-bold rounded-2xl hover:bg-accent hover:text-primary transition-all">
-                                    Join Circle
-                                </button>
-                            </div>
-                        </div>
+                    <div className="flex items-center gap-4 bg-slate-50 p-2 rounded-2xl border border-slate-100">
+                        <button className="px-6 py-3 bg-white shadow-sm rounded-xl text-xs font-bold uppercase tracking-widest text-blue-600">List View</button>
+                        <button className="px-6 py-3 text-slate-400 text-xs font-bold uppercase tracking-widest hover:text-slate-600">Calendar View</button>
                     </div>
-
                 </div>
             </div>
 
-            {/* 3. Featured Highlight Spotlight */}
+            {/* 3. Event Listings */}
+            <div className="max-w-7xl mx-auto px-6 py-20">
+                <AnimatePresence mode="wait">
+                    {loading ? (
+                        <motion.div 
+                            key="loading"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="text-center py-40"
+                        >
+                            <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+                            <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Fetching school events...</p>
+                        </motion.div>
+                    ) : events.length > 0 ? (
+                        <motion.div 
+                            key="events-grid"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="grid lg:grid-cols-2 gap-10"
+                        >
+                            {events.map((event, idx) => {
+                                const dateObj = new Date(event.eventDate);
+                                const day = dateObj.getDate();
+                                const monthShort = dateObj.toLocaleString('en-US', { month: 'short' });
+                                
+                                return (
+                                    <motion.div 
+                                        key={event.key}
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        whileInView={{ opacity: 1, scale: 1 }}
+                                        viewport={{ once: true }}
+                                        className="group bg-white rounded-[2rem] p-8 flex gap-10 border border-transparent hover:border-blue-100 hover:shadow-3xl transition-all duration-500"
+                                    >
+                                        <div className="flex flex-col items-center justify-center bg-blue-50 rounded-3xl px-6 py-8 min-w-[100px] h-fit group-hover:bg-blue-600 transition-colors duration-500">
+                                            <span className="text-4xl font-black text-blue-600 group-hover:text-white transition-colors">{day}</span>
+                                            <span className="text-xs font-black uppercase tracking-widest text-blue-400 group-hover:text-blue-100 transition-colors mt-2">{monthShort}</span>
+                                        </div>
+                                        
+                                        <div className="flex-1 space-y-4">
+                                            <div className="flex items-center gap-3">
+                                                <span className="px-3 py-1 bg-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest rounded-lg">
+                                                    {event.category || 'General'}
+                                                </span>
+                                                <span className="text-[10px] text-slate-300 font-bold">•</span>
+                                                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                                                    {event.startTime && `${event.startTime} Onwards`}
+                                                </span>
+                                            </div>
+                                            <h3 className="text-2xl font-bold text-slate-800 group-hover:text-blue-600 transition-colors font-serif lowercase leading-tight">
+                                                {event.title}
+                                            </h3>
+                                            <p className="text-slate-500 text-sm leading-relaxed line-clamp-2">
+                                                {event.description}
+                                            </p>
+                                            <button className="flex items-center gap-2 text-blue-600 font-black text-[10px] uppercase tracking-widest group/btn pt-2">
+                                                Event Details
+                                                <span className="group-hover/btn:translate-x-2 transition-transform">→</span>
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                );
+                            })}
+                        </motion.div>
+                    ) : (
+                        <motion.div 
+                            key="no-events"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="text-center py-40 bg-white rounded-[3rem] border-2 border-dashed border-slate-100"
+                        >
+                            <div className="text-6xl mb-6 grayscale opacity-20">📅</div>
+                            <h3 className="text-2xl font-bold text-slate-400 font-serif mb-2">No events this month</h3>
+                            <p className="text-slate-300">Check surrounding months for school activities.</p>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+
+            {/* 4. Highlight Carousel / Banner */}
             {featuredEvent && (
-                <section className="bg-primary-dark py-32 relative overflow-hidden">
-                    <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-24 items-center relative z-10">
-                        <div className="relative group">
-                            <div className="absolute inset-0 bg-accent rounded-[4rem] rotate-3 translate-x-4 translate-y-4 transition-transform group-hover:rotate-6"></div>
-                            <img
-                                src={featuredEvent.imageUrl || "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&q=80&w=1200"}
-                                className="relative z-10 rounded-[4rem] shadow-2xl aspect-video object-cover"
-                                alt={featuredEvent.title}
-                            />
-                        </div>
-                        <div className="space-y-8 text-white">
-                            <span className="bg-accent text-primary px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">Event Spotlight</span>
-                            <h2 className="text-5xl font-bold leading-tight font-playfair">{featuredEvent.title}</h2>
-                            <p className="text-blue-100/70 text-lg leading-relaxed">
-                                {featuredEvent.description}
-                            </p>
-                            <div className="flex gap-8 pt-4">
-                                <div>
-                                    <p className="text-accent font-black text-2xl">
-                                        {new Date(featuredEvent.date).toLocaleString('en-US', { month: 'short', day: 'numeric' })}
-                                    </p>
-                                    <p className="text-[10px] uppercase font-bold tracking-widest opacity-40">{featuredEvent.location || 'Campus'}</p>
+                <section className="max-w-7xl mx-auto px-6 pb-32">
+                    <div className="bg-blue-900 rounded-[4rem] overflow-hidden relative shadow-3xl">
+                        <img 
+                            src={featuredEvent.imageUrl || "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&q=80&w=1200"} 
+                            className="absolute inset-0 w-full h-full object-cover opacity-20 blur-sm"
+                            alt="Featured"
+                        />
+                        <div className="relative z-10 grid lg:grid-cols-2 gap-20 items-center p-16 md:p-24">
+                            <div className="space-y-10 order-2 lg:order-1 text-center lg:text-left">
+                                <span className="bg-blue-400/20 text-blue-400 px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-400/10">Feature Highlight</span>
+                                <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight font-serif lowercase">Upcoming event: <br/><span className="text-blue-400">{featuredEvent.title}</span></h2>
+                                <p className="text-blue-100/60 text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">
+                                    {featuredEvent.description}
+                                </p>
+                                <div className="flex gap-10 justify-center lg:justify-start pt-6">
+                                    <div>
+                                        <p className="text-white font-black text-2xl lowercase">{new Date(featuredEvent.eventDate).toLocaleDateString()}</p>
+                                        <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mt-1">Calendar Date</p>
+                                    </div>
+                                    <div className="w-px h-12 bg-white/10"></div>
+                                    <div>
+                                        <p className="text-white font-black text-2xl lowercase">{featuredEvent.location || 'Campus Center'}</p>
+                                        <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mt-1">Venue</p>
+                                    </div>
                                 </div>
-                                <div className="w-px h-12 bg-white/10"></div>
-                                <div>
-                                    <p className="text-accent font-black text-2xl">{featuredEvent.startTime || '9:00 AM'}</p>
-                                    <p className="text-[10px] uppercase font-bold tracking-widest opacity-40">Timing</p>
-                                </div>
+                            </div>
+                            <div className="order-1 lg:order-2 group">
+                                <motion.img 
+                                    whileHover={{ scale: 1.02 }}
+                                    src={featuredEvent.imageUrl || "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&q=80&w=1200"} 
+                                    className="rounded-[3rem] shadow-4xl w-full aspect-square md:aspect-video object-cover"
+                                    alt="Featured Event"
+                                />
                             </div>
                         </div>
                     </div>
-                    <div className="absolute -bottom-48 -right-48 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
                 </section>
             )}
-
-            {/* 4. Final CTA */}
-            <section className="py-32 bg-white text-center">
-                <div className="max-w-3xl mx-auto px-4 space-y-10">
-                    <h2 className="text-4xl md:text-6xl font-bold text-primary font-playfair">Experience it yourself.</h2>
-                    <p className="text-gray-500 text-xl leading-relaxed">
-                        Guests and parents are welcome to join most of our cultural and academic events. Please register your attendance in advance.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
-                        <button className="bg-primary text-white px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-accent hover:text-primary transition-all shadow-2xl">RSVP for Events</button>
-                        <button className="border-2 border-primary text-primary px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-blue-50 transition-all">School Contact</button>
-                    </div>
-                </div>
-            </section>
         </div>
     );
 };
 
-export default Broadcast;
+export default EventsScreen;

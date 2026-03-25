@@ -1,14 +1,109 @@
-"use client";
+'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
+import { getMonthEventsAction } from '@/app/actions/events';
 import LayoutWrapper from '../../components/LayoutWrapper';
+import { Button } from '../../components/Shared';
+import { isValidImageUrl } from '@/core/utils/url';
+import Link from 'next/link';
 
-const MiniCalendar: React.FC<{ events: any[] }> = ({ events }) => {
-    const monthName = "November";
-    const year = 2023;
-    const daysInMonth = 30;
-    const firstDayOfMonth = 3;
+interface HeroSlide {
+  mediaType: string;
+  mediaUrl: string;
+  headline: string;
+  subheadline: string;
+  primaryButtonText: string;
+  primaryButtonUrl: string;
+  secondaryButtonText: string;
+  secondaryButtonUrl: string;
+}
+
+const Hero: React.FC<{ heroSlide: HeroSlide | null }> = ({ heroSlide }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => console.warn("Autoplay muted video"));
+    }
+  }, []);
+
+  return (
+    <section className="h-[70vh] relative overflow-hidden bg-signature-navy">
+      <div className="absolute inset-0 z-0">
+        {heroSlide?.mediaUrl && isValidImageUrl(heroSlide.mediaUrl) && (
+          <>
+            {heroSlide.mediaType === 'video' ? (
+              <video
+                ref={videoRef}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-full object-cover scale-110"
+              >
+                <source src={heroSlide.mediaUrl} type="video/mp4" />
+              </video>
+            ) : (
+              <img
+                src={heroSlide.mediaUrl}
+                alt={""}
+                className="w-full h-full object-cover scale-110"
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-transparent z-[1]"></div>
+          </>
+        )}
+      </div>
+
+      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-6">
+        <div className="max-w-5xl">
+          <div className="mb-10 flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-10 duration-1000">
+            <div className="w-px h-24 bg-gradient-to-b from-transparent to-signature-gold/60"></div>
+            <p className="text-signature-gold uppercase tracking-[0.8em] text-[10px] md:text-xs font-bold">
+              {heroSlide?.subheadline || 'ESTABLISHED MCMLXXXVIII'}
+            </p>
+          </div>
+
+          <h1 className="text-white text-5xl md:text-8xl font-serif leading-[0.9] mb-12 tracking-tighter animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
+            {heroSlide?.headline ?? (
+              <>
+                Public <br />
+                <span className="italic text-signature-gold block mt-4 lowercase">Engagements</span>
+              </>
+            )}
+          </h1>
+
+          <div className="flex flex-col sm:flex-row gap-8 justify-center items-center mt-12 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-500">
+            {heroSlide?.primaryButtonText && (
+                <Link href={heroSlide.primaryButtonUrl || '#'}>
+                <Button variant="gold">{heroSlide.primaryButtonText}</Button>
+                </Link>
+            )}
+            {heroSlide?.secondaryButtonText && (
+              <Link href={heroSlide.secondaryButtonUrl || '#'}>
+                <Button variant="outline">{heroSlide.secondaryButtonText}</Button>
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const MiniCalendar: React.FC<{ 
+    currentDate: Date, 
+    events: any[],
+    onPrevMonth: () => void,
+    onNextMonth: () => void
+}> = ({ currentDate, events, onPrevMonth, onNextMonth }) => {
+    const monthName = currentDate.toLocaleString('default', { month: 'long' });
+    const year = currentDate.getFullYear();
+    
+    // Calculate days in month
+    const daysInMonth = new Date(year, currentDate.getMonth() + 1, 0).getDate();
+    const firstDayOfMonth = new Date(year, currentDate.getMonth(), 1).getDay();
 
     const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
     const blanks = Array.from({ length: firstDayOfMonth }, (_, i) => i);
@@ -16,13 +111,23 @@ const MiniCalendar: React.FC<{ events: any[] }> = ({ events }) => {
     const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
     const eventDates = events
-        .filter(e => e.date && typeof e.date === 'string' && e.date.includes('Nov'))
-        .map(e => parseInt(e.date.match(/\d+/)?.[0] || '0'));
+        .map(e => {
+            const d = new Date(e.eventDate);
+            return d.getDate();
+        });
 
     return (
         <div className="font-sans">
             <div className="flex justify-between items-center mb-8">
-                <h3 className="text-[11px] uppercase tracking-[0.3em] font-bold text-signature-gold">Institutional Calendar</h3>
+                <div className="flex items-center gap-4">
+                    <button onClick={onPrevMonth} className="p-1 hover:text-signature-gold transition-colors">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    <h3 className="text-[11px] uppercase tracking-[0.3em] font-bold text-signature-gold">Institutional Calendar</h3>
+                    <button onClick={onNextMonth} className="p-1 hover:text-signature-gold transition-colors">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
                 <span className="text-xs font-serif italic">{monthName} {year}</span>
             </div>
 
@@ -68,51 +173,123 @@ const MiniCalendar: React.FC<{ events: any[] }> = ({ events }) => {
     );
 };
 
-export default function Events({ data }: { data?: TenantViewModel }) {
-    const sections = data?.homepageSections ?? [];
-    const section = sections.find((s: any) => s.sectionKey === 'events');
-    const isEnabled = section?.isEnabled ?? true;
-    const isRequired = section?.isRequired ?? false;
-    const eventsData = data?.events ?? [];
+export default function Events({ data }: { data: TenantViewModel }) {
+    const schoolKey = data?.school?.key;
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const [events, setEvents] = useState(data?.events || []);
+    const [loading, setLoading] = useState(false);
 
-    if (!isEnabled) return null;
+    const month = currentDate.getMonth() + 1;
+    const year = currentDate.getFullYear();
 
-    const events = eventsData.length > 0 ? eventsData : []; // schoolData fallback if needed? Let's stick to dynamic
+    // Hero Logic
+    const getComponent = (code: string) => {
+        return data?.components?.find(c =>
+            c.componentCode?.toLowerCase() === code.toLowerCase()
+        );
+    };
+    const heroComp = getComponent('hero');
+    const heroEnabled = heroComp?.isActive ?? true;
+    const heroMedia = (data?.heroMedia ?? [])
+        .filter(s => s.isActive)
+        .sort((a, b) => a.displayOrder - b.displayOrder);
+    const firstSlide = heroMedia[0] ?? null;
+
+    const fetchEvents = useCallback(async (m: number, y: number) => {
+        if (!schoolKey) return;
+        setLoading(true);
+        try {
+            const result = await getMonthEventsAction(schoolKey, m, y);
+            if (result.status === 'success') {
+                setEvents(result.data);
+            }
+        } catch (err) {
+            console.error('Failed to fetch events:', err);
+        } finally {
+            setLoading(false);
+        }
+    }, [schoolKey]);
+
+    useEffect(() => {
+        const initialDate = new Date();
+        if (currentDate.getMonth() !== initialDate.getMonth() || currentDate.getFullYear() !== initialDate.getFullYear()) {
+            fetchEvents(month, year);
+        }
+    }, [currentDate, month, year, fetchEvents]);
+
+    const handlePrevMonth = () => {
+        setCurrentDate(prev => {
+            const d = new Date(prev);
+            d.setMonth(d.getMonth() - 1);
+            return d;
+        });
+    };
+
+    const handleNextMonth = () => {
+        setCurrentDate(prev => {
+            const d = new Date(prev);
+            d.setMonth(d.getMonth() + 1);
+            return d;
+        });
+    };
 
     return (
         <LayoutWrapper>
-            <div className="fade-in py-24 pt-48">
-                <div className="max-w-7xl mx-auto px-6">
-                    <h1 className="text-6xl md:text-8xl font-serif mb-24">Public <br /><span className="italic text-signature-gold">Engagements</span></h1>
-
+            <div className="fade-in">
+                {heroEnabled && firstSlide && <Hero heroSlide={firstSlide} />}
+                
+                <div className="max-w-7xl mx-auto px-6 py-24">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-24">
                         <div className="lg:col-span-8">
                             <h2 className="text-[11px] uppercase tracking-[0.3em] font-bold text-signature-gold mb-12">Upcoming Occasions</h2>
-                            <div className="space-y-0">
-                                {events.map((event: any) => (
-                                    <div key={event.id || event.key} className="grid grid-cols-1 md:grid-cols-4 gap-8 py-12 border-t border-signature-navy/10 group cursor-pointer">
-                                        <div className="md:col-span-1">
-                                            <div className="text-3xl font-serif mb-2">{(event.date || '').split(',')[0]}</div>
-                                            <div className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">{event.category}</div>
-                                        </div>
-                                        <div className="md:col-span-3">
-                                            <h3 className="text-2xl font-bold mb-4 group-hover:text-signature-gold transition-colors">{event.title}</h3>
-                                            <p className="text-gray-500 leading-relaxed mb-8">{event.description || event.content}</p>
-                                            <div className="flex gap-4">
-                                                <button className="w-10 h-10 rounded-full border border-signature-navy flex items-center justify-center hover:bg-signature-navy hover:text-white transition-all">
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
-                                                </button>
-                                                <span className="text-[10px] uppercase tracking-widest font-bold self-center">Add to Calendar</span>
+                            
+                            {loading ? (
+                                <div className="py-20 text-center">
+                                    <div className="w-8 h-8 border-2 border-signature-gold border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                                    <p className="text-[10px] uppercase tracking-widest text-gray-400">Updating engagement list...</p>
+                                </div>
+                            ) : events.length > 0 ? (
+                                <div className="space-y-0">
+                                    {events.map((event: any) => {
+                                        const d = new Date(event.eventDate);
+                                        const dayStr = d.getDate();
+                                        const monthStr = d.toLocaleString('en-US', { month: 'short' });
+                                        
+                                        return (
+                                            <div key={event.key} className="grid grid-cols-1 md:grid-cols-4 gap-8 py-12 border-t border-signature-navy/10 group cursor-pointer transition-all hover:bg-signature-ivory/30 px-4 -mx-4">
+                                                <div className="md:col-span-1">
+                                                    <div className="text-4xl font-serif mb-2 text-signature-navy">{dayStr} <span className="text-lg italic text-signature-gold">{monthStr}</span></div>
+                                                    <div className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">{event.category || 'General'}</div>
+                                                </div>
+                                                <div className="md:col-span-3">
+                                                    <h3 className="text-2xl font-bold mb-4 group-hover:text-signature-gold transition-colors text-signature-navy">{event.title}</h3>
+                                                    <p className="text-gray-500 leading-relaxed mb-8 italic">{event.description}</p>
+                                                    <div className="flex gap-4">
+                                                        <button className="w-10 h-10 rounded-full border border-signature-navy flex items-center justify-center hover:bg-signature-navy hover:text-white transition-all">
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+                                                        </button>
+                                                        <span className="text-[10px] uppercase tracking-widest font-bold self-center text-signature-navy/60">{event.startTime || '9:00 AM'} • {event.location || 'Campus Center'}</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <div className="py-20 text-center border border-dashed border-signature-navy/10 bg-signature-ivory/20">
+                                    <p className="text-gray-400 text-sm italic">No scheduled engagements for this period.</p>
+                                </div>
+                            )}
                         </div>
 
                         <aside className="lg:col-span-4">
                             <div className="bg-signature-ivory p-10 lg:p-12 border border-signature-navy/5 sticky top-32">
-                                <MiniCalendar events={events} />
+                                <MiniCalendar 
+                                    currentDate={currentDate} 
+                                    events={events} 
+                                    onPrevMonth={handlePrevMonth} 
+                                    onNextMonth={handleNextMonth} 
+                                />
                             </div>
                         </aside>
                     </div>
