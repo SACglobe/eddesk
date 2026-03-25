@@ -10,14 +10,25 @@ import {
     TABLE_EVENTS, 
     COL_EVENTS_SCHOOL_ID, 
     COL_EVENTS_DATE,
-    COL_IS_ACTIVE
+    COL_IS_ACTIVE,
+    COL_EVENTS_ID,
+    COL_EVENTS_TITLE,
+    COL_EVENTS_DESCRIPTION,
+    COL_EVENTS_CATEGORY,
+    COL_EVENTS_LOCATION,
+    COL_EVENTS_START_TIME,
+    COL_EVENTS_END_TIME,
+    COL_EVENTS_IMAGE_URL,
+    COL_EVENTS_IS_FEATURED
 } from '@/lib/constants/reference';
 
 export type EventData = {
     key: string;
+    id: string; // Alias for key (backward compat)
     title: string;
     description: string;
     eventDate: string;
+    date: string; // Alias for eventDate (backward compat)
     startTime: string;
     endTime: string;
     category: string;
@@ -60,24 +71,20 @@ export async function fetchMonthEvents(
             return { status: 'error', message: error.message };
         }
 
-        if (data && data.length > 0) {
-            console.log('[events.service] fetchMonthEvents raw data (first 2):', data.slice(0, 2));
-        } else {
-            console.log('[events.service] fetchMonthEvents: No data found for the given criteria.');
-        }
-
         // Map database naming to logical naming used in templates/viewmodels
         const events: EventData[] = (data || []).map(r => ({
-            key: r['key'],
-            title: r['title'],
-            description: r['description'],
-            eventDate: r['eventdate'],
-            startTime: r['starttime'],
-            endTime: r['endtime'],
-            category: r['category'],
-            location: r['location'],
-            imageUrl: r['imageurl'],
-            isFeatured: r['isfeatured'] === true || r['isfeatured'] === 'true',
+            key: str(r[COL_EVENTS_ID]),
+            id: str(r[COL_EVENTS_ID]),
+            title: str(r[COL_EVENTS_TITLE]),
+            description: str(r[COL_EVENTS_DESCRIPTION]),
+            eventDate: str(r[COL_EVENTS_DATE]),
+            date: str(r[COL_EVENTS_DATE]),
+            startTime: str(r[COL_EVENTS_START_TIME]),
+            endTime: str(r[COL_EVENTS_END_TIME]),
+            category: str(r[COL_EVENTS_CATEGORY]),
+            location: str(r[COL_EVENTS_LOCATION]),
+            imageUrl: str(r[COL_EVENTS_IMAGE_URL]),
+            isFeatured: bool(r[COL_EVENTS_IS_FEATURED]),
         }));
 
         return { status: 'success', data: events };
@@ -85,4 +92,12 @@ export async function fetchMonthEvents(
         console.error('[events.service] fetchMonthEvents unexpected error:', err.message);
         return { status: 'error', message: err.message || 'Unknown error' };
     }
+}
+
+function str(val: unknown): string {
+    return typeof val === 'string' ? val : '';
+}
+
+function bool(val: unknown): boolean {
+    return val === true || val === 'true';
 }
