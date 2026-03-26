@@ -60,6 +60,8 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
         }
     }, [currentDate, month, year, fetchEvents, events.length]);
 
+    const [view, setView] = useState<'list' | 'calendar'>('list');
+
     const handlePrevMonth = () => {
         setCurrentDate(prev => {
             const d = new Date(prev);
@@ -77,6 +79,13 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
     };
 
     const featuredEvent = events.find((e: any) => e.isFeatured) || events[0];
+
+    // Calendar Grid Logic
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const firstDayOfMonth = new Date(year, month - 1, 1).getDay();
+    const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    const blanks = Array.from({ length: firstDayOfMonth }, (_, i) => i);
+    const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
     return (
         <div className="bg-slate-50 min-h-screen">
@@ -109,13 +118,23 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                     </div>
 
                     <div className="flex items-center gap-4 bg-slate-50 p-2 rounded-2xl border border-slate-100">
-                        <button className="px-6 py-3 bg-white shadow-sm rounded-xl text-xs font-bold uppercase tracking-widest text-blue-600">List View</button>
-                        <button className="px-6 py-3 text-slate-400 text-xs font-bold uppercase tracking-widest hover:text-slate-600">Calendar View</button>
+                        <button 
+                            onClick={() => setView('list')}
+                            className={`px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${view === 'list' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
+                        >
+                            List View
+                        </button>
+                        <button 
+                            onClick={() => setView('calendar')}
+                            className={`px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${view === 'calendar' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
+                        >
+                            Calendar View
+                        </button>
                     </div>
                 </div>
             </div>
 
-            {/* 3. Event Listings */}
+            {/* 3. Event Listings / Calendar Grid */}
             <div className="max-w-7xl mx-auto px-6 py-20">
                 <AnimatePresence mode="wait">
                     {loading ? (
@@ -129,66 +148,110 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                             <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
                             <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Fetching school events...</p>
                         </motion.div>
-                    ) : events.length > 0 ? (
-                        <motion.div 
-                            key="events-grid"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="grid lg:grid-cols-2 gap-10"
-                        >
-                            {events.map((event, idx) => {
-                                const dateObj = new Date(event.eventDate);
-                                const day = dateObj.getDate();
-                                const monthShort = dateObj.toLocaleString('en-US', { month: 'short' });
-                                
-                                return (
-                                    <motion.div 
-                                        key={event.key}
-                                        initial={{ opacity: 0, scale: 0.95 }}
-                                        whileInView={{ opacity: 1, scale: 1 }}
-                                        viewport={{ once: true }}
-                                        className="group bg-white rounded-[2rem] p-8 flex gap-10 border border-transparent hover:border-blue-100 hover:shadow-3xl transition-all duration-500"
-                                    >
-                                        <div className="flex flex-col items-center justify-center bg-blue-50 rounded-3xl px-6 py-8 min-w-[100px] h-fit group-hover:bg-blue-600 transition-colors duration-500">
-                                            <span className="text-4xl font-black text-blue-600 group-hover:text-white transition-colors">{day}</span>
-                                            <span className="text-xs font-black uppercase tracking-widest text-blue-400 group-hover:text-blue-100 transition-colors mt-2">{monthShort}</span>
-                                        </div>
-                                        
-                                        <div className="flex-1 space-y-4">
-                                            <div className="flex items-center gap-3">
-                                                <span className="px-3 py-1 bg-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest rounded-lg">
-                                                    {event.category || 'General'}
-                                                </span>
-                                                <span className="text-[10px] text-slate-300 font-bold">•</span>
-                                                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                                                    {event.startTime && `${event.startTime} Onwards`}
-                                                </span>
+                    ) : view === 'list' ? (
+                        events.length > 0 ? (
+                            <motion.div 
+                                key="events-grid"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="grid lg:grid-cols-2 gap-10"
+                            >
+                                {events.map((event, idx) => {
+                                    const dateObj = new Date(event.eventDate);
+                                    const day = dateObj.getDate();
+                                    const monthShort = dateObj.toLocaleString('en-US', { month: 'short' });
+                                    
+                                    return (
+                                        <motion.div 
+                                            key={event.key}
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            whileInView={{ opacity: 1, scale: 1 }}
+                                            viewport={{ once: true }}
+                                            className="group bg-white rounded-[2rem] p-8 flex gap-10 border border-transparent hover:border-blue-100 hover:shadow-3xl transition-all duration-500"
+                                        >
+                                            <div className="flex flex-col items-center justify-center bg-blue-50 rounded-3xl px-6 py-8 min-w-[100px] h-fit group-hover:bg-blue-600 transition-colors duration-500">
+                                                <span className="text-4xl font-black text-blue-600 group-hover:text-white transition-colors">{day}</span>
+                                                <span className="text-xs font-black uppercase tracking-widest text-blue-400 group-hover:text-blue-100 transition-colors mt-2">{monthShort}</span>
                                             </div>
-                                            <h3 className="text-2xl font-bold text-slate-800 group-hover:text-blue-600 transition-colors font-serif lowercase leading-tight">
-                                                {event.title}
-                                            </h3>
-                                            <p className="text-slate-500 text-sm leading-relaxed line-clamp-2">
-                                                {event.description}
-                                            </p>
-                                            <button className="flex items-center gap-2 text-blue-600 font-black text-[10px] uppercase tracking-widest group/btn pt-2">
-                                                Event Details
-                                                <span className="group-hover/btn:translate-x-2 transition-transform">→</span>
-                                            </button>
-                                        </div>
-                                    </motion.div>
-                                );
-                            })}
-                        </motion.div>
+                                            
+                                            <div className="flex-1 space-y-4">
+                                                <div className="flex items-center gap-3">
+                                                    <span className="px-3 py-1 bg-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest rounded-lg">
+                                                        {event.category || 'General'}
+                                                    </span>
+                                                    <span className="text-[10px] text-slate-300 font-bold">•</span>
+                                                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                                                        {event.startTime && `${event.startTime} Onwards`}
+                                                    </span>
+                                                </div>
+                                                <h3 className="text-2xl font-bold text-slate-800 group-hover:text-blue-600 transition-colors font-serif lowercase leading-tight">
+                                                    {event.title}
+                                                </h3>
+                                                <p className="text-slate-500 text-sm leading-relaxed line-clamp-2">
+                                                    {event.description}
+                                                </p>
+                                            </div>
+                                        </motion.div>
+                                    );
+                                })}
+                            </motion.div>
+                        ) : (
+                            <motion.div 
+                                key="no-events"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="text-center py-40 bg-white rounded-[3rem] border-2 border-dashed border-slate-100"
+                            >
+                                <div className="text-6xl mb-6 grayscale opacity-20">📅</div>
+                                <h3 className="text-2xl font-bold text-slate-400 font-serif mb-2">No events this month</h3>
+                                <p className="text-slate-300">Check surrounding months for school activities.</p>
+                            </motion.div>
+                        )
                     ) : (
                         <motion.div 
-                            key="no-events"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="text-center py-40 bg-white rounded-[3rem] border-2 border-dashed border-slate-100"
+                            key="calendar-view"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="bg-white rounded-[3rem] p-4 md:p-12 shadow-xl border border-slate-100 overflow-hidden"
                         >
-                            <div className="text-6xl mb-6 grayscale opacity-20">📅</div>
-                            <h3 className="text-2xl font-bold text-slate-400 font-serif mb-2">No events this month</h3>
-                            <p className="text-slate-300">Check surrounding months for school activities.</p>
+                            <div className="grid grid-cols-7 mb-8">
+                                {weekDays.map(day => (
+                                    <div key={day} className="text-center py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                                        {day}
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="grid grid-cols-7 gap-px bg-slate-100 border border-slate-100 rounded-3xl overflow-hidden">
+                                {blanks.map(b => (
+                                    <div key={`blank-${b}`} className="bg-slate-50 min-h-[120px] md:min-h-[160px]" />
+                                ))}
+                                {days.map(day => {
+                                    const dayEvents = events.filter(e => new Date(e.eventDate).getDate() === day);
+                                    const isToday = day === new Date().getDate() && month === new Date().getMonth() + 1 && year === new Date().getFullYear();
+
+                                    return (
+                                        <div key={day} className={`bg-white min-h-[120px] md:min-h-[160px] p-4 group transition-colors hover:bg-slate-50/50 ${isToday ? 'relative' : ''}`}>
+                                            {isToday && (
+                                                <div className="absolute top-4 right-4 w-2 h-2 bg-blue-600 rounded-full shadow-[0_0_10px_rgba(37,99,235,0.5)]" />
+                                            )}
+                                            <span className={`text-lg font-bold mb-4 block transition-colors ${isToday ? 'text-blue-600' : 'text-slate-300 group-hover:text-slate-600'}`}>
+                                                {day}
+                                            </span>
+                                            <div className="space-y-2">
+                                                {dayEvents.map(e => (
+                                                    <div 
+                                                        key={e.key}
+                                                        className="text-[9px] font-black uppercase tracking-tighter p-2 bg-blue-50 text-blue-600 rounded-lg truncate border border-blue-100 hover:bg-blue-600 hover:text-white transition-all cursor-default"
+                                                        title={e.title}
+                                                    >
+                                                        {e.title}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </motion.div>
                     )}
                 </AnimatePresence>

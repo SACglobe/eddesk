@@ -202,7 +202,6 @@ const EventsScreen = ({ data }) => {
                                         </p>
                                         <div className="pt-4 border-t border-slate-50 flex items-center justify-between">
                                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{event.startTime || '9:00 AM'}</span>
-                                            <button className="text-[10px] font-bold text-emerald-900 uppercase tracking-widest border-b border-emerald-900 hover:text-emerald-600 hover:border-emerald-600 transition-colors">Details</button>
                                         </div>
                                     </div>
                                 );
@@ -215,17 +214,6 @@ const EventsScreen = ({ data }) => {
                         </div>
                     )}
 
-                    {/* Institutional Message */}
-                    <div className="mt-32 p-12 bg-emerald-900 text-center relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-emerald-400 opacity-20"></div>
-                        <div className="relative z-10 max-w-2xl mx-auto space-y-6">
-                            <h2 className="text-2xl font-bold text-white serif tracking-wide">Committed to Excellence</h2>
-                            <p className="text-emerald-100/70 text-sm leading-relaxed">
-                                Our institution takes pride in organizing regular academic, cultural, and sporting events to ensure the holistic development of our students.
-                            </p>
-                            <button className="px-10 py-4 border border-emerald-400 text-emerald-400 font-bold uppercase tracking-widest text-[10px] hover:bg-emerald-400 hover:text-emerald-900 transition-all">Download Prospectus</button>
-                        </div>
-                    </div>
                 </div>
 
                 <style jsx>{`
