@@ -119,13 +119,21 @@ const MiniCalendar: React.FC<{
     return (
         <div className="font-sans">
             <div className="flex justify-between items-center mb-8">
-                <div className="flex items-center gap-4">
-                    <button onClick={onPrevMonth} className="p-1 hover:text-signature-gold transition-colors">
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/></svg>
+                <div className="flex items-center gap-2">
+                    <button 
+                        onClick={onPrevMonth} 
+                        className="w-10 h-10 flex items-center justify-center hover:text-signature-gold transition-colors -ml-3"
+                        aria-label="Previous Month"
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/></svg>
                     </button>
                     <h3 className="text-[11px] uppercase tracking-[0.3em] font-bold text-signature-gold">Institutional Calendar</h3>
-                    <button onClick={onNextMonth} className="p-1 hover:text-signature-gold transition-colors">
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>
+                    <button 
+                        onClick={onNextMonth} 
+                        className="w-10 h-10 flex items-center justify-center hover:text-signature-gold transition-colors"
+                        aria-label="Next Month"
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>
                     </button>
                 </div>
                 <span className="text-xs font-serif italic">{monthName} {year}</span>
@@ -158,17 +166,6 @@ const MiniCalendar: React.FC<{
                 })}
             </div>
 
-            <div className="space-y-6">
-                <h4 className="text-[10px] uppercase tracking-widest font-bold text-gray-500">Selected Resources</h4>
-                <ul className="space-y-4">
-                    {['Academic Calendar 2024', 'Founders Week Program'].map((doc, i) => (
-                        <li key={i} className="flex justify-between items-center group cursor-pointer border-b border-signature-navy/5 pb-4">
-                            <span className="text-[12px] group-hover:text-signature-gold transition-colors">{doc}</span>
-                            <svg className="w-3 h-3 opacity-30 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        </li>
-                    ))}
-                </ul>
-            </div>
         </div>
     );
 };
@@ -256,7 +253,7 @@ export default function Events({ data }: { data: TenantViewModel }) {
                                         const monthStr = d.toLocaleString('en-US', { month: 'short' });
                                         
                                         return (
-                                            <div key={event.key} className="grid grid-cols-1 md:grid-cols-4 gap-8 py-12 border-t border-signature-navy/10 group cursor-pointer transition-all hover:bg-signature-ivory/30 px-4 -mx-4">
+                                            <div key={event.key} className="grid grid-cols-1 md:grid-cols-4 gap-8 py-12 border-t border-signature-navy/10 transition-all hover:bg-signature-ivory/30 px-4 -mx-4 group">
                                                 <div className="md:col-span-1">
                                                     <div className="text-4xl font-serif mb-2 text-signature-navy">{dayStr} <span className="text-lg italic text-signature-gold">{monthStr}</span></div>
                                                     <div className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">{event.category || 'General'}</div>
@@ -265,9 +262,6 @@ export default function Events({ data }: { data: TenantViewModel }) {
                                                     <h3 className="text-2xl font-bold mb-4 group-hover:text-signature-gold transition-colors text-signature-navy">{event.title}</h3>
                                                     <p className="text-gray-500 leading-relaxed mb-8 italic">{event.description}</p>
                                                     <div className="flex gap-4">
-                                                        <button className="w-10 h-10 rounded-full border border-signature-navy flex items-center justify-center hover:bg-signature-navy hover:text-white transition-all">
-                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
-                                                        </button>
                                                         <span className="text-[10px] uppercase tracking-widest font-bold self-center text-signature-navy/60">{event.startTime || '9:00 AM'} • {event.location || 'Campus Center'}</span>
                                                     </div>
                                                 </div>
