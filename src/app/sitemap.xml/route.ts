@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { createPublicSupabaseClient } from '@/lib/supabase'
 
-const OWNER_DOMAINS = ['eddesk.in', 'localhost']
+const OWNER_DOMAINS = ['eddesk.in', 'localhost', '127.0.0.1', '192.168.1.6']
 const OWNER_BASE = 'https://www.eddesk.in'
 
 const TEMPLATE_SLUGS = [
@@ -89,20 +90,48 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-        const supabase = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!
-        )
+        console.log('[sitemap] Request host:', host)
+        console.log('[sitemap] Normalized domain:', domain)
 
-        const { data: school } = await supabase
+        const supabase = await createPublicSupabaseClient()
+        
+        // Try exact match with normalized domain
+        let { data: school, error: schoolError } = await supabase
             .from('schools')
-            .select('key')
+            .select('key, customdomain')
             .eq('customdomain', domain)
             .eq('isactive', true)
-            .single()
+            .maybeSingle()
+
+        // Fallback: Try with original host if normalized domain failed
+        if (!school && host !== domain) {
+            const { data: fallbackSchool } = await supabase
+                .from('schools')
+                .select('key, customdomain')
+                .eq('customdomain', host)
+                .eq('isactive', true)
+                .maybeSingle()
+            school = fallbackSchool
+        }
+
+        if (schoolError) {
+            console.error('[sitemap] School lookup error:', schoolError.message)
+        }
 
         if (!school) {
+            console.warn('[sitemap] No active school found for host:', host, 'or domain:', domain)
             return new NextResponse(wrapSitemap([]), { headers: XML_HEADERS })
+        }
+
+        console.log('[sitemap] Found school:', school.key)
+
+        const { data: screens, error: screensError } = await supabase
+            .from('templatescreens')
+            .select('slug, updatedat')
+            .eq('isactive', true)
+
+        if (screensError) {
+            console.error('[sitemap] Screens lookup error:', screensError.message)
         }
 
         return new NextResponse(buildTenantSitemap(domain), { headers: XML_HEADERS })
