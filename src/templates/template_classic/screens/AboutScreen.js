@@ -38,7 +38,7 @@ const AboutScreen = ({ data }) => {
             <section className="bg-emerald-900 py-24 text-center">
                 <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                     <span className="text-emerald-300 text-xs font-bold uppercase tracking-[0.5em] mb-4 block">Institutional History</span>
-                    <h1 className="text-4xl md:text-6xl text-white font-bold serif uppercase tracking-widest">{aboutTitle || 'More Than a School'}</h1>
+                    <h1 className="text-4xl md:text-6xl text-white font-bold serif uppercase tracking-widest">{aboutTitle || `About ${schoolName}`}</h1>
                     <div className="h-1 w-20 bg-emerald-400 mx-auto mt-8"></div>
                 </div>
             </section>
@@ -48,22 +48,22 @@ const AboutScreen = ({ data }) => {
                 <section className="py-24 bg-white">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-                            <div className="prose prose-emerald prose-lg max-w-none serif text-slate-700 leading-relaxed">
+                            <div className="prose prose-emerald prose-lg max-w-none serif text-slate-700 leading-relaxed text-left">
                                 <h2 className="text-3xl font-bold text-emerald-900 uppercase tracking-widest not-italic mb-8 border-b border-emerald-50 pb-4">Our Heritage</h2>
-                                <p>{aboutDescription || 'Education is about more than just textbooks and exams; it is about uncovering the potential within every student and providing the environment for that potential to flourish.'}</p>
-                                <p>We believe that true learning happens when curiosity meets guidance, and when local tradition meets global standards. Our campus is not just a collection of buildings; it is a vibrant ecosystem where character is forged.</p>
+                                {aboutDescription && <p>{aboutDescription}</p>}
+                                <p>Welcome to {schoolName}, an institution dedicated to fostering an environment where curiosity meets guidance and potential flourishes into excellence.</p>
                             </div>
                             <div className="relative group">
                                 <div className="absolute inset-0 bg-emerald-900 translate-x-4 translate-y-4 -z-10 transition-transform group-hover:translate-x-6 group-hover:translate-y-6"></div>
-                                <img
-                                    src="https://images.unsplash.com/photo-1541339907198-e08756ebafe1?auto=format&fit=crop&q=80&w=1200"
-                                    alt="Campus Heritage"
-                                    className="w-full h-[500px] object-cover grayscale group-hover:grayscale-0 transition-all duration-700 border border-emerald-900/10"
-                                />
-                                <div className="absolute top-8 right-8 bg-emerald-900 text-white p-6 shadow-2xl">
-                                    <span className="text-3xl font-bold block">{data?.identity?.foundedYear || '1985'}</span>
-                                    <span className="text-[10px] uppercase tracking-[0.3em] font-medium border-t border-emerald-700 mt-2 pt-2 block text-emerald-300">Foundation Year</span>
+                                <div className="w-full h-[500px] bg-emerald-50 border border-emerald-900/10 flex items-center justify-center p-12 text-center">
+                                    <span className="text-4xl text-emerald-900/20 font-bold serif uppercase tracking-widest">{schoolName}</span>
                                 </div>
+                                {data?.identity?.foundedYear && (
+                                    <div className="absolute top-8 right-8 bg-emerald-900 text-white p-6 shadow-2xl">
+                                        <span className="text-3xl font-bold block">{data.identity.foundedYear}</span>
+                                        <span className="text-[10px] uppercase tracking-[0.3em] font-medium border-t border-emerald-700 mt-2 pt-2 block text-emerald-300">Foundation Year</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -71,29 +71,35 @@ const AboutScreen = ({ data }) => {
             )}
 
             {/* Overview & Core Values */}
-            {identityEnabled && hasIdentityData && (
+            {identityEnabled && (vision || mission || motto) && (
                 <section className="py-24 bg-white">
-                    <div className="max-w-[1600px] mx-auto px-2 md:px-6">
+                    <div className="max-w-[1600px] mx-auto px-2 md:px-6 text-left">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
                             <div className="prose prose-emerald prose-lg max-w-none serif text-slate-700 leading-relaxed">
                                 <h2 className="text-3xl font-bold text-emerald-900 uppercase tracking-widest not-italic mb-8 border-b border-emerald-50 pb-4">Our Core Values</h2>
-                                <p className="mt-6">At {schoolName}, we believe that true education is a symbiotic relationship between intellectual development and moral character. Our roots are deep, but our vision is future-oriented.</p>
+                                <p className="mt-6">At {schoolName}, we prioritize the symbiotic relationship between intellectual development and moral character, ensuring our students are prepared for a future-oriented world.</p>
                             </div>
                             <div className="space-y-8">
-                                <div className="p-10 border border-emerald-100 bg-emerald-50/30 relative">
-                                    <div className="absolute top-0 left-0 w-1 h-full bg-emerald-900"></div>
-                                    <h3 className="text-xl font-bold uppercase tracking-widest serif mb-4 text-emerald-900">Our Vision</h3>
-                                    <p className="text-slate-600 italic leading-relaxed">"{vision}"</p>
-                                </div>
-                                <div className="p-10 border border-emerald-100 bg-emerald-50/30 relative">
-                                    <div className="absolute top-0 left-0 w-1 h-full bg-emerald-900"></div>
-                                    <h3 className="text-xl font-bold uppercase tracking-widest serif mb-4 text-emerald-900">Our Mission</h3>
-                                    <p className="text-slate-600 italic leading-relaxed">"{mission}"</p>
-                                </div>
-                                <div className="p-10 bg-emerald-900 text-white text-center shadow-xl">
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-300 block mb-4">Institutional Motto</span>
-                                    <p className="text-3xl font-bold serif italic uppercase">"{motto}"</p>
-                                </div>
+                                {vision && (
+                                    <div className="p-10 border border-emerald-100 bg-emerald-50/30 relative">
+                                        <div className="absolute top-0 left-0 w-1 h-full bg-emerald-900"></div>
+                                        <h3 className="text-xl font-bold uppercase tracking-widest serif mb-4 text-emerald-900">Our Vision</h3>
+                                        <p className="text-slate-600 italic leading-relaxed">"{vision}"</p>
+                                    </div>
+                                )}
+                                {mission && (
+                                    <div className="p-10 border border-emerald-100 bg-emerald-50/30 relative">
+                                        <div className="absolute top-0 left-0 w-1 h-full bg-emerald-900"></div>
+                                        <h3 className="text-xl font-bold uppercase tracking-widest serif mb-4 text-emerald-900">Our Mission</h3>
+                                        <p className="text-slate-600 italic leading-relaxed">"{mission}"</p>
+                                    </div>
+                                )}
+                                {motto && (
+                                    <div className="p-10 bg-emerald-900 text-white text-center shadow-xl">
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-300 block mb-4">Institutional Motto</span>
+                                        <p className="text-3xl font-bold serif italic uppercase">"{motto}"</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -105,7 +111,7 @@ const AboutScreen = ({ data }) => {
                 <section className="py-24 bg-slate-50 border-y border-slate-200">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                         <div className="text-center mb-16">
-                            <h2 className="text-3xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Why Choose Us</h2>
+                            <h2 className="text-3xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Why Choose {schoolName}</h2>
                             <div className="h-1 w-20 bg-emerald-900 mx-auto"></div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -123,24 +129,32 @@ const AboutScreen = ({ data }) => {
 
             {/* Chairman's Message */}
             {getComponent('leadership')?.isActive && hasChairmanData && (
-                <section className="py-24 bg-emerald-950 text-white">
+                <section className="py-24 bg-emerald-950 text-white text-left">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                         <div className="flex flex-col md:flex-row gap-16 items-center">
                             <div className="w-full md:w-5/12">
                                 <div className="relative group">
                                     <div className="absolute inset-0 bg-emerald-400/20 translate-x-4 translate-y-4 transition-transform group-hover:translate-x-6"></div>
-                                    <img src={chairman.imageUrl || "https://images.unsplash.com/photo-1507679799987-c73774573b8a?auto=format&fit=crop&q=80&w=1200"} alt={chairman.name} className="relative z-10 w-full border border-emerald-800 shadow-2xl rounded-sm object-cover" />
+                                    {chairman.imageUrl ? (
+                                        <img src={chairman.imageUrl} alt={chairman.name} className="relative z-10 w-full border border-emerald-800 shadow-2xl rounded-sm object-cover" />
+                                    ) : (
+                                        <div className="relative z-10 w-full aspect-[4/5] bg-emerald-900 border border-emerald-800 flex items-center justify-center shadow-2xl">
+                                            <span className="text-8xl text-emerald-800 font-bold uppercase">{chairman.name?.charAt(0) || 'C'}</span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div className="w-full md:w-7/12">
                                 <span className="text-emerald-400 text-xs font-bold uppercase tracking-[0.5em] mb-4 block">Chairman's Perspective</span>
                                 <h2 className="text-3xl font-bold text-white uppercase tracking-widest serif mb-2">Message from the Chairman</h2>
                                 <div className="h-1 w-20 bg-emerald-400 mb-10"></div>
-                                <div className="prose prose-invert prose-emerald prose-lg serif italic opacity-90">
-                                    <p>"{chairman.message || "Our commitment to excellence ensures that every student receives a world-class education focused on academic rigor and character development."}"</p>
-                                </div>
+                                {chairman.message && (
+                                    <div className="prose prose-invert prose-emerald prose-lg serif italic opacity-90">
+                                        <p>"{chairman.message}"</p>
+                                    </div>
+                                )}
                                 <div className="mt-12">
-                                    <p className="font-bold text-2xl serif text-emerald-400 uppercase">{chairman.name}</p>
+                                    <p className="font-bold text-2xl serif text-emerald-400 uppercase">{chairman.name || "Board Chairman"}</p>
                                     <p className="text-[10px] text-emerald-300/60 uppercase font-bold tracking-[0.3em]">{chairman.designation || 'Chairman'}</p>
                                 </div>
                             </div>
@@ -151,7 +165,7 @@ const AboutScreen = ({ data }) => {
 
             {/* Principal's Desk */}
             {getComponent('leadership')?.isActive && hasPrincipalData && (
-                <section className="py-24 bg-white border-b border-slate-100">
+                <section className="py-24 bg-white border-b border-slate-100 text-left">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                         <div className="flex flex-col md:flex-row-reverse gap-16 items-center">
                             <div className="w-full md:w-5/12">
@@ -168,11 +182,13 @@ const AboutScreen = ({ data }) => {
                             <div className="w-full md:w-7/12">
                                 <h2 className="text-3xl font-bold text-emerald-900 uppercase tracking-widest serif mb-2">From the Principal's Desk</h2>
                                 <div className="h-1 w-20 bg-emerald-900 mb-10"></div>
-                                <div className="prose prose-emerald prose-lg serif text-slate-700 italic">
-                                    <p>"{principal.message || "Welcome to our school, where we foster an environment of growth, learning, and character building."}"</p>
-                                </div>
+                                {principal.message && (
+                                    <div className="prose prose-emerald prose-lg serif text-slate-700 italic">
+                                        <p>"{principal.message}"</p>
+                                    </div>
+                                )}
                                 <div className="mt-12">
-                                    <p className="font-bold text-2xl serif text-slate-900 uppercase">{principal.name}</p>
+                                    <p className="font-bold text-2xl serif text-slate-900 uppercase">{principal.name || "School Principal"}</p>
                                     <p className="text-[10px] text-emerald-600 uppercase font-bold tracking-[0.3em]">{principal.designation || 'Principal'}</p>
                                 </div>
                             </div>
@@ -180,6 +196,7 @@ const AboutScreen = ({ data }) => {
                     </div>
                 </section>
             )}
+
 
             {/* Board Members / Governance */}
             {getComponent('boardmembers')?.isActive && hasBoardData && (

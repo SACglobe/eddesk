@@ -5,17 +5,16 @@ import "./globals.css";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
 });
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair",
+  display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "Sterling Signature Academy | Premium Institutional Excellence",
-  description: "Architects of the Future, Custodians of Tradition.",
-};
+
 
 export default function RootLayout({
   children,

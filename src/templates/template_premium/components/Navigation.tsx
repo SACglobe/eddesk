@@ -104,7 +104,7 @@ const Header: React.FC<HeaderProps> = ({ announcements, school, activePath }) =>
                     <div className="flex justify-between items-center w-full">
                         <Link href="/" className="flex items-center gap-6 group">
                             {showLogo && (
-                                <img src={school.logoUrl} alt={""} className="w-12 h-12 object-contain brightness-200" />
+                                <img src={school.logoUrl} alt={`${school.name || 'School'} Logo`} className="w-12 h-12 object-contain brightness-200" />
                             )}
                             <div className="text-2xl md:text-3xl font-serif font-bold tracking-tighter transition-colors duration-500 text-white">
                                 {school.name.split(' ').map((word: string, i: number) => (

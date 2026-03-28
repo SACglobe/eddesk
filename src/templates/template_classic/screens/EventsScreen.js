@@ -119,7 +119,7 @@ const EventsScreen = ({ data }) => {
                         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4">
                             <span className="text-white text-xs md:text-sm font-bold uppercase tracking-[0.5em] mb-6 animate-fade-up">{heroSlides[currentSlide]?.subheadline}</span>
                             <h1 className="text-4xl md:text-6xl font-bold text-white mb-8 serif tracking-tight leading-tight max-w-5xl animate-fade-up-delayed">
-                                {heroSlides[currentSlide]?.headline || 'School Events & Calendar'}
+                                {heroSlides[currentSlide]?.headline || `${schoolName} Events & Calendar`}
                             </h1>
                             <div className="flex gap-4 animate-fade-up-extra">
                                 {heroSlides[currentSlide]?.primaryButtonText && (
@@ -143,10 +143,20 @@ const EventsScreen = ({ data }) => {
                     </section>
                 )}
 
+                {!heroEnabled && (
+                    <section className="bg-emerald-900 py-24 text-center">
+                        <div className="max-w-[1600px] mx-auto px-2 md:px-6">
+                            <span className="text-emerald-300 text-xs font-bold uppercase tracking-[0.5em] mb-4 block">{schoolName} Calendar</span>
+                            <h1 className="text-4xl md:text-6xl text-white font-bold serif uppercase tracking-widest">{schoolName} Events</h1>
+                            <div className="h-1 w-20 bg-emerald-400 mx-auto mt-8"></div>
+                        </div>
+                    </section>
+                )}
+
                 <div className="max-w-[1600px] mx-auto px-2 md:px-6 py-20">
                     <div className="text-center mb-16">
-                        <span className="text-emerald-700 font-bold uppercase tracking-[0.3em] text-[10px] mb-2 block">Institutional Calendar</span>
-                        <h2 className="text-4xl md:text-5xl font-bold text-slate-900 uppercase tracking-widest serif">Upcoming Activities</h2>
+                        <span className="text-emerald-700 font-bold uppercase tracking-[0.3em] text-[10px] mb-2 block">{schoolName} Calendar</span>
+                        <h2 className="text-4xl md:text-5xl font-bold text-slate-900 uppercase tracking-widest serif">Events & Activities</h2>
                         <div className="h-1 w-20 bg-emerald-900 mx-auto mt-6"></div>
                     </div>
 

@@ -46,7 +46,7 @@ const ActivitiesPage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                                 ) : (
                                     <img
                                         src={heroMedia[0].mediaUrl}
-                                        alt=""
+                                        alt={heroMedia[0].headline || 'Campus Life'}
                                         className="w-full h-full object-cover scale-110"
                                     />
                                 )}
@@ -60,12 +60,12 @@ const ActivitiesPage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                             <div className="flex flex-col items-center gap-6">
                                 <div className="w-px h-16 bg-gradient-to-b from-transparent to-gold-500/60"></div>
                                 <p className="text-gold-500 uppercase tracking-[0.8em] text-[10px] font-bold">
-                                    {heroMedia[0].subheadline || 'Holistic Excellence'}
+                                    {heroMedia[0].subheadline || `Quality Since MCMLXXXVIII at ${data.school.name}`}
                                 </p>
                             </div>
                             
                             <h1 className="text-white text-6xl md:text-9xl font-serif italic leading-[0.9] tracking-tighter">
-                                {heroMedia[0].headline || 'Campus Life'}
+                                {heroMedia[0].headline || `${data.school.name} Engagement`}
                             </h1>
 
                             <div className="flex flex-col sm:flex-row gap-8 justify-center items-center mt-12">
@@ -88,8 +88,8 @@ const ActivitiesPage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                 <section id="activities" className="py-24 px-4 sm:px-8 lg:px-16 container mx-auto max-w-7xl">
                     <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
                         <div className="max-w-2xl space-y-4">
-                            <span className="text-gold-500 font-bold uppercase tracking-[0.3em] text-xs">Curated Excellence</span>
-                            <h2 className="text-5xl md:text-7xl font-light tracking-tight leading-none italic font-serif">Campus Life <span className="opacity-40">&</span> Engagement</h2>
+                            <span className="text-gold-500 font-bold uppercase tracking-[0.3em] text-xs">{data?.school?.name || 'Institutional'} Portfolio</span>
+                            <h2 className="text-5xl md:text-7xl font-light tracking-tight leading-none italic font-serif">{data?.school?.name || 'Campus'} <span className="opacity-40">&</span> Engagement</h2>
                         </div>
                         <div className="hidden md:block h-px flex-1 bg-white/10 mx-12 mb-4"></div>
                         <p className="text-white/40 max-w-xs text-sm leading-relaxed text-right font-light">

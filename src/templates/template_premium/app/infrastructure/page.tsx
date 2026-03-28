@@ -43,7 +43,7 @@ const InfrastructurePage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                                 ) : (
                                     <img
                                         src={heroMedia[0].mediaUrl}
-                                        alt=""
+                                        alt={heroMedia[0].headline || 'Campus Infrastructure'}
                                         className="w-full h-full object-cover scale-110"
                                     />
                                 )}
@@ -57,12 +57,12 @@ const InfrastructurePage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                             <div className="flex flex-col items-center gap-6">
                                 <div className="w-px h-16 bg-gradient-to-b from-transparent to-gold-500/60"></div>
                                 <p className="text-gold-500 uppercase tracking-[0.8em] text-[10px] font-bold">
-                                    {heroMedia[0].subheadline || 'World-Class Environment'}
+                                    {heroMedia[0].subheadline || `World-Class Environment at ${data.school.name}`}
                                 </p>
                             </div>
                             
                             <h1 className="text-white text-6xl md:text-9xl font-serif italic leading-[0.9] tracking-tighter">
-                                {heroMedia[0].headline || 'Our Campus'}
+                                {heroMedia[0].headline || `${data.school.name} Campus`}
                             </h1>
 
                             <div className="flex flex-col sm:flex-row gap-8 justify-center items-center mt-12">

@@ -71,11 +71,15 @@ const Gallery: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                         }))} />
                     ) : (
                         <div className="relative h-[60vh] flex items-center justify-center overflow-hidden">
-                            <img
-                                src={heroMedia[0]?.mediaUrl || "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&q=80&w=2000"}
-                                className="absolute inset-0 w-full h-full object-cover grayscale brightness-50"
-                                alt="Gallery Hero"
-                            />
+                            {heroMedia[0]?.mediaUrl ? (
+                                <img
+                                    src={heroMedia[0].mediaUrl}
+                                    className="absolute inset-0 w-full h-full object-cover grayscale brightness-50"
+                                    alt="Gallery Hero"
+                                />
+                            ) : (
+                                <div className="absolute inset-0 w-full h-full bg-base-300"></div>
+                            )}
                             <div className="absolute inset-0 bg-gradient-to-b from-primary/70 to-primary/90"></div>
                             <div className="relative z-10 text-center space-y-8 max-w-4xl px-4">
                                 <span className="text-accent font-black uppercase tracking-[0.5em] text-sm animate-pulse">Visual Chronicles</span>

@@ -38,7 +38,7 @@ export const Card: React.FC<{ title: string; image: string; description?: string
     <div className="group overflow-hidden relative bg-white border border-black/5 hover:border-signature-gold/40 transition-all duration-700 shadow-sm hover:shadow-2xl">
         <div className="aspect-[3/4] overflow-hidden relative">
             {image && isValidImageUrl(image) && (
-                <img src={image} alt={""} className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000 ease-out" loading="lazy" />
+                <img src={image} alt={title || 'Card Feature'} className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000 ease-out" loading="lazy" />
             )}
             <div className="absolute inset-0 bg-signature-navy/10 group-hover:bg-transparent transition-colors duration-700"></div>
         </div>

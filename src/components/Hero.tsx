@@ -43,9 +43,9 @@ export const Hero: React.FC = () => {
           transition={{ duration: 0.7, delay: 0.1 }}
           className={`${mDisplay} text-6xl md:text-8xl lg:text-9xl mb-10 leading-[0.95]`}
         >
-          Professional <br />
+          Next-Gen <br />
           <span className={marketingTheme.gradients.text}>
-            School Websites.
+            School Management.
           </span>
         </motion.h1>
 
@@ -55,8 +55,8 @@ export const Hero: React.FC = () => {
           transition={{ duration: 0.7, delay: 0.2 }}
           className="text-slate-400 text-lg md:text-2xl max-w-3xl mx-auto mb-16 leading-relaxed font-medium"
         >
-          Launch a premium website for your school in days. Complete with a powerful admin panel, 
-          automated notices, and student results management. Built for modern Indian institutions.
+          Launch a professional digital presence for your educational institution in days. 
+          The complete ecosystem for school websites, admissions, and academic administration.
         </motion.p>
 
         <motion.div
@@ -139,8 +139,10 @@ export const Hero: React.FC = () => {
             <div className="bg-slate-900/50 rounded-[3rem] overflow-hidden relative">
               <img
                 src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=2426"
-                alt="Dashboard Preview"
+                alt="EdDesk School Management Dashboard Preview"
                 className="w-full opacity-60 mix-blend-luminosity"
+                loading="eager"
+                fetchPriority="high"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
 
