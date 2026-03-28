@@ -3,10 +3,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import BroadcastTicker from "../components/BroadcastTicker";
 
-export const metadata = {
-  title: "St. Augustine Higher Secondary School",
-  description: "Knowledge, Discipline, Integrity - Est. 1952",
-};
+
 
 export default function RootLayout({ children }) {
   return (

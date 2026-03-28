@@ -60,6 +60,7 @@ const AnimatedNumber: React.FC<{ value: number; suffix?: string; duration?: numb
 
 export default function Home({ data }: { data: TenantViewModel }) {
     const now = new Date();
+    const schoolName = data.school?.name || SCHOOL_NAME;
 
     // Helper to get component config by code (handles aliases)
     const getComponent = (code: string) => {
@@ -206,8 +207,10 @@ export default function Home({ data }: { data: TenantViewModel }) {
     };
     return (
         <div className="space-y-24 pb-24">
-            {heroEnabled && heroMedia.length > 0 && (
-                <HeroSlider slides={heroMedia} />
+            {heroEnabled && heroMedia.length > 0 ? (
+                <HeroSlider slides={heroMedia} headingLevel="h1" />
+            ) : (
+                <h1 className="sr-only">{schoolName} | Official Website</h1>
             )}
 
             {/* Broadcast Ticker */}
@@ -249,10 +252,12 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                         <span className="text-[10px] font-black uppercase tracking-[0.5em] text-primary/40">Institutional Merit</span>
                                     </div>
                                     <h2 className="text-4xl md:text-5xl font-bold text-blue-950 leading-tight">Honors & Academic Results</h2>
-                                    <div className="space-y-1">
-                                        <h3 className="text-xl font-medium text-primary">Board Results {latestAcademicResult.year ?? '—'}</h3>
-                                        <p className="text-xs text-gray-400 font-medium uppercase tracking-widest">Academic Merit Summary</p>
-                                    </div>
+                                    {latestAcademicResult.year && (
+                                        <div className="space-y-1">
+                                            <h3 className="text-xl font-medium text-primary">Board Results {latestAcademicResult.year}</h3>
+                                            <p className="text-xs text-gray-400 font-medium uppercase tracking-widest">Academic Merit Summary</p>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-6 py-8 border-y border-gray-100">
@@ -317,10 +322,10 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                             </div>
                                             <div className="space-y-3">
                                                 <div className="inline-block px-3 py-1 bg-yellow-50 text-yellow-700 rounded-lg text-[9px] font-black uppercase tracking-widest">
-                                                    {item.category || "Institutional Recognition"}
+                                                    {item.category || "Merit"}
                                                 </div>
                                                 <h4 className="text-2xl font-bold text-blue-950">{item.title}</h4>
-                                                <p className="text-gray-400 text-sm leading-relaxed">{item.description}</p>
+                                                {item.description && <p className="text-gray-400 text-sm leading-relaxed">{item.description}</p>}
                                             </div>
                                         </div>
                                     ))}
@@ -350,7 +355,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                 {member.imageUrl && isValidImageUrl(member.imageUrl) && (
                                     <img
                                         src={member.imageUrl}
-                                        alt={""}
+                                        alt={`${member.name} - ${member.role || 'Leader'}`}
                                         className="rounded-[3rem] shadow-2xl relative z-10 w-full object-cover object-top aspect-[4/5]"
                                     />
                                 )}
@@ -365,10 +370,12 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                     <span className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></span>
                                     {member.role?.toUpperCase() || 'LEADERSHIP'}
                                 </div>
-                                <h2 className="text-4xl md:text-6xl font-bold text-primary leading-[1.1]">Leading with Vision & Integrity</h2>
-                                <p className="text-gray-600 text-lg md:text-xl leading-relaxed">
-                                    "{member.message ?? ''}"
-                                </p>
+                                 <h2 className="text-4xl md:text-6xl font-bold text-primary leading-[1.1]">{schoolName} Leadership</h2>
+                                {member.message && (
+                                    <p className="text-gray-600 text-lg md:text-xl leading-relaxed">
+                                        "{member.message}"
+                                    </p>
+                                )}
                                 <div className="pt-4 border-t-2 border-gray-100">
                                     <p className="font-bold text-primary text-2xl mb-1">{member.name ?? ''}</p>
                                     <p className="text-yellow-600 font-bold uppercase tracking-widest text-sm">{member.designation ?? member.role ?? 'Leader'}</p>
@@ -445,7 +452,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                     {member.imageUrl && isValidImageUrl(member.imageUrl) && (
                                         <img
                                             src={member.imageUrl}
-                                            alt={""}
+                                            alt={`${member.name} - ${member.designation || 'Faculty'}`}
                                             className="relative w-full aspect-[4/5] object-cover object-top rounded-[2.5rem] shadow-xl border-4 border-white grayscale group-hover:grayscale-0 transition-all duration-500"
                                         />
                                     )}
@@ -621,7 +628,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                             ) : (item.imageUrl && isValidImageUrl(item.imageUrl)) ? (
                                                 <img
                                                     src={item.imageUrl}
-                                                    alt={item.caption ?? 'Gallery highlight'}
+                                                    alt={item.caption || 'Gallery highlight'}
                                                     className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
                                                 />
                                             ) : null}
@@ -629,7 +636,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                             <div className="absolute bottom-0 p-8 text-left">
                                                 <span className="bg-accent text-primary px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-3 inline-block">Campus Life</span>
                                                 <h4 className="text-white font-bold text-xl leading-snug">
-                                                    {item.caption ?? 'Moments of discovery and achievement captured.'}
+                                                    {item.caption || `${schoolName} Campus Life`}
                                                 </h4>
                                             </div>
                                         </div>

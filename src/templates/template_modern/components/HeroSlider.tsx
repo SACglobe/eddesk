@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import NextImage from 'next/image';
 import { isValidImageUrl } from '@/core/utils/url';
 
 export interface HeroSlide {
@@ -16,9 +17,13 @@ export interface HeroSlide {
     isActive: boolean;
     displayOrder: number;
 }
-export interface HeroSliderProps { slides: HeroSlide[] }
+export interface HeroSliderProps { 
+    slides: HeroSlide[];
+    headingLevel?: 'h1' | 'h2';
+}
 
-const HeroSlider: React.FC<HeroSliderProps> = ({ slides: rawSlides }) => {
+const HeroSlider: React.FC<HeroSliderProps> = ({ slides: rawSlides, headingLevel = 'h1' }) => {
+    const HeadingTag = headingLevel;
     const slides = rawSlides
         .filter(s => s.isActive && s.mediaUrl && isValidImageUrl(s.mediaUrl))
         .sort((a, b) => a.displayOrder - b.displayOrder);
@@ -54,16 +59,30 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ slides: rawSlides }) => {
                         />
                     ) : (
                         <div
-                            className={`absolute inset-0 bg-cover bg-center transition-transform duration-[8000ms] ease-out ${index === current ? 'scale-110' : 'scale-100'
+                            className={`absolute inset-0 transition-transform duration-[8000ms] ease-out ${index === current ? 'scale-110' : 'scale-100'
                                 }`}
-                            style={{ backgroundImage: `url(${slide.mediaUrl})` }}
-                        />
+                        >
+                            <NextImage
+                                src={slide.mediaUrl}
+                                alt={slide.headline || `Institutional Highlight ${index + 1}`}
+                                fill
+                                className="object-cover"
+                                priority={index === 0}
+                                sizes="100vw"
+                            />
+                        </div>
                     )}
                     <div className="absolute inset-0 bg-black/40" />
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-                        <h1 className="text-white text-4xl md:text-8xl font-bold mb-6 drop-shadow-lg transform transition-all duration-1000 translate-y-0 opacity-100 font-playfair">
-                            {slide.headline}
-                        </h1>
+                        {index === 0 ? (
+                            <HeadingTag className="text-white text-4xl md:text-8xl font-bold mb-6 drop-shadow-lg transform transition-all duration-1000 translate-y-0 opacity-100 font-playfair">
+                                {slide.headline}
+                            </HeadingTag>
+                        ) : (
+                            <h2 className="text-white text-4xl md:text-8xl font-bold mb-6 drop-shadow-lg transform transition-all duration-1000 translate-y-0 opacity-100 font-playfair">
+                                {slide.headline}
+                            </h2>
+                        )}
                         <p className="text-accent text-xl md:text-3xl font-medium mb-12 max-w-2xl drop-shadow-md opacity-90">
                             {slide.subheadline}
                         </p>

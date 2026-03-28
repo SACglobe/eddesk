@@ -19,7 +19,7 @@ interface HeroSlide {
   secondaryButtonUrl: string;
 }
 
-const Hero: React.FC<{ heroSlide: HeroSlide | null }> = ({ heroSlide }) => {
+const Hero: React.FC<{ heroSlide: HeroSlide | null, schoolName: string }> = ({ heroSlide, schoolName }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -61,14 +61,14 @@ const Hero: React.FC<{ heroSlide: HeroSlide | null }> = ({ heroSlide }) => {
           <div className="mb-10 flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-10 duration-1000">
             <div className="w-px h-24 bg-gradient-to-b from-transparent to-signature-gold/60"></div>
             <p className="text-signature-gold uppercase tracking-[0.8em] text-[10px] md:text-xs font-bold">
-              {heroSlide?.subheadline || 'ESTABLISHED MCMLXXXVIII'}
+              {heroSlide?.subheadline || `Quality Since MCMLXXXVIII at ${schoolName}`}
             </p>
           </div>
 
           <h1 className="text-white text-5xl md:text-8xl font-serif leading-[0.9] mb-12 tracking-tighter animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
             {heroSlide?.headline ?? (
               <>
-                Public <br />
+                {schoolName || 'Institutional'} <br />
                 <span className="italic text-signature-gold block mt-4 lowercase">Engagements</span>
               </>
             )}
@@ -96,8 +96,9 @@ const MiniCalendar: React.FC<{
     currentDate: Date, 
     events: any[],
     onPrevMonth: () => void,
-    onNextMonth: () => void
-}> = ({ currentDate, events, onPrevMonth, onNextMonth }) => {
+    onNextMonth: () => void,
+    schoolName: string
+}> = ({ currentDate, events, onPrevMonth, onNextMonth, schoolName }) => {
     const monthName = currentDate.toLocaleString('default', { month: 'long' });
     const year = currentDate.getFullYear();
     
@@ -127,7 +128,7 @@ const MiniCalendar: React.FC<{
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/></svg>
                     </button>
-                    <h3 className="text-[11px] uppercase tracking-[0.3em] font-bold text-signature-gold">Institutional Calendar</h3>
+                    <h3 className="text-[11px] uppercase tracking-[0.3em] font-bold text-signature-gold">{schoolName || 'Institutional'} Calendar</h3>
                     <button 
                         onClick={onNextMonth} 
                         className="w-10 h-10 flex items-center justify-center hover:text-signature-gold transition-colors"
@@ -233,7 +234,7 @@ export default function Events({ data }: { data: TenantViewModel }) {
     return (
         <LayoutWrapper>
             <div className="fade-in">
-                {heroEnabled && firstSlide && <Hero heroSlide={firstSlide} />}
+                {heroEnabled && firstSlide && <Hero heroSlide={firstSlide} schoolName={data?.school?.name || ''} />}
                 
                 <div className="max-w-7xl mx-auto px-6 py-24">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-24">
@@ -283,6 +284,7 @@ export default function Events({ data }: { data: TenantViewModel }) {
                                     events={events} 
                                     onPrevMonth={handlePrevMonth} 
                                     onNextMonth={handleNextMonth} 
+                                    schoolName={data?.school?.name || ''}
                                 />
                             </div>
                         </aside>

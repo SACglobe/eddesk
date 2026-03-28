@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { SectionHeader, Card, Button, StatCounter, TestimonialSlider, useIntersectionObserver } from '../components/Shared';
 import Link from 'next/link';
+import NextImage from 'next/image';
 import { isValidImageUrl } from '@/core/utils/url';
 import LayoutWrapper from '../components/LayoutWrapper';
 import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
@@ -18,7 +19,7 @@ interface HeroSlide {
   secondaryButtonUrl: string;
 }
 
-const Hero: React.FC<{ heroSlide: HeroSlide | null }> = ({ heroSlide }) => {
+const Hero: React.FC<{ heroSlide: HeroSlide | null; schoolName: string }> = ({ heroSlide, schoolName }) => {
   const [isFilmOpen, setIsFilmOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -48,10 +49,13 @@ const Hero: React.FC<{ heroSlide: HeroSlide | null }> = ({ heroSlide }) => {
                 />
               </video>
             ) : (
-              <img
+              <NextImage
                 src={heroSlide.mediaUrl}
-                alt={""}
-                className="w-full h-full object-cover scale-110"
+                alt={heroSlide.headline || `${schoolName} Hero Image`}
+                fill
+                className="object-cover scale-110"
+                priority
+                sizes="100vw"
               />
             )}
             <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-transparent z-[1]"></div>
@@ -64,22 +68,22 @@ const Hero: React.FC<{ heroSlide: HeroSlide | null }> = ({ heroSlide }) => {
           <div className="mb-10 flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-10 duration-1000">
             <div className="w-px h-24 bg-gradient-to-b from-transparent to-signature-gold/60"></div>
             <p className="text-signature-gold uppercase tracking-[0.8em] text-[10px] md:text-xs font-bold">
-              {heroSlide?.subheadline || 'ESTABLISHED MCMLXXXVIII'}
+              {heroSlide?.subheadline || `${schoolName} — Excellence in Education`}
             </p>
           </div>
 
           <h1 className="text-white text-7xl md:text-[10rem] font-serif leading-[0.9] mb-12 tracking-tighter animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
             {heroSlide?.headline ?? (
               <>
-                The Art of <br />
-                <span className="italic text-signature-gold block mt-4">Mastery.</span>
+                {schoolName} <br />
+                <span className="italic text-signature-gold block mt-4">Legacy.</span>
               </>
             )}
           </h1>
 
           <div className="flex flex-col sm:flex-row gap-12 justify-center items-center mt-12 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-500">
             <Link href={heroSlide?.primaryButtonUrl || '/admission'}>
-              <Button variant="gold">{heroSlide?.primaryButtonText || 'Institutional Prospectus'}</Button>
+              <Button variant="gold">{heroSlide?.primaryButtonText || `Join ${schoolName}`}</Button>
             </Link>
 
             {heroSlide?.secondaryButtonText && (
@@ -136,9 +140,9 @@ const InstitutionalStats: React.FC<{
           <div className={`py-24 px-8 lg:pr-24 lg:pl-16 bg-[#F0F7FF] transition-all duration-1000 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
             <div className="flex items-center gap-4 mb-8">
               <div className="w-8 h-px bg-signature-gold"></div>
-              <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-signature-gold">Institutional Merit</span>
+              <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-signature-gold">Scholastic Records</span>
             </div>
-            <h2 className="text-5xl md:text-6xl font-serif text-signature-navy mb-12 leading-tight tracking-tight">Honors & Academic <br />Results</h2>
+            <h2 className="text-5xl md:text-6xl font-serif text-signature-navy mb-12 leading-tight tracking-tight">Honors & Results</h2>
 
             <div className="mb-12">
               <h3 className="text-2xl font-serif text-signature-navy mb-2">Board Results {latestAcademicResult.year || '—'}</h3>
@@ -172,9 +176,9 @@ const InstitutionalStats: React.FC<{
           <div className={`py-24 px-8 lg:pl-24 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'}`}>
             <div className="flex items-center gap-4 mb-8">
               <div className="w-8 h-px bg-signature-navy/20"></div>
-              <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-gray-400">Institutional Recognition</span>
+              <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-gray-400">Institutional Excellence</span>
             </div>
-            <h2 className="text-5xl md:text-6xl font-serif text-signature-navy mb-16 tracking-tight">Achievements & Glories</h2>
+            <h2 className="text-5xl md:text-6xl font-serif text-signature-navy mb-16 tracking-tight">Merits & Achievements</h2>
 
             <div className="space-y-20 mb-20">
               {academicAchievements.slice(0, 2).map((item, i) => (
@@ -315,9 +319,9 @@ const FacultyHighlights: React.FC<FacultyHighlightsProps> = ({ faculty, facultyE
       <div className="max-w-[1400px] mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12">
           <div>
-            <SectionHeader title="Intellectual Capital" subtitle="Our Distinguished Educators" />
+            <SectionHeader title="Intellectual Capital" subtitle="Our Distinguished Faculty" />
             <p className="text-xl text-signature-navy/50 max-w-md font-light italic leading-relaxed mt-4">
-              World-class mentors dedicated to fostering excellence and innovation.
+              Mentors dedicated to fostering excellence and innovation.
             </p>
           </div>
         </div>
@@ -327,7 +331,7 @@ const FacultyHighlights: React.FC<FacultyHighlightsProps> = ({ faculty, facultyE
             <div key={i} className={`group transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`} style={{ transitionDelay: `${i * 200}ms` }}>
               <div className="relative aspect-[4/5] overflow-hidden mb-8">
                 {edu.photoUrl && isValidImageUrl(edu.photoUrl) && (
-                  <img src={edu.photoUrl} alt={""} className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
+                  <img src={edu.photoUrl} alt={`${edu.name} - Faculty`} className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
                 )}
                 <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-signature-gold/30"></div>
               </div>
@@ -493,7 +497,7 @@ const UpcomingEvents: React.FC<{ eventsToShow: any[], eventsEnabled: boolean, ev
     <section ref={containerRef} className="bg-signature-navy text-white py-48 px-8 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-1/3 h-full bg-signature-gold/5 -skew-x-12 translate-x-1/2"></div>
       <div className="max-w-7xl mx-auto relative z-10">
-        <SectionHeader title="Upcoming Events" subtitle="Institutional Engagements" light center />
+        <SectionHeader title="Events & Updates" subtitle="Institutional Calendar" light center />
 
         <div className="mt-24 space-y-0 border-t border-white/10">
           {eventsToShow.map((event: any, i: number) => (
@@ -645,8 +649,23 @@ export default function Home({ data }: { data: TenantViewModel }) {
   return (
     <LayoutWrapper>
       <div className="fade-in bg-signature-ivory">
-        {heroEnabled && heroSlide && (
-          <Hero heroSlide={heroSlide} />
+        {heroEnabled ? (
+          <Hero heroSlide={heroSlide} schoolName={data.school.name} />
+        ) : (
+          <section className="bg-signature-navy py-48 text-center relative overflow-hidden">
+            <div className="absolute inset-0 z-0">
+               <div className="absolute inset-0 bg-signature-navy/90 backdrop-blur-sm"></div>
+            </div>
+            <div className="relative z-10 max-w-5xl mx-auto px-6">
+              <span className="text-signature-gold uppercase tracking-[0.8em] text-[10px] md:text-xs font-bold mb-8 block">
+                {data.school.name}
+              </span>
+              <h1 className="text-white text-6xl md:text-9xl font-serif leading-[0.9] tracking-tighter">
+                Institutional <br />
+                <span className="italic text-signature-gold block mt-4">Legacy.</span>
+              </h1>
+            </div>
+          </section>
         )}
 
         <div className="flex flex-col">
@@ -666,12 +685,17 @@ export default function Home({ data }: { data: TenantViewModel }) {
               <section key={member.key || idx} className="py-48 px-8 grid lg:grid-cols-2 gap-24 items-center max-w-[1400px] mx-auto border-b border-signature-navy/5">
                 <div className={`relative aspect-[4/5] overflow-hidden rounded-2xl group ${idx % 2 !== 0 ? 'lg:order-2' : ''}`}>
                   {member.imageUrl && isValidImageUrl(member.imageUrl) && (
-                    <img src={member.imageUrl} alt={""} className="w-full h-full object-cover object-top transition-transform duration-1000 group-hover:scale-105" />
+                    <NextImage 
+                      src={member.imageUrl} 
+                      alt={`${member.name} - ${member.designation || 'Institutional Leader'}`} 
+                      fill
+                      className="object-cover object-top transition-transform duration-1000 group-hover:scale-105" 
+                    />
                   )}
                   <div className="absolute inset-0 bg-signature-navy/20 mix-blend-multiply"></div>
                 </div>
                 <div className={`${idx % 2 !== 0 ? 'lg:order-1' : ''}`}>
-                  <SectionHeader title="Leadership" subtitle={member.role?.toUpperCase() || "Visionary Guidance"} />
+                  <SectionHeader title="Leadership" subtitle={member.role?.toUpperCase() || `${data.school.name} Guidance`} />
                   <p className="text-2xl text-signature-navy/60 font-serif italic mb-12 leading-relaxed">
                     "{member.message || ''}"
                   </p>
@@ -728,7 +752,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
             <section className="py-48 px-8 bg-white">
             <div className="max-w-[1400px] mx-auto">
               <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12">
-                <SectionHeader title="Gallery" subtitle="The Sterling Experience" />
+                <SectionHeader title="Gallery" subtitle={`${data.school.name} Portraits`} />
                 <Link href="/activities">
                   <Button variant="outline">Explore Enrichment</Button>
                 </Link>
@@ -792,8 +816,8 @@ export default function Home({ data }: { data: TenantViewModel }) {
         <section className="py-48 bg-signature-gold text-white text-center px-8 relative overflow-hidden">
           <div className="absolute inset-0 bg-signature-navy/10"></div>
           <div className="relative z-10 max-w-4xl mx-auto">
-            <p className="text-[12px] uppercase tracking-[0.6em] font-bold mb-10">2024-2025 ADMISSIONS</p>
-            <h2 className="text-6xl md:text-8xl font-serif mb-16 leading-tight">Start your <br /><span className="italic">Signature Journey.</span></h2>
+            <p className="text-[12px] uppercase tracking-[0.6em] font-bold mb-10">ACADEMIC ADMISSIONS</p>
+            <h2 className="text-6xl md:text-8xl font-serif mb-16 leading-tight">Start your <br /><span className="italic">Excellence Journey.</span></h2>
             <div className="flex flex-col sm:flex-row gap-8 justify-center">
               <Link href="/admission">
                 <span className="inline-block px-16 py-6 bg-white text-signature-navy text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-signature-navy hover:text-white transition-all duration-500 shadow-2xl">

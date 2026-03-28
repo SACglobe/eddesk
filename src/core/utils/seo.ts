@@ -97,6 +97,7 @@ export function generateTenantMetadata(
         : [];
 
     return {
+        metadataBase: new URL(`https://${domain}`),
         title,
         description,
         keywords,
@@ -104,6 +105,14 @@ export function generateTenantMetadata(
         category: 'education',
         applicationName: school.name,
         generator: 'EdDesk',
+        alternates: {
+            canonical: '/',
+        },
+        formatDetection: {
+            telephone: true,
+            address: true,
+            email: true,
+        },
         robots: isDemo
             ? { index: false, follow: false, noarchive: true }
             : {
@@ -112,14 +121,11 @@ export function generateTenantMetadata(
                 googleBot: {
                     index: true,
                     follow: true,
+                    'max-video-preview': -1,
                     'max-image-preview': 'large',
                     'max-snippet': -1,
                 },
             },
-        alternates: {
-            canonical: `https://${domain}`,
-        },
-        metadataBase: new URL(`https://${domain}`),
         openGraph: {
             title,
             description,
@@ -133,70 +139,14 @@ export function generateTenantMetadata(
             card: 'summary_large_image',
             title,
             description,
-            images: ogImages.map(img => img.url),
+            images: ogImage ? [ogImage] : [],
         },
-        icons: school.logoUrl
-            ? {
-                icon: school.logoUrl,
-                apple: school.logoUrl,
-            }
-            : undefined,
     };
 }
 
 /**
  * Generates JSON-LD Structured Data for Local Business (School).
  */
-export function generateSchoolJsonLd(data: TenantViewModel, domain: string) {
-    const school = data.school;
-    const contact = data.contactDetails as any;
-
-    const sameAs = [
-        contact?.facebook,
-        contact?.instagram,
-        contact?.twitter,
-        contact?.youtube,
-    ].filter(Boolean);
-
-    const principal = data.principal as any;
-    const employeeBlock = principal
-        ? {
-            employee: {
-                '@type': 'Person',
-                name: principal.name,
-                jobTitle: principal.designation || 'Principal',
-                ...(principal.imageUrl ? { image: principal.imageUrl } : {}),
-            },
-        }
-        : {};
-
-    return {
-        '@context': 'https://schema.org',
-        '@type': ['EducationalOrganization', 'School'],
-        name: school.name,
-        url: `https://${domain}`,
-        logo: {
-            '@type': 'ImageObject',
-            url: school.logoUrl,
-            width: 200,
-            height: 200,
-        },
-        image: school.logoUrl,
-        description: `Official website of ${school.name}. Located in ${school.city}, ${school.state}.`,
-        address: {
-            '@type': 'PostalAddress',
-            streetAddress: school.address || school.fullAddress,
-            addressLocality: school.city || '',
-            addressRegion: school.state || '',
-            postalCode: school.postalCode || '',
-            addressCountry: school.country || 'IN',
-        },
-        telephone: school.phone,
-        email: school.email,
-        ...(sameAs.length > 0 ? { sameAs } : {}),
-        ...employeeBlock,
-    };
-}
 
 /**
  * Generates Event schema for upcoming school events.
@@ -381,5 +331,346 @@ export function generateAboutJsonLd(data: TenantViewModel, domain: string) {
                 }
             } : {})
         }
+    };
+}
+
+/**
+ * Generates Gallery Page specific metadata.
+ */
+export function generateGalleryMetadata(data: TenantViewModel, domain: string, isDemo = false): Metadata {
+    const school = data.school;
+    const base = generateTenantMetadata(data, domain, isDemo);
+    const title = isDemo ? `[PREVIEW] Photo Gallery - ${school.name} | EdDesk` : `Photo Gallery | ${school.name}`;
+    return {
+        ...base,
+        title,
+        description: `Explore ${school.name}'s campus, events, and activities through our photo gallery.`,
+        alternates: { canonical: `https://${domain}/gallery` },
+        openGraph: { ...(base.openGraph as object), title, url: `https://${domain}/gallery` },
+    };
+}
+
+/**
+ * Generates Events Page specific metadata.
+ */
+export function generateEventsMetadata(data: TenantViewModel, domain: string, isDemo = false): Metadata {
+    const school = data.school;
+    const base = generateTenantMetadata(data, domain, isDemo);
+    const title = isDemo ? `[PREVIEW] Events & Programs - ${school.name} | EdDesk` : `Events & Programs | ${school.name}`;
+    return {
+        ...base,
+        title,
+        description: `Upcoming events, sports days, and cultural programs at ${school.name}.`,
+        alternates: { canonical: `https://${domain}/events` },
+        openGraph: { ...(base.openGraph as object), title, url: `https://${domain}/events` },
+    };
+}
+
+/**
+ * Generates Faculty Page specific metadata.
+ */
+export function generateFacultyMetadata(data: TenantViewModel, domain: string, isDemo = false): Metadata {
+    const school = data.school;
+    const base = generateTenantMetadata(data, domain, isDemo);
+    const title = isDemo ? `[PREVIEW] Our Faculty - ${school.name} | EdDesk` : `Our Faculty | ${school.name}`;
+    return {
+        ...base,
+        title,
+        description: `Meet the experienced teachers and staff at ${school.name}${school.city ? ` in ${school.city}` : ''}.`,
+        alternates: { canonical: `https://${domain}/faculty` },
+        openGraph: { ...(base.openGraph as object), title, url: `https://${domain}/faculty` },
+    };
+}
+
+/**
+ * Generates Admission Page specific metadata.
+ */
+export function generateAdmissionMetadata(data: TenantViewModel, domain: string, isDemo = false): Metadata {
+    const school = data.school;
+    const base = generateTenantMetadata(data, domain, isDemo);
+    const year = new Date().getFullYear();
+    const title = isDemo ? `[PREVIEW] Admissions ${year} - ${school.name} | EdDesk` : `Admissions ${year} | ${school.name}`;
+    return {
+        ...base,
+        title,
+        description: `Apply for admission at ${school.name}. Learn about eligibility, steps, and fees for the upcoming academic year.`,
+        alternates: { canonical: `https://${domain}/admission` },
+        openGraph: { ...(base.openGraph as object), title, url: `https://${domain}/admission` },
+    };
+}
+
+/**
+ * Generates Contact Page specific metadata.
+ */
+export function generateContactMetadata(data: TenantViewModel, domain: string, isDemo = false): Metadata {
+    const school = data.school;
+    const base = generateTenantMetadata(data, domain, isDemo);
+    const title = isDemo ? `[PREVIEW] Contact Us - ${school.name} | EdDesk` : `Contact Us | ${school.name}`;
+    return {
+        ...base,
+        title,
+        description: `Get in touch with ${school.name}. Find our address, phone, email, and map for our campus${school.city ? ` in ${school.city}` : ''}.`,
+        alternates: { canonical: `https://${domain}/contact` },
+        openGraph: { ...(base.openGraph as object), title, url: `https://${domain}/contact` },
+    };
+}
+
+/**
+ * Generates Academics Page specific metadata.
+ */
+export function generateAcademicsMetadata(data: TenantViewModel, domain: string, isDemo = false): Metadata {
+    const school = data.school;
+    const base = generateTenantMetadata(data, domain, isDemo);
+    const title = isDemo ? `[PREVIEW] Academics - ${school.name} | EdDesk` : `Academics | ${school.name}`;
+    return {
+        ...base,
+        title,
+        description: `Academics, curriculum, and educational excellence at ${school.name}.`,
+        alternates: { canonical: `https://${domain}/academics` },
+        openGraph: { ...(base.openGraph as object), title, url: `https://${domain}/academics` },
+    };
+}
+
+/**
+ * Generates Activities Page specific metadata.
+ */
+export function generateActivitiesMetadata(data: TenantViewModel, domain: string, isDemo = false): Metadata {
+    const school = data.school;
+    const base = generateTenantMetadata(data, domain, isDemo);
+    const title = isDemo ? `[PREVIEW] Activities & Sports - ${school.name} | EdDesk` : `Activities & Sports | ${school.name}`;
+    return {
+        ...base,
+        title,
+        description: `Extracurricular activities, sports, and cultural programs at ${school.name}.`,
+        alternates: { canonical: `https://${domain}/activities` },
+        openGraph: { ...(base.openGraph as object), title, url: `https://${domain}/activities` },
+    };
+}
+
+/**
+ * Generates Infrastructure Page specific metadata.
+ */
+export function generateInfrastructureMetadata(data: TenantViewModel, domain: string, isDemo = false): Metadata {
+    const school = data.school;
+    const base = generateTenantMetadata(data, domain, isDemo);
+    const title = isDemo ? `[PREVIEW] Campus & Infrastructure - ${school.name} | EdDesk` : `Campus & Infrastructure | ${school.name}`;
+    return {
+        ...base,
+        title,
+        description: `Discover the modern facilities and campus infrastructure at ${school.name}.`,
+        alternates: { canonical: `https://${domain}/infrastructure` },
+        openGraph: { ...(base.openGraph as object), title, url: `https://${domain}/infrastructure` },
+    };
+}
+
+/**
+ * Generates WebSite Schema with SearchAction
+ */
+export function generateWebSiteJsonLd(data: TenantViewModel, domain: string) {
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        'name': data.school.name,
+        'url': `https://${domain}`,
+        'potentialAction': {
+            '@type': 'SearchAction',
+            'target': `https://${domain}/?q={search_term_string}`,
+            'query-input': 'required name=search_term_string'
+        }
+    };
+}
+
+/**
+ * Generates ContactPage Schema
+ */
+export function generateContactJsonLd(data: TenantViewModel, domain: string) {
+    const school = data.school;
+    const contact = data.contactDetails as any;
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'ContactPage',
+        'name': `Contact ${school.name}`,
+        'url': `https://${domain}/contact`,
+        'mainEntity': {
+            '@type': 'EducationalOrganization',
+            'name': school.name,
+            'telephone': contact?.phone || school.phone,
+            'email': contact?.email || school.email,
+            'address': {
+                '@type': 'PostalAddress',
+                'streetAddress': contact?.address || school.address || school.fullAddress,
+                'addressLocality': contact?.city || school.city || '',
+                'addressRegion': contact?.state || school.state || '',
+                'postalCode': contact?.postalCode || school.postalCode || '',
+                'addressCountry': contact?.country || school.country || 'IN'
+            }
+        }
+    };
+}
+
+/**
+ * Generates Faculty / Person ItemList Schema
+ */
+export function generateFacultyJsonLd(data: TenantViewModel, domain: string) {
+    const faculty = data.faculty || [];
+    if (faculty.length === 0) return null;
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        'name': `Faculty at ${data.school.name}`,
+        'url': `https://${domain}/faculty`,
+        'itemListElement': faculty.slice(0, 20).map((member: any, i: number) => ({
+            '@type': 'ListItem',
+            'position': i + 1,
+            'item': {
+                '@type': 'Person',
+                'name': member.name,
+                'jobTitle': member.designation || member.role || 'Teacher',
+                ...(member.imageUrl ? { 'image': member.imageUrl } : {}),
+                'worksFor': {
+                    '@type': 'EducationalOrganization',
+                    'name': data.school.name
+                }
+            }
+        }))
+    };
+}
+
+/**
+ * Generates Gallery / ImageGallery Schema
+ */
+export function generateGalleryJsonLd(data: TenantViewModel, domain: string) {
+    const media = data.gallery || [];
+    if (media.length === 0) return null;
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'ImageGallery',
+        'name': `Photo Gallery - ${data.school.name}`,
+        'url': `https://${domain}/gallery`,
+        'about': {
+            '@type': 'EducationalOrganization',
+            'name': data.school.name
+        }
+    };
+}
+
+/**
+ * Generates Admission / Service Schema
+ */
+export function generateAdmissionJsonLd(data: TenantViewModel, domain: string) {
+    const school = data.school;
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'Service',
+        'name': `Admissions at ${school.name}`,
+        'url': `https://${domain}/admission`,
+        'provider': {
+            '@type': 'EducationalOrganization',
+            'name': school.name,
+            'url': `https://${domain}`
+        },
+        'serviceType': 'School Admissions'
+    };
+}
+
+/**
+ * Generates Academics / EducationalOccupationalProgram Schema
+ */
+export function generateAcademicsJsonLd(data: TenantViewModel, domain: string) {
+    const school = data.school;
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'EducationalOccupationalProgram',
+        'name': `Academics at ${school.name}`,
+        'url': `https://${domain}/academics`,
+        'provider': {
+            '@type': 'EducationalOrganization',
+            'name': school.name,
+            'url': `https://${domain}`
+        }
+    };
+}
+/**
+ * Generates School / EducationalOrganization Schema for the homepage.
+ */
+export function generateSchoolJsonLd(data: TenantViewModel, domain: string) {
+    const school = data.school;
+    const contact = data.contactDetails as any;
+    const principal = data.principal as any;
+    const fallbackImage = 'https://eddesk.in/assets/school-fallback.png'; // Global fallback
+
+    const sameAs = [
+        contact?.facebook,
+        contact?.instagram,
+        contact?.twitter,
+        contact?.youtube,
+        ...(contact?.socialLinks?.map((s: any) => s.url) || [])
+    ].filter(Boolean);
+
+    const employeeBlock = principal
+        ? {
+            employee: {
+                '@type': 'Person',
+                'name': principal.name,
+                'jobTitle': principal.designation || 'Principal',
+                ...(principal.imageUrl ? { 'image': principal.imageUrl } : {}),
+            },
+        }
+        : {};
+
+    return {
+        '@context': 'https://schema.org',
+        '@type': ['EducationalOrganization', 'School'],
+        'name': school.name,
+        'description': school.description || `Official website of ${school.name}.`,
+        'url': `https://${domain}`,
+        'logo': school.logoUrl || fallbackImage,
+        'image': data.heroMedia?.[0]?.mediaUrl || school.logoUrl || fallbackImage,
+        'address': {
+            '@type': 'PostalAddress',
+            'streetAddress': school.address || school.fullAddress || 'Contact school for address',
+            'addressLocality': school.city || '',
+            'addressRegion': school.state || '',
+            'postalCode': school.postalCode || '',
+            'addressCountry': 'IN'
+        },
+        'telephone': school.phone || 'Contact school office',
+        'email': school.email || '',
+        'sameAs': sameAs,
+        'award': data.schoolAchievements?.map((a: any) => a.title).filter(Boolean) || [],
+        ...employeeBlock
+    };
+}
+
+/**
+ * Generates LocalBusiness Schema for Maps presence.
+ */
+export function generateLocalBusinessJsonLd(data: TenantViewModel, domain: string) {
+    const school = data.school;
+    const contact = data.contactDetails as any;
+    const fallbackImage = 'https://eddesk.in/assets/school-fallback.png';
+    
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'LocalBusiness',
+        'name': school.name,
+        'image': data.heroMedia?.[0]?.mediaUrl || school.logoUrl || fallbackImage,
+        '@id': `https://${domain}`,
+        'url': `https://${domain}`,
+        'telephone': school.phone || 'Contact school office',
+        'priceRange': '₹₹',
+        'address': {
+            '@type': 'PostalAddress',
+            'streetAddress': school.address || school.fullAddress || 'Contact school for address',
+            'addressLocality': school.city || '',
+            'addressRegion': school.state || '',
+            'postalCode': school.postalCode || '',
+            'addressCountry': 'IN'
+        },
+        'geo': contact?.latitude && contact?.longitude ? {
+            '@type': 'GeoCoordinates',
+            'latitude': contact.latitude,
+            'longitude': contact.longitude
+        } : undefined
     };
 }

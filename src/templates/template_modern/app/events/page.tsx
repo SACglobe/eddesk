@@ -90,8 +90,14 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
     return (
         <div className="bg-slate-50 min-h-screen">
             {/* 1. Immersive Hero Section */}
-            {heroEnabled && heroMedia.length > 0 && (
+            {heroEnabled && heroMedia.length > 0 ? (
                 <HeroSlider slides={heroMedia} />
+            ) : (
+                <div className="bg-primary py-24 text-center">
+                    <h1 className="text-5xl md:text-7xl font-bold text-white font-playfair lowercase tracking-tighter">
+                        School Events & <span className="text-accent italic">Calendar</span>
+                    </h1>
+                </div>
             )}
 
             {/* 2. Calendar Header / Month Selector */}
@@ -261,11 +267,15 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
             {featuredEvent && (
                 <section className="max-w-7xl mx-auto px-6 pb-32">
                     <div className="bg-blue-900 rounded-[4rem] overflow-hidden relative shadow-3xl">
-                        <img 
-                            src={featuredEvent.imageUrl || "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&q=80&w=1200"} 
-                            className="absolute inset-0 w-full h-full object-cover opacity-20 blur-sm"
-                            alt="Featured"
-                        />
+                        {featuredEvent.imageUrl ? (
+                            <img 
+                                src={featuredEvent.imageUrl} 
+                                className="absolute inset-0 w-full h-full object-cover opacity-20 blur-sm"
+                                alt="Featured"
+                            />
+                        ) : (
+                            <div className="absolute inset-0 w-full h-full bg-blue-900 opacity-50"></div>
+                        )}
                         <div className="relative z-10 grid lg:grid-cols-2 gap-20 items-center p-16 md:p-24">
                             <div className="space-y-10 order-2 lg:order-1 text-center lg:text-left">
                                 <span className="bg-blue-400/20 text-blue-400 px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-400/10">Feature Highlight</span>
@@ -286,12 +296,18 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                                 </div>
                             </div>
                             <div className="order-1 lg:order-2 group">
-                                <motion.img 
-                                    whileHover={{ scale: 1.02 }}
-                                    src={featuredEvent.imageUrl || "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&q=80&w=1200"} 
-                                    className="rounded-[3rem] shadow-4xl w-full aspect-square md:aspect-video object-cover"
-                                    alt="Featured Event"
-                                />
+                                {featuredEvent.imageUrl ? (
+                                    <motion.img 
+                                        whileHover={{ scale: 1.02 }}
+                                        src={featuredEvent.imageUrl} 
+                                        className="rounded-[3rem] shadow-4xl w-full aspect-square md:aspect-video object-cover"
+                                        alt="Featured Event"
+                                    />
+                                ) : (
+                                    <div className="rounded-[3rem] shadow-4xl w-full aspect-square md:aspect-video bg-blue-950/50 flex items-center justify-center">
+                                        <span className="text-6xl">📅</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
