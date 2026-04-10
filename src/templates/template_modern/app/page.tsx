@@ -99,8 +99,6 @@ export default function Home({ data }: { data: TenantViewModel }) {
     const achievementsEnabled = achievementsComp?.isActive ?? true;
     const achievementsRequired = achievementsComp?.isRequired ?? false;
 
-    const achievementsComp = getComponent('achievements') || getComponent('schoolachievements');
-    const achievementsEnabled = achievementsComp?.isActive ?? true;
     const academicAchievements = evaluateFilters(data?.schoolAchievements ?? [], achievementsComp?.config?.filters || { category: 'academic' })
         .sort((a, b: any) => b.year - a.year || (a.displayOrder || 0) - (b.displayOrder || 0));
 
