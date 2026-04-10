@@ -7,6 +7,7 @@ import NextImage from 'next/image';
 import { isValidImageUrl } from '@/core/utils/url';
 import LayoutWrapper from '../components/LayoutWrapper';
 import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
+import { evaluateFilters } from '@/core/utils/filterEngine';
 
 interface HeroSlide {
   mediaType: string;
@@ -570,13 +571,10 @@ export default function Home({ data }: { data: TenantViewModel }) {
     .sort((a, b) => b.year - a.year || (a.displayOrder || 0) - (b.displayOrder || 0));
 
   // 4. Leadership
-  const leadershipComp = getComponent('leadership') || getComponent('governance');
+  const leadershipComp = getComponent('leadership') || getComponent('governance') || getComponent('principalmessage');
   const leadershipEnabled = leadershipComp?.isActive ?? true;
   const leadershipRequired = leadershipComp?.isRequired ?? false;
-  const leadership = (data?.leadership ?? []).filter(l => 
-    l.isActive && 
-    (l.role?.toLowerCase() === 'principal' || l.designation?.toLowerCase() === 'principal')
-  );
+  const leadership = [...(data?.principal || []), ...(data?.chairman || [])];
 
   // 5. Statistics Dashboard
   const statsComp = getComponent('stats') || getComponent('schoolstats') || getComponent('stats_premium');
@@ -596,9 +594,8 @@ export default function Home({ data }: { data: TenantViewModel }) {
   const sportsComp = getComponent('sports');
   const sportsEnabled = sportsComp?.isActive ?? true;
   const sportsRequired = sportsComp?.isRequired ?? false;
-  const sportsAchievements = (data?.schoolAchievements ?? [])
-    .filter(a => a.category?.toLowerCase() === 'sports')
-    .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+  const sportsAchievements = evaluateFilters(data?.schoolAchievements ?? [], sportsComp?.config?.filters || { category: 'sports' })
+    .sort((a, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0))
     .map(a => ({
       ...a,
       photoUrl: a.imageUrl // Fix type mismatch for SportAchievement
@@ -622,12 +619,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
   const galleryComp = getComponent('gallery');
   const galleryEnabled = galleryComp?.isActive ?? true;
   const galleryRequired = galleryComp?.isRequired ?? false;
-  const galleryItems = (data?.gallery ?? data?.mediaLibrary ?? [])
-    .filter(m => 
-      m.isActive && 
-      (m.imageUrl || m.url) &&
-      (!galleryComp?.config?.filters?.contenttype || m.mediaType?.toLowerCase() === galleryComp.config.filters.contenttype.toLowerCase())
-    )
+  const galleryItems = evaluateFilters(data?.gallery ?? data?.mediaLibrary ?? [], galleryComp?.config?.filters)
     .slice(0, 3);
 
   // 10. Events

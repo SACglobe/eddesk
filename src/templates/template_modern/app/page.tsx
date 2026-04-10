@@ -6,6 +6,7 @@ import { SCHOOL_NAME, ACTIVITIES } from '../constants';
 import Link from 'next/link';
 import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import { isValidImageUrl } from '@/core/utils/url';
+import { evaluateFilters } from '@/core/utils/filterEngine';
 
 const AnimatedNumber: React.FC<{ value: number; suffix?: string; duration?: number }> = ({ value, suffix = "", duration = 1500 }) => {
     const [count, setCount] = useState(0);
@@ -98,25 +99,22 @@ export default function Home({ data }: { data: TenantViewModel }) {
     const achievementsEnabled = achievementsComp?.isActive ?? true;
     const achievementsRequired = achievementsComp?.isRequired ?? false;
 
-    const academicAchievements = (data?.schoolAchievements ?? [])
-        .filter(a => a.category?.toLowerCase().startsWith('academic'))
-        .sort((a, b) => b.year - a.year || (a.displayOrder || 0) - (b.displayOrder || 0));
+    const achievementsComp = getComponent('achievements') || getComponent('schoolachievements');
+    const achievementsEnabled = achievementsComp?.isActive ?? true;
+    const academicAchievements = evaluateFilters(data?.schoolAchievements ?? [], achievementsComp?.config?.filters || { category: 'academic' })
+        .sort((a, b: any) => b.year - a.year || (a.displayOrder || 0) - (b.displayOrder || 0));
 
     const sportsComp = getComponent('sports');
     const sportsEnabled = sportsComp?.isActive ?? true;
     const sportsRequired = sportsComp?.isRequired ?? false;
-    const sportsAchievements = (data?.schoolAchievements ?? [])
-        .filter(a => a.category?.toLowerCase() === 'sports')
-        .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+    const sportsAchievements = evaluateFilters(data?.schoolAchievements ?? [], sportsComp?.config?.filters || { category: 'sports' })
+        .sort((a, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
     // 5. Leadership
-    const leadershipComp = getComponent('leadership') || getComponent('governance');
+    const leadershipComp = getComponent('leadership') || getComponent('governance') || getComponent('principalmessage');
     const leadershipEnabled = leadershipComp?.isActive ?? true;
     const leadershipRequired = leadershipComp?.isRequired ?? false;
-    const leadership = (data?.leadership ?? []).filter(l => 
-        l.isActive && 
-        (l.role?.toLowerCase() === 'principal' || l.designation?.toLowerCase() === 'principal')
-    );
+    const leadership = [...(data?.principal || []), ...(data?.chairman || [])];
 
     // 6. Statistics
     const statsComp = getComponent('stats') || getComponent('schoolstats') || getComponent('stats_premium');
@@ -177,10 +175,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
     const galleryComp = getComponent('gallery');
     const galleryEnabled = galleryComp?.isActive ?? true;
     const galleryRequired = galleryComp?.isRequired ?? false;
-    const galleryItems = (data?.gallery ?? []).filter(g => 
-        g.isActive && 
-        (!galleryComp?.config?.filters?.contenttype || g.mediaType?.toLowerCase() === galleryComp.config.filters.contenttype.toLowerCase())
-    );
+    const galleryItems = evaluateFilters(data?.gallery ?? [], galleryComp?.config?.filters);
 
     // 10. Events
     const eventsComp = getComponent('events');

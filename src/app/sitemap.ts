@@ -55,7 +55,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
 function buildOwnerSitemap(): MetadataRoute.Sitemap {
     const entries: MetadataRoute.Sitemap = [
-        { url: OWNER_BASE_URL, lastModified: new Date(), changeFrequency: 'weekly', priority: 1.0 }
+        { url: OWNER_BASE_URL, lastModified: new Date(), changeFrequency: 'weekly', priority: 1.0 },
+        { url: `${OWNER_BASE_URL}/about`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+        { url: `${OWNER_BASE_URL}/pricing`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
+        { url: `${OWNER_BASE_URL}/contact`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+        { url: `${OWNER_BASE_URL}/privacy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
+        { url: `${OWNER_BASE_URL}/terms`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
+        { url: `${OWNER_BASE_URL}/refund-cancellation`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 }
     ]
 
     for (const t of TEMPLATE_SLUGS) {
