@@ -68,7 +68,7 @@ export default function About({ data }: { data?: TenantViewModel }) {
                     )}
 
                     {/* Chairman's Message */}
-                    {getComponent('leadership')?.isActive && hasChairmanData && (
+                    {(getComponent('leadership')?.isActive || getComponent('boardmembersmessage')?.isActive) && (hasChairmanData || data?.identity?.boardMessage) && (
                         <section className="mb-40 grid grid-cols-1 lg:grid-cols-12 gap-24 items-start">
                             <div className="lg:col-span-7 pt-12">
                                 <SectionHeader title="Chairman's Message" subtitle="Institutional Vision" />
@@ -102,7 +102,7 @@ export default function About({ data }: { data?: TenantViewModel }) {
                     )}
 
                     {/* Principal's Message */}
-                    {getComponent('leadership')?.isActive && hasPrincipalData && (
+                    {(getComponent('leadership')?.isActive || getComponent('principalmessage')?.isActive) && hasPrincipalData && (
                         <section className="mb-40 grid grid-cols-1 lg:grid-cols-12 gap-24 items-start">
                             <div className="lg:col-span-5 sticky top-32">
                                 <div className="relative">

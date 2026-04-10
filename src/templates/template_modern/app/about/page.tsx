@@ -91,7 +91,7 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
             )}
 
             {/* Principal's Message Board */}
-            {getComponent('leadership')?.isActive && hasPrincipalData && (
+            {(getComponent('leadership')?.isActive || getComponent('principalmessage')?.isActive) && hasPrincipalData && (
                 <section className="max-w-7xl mx-auto px-4 py-24 border-t border-gray-100">
                     <div className="grid lg:grid-cols-2 gap-20 items-center">
                         <div className="relative group">
@@ -142,8 +142,8 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                 </section>
             )}
 
-            {/* Chairman Message */}
-            {getComponent('leadership')?.isActive && hasChairmanData && (
+            {/* Chairman / Board Message */}
+            {(getComponent('leadership')?.isActive || getComponent('boardmembersmessage')?.isActive) && (hasChairmanData || data?.identity?.boardMessage) && (
                  <section className="bg-primary py-32 text-white relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-1/2 h-full bg-white/5 -skew-x-12 translate-x-1/2"></div>
                     <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-24 items-center relative z-10">
@@ -152,9 +152,9 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                                 <span className="text-accent font-black uppercase tracking-[0.4em] text-xs">Message from the Board</span>
                                 <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight font-playfair uppercase">A Message from the Board</h2>
                             </div>
-                            {chairman?.message && (
+                            { (chairman?.message || data?.identity?.boardMessage) && (
                                 <p className="text-blue-100 text-xl font-light leading-loose italic border-l-4 border-accent pl-8">
-                                    "{chairman.message}"
+                                    "{chairman?.message || data?.identity?.boardMessage}"
                                 </p>
                             )}
                             <div className="flex items-center gap-6">

@@ -17,7 +17,7 @@ const templateList = [
     category: "Modern Academy",
     description: "Sleek, fast, and minimalist. Perfect for high-performance international institutions and urban schools.",
     features: ["Dynamic Notice Tickers", "Social Media Integration", "Modern Faculty Grid"],
-    image: "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/images/templates/modern.png",
     color: "from-blue-600 to-indigo-600",
     accent: "text-blue-400",
     glow: "shadow-blue-500/40",
@@ -29,7 +29,7 @@ const templateList = [
     category: "Classical Institution",
     description: "Elegance and prestige. Ideal for schools with long legacies that value tradition and institutional history.",
     features: ["Rich Principal Bio", "Academic Showcase", "Gallery & Events"],
-    image: "https://images.unsplash.com/photo-1541339907198-e08756cdfb3f?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/images/templates/classic.png",
     color: "from-amber-600 to-orange-600",
     accent: "text-amber-400",
     glow: "shadow-amber-500/40",
@@ -41,7 +41,7 @@ const templateList = [
     category: "STEM & Excellence",
     description: "Futuristic and data-centric. Built for technology hubs, coding academies, and premium institutes.",
     features: ["Live Broadcast Bar", "Integrated Dashboard", "Advanced Data Cards"],
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/images/templates/premium.png",
     color: "from-emerald-600 to-teal-600",
     accent: "text-emerald-400",
     glow: "shadow-emerald-500/40",
@@ -119,7 +119,8 @@ export const Templates: React.FC<TemplatesProps> = ({ onSelectTemplate }) => {
                   src={temp.image}
                   alt={temp.name}
                   onError={handleImageError}
-                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 brightness-90 group-hover:brightness-100"
+                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.25] brightness-90 group-hover:brightness-100 origin-top"
+                  style={{ transform: 'scale(1.15) translateY(-8%)' }}
                 />
 
                 {/* Visual Label */}
