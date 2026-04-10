@@ -241,7 +241,18 @@ export interface TenantViewModel {
         isRequired: boolean;
         displayOrder: number;
         config: {
-            filters?: { category?: string; type?: string; designation?: string; contenttype?: string } | null;
+            filters?: {
+                category?: string;
+                type?: string;
+                designation?: string;
+                contenttype?: string;
+                logic?: 'AND' | 'OR';
+                conditions?: Array<{
+                    field: string;
+                    operator: 'equals' | 'notequals' | 'contains' | 'in';
+                    value: any;
+                }>;
+            } | null;
             datasource?: string;
             variant?: string | null;
             itemcount?: number | null;
