@@ -47,6 +47,9 @@ export type ScreenDataTables = {
     templatecomponents?: Record<string, unknown>[];
     whychooseus?: Record<string, unknown>[];
     boardmembers?: Record<string, unknown>[];
+    principalmessage?: Record<string, unknown>[];
+    boardmembersmessage?: Record<string, unknown>[];
+    visionmission?: Record<string, unknown>[];
     academicresults?: Record<string, unknown> | Record<string, unknown>[] | null;
     contactdetails?: Record<string, unknown> | Record<string, unknown>[] | null;
     schoolidentity?: Record<string, unknown> | null;
