@@ -57,9 +57,8 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="pt-16 border-t border-white/5 flex flex-col lg:flex-row justify-between items-center text-slate-500 text-sm space-y-8 lg:space-y-0">
-          <div className="font-bold tracking-tight">© 2023–2026 EdDesk. All rights reserved.</div>
-          <div className="flex items-center space-x-2 font-bold uppercase tracking-widest text-[10px]">
-            <span className="text-slate-600">Powered by</span>
+          <div className="font-bold tracking-tight">
+            © 2026 EdDesk Platform • A Product of{' '}
             <a 
               href="https://tech.sacglobe.com/" 
               target="_blank" 
@@ -68,6 +67,9 @@ export const Footer: React.FC = () => {
             >
               SAC Globe Tech
             </a>
+          </div>
+          <div className="font-bold uppercase tracking-widest text-[10px]">
+             Professional EdTech Solutions
           </div>
         </div>
       </div>
