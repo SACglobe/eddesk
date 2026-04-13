@@ -11,6 +11,24 @@ export interface AdmissionEmailData {
   date: string;
 }
 
+export interface ContactEmailData {
+  schoolname: string;
+  name: string;
+  mobileno: string;
+  email?: string;
+  subject?: string;
+  message: string;
+  date: string;
+}
+
+export interface CallbackEmailData {
+  schoolname: string;
+  name: string;
+  mobileno: string;
+  preferreddate: string;
+  date: string;
+}
+
 export async function sendAdmissionEmail(to: string, data: AdmissionEmailData) {
   const apiKey = process.env.RESEND_API_KEY;
   
@@ -169,4 +187,104 @@ export async function sendAdmissionEmail(to: string, data: AdmissionEmailData) {
     console.error("[email.util] internal error:", error);
     return { success: false, error: error.message };
   }
+}
+
+/**
+ * Sends a notification email to the school when a contact form is submitted.
+ */
+export async function sendContactEmail(to: string, data: ContactEmailData) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return { success: false, error: "Configuration missing" };
+
+  const adminUrl = "https://admin.eddesk.in";
+  const logoUrl = "https://admin.eddesk.in/logo-full.png";
+  const subject = `New Web Enquiry - ${data.name} - EdDesk`;
+  const sender = "EdDesk Enquiry <admission@eddesk.in>";
+  
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: sans-serif;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 16px; margin-top: 40px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+          <tr>
+            <td align="center" bgcolor="#475569" style="padding: 40px;">
+              <img src="${logoUrl}" alt="EdDesk" width="140" style="filter: brightness(0) invert(1);" />
+              <h1 style="color: #ffffff; font-size: 24px; margin: 20px 0 0 0;">New Message Received</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 40px;">
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+                <tr><td style="color: #64748b; font-size: 14px; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">From</td><td align="right" style="font-weight: 700; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">${data.name}</td></tr>
+                <tr><td style="color: #64748b; font-size: 14px; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">Mobile</td><td align="right" style="font-weight: 700; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">${data.mobileno}</td></tr>
+                ${data.email ? `<tr><td style="color: #64748b; font-size: 14px; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">Email</td><td align="right" style="font-weight: 700; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">${data.email}</td></tr>` : ''}
+                <tr><td style="color: #64748b; font-size: 14px; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">Subject</td><td align="right" style="font-weight: 700; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">${data.subject || 'General Enquiry'}</td></tr>
+                <tr><td colspan="2" style="color: #64748b; font-size: 14px; padding: 20px 0 10px 0;">Message</td></tr>
+                <tr><td colspan="2" style="background-color: #f8fafc; padding: 20px; border-radius: 12px; color: #1e293b; line-height: 1.6;">${data.message}</td></tr>
+              </table>
+              <div style="margin-top: 40px; text-align: center;">
+                <a href="${adminUrl}" style="background-color: #0f172a; color: #ffffff; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 700;">Open Admin Panel</a>
+              </div>
+            </td>
+          </tr>
+          <tr><td bgcolor="#f8fafc" style="padding: 30px; text-align: center; color: #94a3b8; font-size: 12px; border-top: 1px solid #e2e8f0;">&copy; ${new Date().getFullYear()} EdDesk Platform</td></tr>
+        </table>
+      </body>
+    </html>
+  `;
+
+  return fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+    body: JSON.stringify({ from: sender, to: [to], subject: subject, html: html }),
+  }).then(res => res.json());
+}
+
+/**
+ * Sends a notification email to the school when a callback is requested.
+ */
+export async function sendCallbackEmail(to: string, data: CallbackEmailData) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return { success: false, error: "Configuration missing" };
+
+  const adminUrl = "https://admin.eddesk.in";
+  const logoUrl = "https://admin.eddesk.in/logo-full.png";
+  const subject = `Callback Request - ${data.name} - EdDesk`;
+  const sender = "EdDesk Alerts <admission@eddesk.in>";
+  
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: sans-serif;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 16px; margin-top: 40px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+          <tr>
+            <td align="center" bgcolor="#0891b2" style="padding: 40px;">
+              <img src="${logoUrl}" alt="EdDesk" width="140" style="filter: brightness(0) invert(1);" />
+              <h1 style="color: #ffffff; font-size: 24px; margin: 20px 0 0 0;">Callback Requested</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 40px;">
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+                <tr><td style="color: #64748b; font-size: 14px; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">Parent Name</td><td align="right" style="font-weight: 700; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">${data.name}</td></tr>
+                <tr><td style="color: #64748b; font-size: 14px; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">Mobile Number</td><td align="right" style="font-weight: 700; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">${data.mobileno}</td></tr>
+                <tr><td style="color: #64748b; font-size: 14px; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">Preferred Time</td><td align="right" style="color: #0891b2; font-weight: 800; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">${data.preferreddate}</td></tr>
+                <tr><td style="color: #64748b; font-size: 14px; padding: 12px 0;">Requested On</td><td align="right" style="font-weight: 700; padding: 12px 0;">${data.date}</td></tr>
+              </table>
+              <div style="margin-top: 40px; text-align: center;">
+                <a href="${adminUrl}" style="background-color: #0f172a; color: #ffffff; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 700;">Review in Admin Panel</a>
+              </div>
+            </td>
+          </tr>
+          <tr><td bgcolor="#f8fafc" style="padding: 30px; text-align: center; color: #94a3b8; font-size: 12px; border-top: 1px solid #e2e8f0;">&copy; ${new Date().getFullYear()} EdDesk Platform</td></tr>
+        </table>
+      </body>
+    </html>
+  `;
+
+  return fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+    body: JSON.stringify({ from: sender, to: [to], subject: subject, html: html }),
+  }).then(res => res.json());
 }

@@ -7,6 +7,7 @@ import { isValidImageUrl } from '@/core/utils/url';
 import LayoutWrapper from '../../components/LayoutWrapper';
 import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import ContactForm from '@/components/contact/ContactForm';
+import CallbackForm from '@/components/contact/CallbackForm';
 
 interface HeroSlide {
   mediaType: string;
@@ -282,6 +283,10 @@ export default function Contact({ data }: { data: TenantViewModel }) {
                    <p className="text-[10px] uppercase tracking-[0.4em] text-gray-400 font-bold mb-16 italic">Formal Communication Entry</p>
 
                    <ContactForm schoolkey={schoolKey} schoolname={schoolName} />
+
+                   <div className="mt-16 pt-16 border-t border-signature-navy/5">
+                        <CallbackForm schoolkey={schoolKey} schoolname={schoolName} />
+                   </div>
               </div>
 
             </div>
