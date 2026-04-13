@@ -106,7 +106,7 @@ export async function submitAdmissionAction(data: AdmissionFormData): Promise<Ad
       .from('formsubmissions')
       .insert({
         schoolkey: data.schoolkey,
-        formtype: 'admission',
+        formtype: 'admissionenquiry',
         payload: data,
         status: 'pending',
         isactive: true

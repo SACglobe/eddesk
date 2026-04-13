@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import ContactForm from '@/components/contact/ContactForm';
+import CallbackForm from '@/components/contact/CallbackForm';
 import { isValidImageUrl } from '@/core/utils/url';
 
 const ContactScreen = ({ data }) => {
@@ -215,6 +216,10 @@ const ContactScreen = ({ data }) => {
                             <p className="text-emerald-600 text-xs font-bold uppercase tracking-[0.2em] mb-12">Communications Registry</p>
 
                             <ContactForm schoolkey={schoolKey} schoolname={schoolName} />
+
+                            <div className="mt-12 pt-12 border-t border-slate-100">
+                                <CallbackForm schoolkey={schoolKey} schoolname={schoolName} />
+                            </div>
                         </div>
                     </div>
                 </div>

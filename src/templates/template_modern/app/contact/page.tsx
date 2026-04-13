@@ -3,6 +3,7 @@
 import React from 'react';
 import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import ContactForm from '@/components/contact/ContactForm';
+import CallbackForm from '@/components/contact/CallbackForm';
 import HeroSlider from '../../components/HeroSlider';
 
 const Contact: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
@@ -158,6 +159,10 @@ const Contact: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                         <h3 className="text-3xl font-bold text-primary mb-10 font-playfair">Send a Message</h3>
                         
                         <ContactForm schoolkey={schoolKey} schoolname={schoolName} />
+
+                        <div className="mt-12 pt-12 border-t border-slate-100">
+                            <CallbackForm schoolkey={schoolKey} schoolname={schoolName} />
+                        </div>
                     </div>
                 </div>
             </section>
