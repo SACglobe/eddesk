@@ -3,16 +3,17 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { Monitor, Settings, Shield, Globe, Clock, Smartphone, GraduationCap } from 'lucide-react';
 import { mContainer, mSection, mLabel, mDisplay, mCard, marketingTheme } from '@/lib/marketing/theme';
+import { JsonLd } from '@/components/JsonLd';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'About EdDesk | School Websites & Admin Panel',
-  description: 'EdDesk builds professional school websites with a powerful admin panel. Subscription-based, no technical knowledge needed. Serving schools across India.',
-  alternates: { canonical: 'https://eddesk.in/about' },
+  title: 'About EdDesk | Empowering Indian Schools Digitally',
+  description: 'EdDesk is on a mission to give every educational institution in India a premium digital presence. We build managed school websites and administrative ecosystems.',
+  alternates: { canonical: 'https://www.eddesk.in/about' },
   openGraph: {
-    title: 'About EdDesk | School Websites & Admin Panel',
-    description: 'Professional school websites with admin panel. Monthly or annual subscriptions.',
-    url: 'https://eddesk.in/about',
+    title: 'About EdDesk | Next-Gen School Website Ecosystem',
+    description: 'Learn how we help schools manage their digital identity and administrative needs in one place.',
+    url: 'https://www.eddesk.in/about',
     siteName: 'EdDesk',
     type: 'website',
   },
@@ -21,6 +22,26 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="pt-20">
+      <JsonLd 
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://www.eddesk.in"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "About",
+              "item": "https://www.eddesk.in/about"
+            }
+          ]
+        }}
+      />
       {/* Hero Section */}
       <section className={mSection}>
         <div className={mContainer}>
@@ -91,7 +112,7 @@ export default function AboutPage() {
                   When you subscribe, you get a fully managed school website. When you leave, your custom domain is yours to take elsewhere. The website itself is powered by EdDesk and is not transferable.
                 </p>
                 <div className="inline-flex items-center space-x-3 px-6 py-3 bg-indigo-600/10 border border-indigo-500/20 rounded-2xl text-indigo-400 font-bold">
-                  <Sparkles className="w-5 h-5" />
+                  <Shield className="w-5 h-5" />
                   <span>You focus on running your school, we handle the technology.</span>
                 </div>
               </div>
@@ -143,10 +164,6 @@ export default function AboutPage() {
     </div>
   );
 }
-
-const Sparkles = ({ className }: { className?: string }) => (
-  <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
-);
 
 const ArrowRight = ({ className }: { className?: string }) => (
   <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>

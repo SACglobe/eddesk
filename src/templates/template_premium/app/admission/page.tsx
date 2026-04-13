@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { SectionHeader, Button } from '../../components/Shared';
+import Link from 'next/link';
 import LayoutWrapper from '../../components/LayoutWrapper';
 import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import AdmissionForm from '@/components/admission/AdmissionForm';
@@ -10,7 +11,7 @@ import { motion } from 'framer-motion';
 import { isValidImageUrl } from '@/core/utils/url';
 import { useRef, useState, useEffect } from 'react';
 
-const Hero: React.FC<{ heroSlide: any }> = ({ heroSlide }) => {
+const Hero: React.FC<{ heroSlide: any, schoolName: string }> = ({ heroSlide, schoolName }) => {
   const [isFilmOpen, setIsFilmOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -56,24 +57,27 @@ const Hero: React.FC<{ heroSlide: any }> = ({ heroSlide }) => {
           <div className="mb-10 flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-10 duration-1000">
             <div className="w-px h-24 bg-gradient-to-b from-transparent to-signature-gold/60"></div>
             <p className="text-signature-gold uppercase tracking-[0.8em] text-[10px] md:text-xs font-bold">
-              {heroSlide?.subheadline || 'ESTABLISHED MCMLXXXVIII'}
+              {heroSlide?.subheadline || `Quality Since MCMLXXXVIII at ${schoolName}`}
             </p>
           </div>
 
-          <h1 className="text-white text-7xl md:text-[10rem] font-serif leading-[0.9] mb-12 tracking-tighter animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
+          <h1 className="text-white text-5xl md:text-8xl font-serif leading-[0.9] mb-12 tracking-tighter animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
             {heroSlide?.headline ?? (
               <>
-                The Art of <br />
-                <span className="italic text-signature-gold block mt-4">Mastery.</span>
+                {schoolName || 'Institutional'} <br />
+                <span className="italic text-signature-gold block mt-4 lowercase">Engagements</span>
               </>
             )}
           </h1>
 
           <div className="flex flex-col sm:flex-row gap-12 justify-center items-center mt-12 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-500">
-            <Button variant="gold">{heroSlide?.primaryButtonText || 'Institutional Prospectus'}</Button>
-
-            {heroSlide?.secondaryButtonText && (
-              <Button variant="outline">{heroSlide.secondaryButtonText}</Button>
+            {heroSlide?.primaryButtonText && (
+               <Link href={heroSlide?.primaryButtonUrl || '#'}>
+                <Button variant="gold">{heroSlide.primaryButtonText}</Button>
+              </Link>
+            )}
+            {!heroSlide?.primaryButtonText && (
+               <Button variant="gold">Begin Application</Button>
             )}
           </div>
         </div>
@@ -103,7 +107,7 @@ export default function Admissions({ data }: { data?: TenantViewModel }) {
         <LayoutWrapper>
             <div className="bg-signature-ivory min-h-screen">
                 {/* 1. Hero Section (Same as Home) */}
-                <Hero heroSlide={data?.heroMedia?.[0] || null} />
+                <Hero heroSlide={data?.heroMedia?.[0] || null} schoolName={schoolName} />
 
                 {/* 2. Form Section */}
                 <div className="py-32 relative overflow-hidden">

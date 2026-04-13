@@ -15,10 +15,7 @@ const playfair = Playfair_Display({
     variable: "--font-playfair",
 });
 
-export const metadata: Metadata = {
-    title: "St. Andrews Vibrant Campus",
-    description: "Empowering Minds, Shaping Futures at St. Andrews Global Academy",
-};
+
 
 export default function RootLayout({
     children,

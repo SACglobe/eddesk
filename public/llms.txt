@@ -1,0 +1,19 @@
+# EdDesk School SaaS Platform
+
+This platform provides dedicated multi-tenant websites for educational institutions.
+
+## Architecture
+- Framework: Next.js (App Router)
+- Database: Supabase (PostgreSQL)
+- Styling: Tailwind CSS
+- Multi-tenancy: Hostname-based routing middleware
+
+## Resources
+- Marketing Site: https://www.eddesk.in
+- Tenant Sites: Configured via custom domains
+
+## Crawler Instructions
+This site exposes dynamically generated, database-driven templates.
+For indexable content: 
+- `sitemap.xml` provides all active tenant routes.
+- `<head>` contains dynamically generated `BreadcrumbList` schema and metadata.

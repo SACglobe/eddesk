@@ -41,6 +41,8 @@ const GalleryScreen = ({ data }) => {
         ? allMedia 
         : allMedia.filter(m => m.mediaType?.toLowerCase() === activeFilter);
 
+    const schoolName = data.school?.name || 'Our Institution';
+
     useEffect(() => {
         if (heroSlides.length > 1) {
             const timer = setInterval(() => {
@@ -65,16 +67,16 @@ const GalleryScreen = ({ data }) => {
                         >
                             {slide.mediaUrl && (
                                 <>
-                                    <img src={slide.mediaUrl} alt={slide.headline} className="w-full h-full object-cover" />
+                                    <img src={slide.mediaUrl} alt={slide.headline || `${schoolName} Gallery`} className="w-full h-full object-cover" />
                                     <div className="absolute inset-0 bg-black/40 z-10" />
                                 </>
                             )}
                         </div>
                     ))}
                     <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4">
-                        <span className="text-emerald-300 text-[10px] font-bold uppercase tracking-[0.5em] mb-4 block">Visual Archive</span>
+                        <span className="text-emerald-300 text-[10px] font-bold uppercase tracking-[0.5em] mb-4 block">{schoolName} Archive</span>
                         <h1 className="text-4xl md:text-6xl text-white font-bold serif uppercase tracking-widest mb-6">
-                            {heroSlides[currentSlide]?.headline || 'Campus Gallery'}
+                            {heroSlides[currentSlide]?.headline || `${schoolName} Gallery`}
                         </h1>
                         <div className="h-1 w-20 bg-emerald-400 mx-auto"></div>
                     </div>
@@ -82,8 +84,8 @@ const GalleryScreen = ({ data }) => {
             ) : (
                 <section className="bg-emerald-900 py-24 text-center">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
-                        <span className="text-emerald-300 text-xs font-bold uppercase tracking-[0.5em] mb-4 block">Visual Archive</span>
-                        <h1 className="text-4xl md:text-6xl text-white font-bold serif uppercase tracking-widest">Campus Gallery</h1>
+                        <span className="text-emerald-300 text-xs font-bold uppercase tracking-[0.5em] mb-4 block">{schoolName} Portraits</span>
+                        <h1 className="text-4xl md:text-6xl text-white font-bold serif uppercase tracking-widest">{schoolName} Gallery</h1>
                         <div className="h-1 w-20 bg-emerald-400 mx-auto mt-8"></div>
                     </div>
                 </section>

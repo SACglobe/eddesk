@@ -60,7 +60,7 @@ const Header = ({ school, activePath }) => {
                             <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 group-hover:scale-110 transition-transform duration-500">
                                 <img
                                     src={school.logoUrl}
-                                    alt={""}
+                                    alt={`${school.name} Logo`}
                                     className="w-full h-full object-contain"
                                 />
                             </div>

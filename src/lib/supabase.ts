@@ -35,3 +35,16 @@ export async function createPublicSupabaseClient() {
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     )
 }
+
+/**
+ * SSR ONLY. Database client initialized with the SERVICE_ROLE_KEY.
+ * Use this only in server components, actions, or route handlers.
+ * Never expose the service role key to the client.
+ */
+export async function createServiceRoleClient() {
+    return createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+}
+

@@ -15,17 +15,18 @@ export default function Academics({ data }: { data?: TenantViewModel }) {
 
     if (!isEnabled) return null;
 
+    const schoolName = data?.school?.name || 'Our Institution';
     // Fallback to static schoolData if no dynamic data
     const curriculum = academicData?.curriculum || schoolData.academics.curriculum;
     const levels = (academicData?.levels && academicData.levels.length > 0) ? academicData.levels : schoolData.academics.levels;
-    const philosophy = academicData?.philosophy || "Our world-class pedagogy focused on mastery, creativity, and critical inquiry.";
+    const philosophy = academicData?.philosophy || `Our pedagogy at ${schoolName} is focused on mastery, creativity, and critical inquiry.`;
 
     return (
         <LayoutWrapper>
             <div className="fade-in py-24 pt-48">
                 <div className="max-w-7xl mx-auto px-6">
                     <header className="mb-32">
-                        <h1 className="text-6xl md:text-8xl font-serif mb-12">Academic <br /><span className="italic text-signature-gold">Framework</span></h1>
+                        <h1 className="text-6xl md:text-8xl font-serif mb-12">{schoolName} <br /><span className="italic text-signature-gold">Academic Framework</span></h1>
                         <p className="text-2xl font-light text-gray-500 max-w-2xl border-l-2 border-signature-gold pl-8">
                             {curriculum} — {philosophy}
                         </p>

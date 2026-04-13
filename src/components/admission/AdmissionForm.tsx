@@ -37,52 +37,52 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
   
   const [formData, setFormData] = useState<AdmissionFormData>({
     schoolkey,
-    studentInfo: {
-      studentName: '',
-      dateOfBirth: '',
-      bloodGroup: '',
-      aadharNo: '',
+    studentinfo: {
+      studentname: '',
+      dateofbirth: '',
+      bloodgroup: '',
+      aadharno: '',
       religion: '',
-      seekingClass: '',
-      emisNo: ''
+      seekingclass: '',
+      emisno: ''
     },
-    previousSchool: {
-      lastSchoolName: '',
-      lastSchoolDistrict: '',
-      lastSchoolBlock: ''
+    previousschool: {
+      lastschoolname: '',
+      lastschooldistrict: '',
+      lastschoolblock: ''
     },
     documents: {
-      tcSubmitted: false,
-      attendanceCertificate: false,
-      markSheetSubmitted: false
+      tcsubmitted: false,
+      attendancecertificate: false,
+      marksheetsubmitted: false
     },
     reference: {
       name: '',
       designation: '',
       address: '',
-      mobileNo: ''
+      mobileno: ''
     },
     history: {
-      breakOfStudy: false
+      breakofstudy: false
     },
-    fatherInfo: {
+    fatherinfo: {
       name: '',
       occupation: '',
       qualification: '',
-      annualIncome: '',
-      cellNo: ''
+      annualincome: '',
+      mobileno: ''
     },
-    motherInfo: {
+    motherinfo: {
       name: '',
       occupation: '',
       qualification: '',
-      annualIncome: '',
-      cellNo: ''
+      annualincome: '',
+      mobileno: ''
     },
     general: {
-      residentialAddress: '',
-      distanceFromSchool: '',
-      conveyanceRequired: false
+      residentialaddress: '',
+      distancefromschool: '',
+      conveyancerequired: false
     }
   });
 
@@ -114,16 +114,16 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
     const errors: Record<string, string> = {};
     
     if (step === 1) {
-      if (!formData.studentInfo.studentName?.trim()) errors['studentInfo.studentName'] = 'Student name is required';
-      if (!formData.studentInfo.dateOfBirth) errors['studentInfo.dateOfBirth'] = 'Date of birth is required';
-      if (!formData.studentInfo.seekingClass?.trim()) errors['studentInfo.seekingClass'] = 'Seeking class is required';
+      if (!formData.studentinfo.studentname?.trim()) errors['studentinfo.studentname'] = 'Student name is required';
+      if (!formData.studentinfo.dateofbirth) errors['studentinfo.dateofbirth'] = 'Date of birth is required';
+      if (!formData.studentinfo.seekingclass?.trim()) errors['studentinfo.seekingclass'] = 'Seeking class is required';
     } else if (step === 2) {
-      if (!formData.fatherInfo.name?.trim()) errors['fatherInfo.name'] = 'Father name is required';
-      if (!formData.fatherInfo.cellNo?.trim() && !formData.motherInfo.cellNo?.trim()) {
-        errors['fatherInfo.cellNo'] = 'At least one parent cell number is required';
+      if (!formData.fatherinfo.name?.trim()) errors['fatherinfo.name'] = 'Father name is required';
+      if (!formData.fatherinfo.mobileno?.trim() && !formData.motherinfo.mobileno?.trim()) {
+        errors['fatherinfo.mobileno'] = 'At least one parent mobile number is required';
       }
     } else if (step === 4) {
-      if (!formData.general.residentialAddress?.trim()) errors['general.residentialAddress'] = 'Address is required';
+      if (!formData.general.residentialaddress?.trim()) errors['general.residentialaddress'] = 'Address is required';
     }
 
     setFieldErrors(errors);
@@ -179,9 +179,9 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
           <CheckCircle2 className="w-12 h-12 text-emerald-600" />
         </div>
         <h2 className="text-4xl font-black text-slate-900 mb-4 italic tracking-tight uppercase">Application Received</h2>
-        <p className="text-xl text-slate-600 mb-8 font-medium">Thank you for choosing {schoolname}. Your application for <span className="text-emerald-600 font-bold">{formData.studentInfo.studentName}</span> has been successfully submitted.</p>
+        <p className="text-xl text-slate-600 mb-8 font-medium">Thank you for choosing {schoolname}. Your application for <span className="text-emerald-600 font-bold">{formData.studentinfo.studentname}</span> has been successfully submitted.</p>
         <div className="bg-slate-50 p-6 rounded-2xl mb-8 border border-slate-100 italic">
-          <p className="text-sm text-slate-500 lowercase tracking-wider">our admission department will review your details and contact you via "{formData.fatherInfo.cellNo || formData.motherInfo.cellNo}" within 2-3 business days.</p>
+          <p className="text-sm text-slate-500 lowercase tracking-wider">our admission department will review your details and contact you via "{formData.fatherinfo.mobileno || formData.motherinfo.mobileno}" within 2-3 business days.</p>
         </div>
         <button 
           onClick={() => window.location.reload()}
@@ -246,33 +246,33 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormGroup label="Student Full Name" error={fieldErrors['studentInfo.studentName']}>
+                <FormGroup label="Student Full Name" error={fieldErrors['studentinfo.studentname']}>
                   <input
                     type="text"
                     required
-                    value={formData.studentInfo.studentName}
-                    onChange={(e) => handleChange('studentInfo', 'studentName', e.target.value)}
+                    value={formData.studentinfo.studentname}
+                    onChange={(e) => handleChange('studentinfo', 'studentname', e.target.value)}
                     placeholder="Enter full name"
-                    className={inputClass(!!fieldErrors['studentInfo.studentName'])}
+                    className={inputClass(!!fieldErrors['studentinfo.studentname'])}
                   />
                 </FormGroup>
 
-                <FormGroup label="Date of Birth" error={fieldErrors['studentInfo.dateOfBirth']}>
+                <FormGroup label="Date of Birth" error={fieldErrors['studentinfo.dateofbirth']}>
                   <input
                     type="date"
                     required
-                    value={formData.studentInfo.dateOfBirth}
-                    onChange={(e) => handleChange('studentInfo', 'dateOfBirth', e.target.value)}
+                    value={formData.studentinfo.dateofbirth}
+                    onChange={(e) => handleChange('studentinfo', 'dateofbirth', e.target.value)}
                     onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
-                    className={inputClass(!!fieldErrors['studentInfo.dateOfBirth'])}
+                    className={inputClass(!!fieldErrors['studentinfo.dateofbirth'])}
                   />
                 </FormGroup>
 
                 <FormGroup label="Seeking Class">
                   <select
                     required
-                    value={formData.studentInfo.seekingClass}
-                    onChange={(e) => handleChange('studentInfo', 'seekingClass', e.target.value)}
+                    value={formData.studentinfo.seekingclass}
+                    onChange={(e) => handleChange('studentinfo', 'seekingclass', e.target.value)}
                     className={inputClass()}
                   >
                     <option value="">Select Class</option>
@@ -285,8 +285,8 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
                 <FormGroup label="Aadhar Number">
                   <input
                     type="text"
-                    value={formData.studentInfo.aadharNo}
-                    onChange={(e) => handleChange('studentInfo', 'aadharNo', e.target.value)}
+                    value={formData.studentinfo.aadharno}
+                    onChange={(e) => handleChange('studentinfo', 'aadharno', e.target.value)}
                     placeholder="12 digit number"
                     maxLength={12}
                     className={inputClass()}
@@ -295,8 +295,8 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
 
                 <FormGroup label="Blood Group">
                   <select
-                    value={formData.studentInfo.bloodGroup}
-                    onChange={(e) => handleChange('studentInfo', 'bloodGroup', e.target.value)}
+                    value={formData.studentinfo.bloodgroup}
+                    onChange={(e) => handleChange('studentinfo', 'bloodgroup', e.target.value)}
                     className={inputClass()}
                   >
                     <option value="">Select</option>
@@ -309,8 +309,8 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
                 <FormGroup label="Religion">
                   <input
                     type="text"
-                    value={formData.studentInfo.religion}
-                    onChange={(e) => handleChange('studentInfo', 'religion', e.target.value)}
+                    value={formData.studentinfo.religion}
+                    onChange={(e) => handleChange('studentinfo', 'religion', e.target.value)}
                     placeholder="e.g. Hindu, Muslim, Christian"
                     className={inputClass()}
                   />
@@ -319,8 +319,8 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
                 <FormGroup label="EMIS Number (If any)">
                   <input
                     type="text"
-                    value={formData.studentInfo.emisNo}
-                    onChange={(e) => handleChange('studentInfo', 'emisNo', e.target.value)}
+                    value={formData.studentinfo.emisno}
+                    onChange={(e) => handleChange('studentinfo', 'emisno', e.target.value)}
                     placeholder="School ID"
                     className={inputClass()}
                   />
@@ -342,38 +342,38 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
                   <h3 className="text-2xl font-black text-slate-900 italic uppercase">Father Details</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormGroup label="Father's Name" error={fieldErrors['fatherInfo.name']}>
+                  <FormGroup label="Father's Name" error={fieldErrors['fatherinfo.name']}>
                     <input
                       type="text"
                       required
-                      value={formData.fatherInfo.name}
-                      onChange={(e) => handleChange('fatherInfo', 'name', e.target.value)}
-                      className={inputClass(!!fieldErrors['fatherInfo.name'])}
+                      value={formData.fatherinfo.name}
+                      onChange={(e) => handleChange('fatherinfo', 'name', e.target.value)}
+                      className={inputClass(!!fieldErrors['fatherinfo.name'])}
                     />
                   </FormGroup>
-                  <FormGroup label="Phone Number" error={fieldErrors['fatherInfo.cellNo']}>
+                  <FormGroup label="Phone Number" error={fieldErrors['fatherinfo.mobileno']}>
                     <input
                       type="tel"
                       required
-                      value={formData.fatherInfo.cellNo}
-                      onChange={(e) => handleChange('fatherInfo', 'cellNo', e.target.value)}
+                      value={formData.fatherinfo.mobileno}
+                      onChange={(e) => handleChange('fatherinfo', 'mobileno', e.target.value)}
                       maxLength={10}
-                      className={inputClass(!!fieldErrors['fatherInfo.cellNo'])}
+                      className={inputClass(!!fieldErrors['fatherinfo.mobileno'])}
                     />
                   </FormGroup>
                   <FormGroup label="Occupation">
                     <input
                       type="text"
-                      value={formData.fatherInfo.occupation}
-                      onChange={(e) => handleChange('fatherInfo', 'occupation', e.target.value)}
+                      value={formData.fatherinfo.occupation}
+                      onChange={(e) => handleChange('fatherinfo', 'occupation', e.target.value)}
                       className={inputClass()}
                     />
                   </FormGroup>
                   <FormGroup label="Qualification">
                     <input
                       type="text"
-                      value={formData.fatherInfo.qualification}
-                      onChange={(e) => handleChange('fatherInfo', 'qualification', e.target.value)}
+                      value={formData.fatherinfo.qualification}
+                      onChange={(e) => handleChange('fatherinfo', 'qualification', e.target.value)}
                       className={inputClass()}
                     />
                   </FormGroup>
@@ -388,16 +388,16 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
                   <FormGroup label="Mother's Name">
                     <input
                       type="text"
-                      value={formData.motherInfo.name}
-                      onChange={(e) => handleChange('motherInfo', 'name', e.target.value)}
+                      value={formData.motherinfo.name}
+                      onChange={(e) => handleChange('motherinfo', 'name', e.target.value)}
                       className={inputClass()}
                     />
                   </FormGroup>
                   <FormGroup label="Phone Number">
                     <input
                       type="tel"
-                      value={formData.motherInfo.cellNo}
-                      onChange={(e) => handleChange('motherInfo', 'cellNo', e.target.value)}
+                      value={formData.motherinfo.mobileno}
+                      onChange={(e) => handleChange('motherinfo', 'mobileno', e.target.value)}
                       maxLength={10}
                       className={inputClass()}
                     />
@@ -405,8 +405,8 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
                   <FormGroup label="Occupation">
                     <input
                       type="text"
-                      value={formData.motherInfo.occupation}
-                      onChange={(e) => handleChange('motherInfo', 'occupation', e.target.value)}
+                      value={formData.motherinfo.occupation}
+                      onChange={(e) => handleChange('motherinfo', 'occupation', e.target.value)}
                       className={inputClass()}
                     />
                   </FormGroup>
@@ -431,16 +431,16 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
                   <FormGroup label="Last School Name">
                     <input
                       type="text"
-                      value={formData.previousSchool.lastSchoolName}
-                      onChange={(e) => handleChange('previousSchool', 'lastSchoolName', e.target.value)}
+                      value={formData.previousschool.lastschoolname}
+                      onChange={(e) => handleChange('previousschool', 'lastschoolname', e.target.value)}
                       className={inputClass()}
                     />
                   </FormGroup>
                   <FormGroup label="District">
                     <input
                       type="text"
-                      value={formData.previousSchool.lastSchoolDistrict}
-                      onChange={(e) => handleChange('previousSchool', 'lastSchoolDistrict', e.target.value)}
+                      value={formData.previousschool.lastschooldistrict}
+                      onChange={(e) => handleChange('previousschool', 'lastschooldistrict', e.target.value)}
                       className={inputClass()}
                     />
                   </FormGroup>
@@ -454,23 +454,23 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
                 <div className="grid grid-cols-1 gap-4">
                   <FormCheckbox 
                     label="Transfer Certificate (TC) Available?" 
-                    checked={formData.documents.tcSubmitted} 
-                    onChange={(val) => handleChange('documents', 'tcSubmitted', val)} 
+                    checked={formData.documents.tcsubmitted} 
+                    onChange={(val) => handleChange('documents', 'tcsubmitted', val)} 
                   />
                   <FormCheckbox 
                     label="Mark Sheet (Final Exam) Available?" 
-                    checked={formData.documents.markSheetSubmitted} 
-                    onChange={(val) => handleChange('documents', 'markSheetSubmitted', val)} 
+                    checked={formData.documents.marksheetsubmitted} 
+                    onChange={(val) => handleChange('documents', 'marksheetsubmitted', val)} 
                   />
                   <FormCheckbox 
                     label="Attendance Certificate Available?" 
-                    checked={formData.documents.attendanceCertificate} 
-                    onChange={(val) => handleChange('documents', 'attendanceCertificate', val)} 
+                    checked={formData.documents.attendancecertificate} 
+                    onChange={(val) => handleChange('documents', 'attendancecertificate', val)} 
                   />
                   <FormCheckbox 
                     label="Break of Study (History)?" 
-                    checked={formData.history.breakOfStudy} 
-                    onChange={(val) => handleChange('history', 'breakOfStudy', val)} 
+                    checked={formData.history.breakofstudy} 
+                    onChange={(val) => handleChange('history', 'breakofstudy', val)} 
                   />
                 </div>
               </div>
@@ -490,13 +490,13 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
               </div>
 
               <div className="space-y-6">
-                <FormGroup label="Residential Address" error={fieldErrors['general.residentialAddress']}>
+                <FormGroup label="Residential Address" error={fieldErrors['general.residentialaddress']}>
                   <textarea
                     required
                     rows={3}
-                    value={formData.general.residentialAddress}
-                    onChange={(e) => handleChange('general', 'residentialAddress', e.target.value)}
-                    className={inputClass(!!fieldErrors['general.residentialAddress'])}
+                    value={formData.general.residentialaddress}
+                    onChange={(e) => handleChange('general', 'residentialaddress', e.target.value)}
+                    className={inputClass(!!fieldErrors['general.residentialaddress'])}
                   />
                 </FormGroup>
 
@@ -504,15 +504,15 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
                   <FormGroup label="Distance from School (KM)">
                     <input
                       type="text"
-                      value={formData.general.distanceFromSchool}
-                      onChange={(e) => handleChange('general', 'distanceFromSchool', e.target.value)}
+                      value={formData.general.distancefromschool}
+                      onChange={(e) => handleChange('general', 'distancefromschool', e.target.value)}
                       className={inputClass()}
                     />
                   </FormGroup>
                   <FormCheckbox 
                     label="School Conveyance Required?" 
-                    checked={formData.general.conveyanceRequired} 
-                    onChange={(val) => handleChange('general', 'conveyanceRequired', val)} 
+                    checked={formData.general.conveyancerequired} 
+                    onChange={(val) => handleChange('general', 'conveyancerequired', val)} 
                   />
                 </div>
 
@@ -533,8 +533,8 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
                     <FormGroup label="Reference Phone">
                       <input
                         type="tel"
-                        value={formData.reference?.mobileNo}
-                        onChange={(e) => handleChange('reference', 'mobileNo', e.target.value)}
+                        value={formData.reference?.mobileno}
+                        onChange={(e) => handleChange('reference', 'mobileno', e.target.value)}
                         className={inputClass()}
                       />
                     </FormGroup>

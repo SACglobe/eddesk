@@ -48,42 +48,50 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                 <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                 <div className="relative z-10 text-center space-y-8 max-w-4xl px-4">
                     <span className="text-accent font-black uppercase tracking-[0.5em] text-sm animate-pulse">Established Legacy</span>
-                    <h1 className="text-5xl md:text-8xl font-bold text-white leading-tight font-playfair">{aboutTitle || 'More Than a School'}</h1>
-                    <p className="text-blue-100 text-xl md:text-2xl font-medium max-w-2xl mx-auto opacity-80">
-                        {aboutDescription || 'A sanctuary of learning where curiosity meets opportunity and character meets excellence.'}
-                    </p>
+                    <h1 className="text-5xl md:text-8xl font-bold text-white leading-tight font-playfair">{aboutTitle || `About ${schoolName}`}</h1>
+                    {aboutDescription && (
+                        <p className="text-blue-100 text-xl md:text-2xl font-medium max-w-2xl mx-auto opacity-80">
+                            {aboutDescription}
+                        </p>
+                    )}
                 </div>
             </section>
 
             {/* Philosophy Section */}
             {identityEnabled && hasIdentityData && (
                 <section className="max-w-7xl mx-auto px-4 py-24 grid lg:grid-cols-3 gap-8">
-                    <div className="bg-white p-12 rounded-[3rem] shadow-xl border-t-8 border-accent space-y-6">
-                        <div className="w-16 h-16 bg-yellow-50 rounded-2xl flex items-center justify-center text-4xl shadow-inner">👁️</div>
-                        <h3 className="text-3xl font-bold text-primary uppercase tracking-tighter">Vision</h3>
-                        <p className="text-gray-500 text-lg leading-relaxed">
-                            {vision || "To be the global benchmark in school education by creating leaders who are empathetic, innovative, and culturally aware."}
-                        </p>
-                    </div>
-                    <div className="bg-primary p-12 rounded-[3rem] shadow-xl space-y-6 transform lg:-translate-y-8 transition-transform">
-                        <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-4xl shadow-inner">🚀</div>
-                        <h3 className="text-3xl font-bold text-white uppercase tracking-tighter">Mission</h3>
-                        <p className="text-blue-100 text-lg leading-relaxed opacity-90">
-                            {mission || "To provide a holistic and rigorous academic environment supported by professional development and creative exploration."}
-                        </p>
-                    </div>
-                    <div className="bg-white p-12 rounded-[3rem] shadow-xl border-t-8 border-yellow-600 space-y-6">
-                        <div className="w-16 h-16 bg-yellow-50 rounded-2xl flex items-center justify-center text-4xl shadow-inner">🛡️</div>
-                        <h3 className="text-3xl font-bold text-primary uppercase tracking-tighter">Motto</h3>
-                        <p className="text-2xl font-serif italic text-primary leading-relaxed">
-                            "{motto || "Knowledge is Freedom, Excellence is Power."}"
-                        </p>
-                    </div>
+                    {vision && (
+                        <div className="bg-white p-12 rounded-[3rem] shadow-xl border-t-8 border-accent space-y-6">
+                            <div className="w-16 h-16 bg-yellow-50 rounded-2xl flex items-center justify-center text-4xl shadow-inner">👁️</div>
+                            <h3 className="text-3xl font-bold text-primary uppercase tracking-tighter">Vision</h3>
+                            <p className="text-gray-500 text-lg leading-relaxed">
+                                {vision}
+                            </p>
+                        </div>
+                    )}
+                    {mission && (
+                        <div className="bg-primary p-12 rounded-[3rem] shadow-xl space-y-6 transform lg:-translate-y-8 transition-transform">
+                            <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-4xl shadow-inner">🚀</div>
+                            <h3 className="text-3xl font-bold text-white uppercase tracking-tighter">Mission</h3>
+                            <p className="text-blue-100 text-lg leading-relaxed opacity-90">
+                                {mission}
+                            </p>
+                        </div>
+                    )}
+                    {motto && (
+                        <div className="bg-white p-12 rounded-[3rem] shadow-xl border-t-8 border-yellow-600 space-y-6">
+                            <div className="w-16 h-16 bg-yellow-50 rounded-2xl flex items-center justify-center text-4xl shadow-inner">🛡️</div>
+                            <h3 className="text-3xl font-bold text-primary uppercase tracking-tighter">Motto</h3>
+                            <p className="text-2xl font-serif italic text-primary leading-relaxed">
+                                "{motto}"
+                            </p>
+                        </div>
+                    )}
                 </section>
             )}
 
             {/* Principal's Message Board */}
-            {getComponent('leadership')?.isActive && hasPrincipalData && (
+            {(getComponent('leadership')?.isActive || getComponent('principalmessage')?.isActive) && hasPrincipalData && (
                 <section className="max-w-7xl mx-auto px-4 py-24 border-t border-gray-100">
                     <div className="grid lg:grid-cols-2 gap-20 items-center">
                         <div className="relative group">
@@ -116,9 +124,11 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                                 <p>
                                     As the Principal of {schoolName}, I am honored to lead an institution that prioritizes the holistic development of every child.
                                 </p>
-                                <p>
-                                    {principal?.message || "Our classrooms are vibrant ecosystems of inquiry where students are encouraged to challenge the status quo. We believe that true education is about finding one's purpose and using that knowledge to positively impact the world."}
-                                </p>
+                                {principal?.message && (
+                                    <p>
+                                        {principal.message}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="pt-8 flex items-center gap-8">
@@ -132,8 +142,8 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                 </section>
             )}
 
-            {/* Chairman Message */}
-            {getComponent('leadership')?.isActive && hasChairmanData && (
+            {/* Chairman / Board Message */}
+            {(getComponent('leadership')?.isActive || getComponent('boardmembersmessage')?.isActive) && (hasChairmanData || data?.identity?.boardMessage) && (
                  <section className="bg-primary py-32 text-white relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-1/2 h-full bg-white/5 -skew-x-12 translate-x-1/2"></div>
                     <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-24 items-center relative z-10">
@@ -142,9 +152,11 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                                 <span className="text-accent font-black uppercase tracking-[0.4em] text-xs">Message from the Board</span>
                                 <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight font-playfair uppercase">A Message from the Board</h2>
                             </div>
-                            <p className="text-blue-100 text-xl font-light leading-loose italic border-l-4 border-accent pl-8">
-                                "{chairman?.message || "Our commitment to excellence ensures that every student receives a world-class education focused on academic rigor and character development."}"
-                            </p>
+                            { (chairman?.message || data?.identity?.boardMessage) && (
+                                <p className="text-blue-100 text-xl font-light leading-loose italic border-l-4 border-accent pl-8">
+                                    "{chairman?.message || data?.identity?.boardMessage}"
+                                </p>
+                            )}
                             <div className="flex items-center gap-6">
                                 <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-accent/30">
                                     <img src={chairman?.imageUrl || '/school/image/default-avatar.png'} alt={chairman?.name} className="w-full h-full object-cover" />
@@ -158,8 +170,16 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                         <div className="order-1 lg:order-2">
                              <div className="relative group">
                                 <div className="absolute inset-0 bg-accent rounded-[4rem] translate-x-8 translate-y-8 opacity-20 transition-transform group-hover:translate-x-12"></div>
-                                <div className="relative overflow-hidden rounded-[4rem] aspect-video shadow-2xl">
-                                    <img src={chairman?.imageUrl || "https://images.unsplash.com/photo-1507679799987-c73774573b8a?auto=format&fit=crop&q=80&w=1200"} className="w-full h-full object-cover" alt="Chairman" />
+                                <div className="relative overflow-hidden rounded-[4rem] aspect-video shadow-2xl bg-base-300">
+                                    {chairman?.imageUrl ? (
+                                        <img src={chairman.imageUrl} className="w-full h-full object-cover" alt="Chairman" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <span className="text-8xl font-playfair text-base-content/20 uppercase">
+                                                {chairman?.name?.charAt(0) || 'C'}
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -261,9 +281,13 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                             ))}
                         </div>
                     </div>
-                    <div className="relative">
+                    <div className="relative hidden lg:block">
                         <div className="absolute inset-0 bg-primary rounded-[4rem] translate-x-8 -translate-y-8"></div>
-                        <img src="https://images.unsplash.com/photo-1544717297-fa154da09f9b?auto=format&fit=crop&q=80&w=800" className="relative z-10 rounded-[4rem] shadow-2xl w-full" alt="Academic Excellence" />
+                        <div className="relative z-10 rounded-[4rem] shadow-2xl w-full aspect-square bg-base-200 flex items-center justify-center p-12 text-center">
+                            <span className="text-6xl font-playfair text-base-content/20 uppercase">
+                                {data?.school?.name || 'Excellence'}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </section>
