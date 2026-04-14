@@ -4,6 +4,7 @@
  */
 
 import { TenantViewModel } from '../viewmodels/tenant.viewmodel';
+import { evaluateFilters } from './filterEngine';
 
 /** Result of the validation */
 export interface ValidationResult {
@@ -20,6 +21,8 @@ export function validateRequiredSections(tenant: TenantViewModel): ValidationRes
 
     for (const comp of requiredComponents) {
         const code = comp.componentCode?.toLowerCase();
+        const config = comp.config || {};
+        const filters = config.filters || {};
 
         // Perform existence check based on component code
         let hasData = false;
@@ -39,34 +42,24 @@ export function validateRequiredSections(tenant: TenantViewModel): ValidationRes
                 break;
             case 'achievements':
             case 'schoolachievements': {
-                const results = tenant.schoolAchievements || [];
-                // Respect both 'category' and 'type' filters, prioritizing 'category' (EdDesk v2.0)
-                const filterVal = comp.config?.filters?.category || comp.config?.filters?.type;
-                if (filterVal) {
-                    data = results.filter(a => a.category?.toLowerCase() === filterVal.toLowerCase());
-                } else {
-                    data = results;
-                }
+                data = evaluateFilters(tenant.schoolAchievements || [], filters);
                 break;
             }
             case 'faculty':
                 data = tenant.faculty;
                 break;
             case 'leadership':
+            case 'principalmessage':
             case 'governance': {
-                const results = tenant.leadership || [];
-                const designationFilter = comp.config?.filters?.designation;
-                if (designationFilter === 'Principal') {
+                // Handle complex filters or legacy designation filter
+                if (filters.conditions) {
+                    data = evaluateFilters(tenant.leadership || [], filters);
+                } else if (filters.designation === 'Principal') {
                     data = tenant.principal;
-                } else if (designationFilter === 'Chairman') {
+                } else if (filters.designation === 'Chairman') {
                     data = tenant.chairman;
-                } else if (designationFilter) {
-                    data = results.filter(l => 
-                        l.role?.toLowerCase() === designationFilter.toLowerCase() ||
-                        l.designation?.toLowerCase() === designationFilter.toLowerCase()
-                    );
                 } else {
-                    data = results;
+                    data = tenant.leadership;
                 }
                 break;
             }
@@ -87,16 +80,11 @@ export function validateRequiredSections(tenant: TenantViewModel): ValidationRes
                 data = tenant.activities;
                 break;
             case 'gallery': {
-                const results = tenant.gallery || [];
-                const contentTypeFilter = comp.config?.filters?.contenttype;
-                if (contentTypeFilter) {
-                    data = results.filter(g => g.mediaType?.toLowerCase() === contentTypeFilter.toLowerCase());
-                } else {
-                    data = results;
-                }
+                data = evaluateFilters(tenant.gallery || [], filters);
                 break;
             }
             case 'events':
+            case 'recentnews':
                 data = tenant.events;
                 break;
             case 'contact':
@@ -108,7 +96,12 @@ export function validateRequiredSections(tenant: TenantViewModel): ValidationRes
                 data = tenant.testimonials;
                 break;
             case 'boardmembers':
-                data = tenant.boardMembers;
+            case 'boardmembersmessage':
+                data = evaluateFilters(tenant.leadership || [], filters);
+                // Fallback to boardmembers if local table still exists in some payloads
+                if ((!data || data.length === 0) && tenant.boardMembers?.length > 0) {
+                    data = tenant.boardMembers;
+                }
                 break;
             case 'whychooseus':
                 data = tenant.whyChooseUs;

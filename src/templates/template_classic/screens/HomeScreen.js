@@ -62,6 +62,7 @@ const HomeScreen = ({ data }) => {
     const leadershipComp = getComponent('leadership') || getComponent('governance');
     const leadershipEnabled = leadershipComp?.isActive ?? true;
     const leadershipRequired = leadershipComp?.isRequired ?? false;
+    const schoolName = data.school?.name || 'Our Institution';
     const leadership = (data?.leadership ?? []).filter(l => 
         l.isActive && 
         (l.role?.toLowerCase() === 'principal' || l.designation?.toLowerCase() === 'principal')
@@ -166,7 +167,7 @@ const HomeScreen = ({ data }) => {
     return (
         <div className="fade-in">
             <div className="flex flex-col">
-            {heroEnabled && heroSlides.length > 0 && (
+            {heroEnabled && heroSlides.length > 0 ? (
                 <section className="h-[70vh] md:h-[85vh] relative overflow-hidden bg-slate-900">
                     {heroSlides.map((slide, idx) => (
                         <div
@@ -175,10 +176,17 @@ const HomeScreen = ({ data }) => {
                             style={{ transition: 'opacity 1s ease-in-out, transform 10s linear' }}
                         >
                             {slide.mediaUrl && isValidImageUrl(slide.mediaUrl) ? (
-                                <>
-                                    <img src={slide.mediaUrl} alt={`Slide ${idx + 1}`} className="w-full h-full object-cover" />
+                                <div className="absolute inset-0">
+                                    <Image 
+                                        src={slide.mediaUrl} 
+                                        alt={slide.headline || `${schoolName} Hero Slide ${idx + 1}`} 
+                                        fill
+                                        className="object-cover"
+                                        priority={idx === 0}
+                                        sizes="100vw"
+                                    />
                                     <div className="absolute inset-0 bg-black/30 z-10" />
-                                </>
+                                </div>
                             ) : null}
                         </div>
                     ))}
@@ -208,6 +216,8 @@ const HomeScreen = ({ data }) => {
                         ))}
                     </div>
                 </section>
+            ) : (
+                <h1 className="sr-only">{schoolName} | Official Website ({data.school?.city})</h1>
             )}
 
             {/* 2. School Achievements & Academic Results Section */}
@@ -215,7 +225,7 @@ const HomeScreen = ({ data }) => {
                 <section className="py-24 bg-white border-b border-slate-100">
                         <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                             <div className="text-center mb-16">
-                                <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.4em] block mb-4">Institutional Merit</span>
+                                <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.4em] block mb-4">{schoolName} Progress</span>
                                 <h2 className="text-3xl md:text-4xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Honors & Academic Results</h2>
                                 <div className="h-1 w-20 bg-emerald-900 mx-auto mt-6"></div>
                             </div>
@@ -304,7 +314,7 @@ const HomeScreen = ({ data }) => {
                                             {member.imageUrl && isValidImageUrl(member.imageUrl) && (
                                                 <img
                                                     src={member.imageUrl}
-                                                    alt={""}
+                                                    alt={`${member.name} - ${member.designation || 'Institutional Leader'}`}
                                                     className="w-full aspect-[4/5] lg:aspect-auto lg:h-[650px] object-cover shadow-2xl transition-all duration-1000 group-hover:scale-[1.02]"
                                                 />
                                             )}
@@ -315,9 +325,9 @@ const HomeScreen = ({ data }) => {
                                         <div className="bg-white p-8 md:p-16 lg:p-20 shadow-[-20px_20px_60px_rgba(0,0,0,0.05)] border border-slate-100 relative">
                                             <div className="absolute top-0 left-10 -translate-y-1/2 text-8xl text-emerald-900/10 serif leading-none font-black italic">"</div>
 
-                                            <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.5em] block mb-6">{member.role?.toUpperCase() || "Institutional Vision"}</span>
+                                            <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.5em] block mb-6">{member.role?.toUpperCase() || `${schoolName} Leadership`}</span>
                                             <h2 className="text-3xl md:text-5xl font-bold text-slate-900 uppercase tracking-widest serif mb-8 leading-tight">
-                                                Leading with <br /> Vision & Integrity
+                                                Leading {schoolName} <br /> with Vision
                                             </h2>
 
                                             <div className="h-[2px] w-24 bg-emerald-900 mb-12"></div>
@@ -370,8 +380,8 @@ const HomeScreen = ({ data }) => {
                 <section className="py-24 bg-white">
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                         <div className="text-center mb-16">
-                            <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.4em] block mb-4">Intellectual Capital</span>
-                            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Our Distinguished Educators</h2>
+                            <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.4em] block mb-4">{schoolName} Educators</span>
+                            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Our Distinguished Faculty</h2>
                             <div className="h-1 w-20 bg-emerald-900 mx-auto mt-6"></div>
                         </div>
 
@@ -383,7 +393,7 @@ const HomeScreen = ({ data }) => {
                                             {teacher.photoUrl && isValidImageUrl(teacher.photoUrl) && (
                                                 <img
                                                     src={teacher.photoUrl}
-                                                    alt={""}
+                                                    alt={`${teacher.name} - ${teacher.designation || 'Faculty member'}`}
                                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:rotate-3"
                                                 />
                                             )}
@@ -475,10 +485,10 @@ const HomeScreen = ({ data }) => {
                     <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                         <div className="flex flex-col md:flex-row justify-between items-end mb-16">
                             <div>
-                                <h2 className="text-3xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Campus Infrastructure</h2>
+                                <h2 className="text-3xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">{schoolName} Infrastructure</h2>
                                 <div className="h-1 w-20 bg-emerald-900"></div>
                             </div>
-                            <p className="text-slate-500 text-sm max-w-md mt-4 md:mt-0 italic">State-of-the-art facilities designed for academic rigor and holistic development.</p>
+                            <p className="text-slate-500 text-sm max-w-md mt-4 md:mt-0 italic">Modern facilities at {schoolName} optimized for student growth and performance.</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             {Object.entries(groupedFacilities).map(([category, items]) => (
@@ -535,9 +545,9 @@ const HomeScreen = ({ data }) => {
 
                         {/* Slot 5: Static Call to Action */}
                         <div className="bg-emerald-900 flex flex-col items-center justify-center p-4 text-center aspect-square col-span-1">
-                            <span className="text-white text-xs font-bold uppercase tracking-[0.2em] mb-2">View Full</span>
-                            <span className="text-emerald-300 text-[10px] uppercase font-bold">Campus Portrait</span>
-                            <Link href="/portrait" className="mt-4 text-white text-[10px] font-bold underline underline-offset-4 tracking-widest hover:text-emerald-200">Enter Gallery</Link>
+                            <span className="text-white text-xs font-bold uppercase tracking-[0.2em] mb-2">{schoolName} Gallery</span>
+                            <span className="text-emerald-300 text-[10px] uppercase font-bold">Visual Perspective</span>
+                            <Link href="/gallery" className="mt-4 text-white text-[10px] font-bold underline underline-offset-4 tracking-widest hover:text-emerald-200">Enter Gallery</Link>
                         </div>
                     </div>
                 </section>
@@ -551,8 +561,8 @@ const HomeScreen = ({ data }) => {
                         {/* Section Header */}
                         <div className="flex flex-col md:flex-row justify-between items-end mb-16">
                             <div>
-                                <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.4em] block mb-4">Upcoming Events</span>
-                                <h2 className="text-3xl md:text-4xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Events & Activities</h2>
+                                <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.4em] block mb-4">{schoolName} Updates</span>
+                                <h2 className="text-3xl md:text-4xl font-bold text-slate-900 uppercase tracking-widest serif mb-2">Events & School Life</h2>
                                 <div className="h-1 w-20 bg-emerald-900"></div>
                             </div>
                             <Link

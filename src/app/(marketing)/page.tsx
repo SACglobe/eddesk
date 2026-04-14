@@ -7,7 +7,6 @@ import { Services } from '@/components/Services';
 import { Process } from '@/components/Process';
 import { Templates } from '@/components/Templates';
 import { AdminPreview } from '@/components/AdminPreview';
-import { Testimonials } from '@/components/Testimonials';
 import { Monitor, Smartphone, Tablet, X as CloseIcon, ChevronLeft, ChevronUp } from 'lucide-react';
 
 export default function Home() {
@@ -74,7 +73,6 @@ export default function Home() {
                     <Process />
                     <Templates onSelectTemplate={handleSelectTemplate} />
                     <AdminPreview />
-                    <Testimonials />
                 </main>
             </div>
 

@@ -35,7 +35,7 @@ const FacultyPage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                             <>
                                 <img
                                     src={heroMedia[0].mediaUrl}
-                                    alt=""
+                                    alt={heroMedia[0].headline || 'Academic Leadership'}
                                     className="w-full h-full object-cover grayscale opacity-40 scale-110"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-[#050505] z-[1]"></div>
@@ -45,12 +45,12 @@ const FacultyPage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
 
                     <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-6">
                         <div className="max-w-4xl space-y-6">
-                            <span className="text-gold-500 uppercase tracking-[0.8em] text-[10px] font-bold">Academic Leadership</span>
+                            <span className="text-gold-500 uppercase tracking-[0.8em] text-[10px] font-bold">{data.school.name} Leadership</span>
                             <h1 className="text-white text-5xl md:text-8xl font-serif italic leading-none tracking-tighter">
                                 {heroMedia[0].headline || 'Mastering Excellence'}
                             </h1>
                             <p className="text-white/40 text-lg md:text-xl font-light max-w-2xl mx-auto tracking-wide">
-                                {heroMedia[0].subheadline || 'A curated assembly of world-class educators and thought leaders.'}
+                                {heroMedia[0].subheadline || `A curated assembly of world-class educators and thought leaders at ${data.school.name}.`}
                             </p>
                         </div>
                     </div>

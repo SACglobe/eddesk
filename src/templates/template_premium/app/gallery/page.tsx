@@ -74,12 +74,12 @@ export default function GalleryPage({ data }: { data?: TenantViewModel }) {
                 <div className="max-w-7xl mx-auto px-6 text-signature-navy">
                     <header className="mb-24 flex flex-col md:flex-row md:items-end justify-between gap-12">
                         <div className="max-w-2xl">
-                            <SectionHeader title="Institutional Archive" subtitle="Signature Portfolio" />
-                            <h1 className="text-6xl font-serif text-signature-navy">A Legacy <span className="italic text-signature-gold">Visualized</span></h1>
+                            <SectionHeader title="Gallery" subtitle={`${data?.school?.name || 'Institutional'} Portfolio`} />
+                            <h1 className="text-6xl font-serif text-signature-navy">{data?.school?.name || 'Campus'} <span className="italic text-signature-gold">Visualized</span></h1>
                         </div>
                         <div className="flex flex-col items-end gap-6">
                             <p className="text-gray-400 uppercase tracking-[0.3em] text-[10px] font-bold pb-4 border-b border-signature-navy/10">
-                                Official Media Registry
+                                Official {data?.school?.name || 'School'} Media
                             </p>
                             {/* Filter System */}
                             {categories.length > 2 && (

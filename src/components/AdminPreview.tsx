@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Palette, Layers, LayoutPanelLeft, Sparkles, Bell, Users, Award } from 'lucide-react';
+import { Palette, Layers, LayoutPanelLeft, ArrowRight, Bell, Users, Award } from 'lucide-react';
 import { mContainer, mSection, mLabel, mDisplay, mBtnPrimary, marketingTheme } from '@/lib/marketing/theme';
 import Link from 'next/link';
 
@@ -44,7 +44,7 @@ export const AdminPreview: React.FC = () => {
               className={mBtnPrimary + " inline-flex px-10 py-5 rounded-full font-bold shadow-2xl flex items-center space-x-3 group"}
             >
               <span>See the Dashboard</span>
-              <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
             </Link>
           </motion.div>
 

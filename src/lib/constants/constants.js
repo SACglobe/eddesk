@@ -4,6 +4,18 @@ const domain_data = [
         "template_id": "",
         "type": "owner"
     }, {
+        "domain": "localhost",
+        "template_id": "",
+        "type": "owner"
+    }, {
+        "domain": "127.0.0.1:3000",
+        "template_id": "",
+        "type": "owner"
+    }, {
+        "domain": "127.0.0.1",
+        "template_id": "",
+        "type": "owner"
+    }, {
         "domain": "eddesk.in",
         "template_id": "",
         "type": "owner"

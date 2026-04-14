@@ -12,7 +12,7 @@ const Footer = ({ school }) => {
                                 {school.logoUrl && (
                                     <img
                                         src={school.logoUrl}
-                                        alt={""}
+                                        alt={`${school.name} Logo`}
                                         className="w-full h-full object-contain brightness-200"
                                     />
                                 )}

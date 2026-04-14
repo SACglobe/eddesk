@@ -4,12 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { GraduationCap, Layout, Settings, Rocket, Menu, X, MessageSquare, ChevronDown, Monitor, Sparkles } from 'lucide-react';
+import { GraduationCap, Layout, Settings, Rocket, Menu, X, MessageSquare, ChevronDown, Monitor } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { label: 'Features',   type: 'anchor', id: 'features',     icon: <Rocket className="w-4 h-4" /> },
+  { label: 'Home',      type: 'anchor', id: 'hero',         icon: <Rocket className="w-4 h-4" /> },
   { label: 'Templates',  type: 'anchor', id: 'templates',    icon: <Layout className="w-4 h-4" /> },
-  { label: 'Pricing',    type: 'anchor', id: 'pricing',      icon: <Settings className="w-4 h-4" /> },
+  { label: 'Pricing',    type: 'page',   href: '/pricing',   icon: <Settings className="w-4 h-4" /> },
   { label: 'About',      type: 'page',   href: '/about',     icon: <GraduationCap className="w-4 h-4" /> },
   { label: 'Contact',    type: 'page',   href: '/contact',   icon: <MessageSquare className="w-4 h-4" /> },
 ];
@@ -19,7 +19,7 @@ export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const pathname = usePathname();
-  const isHome = pathname === '/';
+  const isHome = pathname === '/' || pathname === '';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -70,22 +70,40 @@ export const Navbar: React.FC = () => {
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'py-3' : 'py-6'}`}>
       <div className="container mx-auto px-6">
         <div className={`flex items-center justify-between rounded-full border px-6 py-2 transition-all duration-500 ${scrolled ? 'bg-slate-950/80 border-slate-800/50 backdrop-blur-xl shadow-2xl shadow-indigo-500/10' : 'bg-transparent border-transparent'}`}>
-          {/* Logo */}
-          <div
-            className="flex items-center space-x-2 cursor-pointer group"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          <Link
+            href="/"
+            className="flex items-center space-x-3 cursor-pointer group"
+            onClick={(e) => {
+              if (isHome) {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
           >
-            <img src="/assets/images/logo.png" alt="EdDesk Logo" className="h-10 w-auto object-contain" />
-          </div>
+            {/* Full Logo wrapped in white oval */}
+            <div className="bg-white rounded-full px-5 py-2 flex items-center justify-center border border-white/20 shadow-xl group-hover:scale-105 transition-all duration-300">
+              <img 
+                src="/assets/images/logo.png" 
+                alt="EdDesk Logo" 
+                className="h-7 w-auto object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  const textEl = document.createElement('span');
+                  textEl.className = 'text-slate-950 font-black tracking-tight text-xl';
+                  textEl.innerText = 'EdDesk';
+                  e.currentTarget.parentElement?.appendChild(textEl);
+                }}
+              />
+            </div>
+          </Link>
 
-          {/* Desktop Nav */}
           <div className="hidden md:flex items-center space-x-1">
             {NAV_ITEMS.map((item) => (
               <NavLink
                 key={item.label}
                 href={item.type === 'anchor' ? (isHome ? `#${item.id}` : `/#${item.id}`) : item.href!}
                 icon={item.icon}
-                isActive={item.type === 'anchor' ? activeSection === item.id : pathname === item.href}
+                isActive={item.type === 'anchor' ? (isHome && activeSection === item.id) : pathname === item.href}
                 onClick={(e) => handleNavClick(e, item)}
               >
                 {item.label}
@@ -93,18 +111,19 @@ export const Navbar: React.FC = () => {
             ))}
           </div>
 
-          {/* Right Action */}
-          <div className="hidden md:flex items-center space-x-4">
+
+          {/* Right Action - Admin Panel */}
+          <div className="hidden md:flex items-center space-x-1">
             <Link
-              href="/contact"
-              className="relative overflow-hidden bg-white text-slate-950 px-8 py-2.5 rounded-full font-black text-sm transition-all hover:scale-105 active:scale-95 shadow-xl shadow-white/5 group"
+              href="https://admin.eddesk.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-2 px-6 py-2 rounded-full font-bold text-sm bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-600 hover:text-white transition-all shadow-lg shadow-indigo-500/5 group"
             >
-              <span className="relative z-10">Start Project</span>
-              <div className="absolute inset-0 bg-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <Monitor className="w-4 h-4 group-hover:scale-110 transition-transform" />
+              <span>Admin Login</span>
             </Link>
           </div>
-
-          {/* Mobile Toggle */}
           <button className="md:hidden text-slate-300 p-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -141,11 +160,14 @@ export const Navbar: React.FC = () => {
               ))}
               <div className="pt-4 border-t border-slate-800">
                 <Link
-                  href="/contact"
+                   href="https://admin.eddesk.in"
+                   target="_blank"
+                   rel="noopener noreferrer"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-xl shadow-indigo-500/20 flex items-center justify-center"
+                  className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold border border-white/5 flex items-center justify-center space-x-3"
                 >
-                  Get Started Now
+                  <Monitor className="w-5 h-5" />
+                  <span>Admin Panel</span>
                 </Link>
               </div>
             </div>

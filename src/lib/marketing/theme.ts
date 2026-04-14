@@ -51,7 +51,7 @@ export const marketingTheme = {
   // ── Gradient Text ────────────────────────────────────────────────────────
   gradients: {
     text:   'bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-white to-purple-400',
-    textAlt:'bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400',
+    textAlt: 'text-slate-200',
     glow:   'bg-indigo-600/10 blur-[120px]',
   },
 

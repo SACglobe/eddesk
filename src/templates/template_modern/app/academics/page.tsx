@@ -33,16 +33,11 @@ const Academics: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
     return (
         <div className="pb-24">
             {/* 1. Immersive Hero Section */}
-            <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
-                <img
-                    src="https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&q=80&w=2000"
-                    className="absolute inset-0 w-full h-full object-cover grayscale brightness-50"
-                    alt="Academic Excellence"
-                />
+            <section className="relative h-[60vh] flex items-center justify-center overflow-hidden bg-primary">
                 <div className="absolute inset-0 bg-gradient-to-b from-primary/70 to-primary/90"></div>
                 <div className="relative z-10 text-center space-y-8 max-w-4xl px-4">
                     <span className="text-accent font-black uppercase tracking-[0.5em] text-sm animate-pulse">Scholastic Rigor</span>
-                    <h1 className="text-5xl md:text-8xl font-bold text-white leading-tight font-playfair">Future-Proof Learning</h1>
+                    <h1 className="text-5xl md:text-8xl font-bold text-white leading-tight font-playfair">Academics | {data?.school?.name || 'Our School'}</h1>
                     <p className="text-blue-100 text-xl md:text-2xl font-medium max-w-2xl mx-auto opacity-80 leading-relaxed">
                         An interdisciplinary curriculum designed to empower thinkers, creators, and global leaders.
                     </p>

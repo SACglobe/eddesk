@@ -30,6 +30,22 @@ import {
     generatePrincipalJsonLd,
     generateAboutMetadata,
     generateAboutJsonLd,
+    generateWebSiteJsonLd,
+    generateContactJsonLd,
+    generateFacultyJsonLd,
+    generateGalleryJsonLd,
+    generateAdmissionJsonLd,
+    generateAcademicsJsonLd,
+    generateContactMetadata,
+    generateFacultyMetadata,
+    generateGalleryMetadata,
+    generateEventsMetadata,
+    generateAdmissionMetadata,
+    generateAcademicsMetadata,
+    generateActivitiesMetadata,
+    generateInfrastructureMetadata,
+    generateBreadcrumbJsonLd,
+    generateLocalBusinessJsonLd,
 } from '@/core/utils/seo';
 import { templateRegistry } from '@/lib/template/registry';
 import TemplateRenderer from '../../demo/[templateSlug]/[[...path]]/TemplateRenderer';
@@ -53,10 +69,18 @@ export async function generateMetadata({
     const result = await fetchTenantScreen(hostname, screenName);
     if (result.status === 'success') {
         const viewModel = buildTenantViewModel(result.payload);
-        if (path === '/about') {
-            return generateAboutMetadata(viewModel, hostname, false);
+        switch (path) {
+            case '/about': return generateAboutMetadata(viewModel, hostname, false);
+            case '/contact': return generateContactMetadata(viewModel, hostname, false);
+            case '/faculty': return generateFacultyMetadata(viewModel, hostname, false);
+            case '/gallery': return generateGalleryMetadata(viewModel, hostname, false);
+            case '/events': return generateEventsMetadata(viewModel, hostname, false);
+            case '/admission': return generateAdmissionMetadata(viewModel, hostname, false);
+            case '/academics': return generateAcademicsMetadata(viewModel, hostname, false);
+            case '/activities': return generateActivitiesMetadata(viewModel, hostname, false);
+            case '/infrastructure': return generateInfrastructureMetadata(viewModel, hostname, false);
+            default: return generateTenantMetadata(viewModel, hostname, false);
         }
-        return generateTenantMetadata(viewModel, hostname, false);
     }
 
     return { title: 'Loading Site... | EdDesk' };
@@ -182,7 +206,44 @@ export default async function TenantPage({
                         }}
                     />
 
-                    {/* 2. About page schema — only on /about */}
+                    {/* WebSite Schema with SearchAction — always present */}
+                    <script
+                        type="application/ld+json"
+                        dangerouslySetInnerHTML={{
+                            __html: JSON.stringify(generateWebSiteJsonLd(tenantState.data, hostname)),
+                        }}
+                    />
+
+                    {/* LocalBusiness Schema — for map-rich presence */}
+                    <script
+                        type="application/ld+json"
+                        dangerouslySetInnerHTML={{
+                            __html: JSON.stringify(generateLocalBusinessJsonLd(tenantState.data, hostname)),
+                        }}
+                    />
+
+                    {/* Breadcrumb Schema — for all inner pages */}
+                    {path !== '/' && path !== '' && (() => {
+                        const crumbs: { name: string; path: string }[] = [];
+                        const pathSegments = path.split('/').filter(Boolean);
+                        let currentPath = '';
+                        pathSegments.forEach((segment) => {
+                            currentPath += `/${segment}`;
+                            // Capitalize First Letter of each segment
+                            const name = segment.charAt(0).toUpperCase() + segment.slice(1);
+                            crumbs.push({ name, path: currentPath });
+                        });
+                        return (
+                            <script
+                                type="application/ld+json"
+                                dangerouslySetInnerHTML={{
+                                    __html: JSON.stringify(generateBreadcrumbJsonLd(hostname, crumbs)),
+                                }}
+                            />
+                        );
+                    })()}
+
+                    {/* 2. Page specific schemas */}
                     {path === '/about' && (
                         <script
                             type="application/ld+json"
@@ -191,9 +252,56 @@ export default async function TenantPage({
                             }}
                         />
                     )}
+                    
+                    {path === '/contact' && (
+                        <script
+                            type="application/ld+json"
+                            dangerouslySetInnerHTML={{
+                                __html: JSON.stringify(generateContactJsonLd(tenantState.data, hostname)),
+                            }}
+                        />
+                    )}
+                    
+                    {path === '/faculty' && (() => {
+                        const ld = generateFacultyJsonLd(tenantState.data, hostname);
+                        return ld ? (
+                            <script
+                                type="application/ld+json"
+                                dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
+                            />
+                        ) : null;
+                    })()}
 
-                    {/* 3. Upcoming Events — home screen only, skip if no upcoming events */}
-                    {screenName === 'home' && (() => {
+                    {path === '/gallery' && (() => {
+                        const ld = generateGalleryJsonLd(tenantState.data, hostname);
+                        return ld ? (
+                            <script
+                                type="application/ld+json"
+                                dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
+                            />
+                        ) : null;
+                    })()}
+
+                    {path === '/admission' && (
+                        <script
+                            type="application/ld+json"
+                            dangerouslySetInnerHTML={{
+                                __html: JSON.stringify(generateAdmissionJsonLd(tenantState.data, hostname)),
+                            }}
+                        />
+                    )}
+
+                    {path === '/academics' && (
+                        <script
+                            type="application/ld+json"
+                            dangerouslySetInnerHTML={{
+                                __html: JSON.stringify(generateAcademicsJsonLd(tenantState.data, hostname)),
+                            }}
+                        />
+                    )}
+
+                    {/* Upcoming Events — events screen or home screen, skip if no upcoming events */}
+                    {(path === '/events' || screenName === 'home') && (() => {
                         const eventsLd = generateEventsJsonLd(tenantState.data, hostname);
                         return eventsLd ? (
                             <script

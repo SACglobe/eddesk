@@ -216,6 +216,7 @@ export interface TenantViewModel {
         postalCode: string;
         fullAddress: string;
         themeConfig: Record<string, unknown>;
+        componentVariants: Record<string, Record<string, string>>; // Nested by screen
         paymentGatewayUrl: string;  // kept for compat — may be empty string
         gracePeriodDays: number;
         expirationDate: string;
@@ -240,7 +241,18 @@ export interface TenantViewModel {
         isRequired: boolean;
         displayOrder: number;
         config: {
-            filters?: { category?: string; type?: string; designation?: string; contenttype?: string } | null;
+            filters?: {
+                category?: string;
+                type?: string;
+                designation?: string;
+                contenttype?: string;
+                logic?: 'AND' | 'OR';
+                conditions?: Array<{
+                    field: string;
+                    operator: 'equals' | 'notequals' | 'contains' | 'in';
+                    value: any;
+                }>;
+            } | null;
             datasource?: string;
             variant?: string | null;
             itemcount?: number | null;
@@ -262,6 +274,7 @@ export interface TenantViewModel {
         motto: string;
         history: string;
         foundedYear: number;
+        boardMessage: string;
         aboutTitle: string;
         aboutDescription: string;
     };
@@ -595,8 +608,14 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
     const infraRows = (d.infrastructure ?? []) as Record<string, unknown>[];
     const componentRows = (d.templatecomponents ?? []) as Record<string, unknown>[];
     const whyChooseUsRows = (d.whychooseus ?? []) as Record<string, unknown>[];
-    const boardMembersRows = (d.boardmembers ?? []) as Record<string, unknown>[];
     const testimonialRows = (d.testimonial ?? []) as Record<string, unknown>[];
+
+    // Combine all leadership related keys from data
+    const combinedLeadershipRows = [
+        ...((d.leadership ?? []) as Record<string, unknown>[]),
+        ...((d.principalmessage ?? []) as Record<string, unknown>[]),
+        ...((d.boardmembers ?? []) as Record<string, unknown>[])
+    ];
 
     // 3. Extract single objects — default to null if missing
     // 3. Extract single objects — default to null if missing
@@ -615,7 +634,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
     ) as Record<string, unknown>[];
     const contactDetailsRow = contactDetailsArr[0] ?? null;
 
-    const schoolIdentityRow = (d.schoolidentity ?? null) as Record<string, unknown> | null;
+    const schoolIdentityRow = (d.schoolidentity ?? d.visionmission ?? d.boardmembersmessage ?? d.contactdetails ?? [null])[0] as Record<string, unknown> | null;
 
     // 4. Deduplicate templatecomponents by componentcode
     // 4. Mapped components — no deduplication, supporting multiple instances (e.g., sports vs academic achievements)
@@ -627,30 +646,18 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
         config: (r['config'] as any) ?? null,
     }));
 
-    const mappedLeadership = [
-        ...leadershipRows.map(r => ({
+    const mappedLeadership = combinedLeadershipRows.map(r => ({
             key: str(r[COL_LEADERSHIP_ID]),
             name: str(r[COL_LEADERSHIP_NAME]),
-            role: str(r[COL_LEADERSHIP_ROLE]),
+            role: str(r[COL_LEADERSHIP_ROLE] || (str(r[COL_LEADERSHIP_DESIGNATION]).toLowerCase() === 'principal' ? 'principal' : 'board')),
             designation: str(r[COL_LEADERSHIP_DESIGNATION]),
             message: str(r[COL_LEADERSHIP_MESSAGE]),
             imageUrl: resolveImageUrl(str(r[COL_LEADERSHIP_IMAGE_URL])),
             signatureUrl: resolveImageUrl(str(r[COL_LEADERSHIP_SIGNATURE_URL])),
             isActive: bool(r[COL_LEADERSHIP_IS_ACTIVE]),
             displayOrder: num(r[COL_LEADERSHIP_DISPLAY_ORDER]),
-        })),
-        ...boardMembersRows.map(r => ({
-            key: str(r[COL_BOARD_MEMBERS_ID]),
-            name: str(r[COL_BOARD_MEMBERS_NAME]),
-            role: 'board', // Explicitly board for boardmembers table
-            designation: str(r[COL_BOARD_MEMBERS_DESIGNATION]),
-            message: str(r[COL_BOARD_MEMBERS_PROFILE]), // Bio/Profile maps to message for combined personnel
-            imageUrl: resolveImageUrl(str(r[COL_BOARD_MEMBERS_IMAGE_URL])),
-            signatureUrl: '', // Board members typically don't have electronic signatures in this schema
-            isActive: bool(r[COL_BOARD_MEMBERS_IS_ACTIVE]),
-            displayOrder: num(r[COL_BOARD_MEMBERS_DISPLAY_ORDER]),
-        }))
-    ].sort((a, b) => a.displayOrder - b.displayOrder);
+            quote: str(r['quote']),
+        })).sort((a, b) => a.displayOrder - b.displayOrder);
 
     // 6. Derive principal and chairman from leadership array
     // 6. Derive leadership roles as arrays (per user request)
@@ -855,6 +862,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
                 str(school[COL_SCHOOLS_STATE]),
             ].filter(Boolean).join(', '),
             themeConfig: (school[COL_SCHOOLS_THEME_CONFIG] as Record<string, unknown>) ?? {},
+            componentVariants: (school['componentvariants'] ?? {}) as Record<string, Record<string, string>>,
             paymentGatewayUrl: str(school[COL_SCHOOLS_PAYMENTGATEWAY_URL]),
             gracePeriodDays: num(plan[COL_PLAN_GRACE_PERIOD]),
             expirationDate: str(school[COL_SCHOOLS_EXPIRATION_DATE]),
@@ -874,13 +882,14 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
         homepageSections,
 
         identity: {
-            vision: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_VISION]) : '',
-            mission: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_MISSION]) : '',
-            motto: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_MOTTO]) : '',
+            vision: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_VISION] || schoolIdentityRow['vision']) : '',
+            mission: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_MISSION] || schoolIdentityRow['mission']) : '',
+            motto: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_MOTTO] || schoolIdentityRow['motto']) : '',
             history: schoolIdentityRow ? str(schoolIdentityRow['history']) : '',
             foundedYear: schoolIdentityRow ? num(schoolIdentityRow['founded_year']) : 0,
-            aboutTitle: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_VISION]) : '', 
-            aboutDescription: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_MISSION]) : '',
+            boardMessage: schoolIdentityRow ? str(schoolIdentityRow['boardmessage']) : '',
+            aboutTitle: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_VISION] || schoolIdentityRow['vision']) : '', 
+            aboutDescription: schoolIdentityRow ? str(schoolIdentityRow[COL_SCHOOL_IDENTITY_MISSION] || schoolIdentityRow['mission']) : '',
         },
 
         whyChooseUs: whyChooseUsRows.map(r => ({
