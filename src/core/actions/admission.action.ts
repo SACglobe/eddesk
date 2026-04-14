@@ -5,52 +5,52 @@ import { sendAdmissionEmail } from '@/core/utils/email';
 
 export interface AdmissionFormData {
   schoolkey: string;
-  studentInfo: {
-    studentName: string;
-    dateOfBirth: string;
-    bloodGroup: string;
-    aadharNo: string;
+  studentinfo: {
+    studentname: string;
+    dateofbirth: string;
+    bloodgroup: string;
+    aadharno: string;
     religion: string;
-    seekingClass: string;
-    emisNo?: string;
+    seekingclass: string;
+    emisno?: string;
   };
-  previousSchool: {
-    lastSchoolName: string;
-    lastSchoolDistrict: string;
-    lastSchoolBlock: string;
+  previousschool: {
+    lastschoolname: string;
+    lastschooldistrict: string;
+    lastschoolblock: string;
   };
   documents: {
-    tcSubmitted: boolean;
-    attendanceCertificate: boolean;
-    markSheetSubmitted: boolean;
+    tcsubmitted: boolean;
+    attendancecertificate: boolean;
+    marksheetsubmitted: boolean;
   };
   reference?: {
     name: string;
     designation: string;
     address: string;
-    mobileNo: string;
+    mobileno: string;
   };
   history: {
-    breakOfStudy: boolean;
+    breakofstudy: boolean;
   };
-  fatherInfo: {
+  fatherinfo: {
     name: string;
     occupation: string;
     qualification: string;
-    annualIncome: string;
-    cellNo: string;
+    annualincome: string;
+    mobileno: string;
   };
-  motherInfo: {
+  motherinfo: {
     name: string;
     occupation: string;
     qualification: string;
-    annualIncome: string;
-    cellNo: string;
+    annualincome: string;
+    mobileno: string;
   };
   general: {
-    residentialAddress: string;
-    distanceFromSchool: string;
-    conveyanceRequired: boolean;
+    residentialaddress: string;
+    distancefromschool: string;
+    conveyancerequired: boolean;
   };
 }
 
@@ -90,17 +90,17 @@ export async function submitAdmissionAction(data: AdmissionFormData): Promise<Ad
     });
 
     // 1. Basic Validation (Name, Phone, Class)
-    if (!data.studentInfo.studentName?.trim()) {
+    if (!data.studentinfo.studentname?.trim()) {
       return { success: false, error: 'Student name is required' };
     }
-    if (!data.studentInfo.seekingClass?.trim()) {
+    if (!data.studentinfo.seekingclass?.trim()) {
       return { success: false, error: 'Seeking class is required' };
     }
-    if (!data.fatherInfo.cellNo?.trim() && !data.motherInfo.cellNo?.trim()) {
-      return { success: false, error: 'At least one parent cell number is required' };
+    if (!data.fatherinfo.mobileno?.trim() && !data.motherinfo.mobileno?.trim()) {
+      return { success: false, error: 'At least one parent mobile number is required' };
     }
 
-    console.log('[admission.action] submit →', { schoolkey: data.schoolkey, studentName: data.studentInfo.studentName });
+    console.log('[admission.action] submit →', { schoolkey: data.schoolkey, studentname: data.studentinfo.studentname });
 
     // Insert into 'formsubmissions' table
     const { error: insertError } = await supabase
@@ -129,9 +129,9 @@ export async function submitAdmissionAction(data: AdmissionFormData): Promise<Ad
       if (schoolData?.email) {
         await sendAdmissionEmail(schoolData.email, {
           schoolname: schoolData.name,
-          studentname: data.studentInfo.studentName,
-          seekingclass: data.studentInfo.seekingClass,
-          mobileno: data.fatherInfo.cellNo || data.motherInfo.cellNo,
+          studentname: data.studentinfo.studentname,
+          seekingclass: data.studentinfo.seekingclass,
+          mobileno: data.fatherinfo.mobileno || data.motherinfo.mobileno,
           date: new Date().toLocaleString('en-IN')
         });
       }
