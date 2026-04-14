@@ -40,11 +40,18 @@ export async function submitContactAction(data: ContactFormData): Promise<Contac
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-    if (!supabaseUrl || (!supabaseServiceKey && !supabaseAnonKey)) {
+    if (!supabaseUrl) {
+      console.error('[contact.action] Error: NEXT_PUBLIC_SUPABASE_URL is missing');
       return { success: false, error: 'Database configuration error' };
     }
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey || supabaseAnonKey, {
+    const supabaseKey = supabaseServiceKey || supabaseAnonKey;
+    if (!supabaseKey) {
+      console.error('[contact.action] Error: No Supabase keys found in environment');
+      return { success: false, error: 'Database configuration error' };
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
 
@@ -108,8 +115,20 @@ export async function submitCallbackAction(data: CallbackFormData): Promise<Cont
   if (!callbackdate) return { success: false, error: 'Preferred date is required' };
 
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl) {
+      console.error('[callback.action] Error: NEXT_PUBLIC_SUPABASE_URL is missing');
+      return { success: false, error: 'Database configuration error' };
+    }
+
+    const supabaseKey = supabaseServiceKey || supabaseAnonKey;
+    if (!supabaseKey) {
+      console.error('[callback.action] Error: No Supabase keys found in environment');
+      return { success: false, error: 'Database configuration error' };
+    }
 
     const supabase = createClient(supabaseUrl, supabaseKey, {
       auth: { persistSession: false, autoRefreshToken: false },

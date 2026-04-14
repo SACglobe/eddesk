@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@supabase/supabase-js'
+import { sendAdmissionEmail } from '@/core/utils/email';
 
 export interface AdmissionFormData {
   schoolkey: string;
@@ -59,8 +60,6 @@ export interface AdmissionActionResult {
   error?: string;
 }
 
-import { sendAdmissionEmail } from '@/core/utils/email';
-
 /**
  * Server Action to submit an admission form via Supabase.
  * Uses SUPABASE_SERVICE_ROLE_KEY to bypass RLS and ensure secure submission.
@@ -90,7 +89,7 @@ export async function submitAdmissionAction(data: AdmissionFormData): Promise<Ad
       },
     });
 
-    // 1. Basic Validation (Name, Phone, Class) - Updated to lowercase keys
+    // 1. Basic Validation (Name, Phone, Class)
     if (!data.studentinfo.studentname?.trim()) {
       return { success: false, error: 'Student name is required' };
     }
@@ -119,32 +118,25 @@ export async function submitAdmissionAction(data: AdmissionFormData): Promise<Ad
       return { success: false, error: 'Failed to submit admission form. Please try again later.' };
     }
 
-    // 2. Lookup school email for notification
+    // 2. Fetch school email and send notification
     try {
-        const { data: schoolData } = await supabase
-            .from('schools')
-            .select('name, email')
-            .eq('key', data.schoolkey)
-            .maybeSingle();
+      const { data: schoolData } = await supabase
+        .from('schools')
+        .select('name, email')
+        .eq('key', data.schoolkey)
+        .maybeSingle();
 
-        if (schoolData?.email) {
-            await sendAdmissionEmail(schoolData.email, {
-                schoolname: schoolData.name,
-                studentname: data.studentinfo.studentname,
-                seekingclass: data.studentinfo.seekingclass,
-                mobileno: data.fatherinfo.mobileno || data.motherinfo.mobileno,
-                date: new Date().toLocaleDateString('en-IN', { 
-                    day: 'numeric', 
-                    month: 'long', 
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                })
-            });
-        }
-    } catch (emailErr) {
-        // We don't block the UI success if email fails, but we log it
-        console.error('[admission.action] notification failed:', emailErr);
+      if (schoolData?.email) {
+        await sendAdmissionEmail(schoolData.email, {
+          schoolname: schoolData.name,
+          studentname: data.studentinfo.studentname,
+          seekingclass: data.studentinfo.seekingclass,
+          mobileno: data.fatherinfo.mobileno || data.motherinfo.mobileno,
+          date: new Date().toLocaleString('en-IN')
+        });
+      }
+    } catch (e) {
+      console.error('[admission.action] notification email failed:', e);
     }
 
     return { success: true, message: 'Admission form submitted successfully' };
