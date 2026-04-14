@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@supabase/supabase-js'
+import { sendAdmissionEmail } from '@/core/utils/email';
 
 export interface AdmissionFormData {
   schoolkey: string;
@@ -115,6 +116,27 @@ export async function submitAdmissionAction(data: AdmissionFormData): Promise<Ad
     if (insertError) {
       console.error('[admission.action] Insert Error:', insertError);
       return { success: false, error: 'Failed to submit admission form. Please try again later.' };
+    }
+
+    // 2. Fetch school email and send notification
+    try {
+      const { data: schoolData } = await supabase
+        .from('schools')
+        .select('name, email')
+        .eq('key', data.schoolkey)
+        .maybeSingle();
+
+      if (schoolData?.email) {
+        await sendAdmissionEmail(schoolData.email, {
+          schoolname: schoolData.name,
+          studentname: data.studentInfo.studentName,
+          seekingclass: data.studentInfo.seekingClass,
+          mobileno: data.fatherInfo.cellNo || data.motherInfo.cellNo,
+          date: new Date().toLocaleString('en-IN')
+        });
+      }
+    } catch (e) {
+      console.error('[admission.action] notification email failed:', e);
     }
 
     return { success: true, message: 'Admission form submitted successfully' };

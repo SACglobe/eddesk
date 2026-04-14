@@ -194,12 +194,15 @@ export async function sendAdmissionEmail(to: string, data: AdmissionEmailData) {
  */
 export async function sendContactEmail(to: string, data: ContactEmailData) {
   const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) return { success: false, error: "Configuration missing" };
+  if (!apiKey) {
+    console.error("[email.util] error: RESEND_API_KEY is not configured for contact email");
+    return { success: false, error: "Configuration missing" };
+  }
 
   const adminUrl = "https://admin.eddesk.in";
   const logoUrl = "https://admin.eddesk.in/logo-full.png";
   const subject = `New Web Enquiry - ${data.name} - EdDesk`;
-  const sender = "EdDesk Enquiry <admission@eddesk.in>";
+  const sender = "EdDesk Enquiry <enquiry@eddesk.in>";
   
   const html = `
     <!DOCTYPE html>
@@ -233,11 +236,33 @@ export async function sendContactEmail(to: string, data: ContactEmailData) {
     </html>
   `;
 
-  return fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify({ from: sender, to: [to], subject: subject, html: html }),
-  }).then(res => res.json());
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        from: sender,
+        to: [to],
+        subject: subject,
+        html: html,
+      }),
+    });
+
+    const result = await response.json();
+    
+    if (!response.ok) {
+      console.error("[email.util] contact email resend error:", result);
+      return { success: false, error: result.message };
+    }
+
+    return { success: true, data: result };
+  } catch (error: any) {
+    console.error("[email.util] contact email internal error:", error);
+    return { success: false, error: error.message };
+  }
 }
 
 /**
@@ -250,7 +275,7 @@ export async function sendCallbackEmail(to: string, data: CallbackEmailData) {
   const adminUrl = "https://admin.eddesk.in";
   const logoUrl = "https://admin.eddesk.in/logo-full.png";
   const subject = `Callback Request - ${data.name} - EdDesk`;
-  const sender = "EdDesk Alerts <admission@eddesk.in>";
+  const sender = "EdDesk Alerts <callback@eddesk.in>";
   
   const html = `
     <!DOCTYPE html>
@@ -282,9 +307,31 @@ export async function sendCallbackEmail(to: string, data: CallbackEmailData) {
     </html>
   `;
 
-  return fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify({ from: sender, to: [to], subject: subject, html: html }),
-  }).then(res => res.json());
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        from: sender,
+        to: [to],
+        subject: subject,
+        html: html,
+      }),
+    });
+
+    const result = await response.json();
+    
+    if (!response.ok) {
+      console.error("[email.util] callback email resend error:", result);
+      return { success: false, error: result.message };
+    }
+
+    return { success: true, data: result };
+  } catch (error: any) {
+    console.error("[email.util] callback email internal error:", error);
+    return { success: false, error: error.message };
+  }
 }
