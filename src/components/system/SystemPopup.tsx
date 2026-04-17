@@ -16,7 +16,7 @@ import React, { useEffect, useState } from 'react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type PopupVariant = 'empty' | 'error' | 'network_error' | 'inactive' | 'expired' | 'content_missing' | 'data_error' | 'template_not_found';
+export type PopupVariant = 'empty' | 'error' | 'network_error' | 'inactive' | 'expired' | 'content_missing' | 'data_error' | 'template_not_found' | 'subscription_missing';
 
 interface SystemPopupProps {
     variant: PopupVariant;
@@ -124,6 +124,7 @@ export default function SystemPopup({
         content_missing: { h: '234,179,8', hex: '#eab308', dark: '#ca8a04', light: '#fde047' }, // amber
         data_error: { h: '99,102,241', hex: '#6366f1', dark: '#4f46e5', light: '#a5b4fc' }, // indigo
         template_not_found: { h: '99,102,241', hex: '#6366f1', dark: '#4f46e5', light: '#a5b4fc' }, // indigo
+        subscription_missing: { h: '99,102,241', hex: '#6366f1', dark: '#4f46e5', light: '#a5b4fc' }, // indigo (setup vibe)
     };
 
     const accent = ACCENT_MAP[variant];
@@ -137,6 +138,7 @@ export default function SystemPopup({
         content_missing: 'ed-pulse-yellow 2.4s ease-in-out infinite',
         data_error: 'ed-pulse-indigo 2.4s ease-in-out infinite',
         template_not_found: 'ed-pulse-indigo 2.4s ease-in-out infinite',
+        subscription_missing: 'ed-pulse-indigo 2.4s ease-in-out infinite',
     };
     const pulseAnim = PULSE_ANIM[variant];
 
@@ -195,6 +197,12 @@ export default function SystemPopup({
             badge: '⚠ Content Required',
             heading: 'Website content is missing.',
             subtitle: `The "${missingSection || 'required'}" section needs content before visitors can access this website. Please add it from the EdDesk Admin Panel.`,
+        },
+        subscription_missing: {
+            icon: '✨',
+            badge: '🚀 Activate Website',
+            heading: 'Activate your professional website.',
+            subtitle: "To go live, please initiate your subscription from the EdDesk Admin Panel. If you've already subscribed, please contact us for assistance.",
         },
     };
 
@@ -386,8 +394,8 @@ export default function SystemPopup({
                     {config.subtitle}
                 </p>
 
-                {/* ── Admin link pill (shown for empty, inactive, expired, template_not_found, content_missing) ── */}
-                {(variant === 'empty' || variant === 'inactive' || variant === 'expired' || variant === 'template_not_found' || variant === 'content_missing') && (
+                {/* ── Admin link pill (shown for empty, inactive, expired, template_not_found, content_missing, subscription_missing) ── */}
+                {(variant === 'empty' || variant === 'inactive' || variant === 'expired' || variant === 'template_not_found' || variant === 'content_missing' || variant === 'subscription_missing') && (
                     <div style={{ marginBottom: '1.5rem' }}>
                         <a
                             href="https://admin.eddesk.in"
@@ -446,8 +454,8 @@ export default function SystemPopup({
                 {/* ── Buttons ── */}
                 <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
 
-                    {/* empty, template_not_found, content_missing → Go to Admin Panel */}
-                    {(variant === 'empty' || variant === 'template_not_found' || variant === 'content_missing') && (
+                    {/* empty, template_not_found, content_missing, subscription_missing → Go to Admin Panel */}
+                    {(variant === 'empty' || variant === 'template_not_found' || variant === 'content_missing' || variant === 'subscription_missing') && (
                         <a href="https://admin.eddesk.in" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                             <button
                                 style={primaryButtonStyle(accent)}

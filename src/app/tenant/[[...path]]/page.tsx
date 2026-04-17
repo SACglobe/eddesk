@@ -164,6 +164,9 @@ export default async function TenantPage({
         if (subscriptionCheck.status === 'expired') {
             return <SystemPopup variant="expired" />;
         }
+        if (subscriptionCheck.status === 'subscription_missing') {
+            return <SystemPopup variant="subscription_missing" />;
+        }
         return (
             <SystemPopup
                 variant="error"
