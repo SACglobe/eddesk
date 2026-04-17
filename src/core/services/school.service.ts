@@ -27,7 +27,6 @@ export async function getSchoolByDomain(
             .from('schools')
             .select('key, customdomain, templateslug')
             .eq('customdomain', domain)
-            .eq('isactive', true)
             .maybeSingle();
 
         if (error || !data) {
