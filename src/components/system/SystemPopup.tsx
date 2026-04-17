@@ -169,14 +169,14 @@ export default function SystemPopup({
         inactive: {
             icon: '🔒',
             badge: '⛔ Website Inactive',
-            heading: 'This website is currently inactive.',
-            subtitle: 'The school administrator has deactivated this website. Please raise a support ticket to reactivate it.',
+            heading: 'This website is inactive.',
+            subtitle: 'Please raise a ticket at admin.eddesk.in to reactivate it.',
         },
         expired: {
             icon: '⏰',
             badge: '⚠ Subscription Expired',
             heading: 'Your subscription has expired.',
-            subtitle: 'Renew your EdDesk subscription to restore access to this website.',
+            subtitle: 'Please renew at admin.eddesk.in to restore access.',
         },
         data_error: {
             icon: '📋',
