@@ -29,6 +29,16 @@ export interface CallbackEmailData {
   date: string;
 }
 
+export interface MarketingLeadEmailData {
+  schoolname?: string;
+  name: string;
+  email: string;
+  mobileno: string;
+  message: string;
+  source: string;
+  date: string;
+}
+
 export async function sendAdmissionEmail(to: string, data: AdmissionEmailData) {
   const apiKey = process.env.RESEND_API_KEY;
   
@@ -64,7 +74,13 @@ export async function sendAdmissionEmail(to: string, data: AdmissionEmailData) {
                 <!-- HEADER -->
                 <tr>
                   <td align="center" bgcolor="${headerBg}" style="padding: 40px 40px 40px 40px;">
-                    <img src="${logoUrl}" alt="EdDesk" width="160" style="display: block; filter: brightness(0) invert(1);" />
+                    <table border="0" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 100px; padding: 12px 24px;">
+                      <tr>
+                        <td align="center">
+                          <img src="${logoUrl}" alt="EdDesk" width="130" style="display: block;" />
+                        </td>
+                      </tr>
+                    </table>
                     <table border="0" cellpadding="0" cellspacing="0" style="margin-top: 24px;">
                       <tr>
                         <td align="center" style="border-radius: 100px; background-color: rgba(255,255,255,0.2); padding: 4px 16px; border: 1px solid rgba(255,255,255,0.4);">
@@ -211,7 +227,13 @@ export async function sendContactEmail(to: string, data: ContactEmailData) {
         <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 16px; margin-top: 40px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
           <tr>
             <td align="center" bgcolor="#475569" style="padding: 40px;">
-              <img src="${logoUrl}" alt="EdDesk" width="140" style="filter: brightness(0) invert(1);" />
+              <table border="0" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 100px; padding: 12px 24px;">
+                <tr>
+                  <td align="center">
+                    <img src="${logoUrl}" alt="EdDesk" width="120" style="display: block;" />
+                  </td>
+                </tr>
+              </table>
               <h1 style="color: #ffffff; font-size: 24px; margin: 20px 0 0 0;">New Message Received</h1>
             </td>
           </tr>
@@ -284,7 +306,13 @@ export async function sendCallbackEmail(to: string, data: CallbackEmailData) {
         <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 16px; margin-top: 40px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
           <tr>
             <td align="center" bgcolor="#0891b2" style="padding: 40px;">
-              <img src="${logoUrl}" alt="EdDesk" width="140" style="filter: brightness(0) invert(1);" />
+              <table border="0" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 100px; padding: 12px 24px;">
+                <tr>
+                  <td align="center">
+                    <img src="${logoUrl}" alt="EdDesk" width="120" style="display: block;" />
+                  </td>
+                </tr>
+              </table>
               <h1 style="color: #ffffff; font-size: 24px; margin: 20px 0 0 0;">Callback Requested</h1>
             </td>
           </tr>
@@ -332,6 +360,90 @@ export async function sendCallbackEmail(to: string, data: CallbackEmailData) {
     return { success: true, data: result };
   } catch (error: any) {
     console.error("[email.util] callback email internal error:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Sends a notification email to support@eddesk.in for marketing leads.
+ */
+export async function sendMarketingLeadEmail(data: MarketingLeadEmailData) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const to = "support@eddesk.in"; // Hardcoded marketing lead recipient
+  
+  if (!apiKey) {
+    console.error("[email.util] error: RESEND_API_KEY is not configured for marketing lead");
+    return { success: false, error: "Configuration missing" };
+  }
+
+  const logoUrl = "https://admin.eddesk.in/logo-full.png";
+  const subject = `New Lead: ${data.name} via ${data.source}`;
+  const sender = "EdDesk Marketing <marketing@eddesk.in>";
+  
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: sans-serif;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 20px; margin-top: 40px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);">
+          <tr>
+            <td align="center" bgcolor="#0f172a" style="padding: 40px;">
+              <table border="0" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 100px; padding: 12px 24px;">
+                <tr>
+                  <td align="center">
+                    <img src="${logoUrl}" alt="EdDesk" width="110" style="display: block;" />
+                  </td>
+                </tr>
+              </table>
+              <h1 style="color: #ffffff; font-size: 20px; margin: 20px 0 0 0; text-transform: uppercase; letter-spacing: 2px;">Marketing Lead Received</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 40px;">
+              <div style="margin-bottom: 30px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">
+                <span style="background-color: #4f46e5; color: #ffffff; padding: 4px 12px; border-radius: 100px; font-size: 11px; font-weight: 800; text-transform: uppercase;">Source: ${data.source}</span>
+              </div>
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+                <tr><td style="color: #64748b; font-size: 13px; padding: 12px 0;">Lead Name</td><td align="right" style="font-weight: 700; color: #1e293b; padding: 12px 0;">${data.name}</td></tr>
+                <tr><td style="color: #64748b; font-size: 13px; padding: 12px 0;">Email</td><td align="right" style="font-weight: 700; color: #1e293b; padding: 12px 0;">${data.email}</td></tr>
+                <tr><td style="color: #64748b; font-size: 13px; padding: 12px 0;">Mobile</td><td align="right" style="font-weight: 700; color: #1e293b; padding: 12px 0;">${data.mobileno}</td></tr>
+                ${data.schoolname ? `<tr><td style="color: #64748b; font-size: 13px; padding: 12px 0;">School</td><td align="right" style="font-weight: 700; color: #1e293b; padding: 12px 0;">${data.schoolname}</td></tr>` : ''}
+                <tr><td style="color: #64748b; font-size: 13px; padding: 12px 0;">Date</td><td align="right" style="font-weight: 700; color: #1e293b; padding: 12px 0;">${data.date}</td></tr>
+                <tr><td colspan="2" style="color: #64748b; font-size: 13px; padding: 25px 0 10px 0; font-weight: 800; text-transform: uppercase;">Message</td></tr>
+                <tr><td colspan="2" style="background-color: #f1f5f9; padding: 25px; border-radius: 15px; color: #334155; line-height: 1.6; font-size: 15px;">${data.message || 'No additional message provided.'}</td></tr>
+              </table>
+            </td>
+          </tr>
+          <tr><td bgcolor="#f8fafc" style="padding: 30px; text-align: center; color: #94a3b8; font-size: 11px; border-top: 1px solid #e2e8f0; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">&copy; ${new Date().getFullYear()} EdDesk &bull; Internal Notification</td></tr>
+        </table>
+      </body>
+    </html>
+  `;
+
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        from: sender,
+        to: [to],
+        subject: subject,
+        html: html,
+      }),
+    });
+
+    const result = await response.json();
+    
+    if (!response.ok) {
+      console.error("[email.util] marketing lead email resend error:", result);
+      return { success: false, error: result.message };
+    }
+
+    return { success: true, data: result };
+  } catch (error: any) {
+    console.error("[email.util] marketing lead email internal error:", error);
     return { success: false, error: error.message };
   }
 }

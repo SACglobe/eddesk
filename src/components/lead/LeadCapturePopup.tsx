@@ -15,7 +15,7 @@ export default function LeadCapturePopup({ templateSlug }: LeadCapturePopupProps
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        phone: '',
+        mobileno: '',
         message: ''
     });
 
@@ -42,11 +42,35 @@ export default function LeadCapturePopup({ templateSlug }: LeadCapturePopupProps
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const data: LeadData = {
-            ...formData,
+            name: formData.name,
+            email: formData.email,
+            phone: formData.mobileno,
+            message: formData.message,
             templateSlug,
             timestamp: new Date().toISOString()
         };
+        
+        // 1. Local storage persistence (existing flow)
         const result = await leadViewModel.submitLead(data);
+        
+        // 2. Trigger email notification via API
+        try {
+            await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    mobileno: formData.mobileno,
+                    message: formData.message,
+                    schoolname: `Template Interest: ${templateSlug}`,
+                    _source: 'Template Demo'
+                })
+            });
+        } catch (err) {
+            console.error('Lead email notification failed:', err);
+        }
+
         if (result.success) {
             setIsSubmitted(true);
             setTimeout(() => setIsVisible(false), 3000);
@@ -100,8 +124,8 @@ export default function LeadCapturePopup({ templateSlug }: LeadCapturePopupProps
                                         required
                                         placeholder="Phone Number"
                                         className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all"
-                                        value={formData.phone}
-                                        onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                                        value={formData.mobileno}
+                                        onChange={e => setFormData({ ...formData, mobileno: e.target.value })}
                                     />
                                 </div>
                                 <div>

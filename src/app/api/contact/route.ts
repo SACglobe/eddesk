@@ -1,56 +1,56 @@
 import { NextResponse } from 'next/server';
+import { sendMarketingLeadEmail } from '@/core/utils/email';
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { school_name, name, email, phone, message } = body;
+    
+    // Standardizing to lowercase keys as per plan
+    const { 
+      schoolname, 
+      name, 
+      email, 
+      mobileno, 
+      message,
+      _source = 'Contact Form' 
+    } = body;
 
+    // 1. Validation
     if (!email || !name || !message) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing required fields (Name, Email, Message)' }, { status: 400 });
     }
 
-    const resendApiKey = process.env.RESEND_API_KEY;
-
-    if (!resendApiKey) {
-      console.error('RESEND_API_KEY is not defined');
-      return NextResponse.json({ error: 'Email service configuration error' }, { status: 500 });
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
     }
 
-    // Send email using Resend API (via fetch to avoid dependency issues)
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${resendApiKey}`,
-      },
-      body: JSON.stringify({
-        from: 'EdDesk Customer <customer@eddesk.in>',
-        to: 'support@eddesk.in',
-        subject: `New Contact Form Submission: ${school_name || 'Individual'}`,
-        html: `
-          <div style="font-family: sans-serif; padding: 20px; color: #333;">
-            <h2 style="color: #4f46e5;">New Contact Request</h2>
-            <p><strong>School Name:</strong> ${school_name || 'N/A'}</p>
-            <p><strong>Contact Name:</strong> ${name}</p>
-            <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
-            <p><strong>Phone:</strong> ${phone || 'N/A'}</p>
-            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
-            <p><strong>Message:</strong></p>
-            <p style="white-space: pre-wrap; background: #f9fafb; padding: 15px; border-radius: 8px;">${message}</p>
-          </div>
-        `,
-      }),
+    if (mobileno && !/^[0-9]{10}$/.test(mobileno)) {
+      return NextResponse.json({ error: 'Mobile number must be exactly 10 digits' }, { status: 400 });
+    }
+
+    // 2. Send email using the central utility
+    // Note: We skip database storage as per user feedback
+    const result = await sendMarketingLeadEmail({
+      schoolname: schoolname || body.school_name, // Support both legacy and new key during migration
+      name,
+      email,
+      mobileno: mobileno || body.phone, // Support both legacy and new key during migration
+      message,
+      source: _source,
+      date: new Date().toLocaleString('en-IN')
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Resend API error:', errorData);
-      return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
+    if (!result.success) {
+      console.error('[contact.api] notification failed:', result.error);
+      // Still return 200/success if the core lead was processed, 
+      // but here since we ONLY do email, we fail if email fails.
+      return NextResponse.json({ error: result.error || 'Failed to send notification' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Contact API error:', error);
+  } catch (error: any) {
+    console.error('[contact.api] internal error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

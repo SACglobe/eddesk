@@ -251,7 +251,7 @@ export default function ContactPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">School Name</label>
-                      <input name="school_name" type="text" required placeholder="e.g. St. Peters Academy" 
+                      <input name="schoolname" type="text" required placeholder="e.g. St. Peters Academy" 
                         className="w-full bg-slate-950 border border-white/10 rounded-2xl px-6 py-4 text-white focus:border-indigo-500/50 focus:outline-none transition-all" />
                     </div>
                     <div className="space-y-2">
@@ -269,7 +269,7 @@ export default function ContactPage() {
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Phone Number</label>
-                      <input name="phone" type="tel" placeholder="+91 00000 00000" 
+                      <input name="mobileno" type="tel" placeholder="+91 00000 00000" 
                         className="w-full bg-slate-950 border border-white/10 rounded-2xl px-6 py-4 text-white focus:border-indigo-500/50 focus:outline-none transition-all" />
                     </div>
                   </div>
