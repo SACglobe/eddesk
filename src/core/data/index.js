@@ -1,9 +1,3 @@
-/**
- * core/data/index.js
- * ─────────────────────────────────────────────────────────────────────
- * DATA SOURCE - Always Live Database.
- * ─────────────────────────────────────────────────────────────────────
- */
 
 import { fetchTenantFromApi } from '../services/tenantApi.service.js';
 
