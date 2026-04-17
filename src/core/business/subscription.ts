@@ -27,6 +27,7 @@ export type SubscriptionStatus =
     | 'active'        // subscription is valid
     | 'grace_period'  // past endDate but within grace period
     | 'expired'       // past endDate + grace period
+    | 'subscription_missing' // subscription record not found or no end date
     | 'inactive';     // school.isactive = false
 
 export interface SubscriptionCheckResult {
@@ -72,7 +73,7 @@ export function checkSubscription(data: TenantViewModel): SubscriptionCheckResul
     // plan.gracePeriod      → plandetails table graceperiod column (number of days)
     //
     // Formula: access allowed if currentDate <= endDate + gracePeriod days
-    const endDateStr = data.subscription?.endDate || data.school?.expirationDate;
+    const endDateStr = data.subscription?.endDate;
     const gracePeriod = data.plan?.gracePeriod ?? 0;
 
     if (endDateStr) {
@@ -104,6 +105,13 @@ export function checkSubscription(data: TenantViewModel): SubscriptionCheckResul
                 message: `Subscription expired. ${daysRemaining} grace period day(s) remaining.`,
             };
         }
+    } else {
+        // No subscription end date found
+        return {
+            status: 'subscription_missing',
+            isAccessAllowed: false,
+            message: 'Subscription required to go live. Please initiate your subscription at admin.eddesk.in.',
+        };
     }
 
     // ── Step 4: Active ────────────────────────────────────────────────────────

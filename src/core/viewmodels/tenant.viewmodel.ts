@@ -219,7 +219,6 @@ export interface TenantViewModel {
         componentVariants: Record<string, Record<string, string>>; // Nested by screen
         paymentGatewayUrl: string;  // kept for compat — may be empty string
         gracePeriodDays: number;
-        expirationDate: string;
     };
 
     // ── Subscription ──────────────────────────────────────────────────────────
@@ -865,7 +864,6 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             componentVariants: (school['componentvariants'] ?? {}) as Record<string, Record<string, string>>,
             paymentGatewayUrl: str(school[COL_SCHOOLS_PAYMENTGATEWAY_URL]),
             gracePeriodDays: num(plan[COL_PLAN_GRACE_PERIOD]),
-            expirationDate: str(school[COL_SCHOOLS_EXPIRATION_DATE]),
         },
 
         subscription: {
