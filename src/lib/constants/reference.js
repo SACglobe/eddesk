@@ -11,8 +11,8 @@
 export const TABLE_SCHOOLS = "schools";
 export const TABLE_HOMEPAGE_SECTIONS = "templatecomponents"; // Map to new table
 export const TABLE_COMPONENT_REGISTRY = "componentregistry";
-export const TABLE_HERO_MEDIA = "hero";
-export const TABLE_ANNOUNCEMENTS = "broadcast";
+export const TABLE_HERO_MEDIA = "herocontent";
+export const TABLE_ANNOUNCEMENTS = "broadcastcontent";
 export const TABLE_ACADEMIC_RESULTS = "academicresults";
 export const TABLE_ACHIEVEMENTS = "achievements";
 export const TABLE_PERSONNEL = "faculty";
@@ -38,8 +38,8 @@ export const TABLE_TEMPLATE_SCREENS = "templatescreens";
 export const TABLE_FORM_SUBMISSIONS = "formsubmissions";
 
 export const TABLE_LEADERSHIP = "leadership";
-export const TABLE_BROADCAST = "broadcast"; // alias for TABLE_ANNOUNCEMENTS
-export const TABLE_HERO = "hero"; // alias for TABLE_HERO_MEDIA
+export const TABLE_BROADCAST = "broadcastcontent"; // alias for TABLE_ANNOUNCEMENTS
+export const TABLE_HERO = "herocontent"; // alias for TABLE_HERO_MEDIA
 
 // --- Columns: Global / Shared ---
 export const COL_ID = "key";
@@ -78,7 +78,7 @@ export const COL_SCHOOLS_DESCRIPTION = "description"; // longer description show
 // --- Columns: hero (TABLE_HERO_MEDIA) ---
 export const COL_HERO_MEDIA_ID = "key";
 export const COL_HERO_MEDIA_SCHOOL_ID = "schoolkey";
-export const COL_HERO_MEDIA_PAGE_TYPE = "pagetype";
+export const COL_HERO_MEDIA_PAGE_TYPE = "screenslug";
 export const COL_HERO_MEDIA_TYPE = "contenttype";
 export const COL_HERO_MEDIA_URL = "mediaurl";
 export const COL_HERO_MEDIA_HEADLINE = "headline";

@@ -126,6 +126,13 @@ export function validateRequiredSections(tenant: TenantViewModel): ValidationRes
         // 4. If required but no data, it's invalid
         if (!hasData) {
             console.warn(`[validator] Required section "${code}" is missing data.`);
+            console.debug(`[validator] Details for "${code}":`, {
+                hasData,
+                dataType: Array.isArray(data) ? 'array' : typeof data,
+                dataLength: Array.isArray(data) ? data.length : 'n/a',
+                isRequired: comp.isRequired,
+                isActive: comp.isActive
+            });
             return {
                 isValid: false,
                 missingSection: code,
