@@ -47,6 +47,9 @@ export interface SubscriptionCheckResult {
  */
 export function checkSubscription(data: TenantViewModel): SubscriptionCheckResult {
 
+    console.log(`[subscription] Checking school: ${data.school.key} (Mode: ${data.mode})`);
+    console.log(`[subscription] Status: ${data.subscription.status}, EndDate: ${data.subscription.endDate}`);
+
     // ── Step 1: Demo bypass ───────────────────────────────────────────────────
     // Demo school has isactive = false in DB — we must skip all checks.
     // mode comes from the RPC response — 'demo' or 'live'.

@@ -580,6 +580,16 @@ function bool(val: unknown): boolean {
     return val === true || val === 'true';
 }
 
+/**
+ * Safely extracts a single row object from a value that could be 
+ * a single object, an array of objects, or null/undefined.
+ */
+function extractRow(val: unknown): Record<string, unknown> {
+    if (!val) return {};
+    if (Array.isArray(val)) return (val[0] as Record<string, unknown>) ?? {};
+    return (val as Record<string, unknown>) ?? {};
+}
+
 // ─── ViewModel Builder ────────────────────────────────────────────────────────
 
 /**
@@ -589,9 +599,10 @@ function bool(val: unknown): boolean {
 export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewModel {
 
     // 1. Extract top-level sections from payload
-    const school = payload.school ?? {};
-    const subscription = payload.subscription ?? {};
-    const plan = payload.plan ?? {};
+    // Use extractRow to handle potential array-wrapping from RPC response
+    const school = extractRow(payload.school);
+    const subscription = extractRow(payload.subscription);
+    const plan = extractRow(payload.plan);
     const d = payload.data ?? {};
 
     // 2. Extract arrays — default to [] if missing
@@ -844,7 +855,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             templateSlug,
             templateId: templateSlug,
             isActive: bool(school[COL_SCHOOLS_IS_ACTIVE]),
-            isDemo: bool(school[COL_SCHOOLS_IS_ACTIVE]),
+            isDemo: bool(school[COL_SCHOOLS_IS_DEMO]),
             logoUrl: str(school[COL_SCHOOLS_LOGO_URL]),
             slogan: str(school[COL_SCHOOLS_SLOGAN]),
             description: str(school[COL_SCHOOLS_DESCRIPTION]),
