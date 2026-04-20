@@ -54,7 +54,7 @@ const InfrastructurePage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                             secondaryButtonUrl: m.secondaryButtonUrl || '/contact',
                             isActive: m.isActive,
                             displayOrder: m.displayOrder
-                        }))} />
+                        }))} heightClass="h-[60vh]" />
                     ) : (
                         <div className="relative h-[60vh] flex items-center justify-center overflow-hidden">
                             {isValidImageUrl(heroMedia[0]?.mediaUrl) ? (

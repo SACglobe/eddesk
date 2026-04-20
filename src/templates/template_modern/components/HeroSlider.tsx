@@ -20,9 +20,10 @@ export interface HeroSlide {
 export interface HeroSliderProps { 
     slides: HeroSlide[];
     headingLevel?: 'h1' | 'h2';
+    heightClass?: string; // e.g. "h-[60vh]"
 }
 
-const HeroSlider: React.FC<HeroSliderProps> = ({ slides: rawSlides, headingLevel = 'h1' }) => {
+const HeroSlider: React.FC<HeroSliderProps> = ({ slides: rawSlides, headingLevel = 'h1', heightClass = 'h-screen' }) => {
     const HeadingTag = headingLevel;
     const slides = rawSlides
         .filter(s => s.isActive && s.mediaUrl && isValidImageUrl(s.mediaUrl))
@@ -41,7 +42,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ slides: rawSlides, headingLevel
     if (slides.length === 0) return null;
 
     return (
-        <div className="relative h-screen w-full overflow-hidden">
+        <div className={`relative ${heightClass} w-full overflow-hidden`}>
             {slides.map((slide, index) => (
                 <div
                     key={index}
@@ -59,7 +60,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ slides: rawSlides, headingLevel
                         />
                     ) : (
                         <div
-                            className={`absolute inset-0 transition-transform duration-[8000ms] ease-out ${index === current ? 'scale-110' : 'scale-100'
+                            className={`absolute inset-0 transition-transform duration-[8000ms] ease-out ${index === current ? 'scale-105' : 'scale-100'
                                 }`}
                         >
                             <NextImage

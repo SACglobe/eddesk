@@ -21,7 +21,7 @@ const Admissions: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
         <div className="bg-white">
             {/* 1. Hero Section (Same as Home) */}
             {heroMedia.length > 0 && (
-                <HeroSlider slides={heroMedia} />
+                <HeroSlider slides={heroMedia} heightClass="h-[60vh]" />
             )}
 
             {/* 2. Admission Form Section */}

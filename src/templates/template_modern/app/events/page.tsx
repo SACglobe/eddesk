@@ -91,7 +91,7 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
         <div className="bg-slate-50 min-h-screen">
             {/* 1. Immersive Hero Section */}
             {heroEnabled && heroMedia.length > 0 ? (
-                <HeroSlider slides={heroMedia} />
+                <HeroSlider slides={heroMedia} heightClass="h-[60vh]" />
             ) : (
                 <div className="bg-primary py-24 text-center">
                     <h1 className="text-5xl md:text-7xl font-bold text-white font-playfair lowercase tracking-tighter">
