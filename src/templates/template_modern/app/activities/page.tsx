@@ -57,7 +57,7 @@ const Activities: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                             secondaryButtonUrl: m.secondaryButtonUrl || '/events',
                             isActive: m.isActive,
                             displayOrder: m.displayOrder
-                        }))} />
+                        }))} heightClass="h-[60vh]" />
                     ) : (
                         <div className="relative h-[60vh] flex items-center justify-center overflow-hidden">
                             {heroMedia[0]?.mediaUrl ? (

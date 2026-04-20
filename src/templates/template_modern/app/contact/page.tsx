@@ -67,7 +67,7 @@ const Contact: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
         <div className="pb-24 bg-gray-50 min-h-screen">
             {/* 1. Home-Style Hero Slider */}
             {isHeroActive && activeHeroes.length > 0 && (
-                <HeroSlider slides={activeHeroes} />
+                <HeroSlider slides={activeHeroes} heightClass="h-[60vh]" />
             )}
 
             {/* 2. Main Contact Grid */}
