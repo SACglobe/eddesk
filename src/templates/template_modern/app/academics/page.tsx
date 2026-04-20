@@ -1,5 +1,6 @@
 import React from 'react';
 import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
+import HeroSlider from '../../components/HeroSlider';
 
 const Academics: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
     // Current TenantViewModel doesn't have academics.levels, so we use a fallback or hardcoded for now
@@ -30,20 +31,17 @@ const Academics: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
 
     const results = data?.academicResults || [];
 
+    // 3. Hero Section Data
+    const heroMedia = (data?.heroMedia ?? [])
+        .filter(s => s.isActive)
+        .sort((a, b) => a.displayOrder - b.displayOrder);
+
     return (
         <div className="pb-24">
-            {/* 1. Immersive Hero Section */}
-            <section className="relative h-[60vh] flex items-center justify-center overflow-hidden bg-primary">
-                <div className="absolute inset-0 bg-gradient-to-b from-primary/70 to-primary/90"></div>
-                <div className="relative z-10 text-center space-y-8 max-w-4xl px-4">
-                    <span className="text-accent font-black uppercase tracking-[0.5em] text-sm animate-pulse">Scholastic Rigor</span>
-                    <h1 className="text-5xl md:text-8xl font-bold text-white leading-tight font-playfair">Academics | {data?.school?.name || 'Our School'}</h1>
-                    <p className="text-blue-100 text-xl md:text-2xl font-medium max-w-2xl mx-auto opacity-80 leading-relaxed">
-                        An interdisciplinary curriculum designed to empower thinkers, creators, and global leaders.
-                    </p>
-                </div>
-                <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white to-transparent"></div>
-            </section>
+            {/* 1. Hero Section */}
+            {heroMedia.length > 0 && (
+                <HeroSlider slides={heroMedia} heightClass="h-[60vh]" />
+            )}
 
             {/* 2. Academic Levels Grid */}
             <section className="max-w-7xl mx-auto px-4 py-24">
