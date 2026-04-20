@@ -566,6 +566,7 @@ const COMPONENT_ALIASES: Record<string, string> = {
     'schoolachievements': 'achievements',
     'academicresults': 'academics',
     'broadcast': 'announcements',
+    'visionmission': 'identity',
 };
 
 // ─── Helper ───────────────────────────────────────────────────────────────────

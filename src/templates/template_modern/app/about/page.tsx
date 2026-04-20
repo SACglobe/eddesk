@@ -36,7 +36,7 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
     const hasChairmanData = !!(chairman?.name || chairman?.message || chairman?.imageUrl);
     const hasBoardData = boardMembers.length > 0;
     
-    const identityComp = getComponent('identity');
+    const identityComp = getComponent('identity') || getComponent('visionmission');
     const identityEnabled = identityComp?.isActive ?? true;
     const hasIdentityData = !!(data?.identity?.aboutTitle || data?.identity?.aboutDescription || data?.identity?.vision || data?.identity?.mission);
 
