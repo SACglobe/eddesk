@@ -60,7 +60,7 @@ const Academics: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                                     <img 
                                         src={item.imageUrl} 
                                         alt={item.title}
-                                        className="relative rounded-[2.5rem] w-full h-[400px] object-cover shadow-2xl"
+                                        className="relative rounded-[2.5rem] w-full h-auto shadow-2xl"
                                     />
                                 </div>
                             )}
