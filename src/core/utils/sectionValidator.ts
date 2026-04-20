@@ -65,7 +65,9 @@ export function validateRequiredSections(tenant: TenantViewModel): ValidationRes
             }
             case 'schoolidentity':
             case 'identity':
-                data = tenant.identity;
+            case 'visionmission':
+                // identity is an object - check if it has any actual content strings
+                data = (tenant.identity?.vision || tenant.identity?.mission || tenant.identity?.motto || tenant.identity?.aboutTitle) ? tenant.identity : null;
                 break;
             case 'stats':
             case 'stats_premium':
