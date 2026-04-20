@@ -137,7 +137,7 @@ export function validateRequiredSections(tenant: TenantViewModel): ValidationRes
             });
             return {
                 isValid: false,
-                missingSection: code,
+                missingSection: comp.label || code,
             };
         }
     }

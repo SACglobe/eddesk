@@ -236,6 +236,7 @@ export interface TenantViewModel {
     // ── Section visibility (from templatecomponents) ──────────────────────────
     components: Array<{
         componentCode: string;   // 'hero' | 'broadcast' | 'faculty' | etc.
+        label: string;           // Display name for the component e.g. "Gallery - Video"
         isActive: boolean;
         isRequired: boolean;
         displayOrder: number;
@@ -651,6 +652,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
     // 4. Mapped components — no deduplication, supporting multiple instances (e.g., sports vs academic achievements)
     const mappedComponents = componentRows.map(r => ({
         componentCode: str(r[COL_TEMPLATE_COMPONENTS_CODE]),
+        label: str(r['editorsname'] || r[COL_TEMPLATE_COMPONENTS_CODE]),
         isActive: bool(r[COL_TEMPLATE_COMPONENTS_IS_ACTIVE]),
         isRequired: bool(r[COL_TEMPLATE_COMPONENTS_REQUIRED]),
         displayOrder: num(r[COL_TEMPLATE_COMPONENTS_ORDER]),
