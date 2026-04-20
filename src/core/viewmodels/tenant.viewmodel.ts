@@ -552,6 +552,11 @@ export interface TenantViewModel {
         twitter: string;
         youtube: string;
     } | null;
+    admissionInstructions: Array<{
+        key: string;
+        description: string;
+        contactEmail: string;
+        contactPhone: string;
         isActive: boolean;
     }>;
 
