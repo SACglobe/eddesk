@@ -29,7 +29,7 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
             const target = (e.target as HTMLElement).closest('a');
             if (target && target.getAttribute('href')?.startsWith('/')) {
                 const href = target.getAttribute('href');
-                if (href && !href.startsWith('/demo/template_modern')) {
+                if (href && !href.startsWith('/demo/template_modern') && window.location.pathname.startsWith('/demo/template_modern')) {
                     e.preventDefault();
                     router.push(`/demo/template_modern${href === '/' ? '' : href}`);
                 }

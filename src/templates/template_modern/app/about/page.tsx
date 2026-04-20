@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
+import HeroSlider from '../../components/HeroSlider';
 
 // Note: Dynamic title is set by the Renderer's parent page.tsx
 
