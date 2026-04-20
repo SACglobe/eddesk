@@ -552,12 +552,28 @@ export interface TenantViewModel {
         twitter: string;
         youtube: string;
     } | null;
-    admissionInstructions: Array<{
-        key: string;
-        description: string;
-        contactEmail: string;
-        contactPhone: string;
         isActive: boolean;
+    }>;
+
+    // ── Academics (Dynamic) ───────────────────────────────────────────────────
+    academicsList: Array<{
+        key: string;
+        title: string;
+        subtitle: string;
+        description: string;
+        imageUrl: string;
+        isActive: boolean;
+        displayOrder: number;
+    }>;
+
+    highlightedAcademics: Array<{
+        key: string;
+        title: string;
+        description: string;
+        imageUrl: string;
+        bulletinPoints: string[];
+        isActive: boolean;
+        displayOrder: number;
     }>;
 }
 
@@ -621,6 +637,8 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
     const componentRows = (d.templatecomponents ?? []) as Record<string, unknown>[];
     const whyChooseUsRows = (d.whychooseus ?? []) as Record<string, unknown>[];
     const testimonialRows = (d.testimonial ?? []) as Record<string, unknown>[];
+    const academicsListRows = (d.academicslist ?? []) as Record<string, unknown>[];
+    const highlightedAcademicsRows = (d.highlightedacademics ?? []) as Record<string, unknown>[];
 
     // Combine all leadership related keys from data
     const combinedLeadershipRows = [
@@ -1044,6 +1062,26 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             contactPhone: str(r['contactphone'] || r['contactPhone']),
             isActive: bool(r['isactive'] ?? true),
         })),
+
+        academicsList: academicsListRows.map(r => ({
+            key: str(r['key']),
+            title: str(r['title']),
+            subtitle: str(r['subtitle']),
+            description: str(r['description']),
+            imageUrl: resolveImageUrl(str(r['imageurl'])),
+            isActive: bool(r['isactive'] ?? true),
+            displayOrder: num(r['displayorder']),
+        })).sort((a, b) => a.displayOrder - b.displayOrder),
+
+        highlightedAcademics: highlightedAcademicsRows.map(r => ({
+            key: str(r['key']),
+            title: str(r['title']),
+            description: str(r['description']),
+            imageUrl: resolveImageUrl(str(r['imageurl'])),
+            bulletinPoints: (Array.isArray(r['bulletinjson']) ? r['bulletinjson'] : []) as string[],
+            isActive: bool(r['isactive'] ?? true),
+            displayOrder: num(r['displayorder']),
+        })).sort((a, b) => a.displayOrder - b.displayOrder),
     };
     return vm;
 }

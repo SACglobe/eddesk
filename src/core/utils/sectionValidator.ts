@@ -40,6 +40,12 @@ export function validateRequiredSections(tenant: TenantViewModel): ValidationRes
             case 'academicresults':
                 data = tenant.academicResults;
                 break;
+            case 'academicslist':
+                data = tenant.academicsList;
+                break;
+            case 'highlightedacademics':
+                data = tenant.highlightedAcademics;
+                break;
             case 'achievements':
             case 'schoolachievements': {
                 data = evaluateFilters(tenant.schoolAchievements || [], filters);
