@@ -62,7 +62,9 @@ const Footer = ({ school }) => {
                 </div>
                 <div className="flex flex-col md:flex-row justify-between items-center text-[10px] text-emerald-600 uppercase tracking-[0.2em] font-bold">
                     <p>&copy; {new Date().getFullYear()} {school.name}. All Rights Reserved.</p>
-                    <p className="mt-4 md:mt-0">Design Standards by EdDesk</p>
+                    <p className="mt-4 md:mt-0 flex items-center gap-2">
+                        Powered by <a href="https://eddesk.in" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-white transition-colors underline decoration-emerald-800 underline-offset-4">EdDesk</a>
+                    </p>
                 </div>
             </div>
         </footer>
