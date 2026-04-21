@@ -203,15 +203,6 @@ const InfrastructurePage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                                     )}
                                 </div>
 
-                                {/* Guided Tour CTA */}
-                                <div className="pt-10 flex items-center gap-8">
-                                    <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white text-2xl shadow-xl hover:bg-accent hover:text-primary transition-all cursor-pointer group">
-                                        <span className="group-hover:translate-x-1 transition-transform">→</span>
-                                    </div>
-                                    <button className="text-[11px] font-black text-primary uppercase tracking-[0.4em] hover:text-accent transition-colors">
-                                        Request a Guided Tour
-                                    </button>
-                                </div>
                             </div>
                         </div>
                     ))}
