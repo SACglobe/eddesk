@@ -251,8 +251,10 @@ const Footer: React.FC<FooterProps> = ({ school }) => {
                 </div>
 
                 <div className="mt-16 flex flex-col md:flex-row justify-between items-center gap-8">
-                    <div className="text-[10px] uppercase tracking-[0.5em] text-white/20">
-                        © {new Date().getFullYear()} {school.name}.
+                    <div className="flex flex-col md:flex-row items-center gap-4 text-[10px] uppercase tracking-[0.5em] text-white/20">
+                        <span>© {new Date().getFullYear()} {school.name}.</span>
+                        <span className="hidden md:block w-px h-3 bg-white/10"></span>
+                        <a href="https://eddesk.in" target="_blank" rel="noopener noreferrer" className="hover:text-gold-500 transition-colors">Powered by EdDesk</a>
                     </div>
                     <div className="flex gap-12 text-[9px] uppercase tracking-[0.3em] text-white/30 font-bold">
                         <a href="#" className="hover:text-signature-gold transition-colors">Privacy Charter</a>

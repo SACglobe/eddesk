@@ -52,46 +52,16 @@ const InfrastructurePage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
         <div className="pb-20 bg-white">
             {/* 1. Hero Section */}
             {heroEnabled && heroMedia.length > 0 && (
-                <section className="relative">
-                    {heroMedia.length > 1 ? (
-                        <HeroSlider slides={heroMedia.map(m => ({
-                            ...m,
-                            mediaUrl: m.mediaUrl || '',
-                            mediaType: m.mediaType || 'image',
-                            headline: m.headline || 'World-Class Infrastructure',
-                            subheadline: m.subheadline || `Modern facilities at ${schoolName}`,
-                            primaryButtonText: m.primaryButtonText || 'View Admissions',
-                            primaryButtonUrl: m.primaryButtonUrl || '/admission',
-                            secondaryButtonText: m.secondaryButtonText || 'Contact Us',
-                            secondaryButtonUrl: m.secondaryButtonUrl || '/contact',
-                            isActive: m.isActive,
-                            displayOrder: m.displayOrder
-                        }))} heightClass="h-[60vh]" />
-                    ) : (
-                        <div className="relative h-[60vh] flex items-center justify-center overflow-hidden">
-                            {isValidImageUrl(heroMedia[0]?.mediaUrl) ? (
-                                <img
-                                    src={heroMedia[0]?.mediaUrl}
-                                    className="absolute inset-0 w-full h-full object-cover grayscale brightness-50"
-                                    alt="Infrastructure Hero"
-                                />
-                            ) : (
-                                <div className="absolute inset-0 bg-primary/20"></div>
-                            )}
-                            <div className="absolute inset-0 bg-gradient-to-b from-primary/70 to-primary/90"></div>
-                            <div className="relative z-10 text-center space-y-8 max-w-4xl px-4">
-                                <span className="text-accent font-black uppercase tracking-[0.5em] text-sm animate-pulse">Our Campus</span>
-                                <h1 className="text-5xl md:text-8xl font-bold text-white leading-tight font-playfair">
-                                    {heroMedia[0]?.headline || 'Campus Infrastructure'}
-                                </h1>
-                                <p className="text-blue-100 text-xl md:text-2xl font-medium max-w-2xl mx-auto opacity-80 leading-relaxed">
-                                    {heroMedia[0]?.subheadline || 'Modern facilities designed to foster innovation, collaboration, and excellence.'}
-                                </p>
-                            </div>
-                            <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white to-transparent"></div>
-                        </div>
-                    )}
-                </section>
+                <HeroSlider 
+                    slides={heroMedia.map(m => ({
+                        ...m,
+                        headline: m.headline || 'World-Class Infrastructure',
+                        subheadline: m.subheadline || `Modern facilities at ${schoolName}`,
+                        primaryButtonText: m.primaryButtonText || 'Explore Campus',
+                        primaryButtonUrl: m.primaryButtonUrl || '#facilities'
+                    }))} 
+                    heightClass="h-[60vh]" 
+                />
             )}
 
             {/* 2. Campus Features (Bulletin Text with Icons) */}
