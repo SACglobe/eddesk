@@ -40,23 +40,30 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
     const identityComp = getComponent('identity') || getComponent('visionmission');
     const identityEnabled = identityComp?.isActive ?? true;
     const hasIdentityData = !!(data?.identity?.aboutTitle || data?.identity?.aboutDescription || data?.identity?.vision || data?.identity?.mission);
+    const heroMedia = (data?.heroMedia ?? [])
+        .filter(s => s.isActive)
+        .sort((a, b) => a.displayOrder - b.displayOrder);
 
     return (
         <div className="pb-24">
             {/* Hero Section */}
-            <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a8a] via-[#1e3a8a]/90 to-[#0f172a] backdrop-blur-2xl"></div>
-                <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-                <div className="relative z-10 text-center space-y-8 max-w-4xl px-4">
-                    <span className="text-accent font-black uppercase tracking-[0.5em] text-sm animate-pulse">Established Legacy</span>
-                    <h1 className="text-5xl md:text-8xl font-bold text-white leading-tight font-playfair">{aboutTitle || `About ${schoolName}`}</h1>
-                    {aboutDescription && (
-                        <p className="text-blue-100 text-xl md:text-2xl font-medium max-w-2xl mx-auto opacity-80">
-                            {aboutDescription}
-                        </p>
-                    )}
-                </div>
-            </section>
+            {heroMedia.length > 0 ? (
+                <HeroSlider slides={heroMedia} heightClass="h-[60vh]" />
+            ) : (
+                <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a8a] via-[#1e3a8a]/90 to-[#0f172a] backdrop-blur-2xl"></div>
+                    <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+                    <div className="relative z-10 text-center space-y-8 max-w-4xl px-4">
+                        <span className="text-accent font-black uppercase tracking-[0.5em] text-sm animate-pulse">Established Legacy</span>
+                        <h1 className="text-5xl md:text-8xl font-bold text-white leading-tight font-playfair">{aboutTitle || `About ${schoolName}`}</h1>
+                        {aboutDescription && (
+                            <p className="text-blue-100 text-xl md:text-2xl font-medium max-w-2xl mx-auto opacity-80">
+                                {aboutDescription}
+                            </p>
+                        )}
+                    </div>
+                </section>
+            )}
 
             {/* Philosophy Section */}
             {identityEnabled && hasIdentityData && (
