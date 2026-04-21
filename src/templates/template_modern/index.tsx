@@ -75,7 +75,7 @@ export const Renderer = ({ data, path }: { data: TenantViewModel, path?: string 
             <main className="flex-grow">
                 {renderScreen()}
             </main>
-            <Footer school={data.school} />
+            <Footer school={data.school} contactDetails={data.contactDetails} />
             <ScrollToTop />
         </div>
     );
