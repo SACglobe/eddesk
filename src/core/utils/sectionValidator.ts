@@ -84,6 +84,15 @@ export function validateRequiredSections(tenant: TenantViewModel): ValidationRes
             case 'facilities':
                 data = tenant.infrastructure;
                 break;
+            case 'campusfeatures':
+                data = tenant.campusFeatures;
+                break;
+            case 'infrastructurelist':
+                data = tenant.infrastructureList;
+                break;
+            case 'highlightedinfrastructure':
+                data = tenant.highlightedInfrastructure;
+                break;
             case 'activities':
                 data = tenant.activities;
                 break;

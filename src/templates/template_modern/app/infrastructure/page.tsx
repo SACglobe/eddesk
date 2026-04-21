@@ -30,11 +30,23 @@ const InfrastructurePage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
         .sort((a, b) => a.displayOrder - b.displayOrder);
 
     // 4. Infrastructure Data
-    const infraComp = getComponent('infrastructure');
-    const infraEnabled = infraComp?.isActive ?? true;
-    const infraItems = (data?.infrastructure ?? [])
+    const campusComp = getComponent('campusfeatures');
+    const campusEnabled = campusComp?.isActive ?? true;
+    const campusItems = (data?.campusFeatures ?? [])
+        .filter(c => c.isActive)
+        .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+
+    const listComp = getComponent('infrastructurelist');
+    const listEnabled = listComp?.isActive ?? true;
+    const listItems = (data?.infrastructureList?.length ? data.infrastructureList : data?.infrastructure ?? [])
         .filter(i => i.isActive)
         .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+
+    const highlightedComp = getComponent('highlightedinfrastructure');
+    const highlightedEnabled = highlightedComp?.isActive ?? true;
+    const highlightedItems = (data?.highlightedInfrastructure ?? [])
+        .filter(i => i.isActive)
+        .sort((a, b) => a.displayOrder - b.displayOrder);
 
     return (
         <div className="pb-20 bg-white">
@@ -82,10 +94,52 @@ const InfrastructurePage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                 </section>
             )}
 
-            {/* 2. Refined Infrastructure Section (Matching Design Image) */}
-            {infraEnabled && (
+            {/* 2. Campus Features (Bulletin Text with Icons) */}
+            {campusEnabled && campusItems.length > 0 && (
+                <section className="max-w-7xl mx-auto px-6 py-24">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        {campusItems.map((item) => (
+                            <div key={item.key} className="bg-gray-50/50 p-12 rounded-[3.5rem] border border-gray-100 hover:bg-white hover:shadow-2xl transition-all duration-500 group">
+                                <div className="space-y-8 text-left">
+                                    <div className="flex items-center gap-6">
+                                        <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center text-white text-3xl shadow-lg group-hover:bg-accent group-hover:text-primary transition-colors">
+                                            {/* Fallback to simple icon or logic if icon string is provided */}
+                                            {item.icon ? (
+                                                <span className="iconify" data-icon={item.icon}></span>
+                                            ) : (
+                                                <span>🏫</span>
+                                            )}
+                                        </div>
+                                        <h3 className="text-3xl font-bold text-primary font-playfair">{item.title}</h3>
+                                    </div>
+                                    
+                                    {item.description && (
+                                        <p className="text-gray-500 text-lg font-medium leading-relaxed">
+                                            {item.description}
+                                        </p>
+                                    )}
+
+                                    {item.bulletinPoints && item.bulletinPoints.length > 0 && (
+                                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            {item.bulletinPoints.map((point, idx) => (
+                                                <li key={idx} className="flex items-center gap-3 text-primary/80 font-bold group/item">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-accent group-hover/item:scale-150 transition-transform" />
+                                                    {point}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* 3. Refined Infrastructure Section (Matching Design Image) */}
+            {listEnabled && (
                 <div className="max-w-7xl mx-auto px-6 py-24 space-y-32">
-                    {infraItems.map((item, index) => (
+                    {listItems.map((item, index) => (
                         <div key={item.key} className={`flex flex-col lg:flex-row items-center gap-16 ${index % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}>
                             {/* Left Side: Image with floating card */}
                             <div className="lg:w-1/2 relative">
@@ -162,7 +216,7 @@ const InfrastructurePage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                         </div>
                     ))}
 
-                    {infraItems.length === 0 && (
+                    {listItems.length === 0 && (
                         <div className="py-24 text-center border-t border-gray-100">
                              <p className="text-gray-400 font-playfair italic text-xl">Information about campus infrastructure is being updated.</p>
                         </div>

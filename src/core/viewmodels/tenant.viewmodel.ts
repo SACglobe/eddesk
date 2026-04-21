@@ -603,6 +603,42 @@ export interface TenantViewModel {
         isActive: boolean;
         displayOrder: number;
     }>;
+
+    // ── Infrastructure (Dynamic) ──────────────────────────────────────────────
+    campusFeatures: Array<{
+        key: string;
+        title: string;
+        description: string;
+        tag: string;
+        icon: string;
+        imageUrl: string;
+        bulletinPoints: string[];
+        isActive: boolean;
+        displayOrder: number;
+    }>;
+
+    infrastructureList: Array<{
+        key: string;
+        title: string;
+        description: string;
+        tag: string;
+        icon: string;
+        imageUrl: string;
+        isActive: boolean;
+        displayOrder: number;
+        highlightTitle: string;
+        highlightDescription: string;
+    }>;
+
+    highlightedInfrastructure: Array<{
+        key: string;
+        title: string;
+        description: string;
+        imageUrl: string;
+        bulletinPoints: string[];
+        isActive: boolean;
+        displayOrder: number;
+    }>;
 }
 
 const COMPONENT_ALIASES: Record<string, string> = {
@@ -669,6 +705,9 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
     const highlightedAcademicsRows = (d.highlightedacademics ?? []) as Record<string, unknown>[];
     const activitiesListRows = (d.activitieslist ?? []) as Record<string, unknown>[];
     const highlightedActivitiesRows = (d.highlightedactivites ?? []) as Record<string, unknown>[];
+    const campusFeaturesRows = (d.campusfeatures ?? []) as Record<string, unknown>[];
+    const infrastructureListRows = (d.infrastructurelist ?? []) as Record<string, unknown>[];
+    const highlightedInfrastructureRows = (d.highlightedinfrastructure ?? []) as Record<string, unknown>[];
 
     // Combine all leadership related keys from data
     const combinedLeadershipRows = [
@@ -1126,6 +1165,41 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
         })).sort((a, b) => a.displayOrder - b.displayOrder),
 
         highlightedActivities: highlightedActivitiesRows.map(r => ({
+            key: str(r['key']),
+            title: str(r['title']),
+            description: str(r['description']),
+            imageUrl: resolveImageUrl(str(r['imageurl'])),
+            bulletinPoints: (Array.isArray(r['bulletinjson']) ? r['bulletinjson'] : []) as string[],
+            isActive: bool(r['isactive'] ?? true),
+            displayOrder: num(r['displayorder']),
+        })).sort((a, b) => a.displayOrder - b.displayOrder),
+
+        campusFeatures: campusFeaturesRows.map(r => ({
+            key: str(r['key']),
+            title: str(r['title']),
+            description: str(r['description']),
+            tag: str(r['tag']),
+            imageUrl: resolveImageUrl(str(r['imageurl'])),
+            icon: str(r['icon']),
+            bulletinPoints: (Array.isArray(r['bulletintextlist']) ? r['bulletintextlist'].map((b: any) => b.text) : []) as string[],
+            isActive: bool(r['isactive'] ?? true),
+            displayOrder: num(r['displayorder']),
+        })).sort((a, b) => a.displayOrder - b.displayOrder),
+
+        infrastructureList: infrastructureListRows.map(r => ({
+            key: str(r['key']),
+            title: str(r['title']),
+            description: str(r['description']),
+            tag: str(r['tag']),
+            imageUrl: resolveImageUrl(str(r['imageurl'])),
+            icon: str(r['icon']),
+            isActive: bool(r['isactive'] ?? true),
+            displayOrder: num(r['displayorder']),
+            highlightTitle: str(r['highlighttitle']),
+            highlightDescription: str(r['highlightdescription']),
+        })).sort((a, b) => a.displayOrder - b.displayOrder),
+
+        highlightedInfrastructure: highlightedInfrastructureRows.map(r => ({
             key: str(r['key']),
             title: str(r['title']),
             description: str(r['description']),
