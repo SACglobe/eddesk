@@ -2,9 +2,14 @@ import React from 'react';
 import Link from 'next/link';
 interface FooterProps {
     school?: any;
+    contactDetails?: any;
 }
 
-const Footer: React.FC<FooterProps> = ({ school }) => {
+const Footer: React.FC<FooterProps> = ({ school, contactDetails }) => {
+    const displayAddress = contactDetails?.address || school?.fullAddress || school?.address;
+    const displayPhone = contactDetails?.phone || school?.phone;
+    const displayEmail = contactDetails?.email || school?.email;
+
     return (
         <footer className="bg-gray-900 text-gray-300">
             <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
@@ -23,15 +28,14 @@ const Footer: React.FC<FooterProps> = ({ school }) => {
                             <li><Link href="/events" className="hover:text-accent transition-colors">Academic Calendar</Link></li>
                             <li><Link href="/admission" className="hover:text-accent transition-colors">Admission Portal</Link></li>
                             <li><Link href="/contact" className="hover:text-accent transition-colors">Career Opportunities</Link></li>
-                            <li><Link href="/privacy" className="hover:text-accent transition-colors">Privacy Policy</Link></li>
                         </ul>
                     </div>
                     <div>
                         <h4 className="text-white font-semibold mb-4">Contact Us</h4>
                         <ul className="space-y-2 text-sm">
-                            <li>{school.fullAddress}</li>
-                            <li>Phone: {school.phone}</li>
-                            <li>Email: {school.email}</li>
+                            <li>{displayAddress}</li>
+                            <li>Phone: {displayPhone}</li>
+                            <li>Email: {displayEmail}</li>
                         </ul>
                     </div>
                 </div>

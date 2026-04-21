@@ -1,6 +1,10 @@
 
 import Link from 'next/link';
-const Footer = ({ school }) => {
+const Footer = ({ school, contactDetails }) => {
+    const displayAddress = contactDetails?.address || school?.fullAddress || school?.address;
+    const displayPhone = contactDetails?.phone || school?.phone;
+    const displayEmail = contactDetails?.email || school?.email;
+
     return (
         <footer className="bg-emerald-950 text-slate-300 py-16">
             <div className="max-w-[1600px] mx-auto px-2 md:px-6">
@@ -27,13 +31,13 @@ const Footer = ({ school }) => {
                         <h3 className="text-white text-lg font-bold serif uppercase tracking-widest border-b border-emerald-800 pb-2 inline-block">Contact Core</h3>
                         <div className="text-sm space-y-3">
                             <p className="flex items-start gap-2">
-                                <span className="font-bold text-emerald-500">ADDR:</span> {school.fullAddress}
+                                <span className="font-bold text-emerald-500">ADDR:</span> {displayAddress}
                             </p>
                             <p className="flex items-center gap-2">
-                                <span className="font-bold text-emerald-500">PH:</span> {school.phone}
+                                <span className="font-bold text-emerald-500">PH:</span> {displayPhone}
                             </p>
                             <p className="flex items-center gap-2">
-                                <span className="font-bold text-emerald-500">MAIL:</span> {school.email}
+                                <span className="font-bold text-emerald-500">MAIL:</span> {displayEmail}
                             </p>
                         </div>
                     </div>

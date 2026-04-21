@@ -206,9 +206,14 @@ const Header: React.FC<HeaderProps> = ({ announcements, school, activePath }) =>
 
 interface FooterProps {
     school: any;
+    contactDetails?: any;
 }
 
-const Footer: React.FC<FooterProps> = ({ school }) => {
+const Footer: React.FC<FooterProps> = ({ school, contactDetails }) => {
+    const displayAddress = contactDetails?.address || school?.fullAddress || school?.address;
+    const displayPhone = contactDetails?.phone || school?.phone;
+    const displayEmail = contactDetails?.email || school?.email;
+
     return (
         <footer className="bg-signature-navy text-white relative overflow-hidden">
             <div className="absolute top-0 right-0 w-1/3 h-full bg-signature-gold/5 -skew-x-12 translate-x-1/2"></div>
@@ -243,10 +248,10 @@ const Footer: React.FC<FooterProps> = ({ school }) => {
                     <div className="lg:col-span-4">
                         <h4 className="text-[11px] uppercase tracking-[0.5em] mb-10 text-signature-gold font-bold">The Heights</h4>
                         <p className="text-white/50 text-sm leading-relaxed mb-8">
-                            {school.fullAddress}
+                            {displayAddress}
                         </p>
-                        <p className="text-xl font-serif text-white mb-2">{school.phone}</p>
-                        <p className="text-sm text-white/40 tracking-widest uppercase">{school.email}</p>
+                        <p className="text-xl font-serif text-white mb-2">{displayPhone}</p>
+                        <p className="text-sm text-white/40 tracking-widest uppercase">{displayEmail}</p>
                     </div>
                 </div>
 
@@ -257,7 +262,6 @@ const Footer: React.FC<FooterProps> = ({ school }) => {
                         <a href="https://eddesk.in" target="_blank" rel="noopener noreferrer" className="hover:text-gold-500 transition-colors">Powered by EdDesk</a>
                     </div>
                     <div className="flex gap-12 text-[9px] uppercase tracking-[0.3em] text-white/30 font-bold">
-                        <a href="#" className="hover:text-signature-gold transition-colors">Privacy Charter</a>
                         <a href="#" className="hover:text-signature-gold transition-colors">Legal Archive</a>
                         <a href="#" className="hover:text-signature-gold transition-colors">Accessibility</a>
                     </div>
