@@ -100,15 +100,6 @@ const FacultyPage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                                     </div>
                                 </div>
 
-                                {/* Action Buttons */}
-                                <div className="pt-10 flex flex-wrap gap-4">
-                                    <button className="bg-primary text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-accent hover:text-primary transition-all shadow-xl active:scale-95">
-                                        Full Profile
-                                    </button>
-                                    <button className="border-2 border-primary/20 text-primary px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-primary/5 transition-all">
-                                        Contact Office
-                                    </button>
-                                </div>
                             </div>
                         </div>
                     ))}
