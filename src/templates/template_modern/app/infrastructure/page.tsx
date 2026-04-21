@@ -52,16 +52,7 @@ const InfrastructurePage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
         <div className="pb-20 bg-white">
             {/* 1. Hero Section */}
             {heroEnabled && heroMedia.length > 0 && (
-                <HeroSlider 
-                    slides={heroMedia.map(m => ({
-                        ...m,
-                        headline: m.headline || 'World-Class Infrastructure',
-                        subheadline: m.subheadline || `Modern facilities at ${schoolName}`,
-                        primaryButtonText: m.primaryButtonText || 'Explore Campus',
-                        primaryButtonUrl: m.primaryButtonUrl || '#facilities'
-                    }))} 
-                    heightClass="h-[60vh]" 
-                />
+                <HeroSlider slides={heroMedia} heightClass="h-[60vh]" />
             )}
 
             {/* 2. Campus Features (Bulletin Text with Icons) */}
