@@ -31,13 +31,20 @@ const Activities: React.FC<{ data: TenantViewModel }> = ({ data }) => {
         .sort((a, b) => a.displayOrder - b.displayOrder);
 
     // 4. Activities Data
-    const activitiesComp = getComponent('activities');
+    const activitiesComp = getComponent('activitieslist') || getComponent('activities');
     const activitiesEnabled = activitiesComp?.isActive ?? true;
-    const activityItems = (data?.activities ?? [])
+    const activityItems = (data?.activitiesList?.length ? data.activitiesList : data?.activities ?? [])
         .filter(a => a.isActive)
         .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
-    const [selectedActivity, setSelectedActivity] = useState<typeof activityItems[0] | null>(null);
+    // 5. Highlighted Data
+    const highlightedComp = getComponent('highlightedactivites');
+    const highlightedEnabled = highlightedComp?.isActive ?? true;
+    const highlightedItems = (data?.highlightedActivities ?? [])
+        .filter(a => a.isActive)
+        .sort((a, b) => a.displayOrder - b.displayOrder);
+
+    const [selectedActivity, setSelectedActivity] = useState<any>(null);
 
     return (
         <div className="pb-0">
@@ -85,7 +92,44 @@ const Activities: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                 </section>
             )}
 
-            {/* 2. Activities Section */}
+            {/* 2. Highlighted Activities Section */}
+            {highlightedEnabled && highlightedItems.length > 0 && (
+                <section className="max-w-7xl mx-auto px-4 py-24 space-y-24">
+                    {highlightedItems.map((item, index) => (
+                        <div key={item.key} className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-16 items-center`}>
+                            <div className="flex-1 space-y-8">
+                                <span className="text-accent font-black uppercase tracking-[0.4em] text-[10px]">Featured Activity</span>
+                                <h2 className="text-4xl md:text-6xl font-bold text-primary font-playfair leading-[1.1]">{item.title}</h2>
+                                <p className="text-gray-500 text-xl leading-relaxed font-medium">
+                                    {item.description}
+                                </p>
+                                {item.bulletinPoints && item.bulletinPoints.length > 0 && (
+                                    <ul className="space-y-4">
+                                        {item.bulletinPoints.map((point, idx) => (
+                                            <li key={idx} className="flex items-center gap-4 text-primary/70 font-semibold group">
+                                                <div className="w-2 h-2 rounded-full bg-accent group-hover:scale-150 transition-transform" />
+                                                {point}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
+                            {item.imageUrl && (
+                                <div className="flex-1 w-full relative">
+                                    <div className="absolute -inset-4 bg-accent/5 rounded-[3rem] -rotate-2" />
+                                    <img 
+                                        src={item.imageUrl} 
+                                        alt={item.title}
+                                        className="relative rounded-[2.5rem] w-full h-auto shadow-2xl"
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </section>
+            )}
+
+            {/* 3. Activities Section */}
             {activitiesEnabled && (
                 <div className="max-w-7xl mx-auto px-4 py-24 space-y-16">
                     <div className="text-center space-y-4">

@@ -46,6 +46,8 @@ export type ScreenDataTables = {
     admissioninstructions?: Record<string, unknown>[];
     academicslist?: Record<string, unknown>[];
     highlightedacademics?: Record<string, unknown>[];
+    activitieslist?: Record<string, unknown>[];
+    highlightedactivites?: Record<string, unknown>[];
     templatecomponents?: Record<string, unknown>[];
     whychooseus?: Record<string, unknown>[];
     boardmembers?: Record<string, unknown>[];

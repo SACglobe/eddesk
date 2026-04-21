@@ -87,6 +87,12 @@ export function validateRequiredSections(tenant: TenantViewModel): ValidationRes
             case 'activities':
                 data = tenant.activities;
                 break;
+            case 'activitieslist':
+                data = tenant.activitiesList;
+                break;
+            case 'highlightedactivites':
+                data = tenant.highlightedActivities;
+                break;
             case 'gallery': {
                 data = evaluateFilters(tenant.gallery || [], filters);
                 break;
