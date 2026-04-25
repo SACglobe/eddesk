@@ -241,39 +241,27 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                 </section>
             )}
 
-            {/* Why Parents Choose Our School */}
+            {/* Why Choose Us Section */}
             {getComponent('whychooseus')?.isActive && whyChooseUs.length > 0 && (
-                <section className="bg-white py-32">
-                <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-24 items-center">
-                    <div className="space-y-12">
-                        <div className="space-y-4">
+                <section className="bg-gray-50 py-32">
+                    <div className="max-w-7xl mx-auto px-4">
+                        <div className="text-center space-y-4 mb-20">
                             <span className="text-blue-600 font-black uppercase tracking-[0.4em] text-xs">Excellence Simplified</span>
-                            <h2 className="text-4xl md:text-5xl font-bold text-primary leading-tight font-playfair">Why Choose Us</h2>
+                            <h2 className="text-4xl md:text-6xl font-bold text-primary leading-tight font-playfair uppercase">Why Choose Us</h2>
                         </div>
-                        <div className="space-y-12">
-                            {whyChooseUs.slice(0, 4).map((item, i) => ({
-                                t: item.title, d: item.description, i: (item.icon || ['✨', '🌍', '🛡️', '⭐'][i]) ?? '⭐'
-                            })).map((item, i) => (
-                                <div key={i} className="flex gap-8 group">
-                                    <div className="w-16 h-16 bg-blue-50 rounded-[1.5rem] flex items-center justify-center text-3xl shadow-sm group-hover:bg-accent transition-colors shrink-0">{item.i}</div>
-                                    <div className="space-y-2">
-                                        <h4 className="text-2xl font-bold text-primary font-playfair uppercase">{item.t}</h4>
-                                        <p className="text-gray-500 leading-relaxed text-lg uppercase">{item.d}</p>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                            {whyChooseUs.map((item, i) => (
+                                <div key={i} className="bg-white p-10 rounded-[3rem] shadow-xl hover:shadow-2xl transition-all duration-500 group border border-gray-100">
+                                    <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-3xl shadow-sm mb-8 group-hover:bg-accent group-hover:text-white transition-colors">
+                                        {(item.icon && item.icon.length < 4) ? item.icon : (['✨', '🌍', '🛡️', '⭐', '🎓', '🏆', '🚀', '🔬'][i] || '⭐')}
                                     </div>
+                                    <h4 className="text-xl font-bold text-primary font-playfair uppercase mb-4">{item.title}</h4>
+                                    <p className="text-gray-500 leading-relaxed uppercase text-sm">{item.description}</p>
                                 </div>
                             ))}
                         </div>
                     </div>
-                    <div className="relative hidden lg:block">
-                        <div className="absolute inset-0 bg-primary rounded-[4rem] translate-x-8 -translate-y-8"></div>
-                        <div className="relative z-10 rounded-[4rem] shadow-2xl w-full aspect-square bg-base-200 flex items-center justify-center p-12 text-center">
-                            <span className="text-6xl font-playfair text-base-content/20 uppercase">
-                                {data?.school?.name || 'Excellence'}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                </section>
             )}
         </div>
     );
