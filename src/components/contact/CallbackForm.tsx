@@ -77,20 +77,20 @@ const CallbackForm: React.FC<CallbackFormProps> = ({ schoolkey, schoolname }) =>
 
   if (state === 'success') {
     return (
-      <div className="bg-emerald-50 border border-emerald-100 p-8 rounded-3xl text-center flex flex-col items-center justify-center animate-in fade-in zoom-in duration-500">
-        <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-4">
-          <svg className="w-8 h-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="bg-blue-50 border border-blue-100 p-8 rounded-3xl text-center flex flex-col items-center justify-center animate-in fade-in zoom-in duration-500">
+        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm">
+          <svg className="w-8 h-8 text-[#1e3a8a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h3 className="text-xl font-bold text-emerald-900 mb-2">Callback Requested!</h3>
-        <p className="text-emerald-700">We will call you back at your preferred time.</p>
+        <h3 className="text-xl font-bold text-[#1e3a8a] mb-2 uppercase italic">Callback Requested!</h3>
+        <p className="text-blue-900/60 text-sm">We will call you back at your preferred time.</p>
         <button 
           onClick={() => {
             setState('idle');
             setFormData({ name: '', phone: '', callbackdate: '' });
           }}
-          className="mt-4 text-sm font-semibold text-emerald-600 hover:underline"
+          className="mt-4 text-sm font-semibold text-[#1e3a8a] hover:underline"
         >
           Request another callback
         </button>
@@ -101,13 +101,13 @@ const CallbackForm: React.FC<CallbackFormProps> = ({ schoolkey, schoolname }) =>
   return (
     <div className="bg-white p-6 md:p-8 rounded-3xl border border-slate-100 shadow-sm">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
-          <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+          <svg className="w-6 h-6 text-[#1e3a8a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
           </svg>
         </div>
         <div>
-          <h3 className="text-xl font-bold text-slate-900">Request a Call Back</h3>
+          <h3 className="text-xl font-bold text-[#1e3a8a] uppercase italic">Request a Call Back</h3>
           <p className="text-sm text-slate-500">Prefer to talk? Schedule a call with us.</p>
         </div>
       </div>
@@ -130,7 +130,7 @@ const CallbackForm: React.FC<CallbackFormProps> = ({ schoolkey, schoolname }) =>
               onChange={handleChange}
               disabled={state === 'submitting'}
               className={`w-full px-4 py-3 rounded-xl bg-slate-50 border transition-all outline-none ${
-                fieldErrors.name ? 'border-rose-300 ring-4 ring-rose-50' : 'border-slate-100 focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-50'
+                fieldErrors.name ? 'border-rose-300 ring-4 ring-rose-50' : 'border-slate-100 focus:border-[#fbbf24] focus:ring-4 focus:ring-[#fbbf24]/20 bg-slate-50 shadow-inner border-transparent'
               }`}
             />
           </div>
@@ -146,7 +146,7 @@ const CallbackForm: React.FC<CallbackFormProps> = ({ schoolkey, schoolname }) =>
               disabled={state === 'submitting'}
               maxLength={10}
               className={`w-full px-4 py-3 rounded-xl bg-slate-50 border transition-all outline-none ${
-                fieldErrors.phone ? 'border-rose-300 ring-4 ring-rose-50' : 'border-slate-100 focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-50'
+                fieldErrors.phone ? 'border-rose-300 ring-4 ring-rose-50' : 'border-slate-100 focus:border-[#fbbf24] focus:ring-4 focus:ring-[#fbbf24]/20 bg-slate-50 shadow-inner border-transparent'
               }`}
             />
           </div>
@@ -161,7 +161,7 @@ const CallbackForm: React.FC<CallbackFormProps> = ({ schoolkey, schoolname }) =>
             onChange={handleChange}
             disabled={state === 'submitting'}
             className={`w-full px-4 py-3 rounded-xl bg-slate-50 border transition-all outline-none ${
-              fieldErrors.callbackdate ? 'border-rose-300 ring-4 ring-rose-50' : 'border-slate-100 focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-50'
+              fieldErrors.callbackdate ? 'border-rose-300 ring-4 ring-rose-50' : 'border-slate-100 focus:border-[#fbbf24] focus:ring-4 focus:ring-[#fbbf24]/20 bg-slate-50 shadow-inner border-transparent'
             }`}
           />
         </div>
@@ -169,7 +169,7 @@ const CallbackForm: React.FC<CallbackFormProps> = ({ schoolkey, schoolname }) =>
         <button
           type="submit"
           disabled={state === 'submitting'}
-          className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
+          className="w-full bg-[#1e3a8a] hover:bg-[#fbbf24] text-[#fbbf24] hover:text-[#1e3a8a] disabled:bg-slate-400 font-bold py-4 rounded-xl shadow-lg shadow-blue-900/10 transition-all active:scale-95 flex items-center justify-center gap-2"
         >
           {state === 'submitting' ? (
             <div className="animate-spin h-5 w-5 border-2 border-white/20 border-t-white rounded-full" />

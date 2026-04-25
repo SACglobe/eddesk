@@ -123,12 +123,12 @@ const ContactForm: React.FC<ContactFormProps> = ({ schoolkey, schoolname }) => {
   if (state === 'success') {
     return (
       <div className="bg-white p-8 rounded-3xl shadow-xl text-center flex flex-col items-center justify-center min-h-[400px] animate-in slide-in-from-bottom-8 fade-in duration-700 ease-out">
-        <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mb-6 animate-bounce">
-          <svg className="w-10 h-10 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6 animate-bounce">
+          <svg className="w-10 h-10 text-[#1e3a8a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h2 className="text-3xl font-bold text-slate-900 mb-3">Thank You, {formData.name.split(' ')[0]}!</h2>
+        <h2 className="text-3xl font-bold text-[#1e3a8a] mb-3 font-playfair uppercase italic">Thank You, {formData.name.split(' ')[0]}!</h2>
         <p className="text-lg text-slate-600 mb-2">{schoolname} will contact you as soon as possible.</p>
         <p className="text-sm text-slate-400">We typically respond within 1 business day.</p>
       </div>
@@ -157,7 +157,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ schoolkey, schoolname }) => {
             className={`w-full px-5 py-3.5 rounded-2xl bg-white border transition-all duration-300 outline-none ${
               fieldErrors.name 
                 ? 'border-rose-400 ring-4 ring-rose-50' 
-                : 'border-slate-200 hover:border-slate-300 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50'
+                : 'border-slate-200 hover:border-slate-300 focus:border-[#fbbf24] focus:ring-4 focus:ring-[#fbbf24]/20 bg-slate-50 shadow-inner border-transparent'
             }`}
           />
           {fieldErrors.name && <p className="text-xs text-rose-500 ml-1 mt-1 font-medium">{fieldErrors.name}</p>}
@@ -177,7 +177,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ schoolkey, schoolname }) => {
             className={`w-full px-5 py-3.5 rounded-2xl bg-white border transition-all duration-300 outline-none ${
               fieldErrors.phone 
                 ? 'border-rose-400 ring-4 ring-rose-50' 
-                : 'border-slate-200 hover:border-slate-300 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50'
+                : 'border-slate-200 hover:border-slate-300 focus:border-[#fbbf24] focus:ring-4 focus:ring-[#fbbf24]/20 bg-slate-50 shadow-inner border-transparent'
             }`}
           />
           {fieldErrors.phone && <p className="text-xs text-rose-500 ml-1 mt-1 font-medium">{fieldErrors.phone}</p>}
@@ -197,7 +197,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ schoolkey, schoolname }) => {
               className={`w-full px-5 py-3.5 rounded-2xl bg-white border transition-all duration-300 outline-none ${
                 fieldErrors.email 
                   ? 'border-rose-400 ring-4 ring-rose-50' 
-                  : 'border-slate-200 hover:border-slate-300 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50'
+                  : 'border-slate-200 hover:border-slate-300 focus:border-[#fbbf24] focus:ring-4 focus:ring-[#fbbf24]/20 bg-slate-50 shadow-inner border-transparent'
               }`}
             />
             {fieldErrors.email && <p className="text-xs text-rose-500 ml-1 mt-1 font-medium">{fieldErrors.email}</p>}
@@ -213,7 +213,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ schoolkey, schoolname }) => {
               value={formData.subject}
               onChange={handleChange}
               disabled={state === 'submitting'}
-              className="w-full px-5 py-3.5 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50 transition-all duration-300 outline-none"
+              className="w-full px-5 py-3.5 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 focus:border-[#fbbf24] focus:ring-4 focus:ring-[#fbbf24]/20 bg-slate-50 shadow-inner border-transparent transition-all duration-300 outline-none"
             />
           </div>
         </div>
@@ -231,7 +231,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ schoolkey, schoolname }) => {
             className={`w-full px-5 py-3.5 rounded-2xl bg-white border transition-all duration-300 outline-none resize-none ${
               fieldErrors.message 
                 ? 'border-rose-400 ring-4 ring-rose-50' 
-                : 'border-slate-200 hover:border-slate-300 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50'
+                : 'border-slate-200 hover:border-slate-300 focus:border-[#fbbf24] focus:ring-4 focus:ring-[#fbbf24]/20 bg-slate-50 shadow-inner border-transparent'
             }`}
           />
           {fieldErrors.message && <p className="text-xs text-rose-500 ml-1 mt-1 font-medium">{fieldErrors.message}</p>}
@@ -241,11 +241,11 @@ const ContactForm: React.FC<ContactFormProps> = ({ schoolkey, schoolname }) => {
         <button
           type="submit"
           disabled={state === 'submitting'}
-          className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-200 transition-all duration-300 flex items-center justify-center gap-2 group active:scale-95"
+          className="w-full bg-[#1e3a8a] hover:bg-[#fbbf24] text-[#fbbf24] hover:text-[#1e3a8a] disabled:bg-slate-400 font-bold py-4 rounded-2xl shadow-lg shadow-blue-900/10 transition-all duration-300 flex items-center justify-center gap-2 group active:scale-95"
         >
           {state === 'submitting' ? (
             <>
-              <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin h-5 w-5 text-current" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
