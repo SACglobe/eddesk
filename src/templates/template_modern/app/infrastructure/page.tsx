@@ -117,16 +117,28 @@ const InfrastructurePage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                                 </div>
                                 
                                 {/* Floating Card Overlay */}
-                                <div className="absolute -top-4 -right-4 md:-top-8 md:-right-8 bg-white p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] shadow-2xl max-w-[240px] md:max-w-[280px] border-t-8 border-accent transform transition-transform hover:scale-105 duration-500">
-                                    <div className="space-y-2 md:space-y-4">
-                                        <p className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-[0.3em]">
-                                            {item.tag || 'Technical Hub'}
-                                        </p>
-                                        <h4 className="text-lg md:text-2xl font-bold text-primary leading-tight font-primary">
-                                            {item.title}
-                                        </h4>
-                                    </div>
-                                </div>
+                                {(() => {
+                                    const isHexColor = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(item.tag);
+                                    const borderColor = isHexColor ? item.tag : undefined;
+                                    const labelText = !isHexColor && item.tag ? item.tag : null;
+                                    return (
+                                        <div
+                                            className="absolute -top-4 -right-4 md:-top-8 md:-right-8 bg-white p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] shadow-2xl max-w-[240px] md:max-w-[280px] border-t-8 transform transition-transform hover:scale-105 duration-500"
+                                            style={{ borderTopColor: borderColor ?? 'var(--color-accent, #fbbf24)' }}
+                                        >
+                                            <div className="space-y-2 md:space-y-4">
+                                                {labelText && (
+                                                    <p className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-[0.3em]">
+                                                        {labelText}
+                                                    </p>
+                                                )}
+                                                <h4 className="text-lg md:text-2xl font-bold text-primary leading-tight font-primary">
+                                                    {item.title}
+                                                </h4>
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
                             </div>
 
                             {/* Right Side: Typography and Details */}
@@ -142,27 +154,40 @@ const InfrastructurePage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                                     </p>
                                 </div>
 
-                                {/* Feature List (using bulletins/highlights) */}
-                                <div className="space-y-4 pt-8 border-t border-gray-100">
-                                    {[item.highlightTitle, item.highlightDescription].filter(Boolean).map((feat, i) => (
-                                        <div key={i} className="flex items-center gap-6 group">
-                                            <div className="h-0.5 w-8 bg-accent group-hover:w-12 transition-all duration-300"></div>
-                                            <p className="text-lg font-bold text-primary tracking-tight font-primary">{feat}</p>
-                                        </div>
-                                    ))}
-                                    {(!item.highlightTitle && !item.highlightDescription) && (
-                                        <>
-                                            <div className="flex items-center gap-6 group">
-                                                <div className="h-0.5 w-8 bg-accent group-hover:w-12 transition-all duration-300"></div>
-                                                <p className="text-lg font-bold text-primary tracking-tight font-primary">Advanced Equipment</p>
+                                {/* Feature List — priority: bulletinPoints > highlightTitle/highlightDescription > nothing */}
+                                {(() => {
+                                    // 1. Use bulletinPoints (from bulletintextlist) if available
+                                    if (item.bulletinPoints && item.bulletinPoints.length > 0) {
+                                        return (
+                                            <div className="space-y-4 pt-8 border-t border-gray-100">
+                                                {item.bulletinPoints.map((point, i) => (
+                                                    <div key={i} className="flex items-center gap-6 group">
+                                                        <div className="h-0.5 w-8 bg-accent group-hover:w-12 transition-all duration-300" />
+                                                        <p className="text-lg font-bold text-primary tracking-tight font-primary">{point}</p>
+                                                    </div>
+                                                ))}
                                             </div>
-                                            <div className="flex items-center gap-6 group">
-                                                <div className="h-0.5 w-8 bg-accent group-hover:w-12 transition-all duration-300"></div>
-                                                <p className="text-lg font-bold text-primary tracking-tight font-primary">Collaborative Space</p>
+                                        );
+                                    }
+
+                                    // 2. Fall back to highlightTitle / highlightDescription if they exist
+                                    const highlights = [item.highlightTitle, item.highlightDescription].filter(Boolean);
+                                    if (highlights.length > 0) {
+                                        return (
+                                            <div className="space-y-4 pt-8 border-t border-gray-100">
+                                                {highlights.map((feat, i) => (
+                                                    <div key={i} className="flex items-center gap-6 group">
+                                                        <div className="h-0.5 w-8 bg-accent group-hover:w-12 transition-all duration-300" />
+                                                        <p className="text-lg font-bold text-primary tracking-tight font-primary">{feat}</p>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        </>
-                                    )}
-                                </div>
+                                        );
+                                    }
+
+                                    // 3. Nothing to show — render nothing
+                                    return null;
+                                })()}
 
                             </div>
                         </div>

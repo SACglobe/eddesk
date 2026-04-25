@@ -628,6 +628,7 @@ export interface TenantViewModel {
         displayOrder: number;
         highlightTitle: string;
         highlightDescription: string;
+        bulletinPoints: string[];
     }>;
 
     highlightedInfrastructure: Array<{
@@ -1197,6 +1198,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             displayOrder: num(r['displayorder']),
             highlightTitle: str(r['highlighttitle']),
             highlightDescription: str(r['highlightdescription']),
+            bulletinPoints: (Array.isArray(r['bulletintextlist']) ? r['bulletintextlist'].map((b: any) => b.text ?? b) : []) as string[],
         })).sort((a, b) => a.displayOrder - b.displayOrder),
 
         highlightedInfrastructure: highlightedInfrastructureRows.map(r => ({
