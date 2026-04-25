@@ -89,7 +89,16 @@ const Gallery: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                                 onClick={() => setSelectedMedia(item)}
                             >
                                 <div className="aspect-[4/3] overflow-hidden relative">
-                                    {item.imageUrl && isValidImageUrl(item.imageUrl) ? (
+                                    {item.mediaType?.toLowerCase() === 'video' ? (
+                                        <video
+                                            src={item.imageUrl}
+                                            muted
+                                            autoPlay
+                                            loop
+                                            playsInline
+                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
+                                        />
+                                    ) : item.imageUrl && isValidImageUrl(item.imageUrl) ? (
                                         <img
                                             src={item.imageUrl}
                                             alt={item.caption || 'Media item'}
