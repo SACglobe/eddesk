@@ -5,24 +5,12 @@
 import { NextRequest } from 'next/server';
 import { proxy } from './proxy';
 
-// Mock the constants module
-jest.mock('@/lib/constants/constants', () => [
-  { domain: 'localhost:3000', template_id: '', type: 'owner' },
-  { domain: 'eddesk.in', template_id: '', type: 'owner' },
-  { domain: 'crescentthoothukudi.in', template_id: 'template_modern', type: 'tenant' }
-]);
-
 // Mock the domain-classifier module
 jest.mock('@/lib/proxy/domain-classifier', () => ({
   isOwnerDomain: jest.fn((hostname: string) => {
     return hostname.toLowerCase().includes('localhost') ||
       hostname.toLowerCase().includes('eddesk');
   })
-}));
-
-// Mock the domain-lookup module
-jest.mock('@/lib/proxy/domain-lookup', () => ({
-  findDomainConfig: jest.fn()
 }));
 
 // Helper function to create mock NextRequest

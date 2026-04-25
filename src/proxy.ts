@@ -12,9 +12,7 @@
 
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import domain_data from '@/lib/constants/constants';
 import { isOwnerDomain } from '@/lib/proxy/domain-classifier';
-import { findDomainConfig } from '@/lib/proxy/domain-lookup';
 
 export function proxy(request: NextRequest) {
     const url = request.nextUrl.clone();
@@ -41,14 +39,9 @@ export function proxy(request: NextRequest) {
         }
     }
 
-    // 1. Find the domain configuration
-    const config = domain_data.find((d: { domain: string }) => d.domain === host) ||
-        domain_data.find((d: { domain: string }) => d.domain === hostname);
-
-    console.log(`[EdDesk Proxy DEBUG] Found Config:`, config?.domain || 'NONE', 'Type:', config?.type || 'NONE');
-
     // 2. Handle Owner Domains (Root Marketing)
     if (isOwnerDomain(hostname)) {
+        console.log(`[EdDesk Proxy DEBUG] Owner detected. BYPASSING proxy.`);
         return NextResponse.next();
     }
 
