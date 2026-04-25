@@ -110,6 +110,11 @@ export function validateRequiredSections(tenant: TenantViewModel): ValidationRes
             case 'recentnews':
                 data = tenant.events;
                 break;
+            case 'monthwiseevents':
+                // Special case: Month-wise events can be empty (e.g. no events this month)
+                // We don't want to block the site for this.
+                data = true; 
+                break;
             case 'contact':
             case 'contactdetails':
                 data = tenant.contactDetails;

@@ -694,7 +694,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
     const leadershipRows = (d.leadership ?? []) as Record<string, unknown>[];
     const statsRows = (d.schoolstats ?? []) as Record<string, unknown>[];
     const achievementRows = (d.schoolachievements ?? []) as Record<string, unknown>[];
-    const eventRows = (d.events ?? []) as Record<string, unknown>[];
+    const eventRows = (d.events ?? d.monthwiseevents ?? []) as Record<string, unknown>[];
     const galleriesRows = (d.gallery ?? []) as Record<string, unknown>[];
     const activitiesRows = (d.activities ?? []) as Record<string, unknown>[];
     const infraRows = (d.infrastructure ?? []) as Record<string, unknown>[];
