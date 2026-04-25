@@ -154,42 +154,17 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
             {(getComponent('leadership')?.isActive || getComponent('boardmembersmessage')?.isActive) && (hasChairmanData || data?.identity?.boardMessage) && (
                  <section className="bg-primary py-32 text-white relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-1/2 h-full bg-white/5 -skew-x-12 translate-x-1/2"></div>
-                    <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-24 items-center relative z-10">
-                        <div className="space-y-10 order-2 lg:order-1">
+                    <div className="max-w-5xl mx-auto px-4 relative z-10">
+                        <div className="space-y-12 text-center lg:text-left">
                              <div className="space-y-4">
                                 <span className="text-accent font-black uppercase tracking-[0.4em] text-xs">Message from the Board</span>
                                 <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight font-playfair uppercase">A Message from the Board</h2>
                             </div>
                             { (chairman?.message || data?.identity?.boardMessage) && (
-                                <p className="text-blue-100 text-xl font-light leading-loose italic border-l-4 border-accent pl-8">
+                                <p className="text-blue-100 text-xl md:text-2xl font-light leading-relaxed italic border-l-4 border-accent pl-8 text-left">
                                     "{chairman?.message || data?.identity?.boardMessage}"
                                 </p>
                             )}
-                            <div className="flex items-center gap-6">
-                                <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-accent/30">
-                                    <img src={chairman?.imageUrl || '/school/image/default-avatar.png'} alt={chairman?.name} className="w-full h-full object-cover" />
-                                </div>
-                                <div>
-                                    <p className="font-bold text-2xl font-playfair uppercase tracking-tight">{chairman?.name}</p>
-                                    <p className="text-accent font-black uppercase tracking-widest text-[10px]">{chairman?.designation || 'Chairman'}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="order-1 lg:order-2">
-                             <div className="relative group">
-                                <div className="absolute inset-0 bg-accent rounded-[4rem] translate-x-8 translate-y-8 opacity-20 transition-transform group-hover:translate-x-12"></div>
-                                <div className="relative overflow-hidden rounded-[4rem] aspect-video shadow-2xl bg-base-300">
-                                    {chairman?.imageUrl ? (
-                                        <img src={chairman.imageUrl} className="w-full h-full object-cover" alt="Chairman" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center">
-                                            <span className="text-8xl font-playfair text-base-content/20 uppercase">
-                                                {chairman?.name?.charAt(0) || 'C'}
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
                         </div>
                     </div>
                  </section>
