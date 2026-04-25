@@ -530,6 +530,7 @@ export interface TenantViewModel {
         displayOrder: number;
         highlightTitle: string;
         highlightDescription: string;
+        bulletinPoints?: string[];
     }>;
 
     // ── Also kept as facilities for template backward compatibility ────────────
