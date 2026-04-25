@@ -102,21 +102,29 @@ export function normalizeDomain(host: string): string {
     return host.toLowerCase().replace(/^www\./, '');
 }
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 // ─── Core RPC caller ──────────────────────────────────────────────────────────
 
 /**
  * Raw RPC call — shared by both tenant and demo paths.
  * Returns the unwrapped ScreenDataPayload or a typed error/empty result.
+ * Includes a retry mechanism for transient network errors.
  */
 async function callRPC(
     domain: string,
     screen: string,
-    templateSlug: string | null
+    templateSlug: string | null,
+    attempt: number = 1
 ): Promise<ScreenDataResult> {
+    const MAX_ATTEMPTS = 3;
+
     try {
         const supabase = await createPublicSupabaseClient();
 
-        console.log('[screenData] RPC call →', { domain, screen, templateSlug });
+        console.log(`[screenData] RPC call (attempt ${attempt}/${MAX_ATTEMPTS}) →`, { domain, screen, templateSlug });
 
         const { data: raw, error } = await supabase.rpc('get_screen_data', {
             p_domain: domain,
@@ -127,14 +135,23 @@ async function callRPC(
         // ── Supabase-level error ───────────────────────────────────────────────
         if (error) {
             console.error('[screenData] RPC error:', error.message);
+            
+            // If it's a transient-looking error (like fetch failed or timeout), retry
+            const isTransient = error.message.toLowerCase().includes('fetch failed') || 
+                               error.message.toLowerCase().includes('timeout') ||
+                               error.message.toLowerCase().includes('network');
+
+            if (isTransient && attempt < MAX_ATTEMPTS) {
+                const delay = attempt * 1000;
+                console.warn(`[screenData] Transient error detected. Retrying in ${delay}ms...`);
+                await sleep(delay);
+                return callRPC(domain, screen, templateSlug, attempt + 1);
+            }
+
             return { status: 'error', error: error.message };
         }
 
-        console.log('[screenData] RPC Raw Output:', JSON.stringify(raw, null, 2));
-
         // ── Empty response ─────────────────────────────────────────────────────
-        // RPC returns the payload directly as a JSON object — not wrapped in an array.
-        // Shape: { mode, screen, school, subscription, plan, data: { hero, faculty, ... } }
         if (!raw) {
             console.warn('[screenData] RPC returned empty response', { domain, screen });
             return {
@@ -143,7 +160,6 @@ async function callRPC(
             };
         }
 
-        // ── Payload is raw directly (RPC returns object, not array) ───────────
         const payload: ScreenDataPayload = raw as unknown as ScreenDataPayload;
 
         if (!payload) {
@@ -158,7 +174,19 @@ async function callRPC(
 
     } catch (err: unknown) {
         const message = err instanceof Error ? err.message : 'Unknown error';
-        console.error('[screenData] Unexpected error:', message);
+        console.error(`[screenData] Unexpected error (attempt ${attempt}/${MAX_ATTEMPTS}):`, message);
+
+        const isTransient = message.toLowerCase().includes('fetch failed') || 
+                           message.toLowerCase().includes('timeout') ||
+                           message.toLowerCase().includes('network');
+
+        if (isTransient && attempt < MAX_ATTEMPTS) {
+            const delay = attempt * 1000;
+            console.warn(`[screenData] Transient exception detected. Retrying in ${delay}ms...`);
+            await sleep(delay);
+            return callRPC(domain, screen, templateSlug, attempt + 1);
+        }
+
         return { status: 'error', error: message };
     }
 }
@@ -169,17 +197,38 @@ async function callRPC(
  * Fetch screen data for a TENANT domain.
  * Result is cached for 60 seconds per domain+screen combination.
  * templateSlug is always null — comes from schools.templateslug in the DB.
+ * 
+ * IMPORTANT: If the RPC returns an error, we THROW so unstable_cache doesn't 
+ * cache the failed state. The outer try/catch then recovers it.
  */
 export async function fetchTenantScreen(
     domain: string,
     screen: string
 ): Promise<ScreenDataResult> {
-    const cachedFetch = unstable_cache(
-        () => callRPC(domain, screen, null),
-        [`screen-data-${domain}-${screen}`],
-        { revalidate: TENANT_CACHE_TTL }
-    );
-    return cachedFetch();
+    try {
+        const result = await unstable_cache(
+            async () => {
+                const res = await callRPC(domain, screen, null);
+                if (res.status === 'error') {
+                    // Throw to prevent unstable_cache from poisoning the cache with an error result
+                    throw new Error(JSON.stringify(res));
+                }
+                return res;
+            },
+            [`screen-data-${domain}-${screen}`],
+            { revalidate: TENANT_CACHE_TTL }
+        )();
+        return result;
+    } catch (err: any) {
+        try {
+            // If the error is a stringified ScreenDataResult, return it
+            const parsed = JSON.parse(err.message);
+            if (parsed.status === 'error') return parsed;
+        } catch {
+            // Ignore parse error
+        }
+        return { status: 'error', error: err.message };
+    }
 }
 
 /**
