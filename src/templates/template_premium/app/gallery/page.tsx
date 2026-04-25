@@ -109,13 +109,24 @@ export default function GalleryPage({ data }: { data?: TenantViewModel }) {
                                 className="break-inside-avoid overflow-hidden group cursor-pointer bg-signature-navy relative border border-black/5"
                                 onClick={() => openLightbox(i)}
                             >
-                                <div className="overflow-hidden aspect-auto">
+                                <div className="overflow-hidden aspect-auto min-h-[200px]">
+                                    {item.mediaType?.toLowerCase() === 'video' ? (
+                                        <video
+                                            src={item.imageUrl}
+                                            muted
+                                            autoPlay
+                                            loop
+                                            playsInline
+                                            className="w-full grayscale group-hover:grayscale-0 scale-100 group-hover:scale-110 transition-all duration-[1.5s] ease-out opacity-90 group-hover:opacity-100 object-cover min-h-[200px]"
+                                        />
+                                    ) : (
                                         <img
                                             src={item.imageUrl}
                                             className="w-full grayscale group-hover:grayscale-0 scale-100 group-hover:scale-110 transition-all duration-[1.5s] ease-out opacity-90 group-hover:opacity-100"
                                             alt={item.caption}
                                             loading="lazy"
                                         />
+                                    )}
                                 </div>
                                 {/* Hover Overlay */}
                                 <div className="absolute inset-0 bg-signature-navy/60 opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex items-center justify-center">
@@ -214,13 +225,22 @@ export default function GalleryPage({ data }: { data?: TenantViewModel }) {
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="relative group/image max-w-full">
-                                {selectedItem.mediaType === 'video' ? (
+                                {selectedItem.mediaType?.toLowerCase() === 'video' ? (
                                     <div className="aspect-video w-[80vw] max-w-full bg-black rounded shadow-2xl overflow-hidden border border-white/10">
-                                        <iframe
-                                            src={selectedItem.url?.replace('watch?v=', 'embed/')}
-                                            className="w-full h-full"
-                                            allowFullScreen
-                                        />
+                                        {(selectedItem.url?.includes('youtube.com') || selectedItem.url?.includes('youtu.be')) ? (
+                                            <iframe
+                                                src={selectedItem.url?.replace('watch?v=', 'embed/')}
+                                                className="w-full h-full"
+                                                allowFullScreen
+                                            />
+                                        ) : (
+                                            <video
+                                                src={selectedItem.url || selectedItem.imageUrl}
+                                                controls
+                                                autoPlay
+                                                className="w-full h-full object-contain"
+                                            />
+                                        )}
                                     </div>
                                 ) : (
                                     <>

@@ -39,6 +39,7 @@ export interface AdmissionFormData {
     qualification: string;
     annualincome: string;
     mobileno: string;
+    email?: string;
   };
   motherinfo: {
     name: string;
@@ -46,11 +47,13 @@ export interface AdmissionFormData {
     qualification: string;
     annualincome: string;
     mobileno: string;
+    email?: string;
   };
   general: {
     residentialaddress: string;
     distancefromschool: string;
     conveyancerequired: boolean;
+    additionalmessage?: string;
   };
 }
 

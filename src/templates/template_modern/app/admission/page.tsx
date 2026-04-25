@@ -18,69 +18,77 @@ const Admissions: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
         .sort((a, b) => a.displayOrder - b.displayOrder);
 
     return (
-        <div className="bg-white">
-            {/* 1. Hero Section (Same as Home) */}
+        <div className="bg-slate-50/50 min-h-screen">
+            {/* 1. Hero Section */}
             {heroMedia.length > 0 && (
-                <HeroSlider slides={heroMedia} heightClass="h-[60vh]" />
+                <HeroSlider slides={heroMedia} heightClass="h-[40vh] md:h-[50vh]" />
             )}
 
-            {/* 2. Admission Form Section */}
-            <div className="py-20 relative overflow-hidden bg-slate-50">
-                <div className="max-w-7xl mx-auto px-6 relative z-10">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="text-center mb-16"
-                    >
-                        <h2 className="text-4xl md:text-6xl font-black text-slate-900 uppercase italic tracking-tighter mb-4">
-                            Apply <span className="text-emerald-500">Now</span>
-                        </h2>
-                        <div className="w-20 h-1.5 bg-emerald-500 mx-auto"></div>
-                    </motion.div>
+            <div className="py-12 md:py-20 max-w-7xl mx-auto px-6">
+                <div className="grid grid-cols-1 lg:grid-cols-[1.8fr_1.2fr] gap-12 items-start">
                     
-                    <div className="max-w-4xl mx-auto">
-                        <AdmissionForm schoolkey={schoolKey} schoolname={schoolName} />
-                    </div>
-                </div>
-            </div>
-
-            {/* 3. Admission Instructions Section */}
-            {admissionInstructions.length > 0 && (
-                <div className="py-20 bg-white">
-                    <AdmissionInstructions steps={admissionInstructions} schoolName={schoolName} />
-                </div>
-            )}
-
-            {/* 4. Support Footer Section */}
-            <section className="py-24 bg-white">
-                <div className="max-w-4xl mx-auto px-6 text-center">
-                    <div className="bg-slate-900 rounded-[3rem] p-12 md:p-20 text-white relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full translate-x-1/2 -translate-y-1/2 blur-3xl group-hover:bg-emerald-500/20 transition-all duration-700"></div>
-                        
-                        <h3 className="text-4xl md:text-5xl font-black mb-8 italic uppercase tracking-tight relative z-10">Need Assistance?</h3>
-                        <p className="text-slate-400 text-lg mb-12 max-w-xl mx-auto relative z-10">Our admission coordinators are here to help you with the registration process or any specific queries about the academy.</p>
-                        
-                        <div className="flex flex-col md:flex-row items-center justify-center gap-12 relative z-10">
-                            <a href={`tel:${data?.school?.phone}`} className="flex flex-col items-center gap-4 group/item">
-                                <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center group-hover/item:bg-emerald-600 transition-colors duration-300">
-                                    <span className="text-2xl italic">📞</span>
-                                </div>
-                                <span className="text-xl font-bold">{data?.school?.phone || '+91 98765 43210'}</span>
-                                <span className="text-xs uppercase tracking-widest text-slate-500 font-black">Call Support</span>
-                            </a>
+                    {/* Left Column: Admission Form */}
+                    <div className="space-y-8">
+                        <div className="bg-white rounded-[3rem] p-8 md:p-12 shadow-xl shadow-slate-200/50 border border-slate-100">
+                            <div className="mb-12">
+                                <h2 className="text-4xl md:text-5xl font-serif text-slate-900 mb-4">
+                                    Admission Inquiry
+                                </h2>
+                                <div className="w-20 h-1 bg-slate-900"></div>
+                            </div>
                             
-                            <a href={`mailto:${data?.school?.email}`} className="flex flex-col items-center gap-4 group/item">
-                                <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center group-hover/item:bg-emerald-600 transition-colors duration-300">
-                                    <span className="text-2xl italic">✉️</span>
-                                </div>
-                                <span className="text-xl font-bold">{data?.school?.email || 'admissions@school.com'}</span>
-                                <span className="text-xs uppercase tracking-widest text-slate-500 font-black">Email Desk</span>
-                            </a>
+                            <AdmissionForm schoolkey={schoolKey} schoolname={schoolName} />
+                        </div>
+                    </div>
+
+                    {/* Right Column: Sidebar */}
+                    <div className="space-y-8 sticky top-32">
+                        {/* Enrollment Pathway (Instructions) */}
+                        <div className="bg-white rounded-[3rem] p-8 md:p-12 shadow-xl shadow-slate-200/50 border border-slate-100">
+                            <h3 className="text-2xl font-serif text-slate-900 mb-8">Enrollment Pathway</h3>
+                            <AdmissionInstructions steps={admissionInstructions} schoolName={schoolName} />
+                        </div>
+
+                        {/* Assistance Center */}
+                        <div className="bg-slate-900 rounded-[3rem] p-8 md:p-12 text-white shadow-2xl shadow-slate-900/20 relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full translate-x-1/2 -translate-y-1/2 blur-2xl"></div>
+                            
+                            <h3 className="text-2xl font-serif mb-4 relative z-10">Assistance Center</h3>
+                            <p className="text-slate-400 text-sm mb-10 relative z-10 leading-relaxed">
+                                Our admission coordinators are available to guide you through every step of the process.
+                            </p>
+
+                            <div className="space-y-6 relative z-10">
+                                <a 
+                                    href={`tel:${data?.contactDetails?.phone || data?.school?.phone}`} 
+                                    className="flex items-center gap-4 group/link"
+                                >
+                                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center group-hover/link:bg-white/20 transition-colors">
+                                        <span className="text-lg">📞</span>
+                                    </div>
+                                    <span className="text-lg font-bold">{data?.contactDetails?.phone || data?.school?.phone || '+91 999 0000'}</span>
+                                </a>
+
+                                <a 
+                                    href={`mailto:${data?.contactDetails?.email || data?.school?.email}`} 
+                                    className="flex items-center gap-4 group/link"
+                                >
+                                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center group-hover/link:bg-white/20 transition-colors">
+                                        <span className="text-lg">✉️</span>
+                                    </div>
+                                    <span className="text-sm font-medium text-slate-300 group-hover/link:text-white transition-colors">
+                                        {data?.contactDetails?.email || data?.school?.email || 'admissions@school.com'}
+                                    </span>
+                                </a>
+
+                                <button className="w-full mt-4 bg-white/10 hover:bg-white/20 text-white border border-white/10 py-4 rounded-2xl font-bold uppercase tracking-widest text-xs transition-all">
+                                    Schedule a Call
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
         </div>
     );
 };
