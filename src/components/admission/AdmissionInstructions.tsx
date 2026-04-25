@@ -45,14 +45,14 @@ const AdmissionInstructions: React.FC<AdmissionInstructionsProps> = ({ steps }) 
             className="flex gap-6 relative z-10"
           >
             {/* Number Circle */}
-            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-white border-2 border-slate-100 shadow-sm flex items-center justify-center text-slate-900 font-bold text-lg">
+            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[#1e3a8a] text-[#fbbf24] shadow-lg shadow-blue-900/10 flex items-center justify-center font-bold text-lg">
               {index + 1}
             </div>
 
             {/* Content */}
             <div className="space-y-2 pt-1">
               {title && (
-                <h4 className="text-lg font-bold text-slate-900 leading-tight">
+                <h4 className="text-lg font-bold text-[#1e3a8a] leading-tight">
                   {title}
                 </h4>
               )}

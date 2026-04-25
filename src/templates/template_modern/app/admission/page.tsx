@@ -31,10 +31,10 @@ const Admissions: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                     <div className="space-y-8">
                         <div className="bg-white rounded-[3rem] p-8 md:p-12 shadow-xl shadow-slate-200/50 border border-slate-100">
                             <div className="mb-12">
-                                <h2 className="text-4xl md:text-5xl font-serif text-slate-900 mb-4">
+                                <h2 className="text-4xl md:text-5xl font-serif text-[#1e3a8a] mb-4">
                                     Admission Inquiry
                                 </h2>
-                                <div className="w-20 h-1 bg-slate-900"></div>
+                                <div className="w-20 h-1 bg-[#fbbf24]"></div>
                             </div>
                             
                             <AdmissionForm schoolkey={schoolKey} schoolname={schoolName} />
@@ -45,16 +45,16 @@ const Admissions: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                     <div className="space-y-8 sticky top-32">
                         {/* Enrollment Pathway (Instructions) */}
                         <div className="bg-white rounded-[3rem] p-8 md:p-12 shadow-xl shadow-slate-200/50 border border-slate-100">
-                            <h3 className="text-2xl font-serif text-slate-900 mb-8">Enrollment Pathway</h3>
+                            <h3 className="text-2xl font-serif text-[#1e3a8a] mb-8">Enrollment Pathway</h3>
                             <AdmissionInstructions steps={admissionInstructions} schoolName={schoolName} />
                         </div>
 
                         {/* Assistance Center */}
-                        <div className="bg-slate-900 rounded-[3rem] p-8 md:p-12 text-white shadow-2xl shadow-slate-900/20 relative overflow-hidden group">
+                        <div className="bg-[#1e3a8a] rounded-[3rem] p-8 md:p-12 text-white shadow-2xl shadow-blue-900/20 relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full translate-x-1/2 -translate-y-1/2 blur-2xl"></div>
                             
-                            <h3 className="text-2xl font-serif mb-4 relative z-10">Assistance Center</h3>
-                            <p className="text-slate-400 text-sm mb-10 relative z-10 leading-relaxed">
+                            <h3 className="text-2xl font-serif mb-4 relative z-10 text-[#fbbf24]">Assistance Center</h3>
+                            <p className="text-blue-100/60 text-sm mb-10 relative z-10 leading-relaxed">
                                 Our admission coordinators are available to guide you through every step of the process.
                             </p>
 
@@ -63,25 +63,25 @@ const Admissions: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                                     href={`tel:${data?.contactDetails?.phone || data?.school?.phone}`} 
                                     className="flex items-center gap-4 group/link"
                                 >
-                                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center group-hover/link:bg-white/20 transition-colors">
+                                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center group-hover/link:bg-[#fbbf24] group-hover/link:text-[#1e3a8a] transition-all">
                                         <span className="text-lg">📞</span>
                                     </div>
-                                    <span className="text-lg font-bold">{data?.contactDetails?.phone || data?.school?.phone || '+91 999 0000'}</span>
+                                    <span className="text-lg font-bold group-hover/link:text-[#fbbf24] transition-colors">{data?.contactDetails?.phone || data?.school?.phone || '+91 999 0000'}</span>
                                 </a>
 
                                 <a 
                                     href={`mailto:${data?.contactDetails?.email || data?.school?.email}`} 
                                     className="flex items-center gap-4 group/link"
                                 >
-                                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center group-hover/link:bg-white/20 transition-colors">
+                                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center group-hover/link:bg-[#fbbf24] group-hover/link:text-[#1e3a8a] transition-all">
                                         <span className="text-lg">✉️</span>
                                     </div>
-                                    <span className="text-sm font-medium text-slate-300 group-hover/link:text-white transition-colors">
+                                    <span className="text-sm font-medium text-blue-100 group-hover/link:text-[#fbbf24] transition-colors">
                                         {data?.contactDetails?.email || data?.school?.email || 'admissions@school.com'}
                                     </span>
                                 </a>
 
-                                <button className="w-full mt-4 bg-white/10 hover:bg-white/20 text-white border border-white/10 py-4 rounded-2xl font-bold uppercase tracking-widest text-xs transition-all">
+                                <button className="w-full mt-4 bg-[#fbbf24] hover:bg-white text-[#1e3a8a] py-4 rounded-2xl font-bold uppercase tracking-widest text-xs transition-all shadow-lg shadow-yellow-500/20">
                                     Schedule a Call
                                 </button>
                             </div>

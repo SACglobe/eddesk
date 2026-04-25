@@ -176,10 +176,10 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
     return (
       <div className="bg-white/80 backdrop-blur-xl p-12 rounded-[2rem] shadow-2xl text-center border border-white max-w-2xl mx-auto animate-in fade-in zoom-in duration-700">
         <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-8 mx-auto">
-          <CheckCircle2 className="w-12 h-12 text-slate-900" />
+          <CheckCircle2 className="w-12 h-12 text-[#1e3a8a]" />
         </div>
-        <h2 className="text-4xl font-black text-slate-900 mb-4 italic tracking-tight uppercase">Application Received</h2>
-        <p className="text-xl text-slate-600 mb-8 font-medium">Thank you for choosing {schoolname}. Your application for <span className="text-slate-900 font-bold">{formData.studentinfo.studentname}</span> has been successfully submitted.</p>
+        <h2 className="text-4xl font-black text-[#1e3a8a] mb-4 italic tracking-tight uppercase">Application Received</h2>
+        <p className="text-xl text-slate-600 mb-8 font-medium">Thank you for choosing {schoolname}. Your application for <span className="text-[#1e3a8a] font-bold">{formData.studentinfo.studentname}</span> has been successfully submitted.</p>
         <div className="bg-slate-50 p-6 rounded-2xl mb-8 border border-slate-100 italic">
           <p className="text-sm text-slate-500 lowercase tracking-wider">our admission department will review your details and contact you via "{formData.fatherinfo.mobileno || formData.motherinfo.mobileno}" within 2-3 business days.</p>
         </div>
@@ -209,14 +209,14 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
           <div key={s.id} className="relative z-10 flex flex-col items-center">
             <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-500 border-4 ${
               currentStep === s.id 
-                ? 'bg-slate-900 border-slate-50 text-white shadow-xl shadow-slate-200 scale-110' 
+                ? 'bg-[#1e3a8a] border-white text-[#fbbf24] shadow-xl shadow-blue-900/20 scale-110' 
                 : currentStep > s.id 
-                  ? 'bg-slate-100 border-white text-slate-900' 
+                  ? 'bg-blue-50 border-white text-[#1e3a8a]' 
                   : 'bg-white border-slate-100 text-slate-300'
             }`}>
               {currentStep > s.id ? <CheckCircle2 className="w-6 h-6" /> : <s.icon className="w-6 h-6" />}
             </div>
-            <span className={`text-[10px] uppercase tracking-[0.2em] mt-3 font-black ${currentStep >= s.id ? 'text-slate-900' : 'text-slate-300'}`}>
+            <span className={`text-[10px] uppercase tracking-[0.2em] mt-3 font-black ${currentStep >= s.id ? 'text-[#1e3a8a]' : 'text-slate-300'}`}>
               {s.title}
             </span>
           </div>
@@ -226,8 +226,8 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
       <form onSubmit={handleSubmit} className="bg-white/80 backdrop-blur-xl p-8 md:p-12 rounded-[2.5rem] shadow-2xl border border-white/50 relative overflow-hidden">
         {state === 'submitting' && (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-50 flex flex-col items-center justify-center animate-in fade-in duration-300">
-            <Loader2 className="w-12 h-12 text-slate-900 animate-spin mb-4" />
-            <p className="text-slate-900 font-black uppercase tracking-widest text-sm italic">Processing Application...</p>
+            <Loader2 className="w-12 h-12 text-[#1e3a8a] animate-spin mb-4" />
+            <p className="text-[#1e3a8a] font-black uppercase tracking-widest text-sm italic">Processing Application...</p>
           </div>
         )}
 
@@ -240,8 +240,8 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
               exit={{ x: -20, opacity: 0 }}
               className="space-y-8"
             >
-              <div className="border-l-4 border-slate-900 pl-6 mb-8">
-                <h3 className="text-2xl font-bold text-slate-900 italic uppercase">Student Information</h3>
+              <div className="border-l-4 border-[#1e3a8a] pl-6 mb-8">
+                <h3 className="text-2xl font-bold text-[#1e3a8a] italic uppercase">Student Information</h3>
                 <p className="text-slate-500 text-sm">Primary details of the applicant</p>
               </div>
 
@@ -338,8 +338,8 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
               className="space-y-12"
             >
               <div>
-                <div className="border-l-4 border-slate-900 pl-6 mb-8">
-                  <h3 className="text-2xl font-black text-slate-900 italic uppercase">Father Details</h3>
+                <div className="border-l-4 border-[#1e3a8a] pl-6 mb-8">
+                  <h3 className="text-2xl font-black text-[#1e3a8a] italic uppercase">Father Details</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormGroup label="Father's Name" error={fieldErrors['fatherinfo.name']}>
@@ -381,8 +381,8 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
               </div>
 
               <div>
-                <div className="border-l-4 border-slate-900 pl-6 mb-8">
-                  <h3 className="text-2xl font-black text-slate-900 italic uppercase">Mother Details</h3>
+                <div className="border-l-4 border-[#1e3a8a] pl-6 mb-8">
+                  <h3 className="text-2xl font-black text-[#1e3a8a] italic uppercase">Mother Details</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormGroup label="Mother's Name">
@@ -424,8 +424,8 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
               className="space-y-12"
             >
               <div>
-                <div className="border-l-4 border-slate-900 pl-6 mb-8">
-                  <h3 className="text-2xl font-black text-slate-900 italic uppercase">Previous School</h3>
+                <div className="border-l-4 border-[#1e3a8a] pl-6 mb-8">
+                  <h3 className="text-2xl font-black text-[#1e3a8a] italic uppercase">Previous School</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormGroup label="Last School Name">
@@ -448,8 +448,8 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
               </div>
 
               <div>
-                <div className="border-l-4 border-slate-900 pl-6 mb-8">
-                  <h3 className="text-2xl font-black text-slate-900 italic uppercase">Documents Check</h3>
+                <div className="border-l-4 border-[#1e3a8a] pl-6 mb-8">
+                  <h3 className="text-2xl font-black text-[#1e3a8a] italic uppercase">Documents Check</h3>
                 </div>
                 <div className="grid grid-cols-1 gap-4">
                   <FormCheckbox 
@@ -485,8 +485,8 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
               exit={{ x: -20, opacity: 0 }}
               className="space-y-8"
             >
-              <div className="border-l-4 border-slate-900 pl-6 mb-8">
-                <h3 className="text-2xl font-black text-slate-900 italic uppercase">General & Reference</h3>
+              <div className="border-l-4 border-[#1e3a8a] pl-6 mb-8">
+                <h3 className="text-2xl font-black text-[#1e3a8a] italic uppercase">General & Reference</h3>
               </div>
 
               <div className="space-y-6">
@@ -518,7 +518,7 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
 
                 <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 mt-8">
                   <div className="flex items-center gap-2 mb-4">
-                    <ShieldCheck className="w-5 h-5 text-slate-900" />
+                    <ShieldCheck className="w-5 h-5 text-[#1e3a8a]" />
                     <h4 className="text-sm font-black uppercase tracking-widest text-slate-800 italic">Reference (Optional)</h4>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -558,7 +558,7 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
             type="button"
             onClick={prevStep}
             disabled={currentStep === 1 || state === 'submitting'}
-            className="flex items-center gap-2 text-slate-400 hover:text-slate-900 disabled:opacity-0 transition-all font-bold uppercase tracking-widest text-xs"
+            className="flex items-center gap-2 text-slate-400 hover:text-[#1e3a8a] disabled:opacity-0 transition-all font-bold uppercase tracking-widest text-xs"
           >
             <ChevronLeft className="w-4 h-4" />
             Previous
@@ -568,7 +568,7 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
             <button
               type="button"
               onClick={nextStep}
-              className="bg-slate-900 text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center gap-3 hover:bg-slate-800 shadow-xl shadow-slate-100 transition-all active:scale-95 group"
+              className="bg-[#1e3a8a] text-[#fbbf24] px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center gap-3 hover:bg-[#fbbf24] hover:text-[#1e3a8a] shadow-xl shadow-blue-900/10 transition-all active:scale-95 group"
             >
               Next Step
               <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -577,7 +577,7 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
             <button
               type="submit"
               disabled={state === 'submitting'}
-              className="bg-slate-900 text-white px-12 py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center gap-3 hover:bg-black shadow-xl shadow-slate-200 transition-all active:scale-95 disabled:bg-slate-400"
+              className="bg-[#1e3a8a] text-[#fbbf24] px-12 py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center gap-3 hover:bg-[#fbbf24] hover:text-[#1e3a8a] shadow-xl shadow-blue-900/10 transition-all active:scale-95 disabled:bg-slate-400"
             >
               Submit Application
               <CheckCircle2 className="w-4 h-4" />
@@ -615,10 +615,10 @@ const FormCheckbox: React.FC<{ label: string; checked: boolean; onChange: (val: 
 );
 
 const inputClass = (hasError: boolean = false) => `
-  w-full px-5 py-4 rounded-xl bg-slate-50 border transition-all duration-300 outline-none font-medium text-slate-900
+  w-full px-5 py-4 rounded-xl bg-gray-50 shadow-inner border transition-all duration-300 outline-none font-medium text-slate-900
   ${hasError 
       ? 'border-rose-400 ring-4 ring-rose-50 bg-rose-50/20' 
-      : 'border-slate-100 hover:border-slate-300 focus:border-slate-900 focus:ring-4 focus:ring-slate-50 focus:bg-white shadow-sm hover:shadow-md'
+      : 'border-transparent hover:border-slate-200 focus:border-[#fbbf24] focus:ring-4 focus:ring-[#fbbf24]/20 focus:bg-white'
   }
 `;
 
