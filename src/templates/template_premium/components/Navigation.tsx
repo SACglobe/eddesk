@@ -103,16 +103,17 @@ const Header: React.FC<HeaderProps> = ({ announcements, school, activePath }) =>
                 <div className="max-w-[1400px] mx-auto px-8 flex flex-col items-center">
                     <div className="flex justify-between items-center w-full">
                         <Link href="/" className="flex items-center gap-6 group">
-                            {showLogo && (
+                            {showLogo ? (
                                 <div className="flex-shrink-0 h-10 md:h-12 w-auto flex items-center">
                                     <img src={school.logoUrl} alt={`${school.name || 'School'} Logo`} className="h-full w-auto object-contain brightness-110" />
                                 </div>
+                            ) : (
+                                <div className="text-2xl md:text-3xl font-serif font-bold tracking-tighter transition-colors duration-500 text-white">
+                                    {school.name.split(' ').map((word: string, i: number) => (
+                                        <span key={i} className={i === 1 ? 'italic text-signature-gold' : ''}>{word} </span>
+                                    ))}
+                                </div>
                             )}
-                            <div className="text-2xl md:text-3xl font-serif font-bold tracking-tighter transition-colors duration-500 text-white">
-                                {school.name.split(' ').map((word: string, i: number) => (
-                                    <span key={i} className={i === 1 ? 'italic text-signature-gold' : ''}>{word} </span>
-                                ))}
-                            </div>
                         </Link>
 
                         <nav className="hidden lg:flex space-x-12 items-center">
@@ -216,6 +217,8 @@ const Footer: React.FC<FooterProps> = ({ school, contactDetails }) => {
     const displayPhone = contactDetails?.phone || school?.phone;
     const displayEmail = contactDetails?.email || school?.email;
 
+    const showLogo = school?.logoUrl && isValidImageUrl(school.logoUrl);
+
     return (
         <footer className="bg-signature-navy text-white relative overflow-hidden">
             <div className="absolute top-0 right-0 w-1/3 h-full bg-signature-gold/5 -skew-x-12 translate-x-1/2"></div>
@@ -223,14 +226,15 @@ const Footer: React.FC<FooterProps> = ({ school, contactDetails }) => {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-20 border-b border-white/5 pb-32">
                     <div className="lg:col-span-5">
                         <div className="flex items-center gap-6 mb-10">
-                            {school.logoUrl && (
-                                <div className="h-12 w-auto flex-shrink-0">
+                            {showLogo ? (
+                                <div className="h-16 w-auto flex-shrink-0">
                                     <img src={school.logoUrl} alt={`${school.name} Logo`} className="h-full w-auto object-contain brightness-0 invert" />
                                 </div>
+                            ) : (
+                                <h2 className="text-5xl font-serif text-white leading-tight">
+                                    {school.name.split(' ')[0]} <span className="italic text-signature-gold">{school.name.split(' ')[1] || ''}</span> {school.name.split(' ').slice(2).join(' ')}
+                                </h2>
                             )}
-                            <h2 className="text-5xl font-serif text-white leading-tight">
-                                {school.name.split(' ')[0]} <span className="italic text-signature-gold">{school.name.split(' ')[1] || ''}</span> {school.name.split(' ').slice(2).join(' ')}
-                            </h2>
                         </div>
                         {school.description && (
                             <p className="text-white/40 max-w-md leading-loose font-light text-lg italic mb-10">

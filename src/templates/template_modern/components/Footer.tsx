@@ -1,5 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
+import { isValidImageUrl } from '@/core/utils/url';
+
 interface FooterProps {
     school?: any;
     contactDetails?: any;
@@ -10,18 +12,21 @@ const Footer: React.FC<FooterProps> = ({ school, contactDetails }) => {
     const displayPhone = contactDetails?.phone || school?.phone;
     const displayEmail = contactDetails?.email || school?.email;
 
+    const showLogo = school?.logoUrl && isValidImageUrl(school.logoUrl);
+
     return (
         <footer className="bg-gray-900 text-gray-300">
             <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                     <div className="space-y-4">
                         <div className="flex items-center gap-4">
-                            {school?.logoUrl && (
+                            {showLogo ? (
                                 <div className="h-10 w-auto flex-shrink-0">
                                     <img src={school.logoUrl} alt={`${school.name} Logo`} className="h-full w-auto object-contain brightness-0 invert" />
                                 </div>
+                            ) : (
+                                <h3 className="text-white text-xl font-bold">{school?.name}</h3>
                             )}
-                            <h3 className="text-white text-xl font-bold">{school?.name}</h3>
                         </div>
                         {school?.description && (
                             <p className="text-sm leading-relaxed">

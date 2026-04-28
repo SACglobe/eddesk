@@ -56,7 +56,7 @@ const Header = ({ school, activePath }) => {
             <div className="max-w-[1600px] mx-auto px-2 md:px-6">
                 <div className="flex justify-between items-center py-4">
                     <Link href="/" className="flex items-center gap-3 md:gap-4 group">
-                        {showLogo && (
+                        {showLogo ? (
                             <div className="flex-shrink-0 h-10 md:h-14 w-auto flex items-center group-hover:scale-110 transition-transform duration-500">
                                 <img
                                     src={school.logoUrl}
@@ -64,17 +64,18 @@ const Header = ({ school, activePath }) => {
                                     className="h-full w-auto object-contain"
                                 />
                             </div>
-                        )}
-                        <div className="flex flex-col">
-                            <span className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight serif uppercase group-hover:text-emerald-900 transition-colors leading-tight">
-                                {school.name}
-                            </span>
-                            {school.slogan && (
-                                <span className="text-[10px] text-slate-500 uppercase tracking-widest leading-none mt-1">
-                                    {school.slogan}
+                        ) : (
+                            <div className="flex flex-col">
+                                <span className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight serif uppercase group-hover:text-emerald-900 transition-colors leading-tight">
+                                    {school.name}
                                 </span>
-                            )}
-                        </div>
+                                {school.slogan && (
+                                    <span className="text-[10px] text-slate-500 uppercase tracking-widest leading-none mt-1">
+                                        {school.slogan}
+                                    </span>
+                                )}
+                            </div>
+                        )}
                     </Link>
 
                     <nav className="hidden lg:flex items-center space-x-2">
