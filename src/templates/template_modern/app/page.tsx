@@ -152,7 +152,8 @@ export default function Home({ data }: { data: TenantViewModel }) {
     const infrastructure = (data?.infrastructure ?? []).filter(i => i.isActive);
 
     const grouped = infrastructure.reduce((acc: any, f: any) => {
-        const key = f.tag || 'Infrastructure';
+        const isHex = /^\\s*#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})\\s*$/.test(f.tag || '');
+        const key = (!isHex && f.tag) ? f.tag.trim() : 'Infrastructure';
         if (!acc[key]) acc[key] = { categoryName: key, items: [] };
         acc[key].items.push(f);
         return acc;
@@ -351,11 +352,6 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                         alt={`${member.name} - ${member.role || 'Leader'}`}
                                         className="rounded-[3rem] shadow-2xl relative z-10 w-full object-cover object-top aspect-[4/5]"
                                     />
-                                )}
-                                {member.message && (
-                                    <div className="absolute -bottom-8 -left-8 bg-primary text-white p-8 rounded-3xl shadow-2xl z-20 max-w-xs hidden md:block">
-                                        <p className="italic font-serif text-xl">"{member.message}"</p>
-                                    </div>
                                 )}
                             </div>
                             <div className={`space-y-8 ${idx % 2 !== 0 ? 'order-1' : 'order-1 lg:order-2'}`}>
@@ -563,7 +559,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                             {group.items.map((item: any, idx: number) => (
                                                 <li key={idx} className="flex items-center gap-4 group/item">
                                                     <div className={`w-2.5 h-2.5 rounded-full ${i % 2 === 0 ? 'bg-primary' : 'bg-accent'} group-hover/item:scale-125 transition-transform`}></div>
-                                                    <span className="text-gray-600 font-bold text-lg group-hover/item:text-primary transition-colors">{item.name}</span>
+                                                    <span className="text-gray-600 font-bold text-lg group-hover/item:text-primary transition-colors">{item.title}</span>
                                                 </li>
                                             ))}
                                         </ul>
