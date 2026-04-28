@@ -1104,6 +1104,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             displayOrder: num(r[COL_INFRASTRUCTURE_DISPLAY_ORDER]),
             highlightTitle: str(r['highlighttitle']),
             highlightDescription: str(r['highlightdescription']),
+            bulletinPoints: (Array.isArray(r['bulletintextlist']) ? [...r['bulletintextlist']].sort((a: any, b: any) => (a.displayorder || 0) - (b.displayorder || 0)).map((b: any) => b.text ?? b) : []) as string[],
         })),
 
         facilities: infraRows.map(r => ({
