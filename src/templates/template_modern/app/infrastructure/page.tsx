@@ -118,8 +118,8 @@ const InfrastructurePage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                                 
                                 {/* Floating Card Overlay */}
                                 {(() => {
-                                    const isHexColor = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(item.tag);
-                                    const borderColor = isHexColor ? item.tag : undefined;
+                                    const isHexColor = /^\\s*#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})\\s*$/.test(item.tag || '');
+                                    const borderColor = isHexColor ? item.tag.trim() : undefined;
                                     const labelText = !isHexColor && item.tag ? item.tag : null;
                                     return (
                                         <div
