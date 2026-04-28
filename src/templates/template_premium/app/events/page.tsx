@@ -5,7 +5,7 @@ import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import { getMonthEventsAction } from '@/app/actions/events';
 import LayoutWrapper from '../../components/LayoutWrapper';
 import { Button } from '../../components/Shared';
-import { isValidImageUrl } from '@/core/utils/url';
+import { isValidImageUrl, formatHeroUrl } from '@/core/utils/url';
 import Link from 'next/link';
 
 interface HeroSlide {
@@ -75,13 +75,13 @@ const Hero: React.FC<{ heroSlide: HeroSlide | null, schoolName: string }> = ({ h
           </h1>
 
           <div className="flex flex-col sm:flex-row gap-8 justify-center items-center mt-12 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-500">
-            {heroSlide?.primaryButtonText && (
-                <Link href={heroSlide.primaryButtonUrl || '#'}>
+            {formatHeroUrl(heroSlide?.primaryButtonUrl) && heroSlide?.primaryButtonText && (
+                <Link href={formatHeroUrl(heroSlide.primaryButtonUrl)}>
                 <Button variant="gold">{heroSlide.primaryButtonText}</Button>
                 </Link>
             )}
-            {heroSlide?.secondaryButtonText && (
-              <Link href={heroSlide.secondaryButtonUrl || '#'}>
+            {formatHeroUrl(heroSlide?.secondaryButtonUrl) && heroSlide?.secondaryButtonText && (
+              <Link href={formatHeroUrl(heroSlide.secondaryButtonUrl)}>
                 <Button variant="outline">{heroSlide.secondaryButtonText}</Button>
               </Link>
             )}

@@ -8,7 +8,7 @@ import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import AdmissionForm from '@/components/admission/AdmissionForm';
 import AdmissionInstructions from '@/components/admission/AdmissionInstructions';
 import { motion } from 'framer-motion';
-import { isValidImageUrl } from '@/core/utils/url';
+import { isValidImageUrl, formatHeroUrl } from '@/core/utils/url';
 import { useRef, useState, useEffect } from 'react';
 
 const Hero: React.FC<{ heroSlide: any, schoolName: string }> = ({ heroSlide, schoolName }) => {
@@ -71,13 +71,10 @@ const Hero: React.FC<{ heroSlide: any, schoolName: string }> = ({ heroSlide, sch
           </h1>
 
           <div className="flex flex-col sm:flex-row gap-12 justify-center items-center mt-12 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-500">
-            {heroSlide?.primaryButtonText && (
-               <Link href={heroSlide?.primaryButtonUrl || '#'}>
-                <Button variant="gold">{heroSlide.primaryButtonText}</Button>
+            {formatHeroUrl(heroSlide?.primaryButtonUrl) && (heroSlide?.primaryButtonText || schoolName) && (
+               <Link href={formatHeroUrl(heroSlide?.primaryButtonUrl)}>
+                <Button variant="gold">{heroSlide?.primaryButtonText || `Begin Application`}</Button>
               </Link>
-            )}
-            {!heroSlide?.primaryButtonText && (
-               <Button variant="gold">Begin Application</Button>
             )}
           </div>
         </div>
