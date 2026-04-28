@@ -61,6 +61,25 @@ const Navbar: React.FC<NavbarProps> = ({ school, activePath }) => {
         <nav className="bg-primary text-white sticky top-0 z-50 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
+                    <Link href="/" className="flex items-center gap-3 cursor-pointer">
+                        <div className="flex items-center gap-3">
+                            {showLogo ? (
+                                <div className="flex-shrink-0 bg-white rounded p-1 h-10 md:h-12 lg:h-14 w-auto flex items-center">
+                                    <img src={school.logoUrl} alt={`${school.name} Logo`}
+                                        className="h-full w-auto object-contain" />
+                                </div>
+                            ) : (
+                                <div>
+                                    <span className="font-bold text-xl tracking-tight hidden sm:block">
+                                        {school.name}
+                                    </span>
+                                    {school.slogan && (
+                                        <p className="text-xs text-accent font-medium hidden sm:block uppercase">{school.slogan}</p>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </Link>
 
                     <div className="hidden md:flex items-center space-x-1">
                         {mainNavItems.map((item) => (

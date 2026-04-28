@@ -21,8 +21,8 @@ const Footer: React.FC<FooterProps> = ({ school, contactDetails }) => {
                     <div className="space-y-4">
                         <div className="flex items-center gap-4">
                             {showLogo ? (
-                                <div className="h-10 w-auto flex-shrink-0">
-                                    <img src={school.logoUrl} alt={`${school.name} Logo`} className="h-full w-auto object-contain brightness-0 invert" />
+                                <div className="h-12 w-auto flex-shrink-0 bg-white p-1 rounded">
+                                    <img src={school.logoUrl} alt={`${school.name} Logo`} className="h-full w-auto object-contain" />
                                 </div>
                             ) : (
                                 <h3 className="text-white text-xl font-bold">{school?.name}</h3>
