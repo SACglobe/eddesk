@@ -449,33 +449,48 @@ const CampusFacilities: React.FC<CampusFacilitiesProps> = ({ facilityGroups, fac
           </Link>
         </div>
 
-        <div className={`grid grid-cols-1 md:grid-cols-${Math.min(facilityGroups.length, 4)} gap-0 border border-signature-navy/5`}>
-          {facilityGroups.map((group, i) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          {infrastructure.map((item, i) => (
             <div
               key={i}
               className={`
-                px-12 py-16 border-r last:border-r-0 border-signature-navy/5
-                transition-all duration-1000
+                flex flex-col md:flex-row gap-8 p-10 border border-signature-navy/5
+                transition-all duration-1000 group
                 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
               `}
               style={{ transitionDelay: `${i * 150}ms` }}
             >
-              <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-signature-gold mb-6">
-                {group.categoryName}
-              </p>
-              <div className="w-full h-px bg-signature-gold/20 mb-10"></div>
-              <ul className="space-y-6">
-                {group.items.map((item, j) => (
-                  <li key={j} className="flex items-start gap-4 group/item">
-                    <span className="mt-2 w-1.5 h-1.5 rounded-full bg-signature-gold/60 flex-shrink-0
-                                     group-hover/item:bg-signature-gold transition-colors"></span>
-                    <span className="text-signature-navy/70 font-light leading-relaxed
-                                     group-hover/item:text-signature-navy transition-colors">
-                      {item.name}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              <div className="w-32 h-32 flex-shrink-0 bg-signature-ivory rounded-lg overflow-hidden border border-signature-gold/20">
+                {item.imageUrl && isValidImageUrl(item.imageUrl) ? (
+                  <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-signature-gold/30">
+                    <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              <div className="flex-grow">
+                <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-signature-gold mb-3 block">
+                  {item.tag || "Facility"}
+                </span>
+                <h3 className="text-3xl font-serif text-signature-navy mb-6 tracking-tight group-hover:text-signature-gold transition-colors">
+                  {item.title}
+                </h3>
+                {item.bulletinPoints && item.bulletinPoints.length > 0 ? (
+                  <ul className="space-y-4">
+                    {item.bulletinPoints.map((point, j) => (
+                      <li key={j} className="flex items-start gap-3 text-signature-navy/60 group/item">
+                        <span className="mt-2 w-1 h-1 rounded-full bg-signature-gold/40 flex-shrink-0"></span>
+                        <span className="text-sm font-light leading-relaxed group-hover/item:text-signature-navy transition-colors">{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-signature-navy/50 font-light leading-relaxed italic">{item.description}</p>
+                )}
+              </div>
             </div>
           ))}
         </div>

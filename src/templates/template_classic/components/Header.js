@@ -57,11 +57,11 @@ const Header = ({ school, activePath }) => {
                 <div className="flex justify-between items-center py-4">
                     <Link href="/" className="flex items-center gap-3 md:gap-4 group">
                         {showLogo && (
-                            <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 group-hover:scale-110 transition-transform duration-500">
+                            <div className="flex-shrink-0 h-10 md:h-14 w-auto flex items-center group-hover:scale-110 transition-transform duration-500">
                                 <img
                                     src={school.logoUrl}
                                     alt={`${school.name} Logo`}
-                                    className="w-full h-full object-contain"
+                                    className="h-full w-auto object-contain"
                                 />
                             </div>
                         )}

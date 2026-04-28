@@ -57,15 +57,14 @@ export const Button: React.FC<{ children: React.ReactNode; variant?: 'primary' |
         primary: "bg-signature-navy text-white hover:bg-signature-navy/90",
         outline: "border border-signature-navy text-signature-navy hover:bg-signature-navy hover:text-white",
         gold: "bg-signature-gold text-white hover:bg-signature-navy",
-        light: "border border-white/50 text-white hover:bg-white hover:text-signature-navy backdrop-blur-sm"
-    };
+    light: "border border-white/50 text-white hover:bg-white hover:!text-signature-navy backdrop-blur-sm"
+};
 
-    return (
-        <span className={`${baseClasses} ${variants[variant]} ${className}`}>
-            <span className="relative z-10">{children}</span>
-            <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
-        </span>
-    );
+return (
+    <span className={`${baseClasses} ${variants[variant]} ${className}`}>
+        <span className="relative z-10">{children}</span>
+    </span>
+);
 };
 
 export const StatCounter: React.FC<{ target: number; suffix: string; label: string }> = ({ target, suffix, label }) => {
