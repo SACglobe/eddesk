@@ -1183,7 +1183,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             tag: str(r['tag']),
             imageUrl: resolveImageUrl(str(r['imageurl'])),
             icon: str(r['icon']),
-            bulletinPoints: (Array.isArray(r['bulletintextlist']) ? r['bulletintextlist'].map((b: any) => b.text) : []) as string[],
+            bulletinPoints: (Array.isArray(r['bulletintextlist']) ? [...r['bulletintextlist']].sort((a: any, b: any) => (a.displayorder || 0) - (b.displayorder || 0)).map((b: any) => b.text) : []) as string[],
             isActive: bool(r['isactive'] ?? true),
             displayOrder: num(r['displayorder']),
         })).sort((a, b) => a.displayOrder - b.displayOrder),
@@ -1199,7 +1199,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             displayOrder: num(r['displayorder']),
             highlightTitle: str(r['highlighttitle']),
             highlightDescription: str(r['highlightdescription']),
-            bulletinPoints: (Array.isArray(r['bulletintextlist']) ? r['bulletintextlist'].map((b: any) => b.text ?? b) : []) as string[],
+            bulletinPoints: (Array.isArray(r['bulletintextlist']) ? [...r['bulletintextlist']].sort((a: any, b: any) => (a.displayorder || 0) - (b.displayorder || 0)).map((b: any) => b.text ?? b) : []) as string[],
         })).sort((a, b) => a.displayOrder - b.displayOrder),
 
         highlightedInfrastructure: highlightedInfrastructureRows.map(r => ({

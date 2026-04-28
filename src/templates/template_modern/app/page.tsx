@@ -152,7 +152,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
     const infrastructure = (data?.infrastructure ?? []).filter(i => i.isActive);
 
     const grouped = infrastructure.reduce((acc: any, f: any) => {
-        const isHex = /^\\s*#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})\\s*$/.test(f.tag || '');
+        const isHex = /^\s*#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})\s*$/.test(f.tag || '');
         const key = (!isHex && f.tag) ? f.tag.trim() : 'Infrastructure';
         if (!acc[key]) acc[key] = { categoryName: key, items: [] };
         acc[key].items.push(f);
