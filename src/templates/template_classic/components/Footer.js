@@ -17,11 +17,11 @@ const Footer = ({ school, contactDetails }) => {
                         <h3 className="text-white text-lg font-bold serif uppercase tracking-widest border-b border-emerald-800 pb-2 inline-block">Institutional Profile</h3>
                         <div className="flex items-center gap-4 mb-4">
                             {showLogo ? (
-                                <div className="flex-shrink-0 h-10 w-auto flex items-center group-hover:scale-110 transition-transform duration-500">
+                                <div className="flex-shrink-0 h-12 w-auto flex items-center group-hover:scale-110 transition-transform duration-500 bg-white p-1 rounded">
                                     <img
                                         src={school.logoUrl}
                                         alt={`${school.name} Logo`}
-                                        className="h-full w-auto object-contain brightness-200"
+                                        className="h-full w-auto object-contain"
                                     />
                                 </div>
                             ) : (

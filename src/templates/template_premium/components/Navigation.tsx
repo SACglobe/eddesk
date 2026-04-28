@@ -104,8 +104,8 @@ const Header: React.FC<HeaderProps> = ({ announcements, school, activePath }) =>
                     <div className="flex justify-between items-center w-full">
                         <Link href="/" className="flex items-center gap-6 group">
                             {showLogo ? (
-                                <div className="flex-shrink-0 h-10 md:h-12 w-auto flex items-center">
-                                    <img src={school.logoUrl} alt={`${school.name || 'School'} Logo`} className="h-full w-auto object-contain brightness-110" />
+                                <div className="flex-shrink-0 h-10 md:h-12 w-auto flex items-center bg-white p-1 rounded">
+                                    <img src={school.logoUrl} alt={`${school.name || 'School'} Logo`} className="h-full w-auto object-contain" />
                                 </div>
                             ) : (
                                 <div className="text-2xl md:text-3xl font-serif font-bold tracking-tighter transition-colors duration-500 text-white">
@@ -227,8 +227,8 @@ const Footer: React.FC<FooterProps> = ({ school, contactDetails }) => {
                     <div className="lg:col-span-5">
                         <div className="flex items-center gap-6 mb-10">
                             {showLogo ? (
-                                <div className="h-16 w-auto flex-shrink-0">
-                                    <img src={school.logoUrl} alt={`${school.name} Logo`} className="h-full w-auto object-contain brightness-0 invert" />
+                                <div className="h-16 w-auto flex-shrink-0 bg-white p-1 rounded">
+                                    <img src={school.logoUrl} alt={`${school.name} Logo`} className="h-full w-auto object-contain" />
                                 </div>
                             ) : (
                                 <h2 className="text-5xl font-serif text-white leading-tight">
