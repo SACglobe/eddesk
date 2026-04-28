@@ -63,9 +63,10 @@ const InfrastructurePage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                             <div key={item.key} className="bg-gray-50/50 p-12 rounded-[3.5rem] border border-gray-100 hover:bg-white hover:shadow-2xl transition-all duration-500 group">
                                 <div className="space-y-8 text-left">
                                     <div className="flex items-center gap-6">
-                                        <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center text-white text-3xl shadow-lg group-hover:bg-accent group-hover:text-primary transition-colors">
-                                            {/* Fallback to simple icon or logic if icon string is provided */}
-                                            {item.icon ? (
+                                        <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center text-white text-3xl shadow-lg group-hover:shadow-2xl transition-all overflow-hidden flex-shrink-0">
+                                            {item.imageUrl && isValidImageUrl(item.imageUrl) ? (
+                                                <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
+                                            ) : item.icon ? (
                                                 <span className="iconify" data-icon={item.icon}></span>
                                             ) : (
                                                 <span>🏫</span>

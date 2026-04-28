@@ -151,25 +151,6 @@ export default function Home({ data }: { data: TenantViewModel }) {
     const facilitiesRequired = facilitiesComp?.isRequired ?? false;
     const infrastructure = (data?.infrastructure ?? []).filter(i => i.isActive);
 
-    const grouped = infrastructure.reduce((acc: any, f: any) => {
-        const isHex = /^\s*#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})\s*$/.test(f.tag || '');
-        const key = (!isHex && f.tag) ? f.tag.trim() : 'Infrastructure';
-        if (!acc[key]) acc[key] = { categoryName: key, items: [] };
-        acc[key].items.push(f);
-        return acc;
-    }, {});
-    const facilityGroups = Object.values(grouped) as any[];
-
-    const FACILITY_ICON_MAP: Record<string, { icon: string; color: string }> = {
-        'Academics': { icon: '🔬', color: 'bg-primary' },
-        'Sports': { icon: '⚽', color: 'bg-blue-600' },
-        'Arts': { icon: '🎨', color: 'bg-accent' },
-        'Technology': { icon: '💻', color: 'bg-primary' },
-        'Wellness': { icon: '🏥', color: 'bg-blue-600' },
-    };
-    const getFacilityMeta = (cat: string) =>
-        FACILITY_ICON_MAP[cat] ?? { icon: '🏫', color: 'bg-primary' };
-
     // 9. Gallery
     const galleryComp = getComponent('gallery');
     const galleryEnabled = galleryComp?.isActive ?? true;
@@ -528,7 +509,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
             )}
 
             {/* Campus highlights Section */}
-            {facilitiesEnabled && facilityGroups.length > 0 && (
+            {facilitiesEnabled && infrastructure.length > 0 && (
                 <section className="max-w-7xl mx-auto px-4 py-24">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
                         <div className="space-y-4">
@@ -541,32 +522,39 @@ export default function Home({ data }: { data: TenantViewModel }) {
                         </div>
                     </div>
 
-                    <div className="grid lg:grid-cols-3 gap-12">
-                        {facilityGroups.map((group, i) => {
-                            const { icon, color } = getFacilityMeta(group.categoryName);
-                            return (
-                                <div key={i} className="group flex flex-col">
-                                    <div className="bg-white p-10 md:p-14 rounded-[3rem] border border-gray-100 shadow-xl group-hover:border-primary/10 group-hover:-translate-y-2 transition-all flex-1 flex flex-col text-left">
-                                        <div className="mb-10">
-                                            <div className={`w-20 h-20 ${color} text-white rounded-[1.75rem] flex items-center justify-center text-4xl shadow-2xl mb-8 transform group-hover:scale-110 transition-transform duration-500`}>
-                                                {icon}
-                                            </div>
-                                            <h3 className="text-3xl font-bold text-blue-950 tracking-tight mb-2">{group.categoryName}</h3>
+                    <div className="grid lg:grid-cols-2 gap-12">
+                        {infrastructure.map((item, i) => (
+                            <div key={item.key || i} className="group flex flex-col">
+                                <div className="bg-white p-10 md:p-14 rounded-[3rem] border border-gray-100 shadow-xl group-hover:border-primary/10 group-hover:-translate-y-2 transition-all flex-1 flex flex-col text-left">
+                                    <div className="flex items-center gap-6 mb-10">
+                                        <div className="w-20 h-20 bg-primary text-white rounded-[1.75rem] flex items-center justify-center text-4xl shadow-2xl transform group-hover:scale-110 transition-transform duration-500 overflow-hidden flex-shrink-0">
+                                            {item.imageUrl && isValidImageUrl(item.imageUrl) ? (
+                                                <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
+                                            ) : item.icon ? (
+                                                <span className="iconify" data-icon={item.icon}></span>
+                                            ) : (
+                                                <span>🏢</span>
+                                            )}
+                                        </div>
+                                        <div className="space-y-2">
+                                            <h3 className="text-3xl font-bold text-blue-950 tracking-tight">{item.title}</h3>
                                             <div className="w-12 h-1 bg-accent rounded-full group-hover:w-20 transition-all duration-500"></div>
                                         </div>
+                                    </div>
 
-                                        <ul className="space-y-6">
-                                            {group.items.map((item: any, idx: number) => (
-                                                <li key={idx} className="flex items-center gap-4 group/item">
-                                                    <div className={`w-2.5 h-2.5 rounded-full ${i % 2 === 0 ? 'bg-primary' : 'bg-accent'} group-hover/item:scale-125 transition-transform`}></div>
-                                                    <span className="text-gray-600 font-bold text-lg group-hover/item:text-primary transition-colors">{item.title}</span>
+                                    {item.bulletinPoints && item.bulletinPoints.length > 0 && (
+                                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                                            {item.bulletinPoints.map((point: string, idx: number) => (
+                                                <li key={idx} className="flex items-center gap-3 text-gray-600 font-bold group/item">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-accent group-hover/item:scale-150 transition-transform" />
+                                                    <span className="text-lg">{point}</span>
                                                 </li>
                                             ))}
                                         </ul>
-                                    </div>
+                                    )}
                                 </div>
-                            );
-                        })}
+                            </div>
+                        ))}
                     </div>
                     <div className="mt-16 text-center">
                         <Link
