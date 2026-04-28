@@ -147,8 +147,13 @@ export function generateTenantMetadata(
             images: ogImage ? [ogImage] : [],
         },
         icons: {
-            icon: faviconUrl,
-            apple: faviconUrl,
+            icon: [
+                { url: faviconUrl },
+            ],
+            shortcut: faviconUrl,
+            apple: [
+                { url: faviconUrl, sizes: '180x180' },
+            ],
         },
     };
 }
