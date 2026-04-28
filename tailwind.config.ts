@@ -18,6 +18,8 @@ const config: Config = {
                 'playfair': ['var(--font-playfair)', 'serif'],
             },
             colors: {
+                'primary': 'var(--primary, #1e3a8a)',
+                'accent': 'var(--accent, #fbbf24)',
                 'signature': {
                     'navy': '#0F172A',
                     'gold': '#D4AF37',

@@ -91,7 +91,7 @@ const Hero: React.FC<{ heroSlide: HeroSlide | null; schoolName: string }> = ({ h
 
             {formatHeroUrl(heroSlide?.secondaryButtonUrl) && heroSlide?.secondaryButtonText && (
               <Link href={formatHeroUrl(heroSlide.secondaryButtonUrl)}>
-                <Button variant="outline">{heroSlide.secondaryButtonText}</Button>
+                <Button variant="light">{heroSlide.secondaryButtonText}</Button>
               </Link>
             )}
           </div>
