@@ -1,9 +1,13 @@
 
 import Link from 'next/link';
+import { isValidImageUrl } from '@/core/utils/url';
+
 const Footer = ({ school, contactDetails }) => {
     const displayAddress = contactDetails?.address || school?.fullAddress || school?.address;
     const displayPhone = contactDetails?.phone || school?.phone;
     const displayEmail = contactDetails?.email || school?.email;
+
+    const showLogo = school?.logoUrl && isValidImageUrl(school.logoUrl);
 
     return (
         <footer className="bg-emerald-950 text-slate-300 py-16">
@@ -12,16 +16,17 @@ const Footer = ({ school, contactDetails }) => {
                     <div className="space-y-4">
                         <h3 className="text-white text-lg font-bold serif uppercase tracking-widest border-b border-emerald-800 pb-2 inline-block">Institutional Profile</h3>
                         <div className="flex items-center gap-4 mb-4">
-                            <div className="flex-shrink-0 h-10 w-auto flex items-center group-hover:scale-110 transition-transform duration-500">
-                                {school.logoUrl && (
+                            {showLogo ? (
+                                <div className="flex-shrink-0 h-10 w-auto flex items-center group-hover:scale-110 transition-transform duration-500">
                                     <img
                                         src={school.logoUrl}
                                         alt={`${school.name} Logo`}
                                         className="h-full w-auto object-contain brightness-200"
                                     />
-                                )}
-                            </div>
-                            <p className="text-white font-bold serif text-sm uppercase leading-tight">{school.name}</p>
+                                </div>
+                            ) : (
+                                <p className="text-white font-bold serif text-sm uppercase leading-tight">{school.name}</p>
+                            )}
                         </div>
                         {school.description && (
                             <p className="text-sm leading-relaxed text-emerald-100/70">{school.description}</p>
