@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button, useIntersectionObserver } from '../../components/Shared';
 import Link from 'next/link';
-import { isValidImageUrl } from '@/core/utils/url';
+import { isValidImageUrl, formatHeroUrl } from '@/core/utils/url';
 import LayoutWrapper from '../../components/LayoutWrapper';
 import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import ContactForm from '@/components/contact/ContactForm';
@@ -80,14 +80,14 @@ const Hero: React.FC<{ heroSlide: HeroSlide | null }> = ({ heroSlide }) => {
           </h1>
 
           <div className="flex flex-col sm:flex-row gap-12 justify-center items-center mt-12 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-500">
-            {heroSlide?.primaryButtonText && (
-               <Link href={heroSlide?.primaryButtonUrl || '#'}>
+            {formatHeroUrl(heroSlide?.primaryButtonUrl) && heroSlide?.primaryButtonText && (
+               <Link href={formatHeroUrl(heroSlide?.primaryButtonUrl)}>
                 <Button variant="gold">{heroSlide.primaryButtonText}</Button>
               </Link>
             )}
 
-            {heroSlide?.secondaryButtonText && (
-              <Link href={heroSlide.secondaryButtonUrl || '#'}>
+            {formatHeroUrl(heroSlide?.secondaryButtonUrl) && heroSlide?.secondaryButtonText && (
+              <Link href={formatHeroUrl(heroSlide.secondaryButtonUrl)}>
                 <Button variant="outline">{heroSlide.secondaryButtonText}</Button>
               </Link>
             )}

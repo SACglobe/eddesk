@@ -54,3 +54,29 @@ export const resolveImageUrl = (url: string | null | undefined, bucket: string =
   
   return `${base}/storage/v1/object/public/${bucket}/${path}`;
 };
+
+/**
+ * Formats a hero button URL.
+ * If it looks like a domain without a protocol (e.g., crescentthoothukudi.in/admission),
+ * it prepends 'https://' to ensure it's treated as an absolute URL.
+ */
+export const formatHeroUrl = (url: string | null | undefined): string => {
+  if (!url || typeof url !== 'string') return '';
+  const trimmed = url.trim();
+  if (trimmed === '' || trimmed === '#') return '';
+
+  // If it starts with / or a protocol, it's already well-formatted for Next.js Link or absolute link
+  if (trimmed.startsWith('/') || trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return trimmed;
+  }
+
+  // If it looks like a domain (has a dot before a slash, or no slash but a dot)
+  // e.g., crescentthoothukudi.in/admission
+  const firstSegment = trimmed.split('/')[0];
+  if (firstSegment.includes('.') && !firstSegment.startsWith('.')) {
+    return `https://${trimmed}`;
+  }
+
+  // Otherwise, assume it's an internal path and prepend /
+  return `/${trimmed}`;
+};

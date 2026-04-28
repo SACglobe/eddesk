@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { SectionHeader, Card, Button, StatCounter, TestimonialSlider, useIntersectionObserver } from '../components/Shared';
 import Link from 'next/link';
 import NextImage from 'next/image';
-import { isValidImageUrl } from '@/core/utils/url';
+import { isValidImageUrl, formatHeroUrl } from '@/core/utils/url';
 import LayoutWrapper from '../components/LayoutWrapper';
 import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import { evaluateFilters } from '@/core/utils/filterEngine';
@@ -83,12 +83,14 @@ const Hero: React.FC<{ heroSlide: HeroSlide | null; schoolName: string }> = ({ h
           </h1>
 
           <div className="flex flex-col sm:flex-row gap-12 justify-center items-center mt-12 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-500">
-            <Link href={heroSlide?.primaryButtonUrl || '/admission'}>
-              <Button variant="gold">{heroSlide?.primaryButtonText || `Join ${schoolName}`}</Button>
-            </Link>
+            {formatHeroUrl(heroSlide?.primaryButtonUrl) && (heroSlide?.primaryButtonText || schoolName) && (
+              <Link href={formatHeroUrl(heroSlide?.primaryButtonUrl)}>
+                <Button variant="gold">{heroSlide?.primaryButtonText || `Join ${schoolName}`}</Button>
+              </Link>
+            )}
 
-            {heroSlide?.secondaryButtonText && (
-              <Link href={heroSlide.secondaryButtonUrl || '#'}>
+            {formatHeroUrl(heroSlide?.secondaryButtonUrl) && heroSlide?.secondaryButtonText && (
+              <Link href={formatHeroUrl(heroSlide.secondaryButtonUrl)}>
                 <Button variant="outline">{heroSlide.secondaryButtonText}</Button>
               </Link>
             )}

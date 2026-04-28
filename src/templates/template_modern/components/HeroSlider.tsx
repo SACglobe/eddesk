@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import NextImage from 'next/image';
-import { isValidImageUrl } from '@/core/utils/url';
+import { isValidImageUrl, formatHeroUrl } from '@/core/utils/url';
 
 export interface HeroSlide {
     mediaType: string;
@@ -88,11 +88,13 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ slides: rawSlides, headingLevel
                             {slide.subheadline}
                         </p>
                         <div className="flex flex-col sm:flex-row gap-6">
-                            <Link href={slide.primaryButtonUrl || '/infrastructure'} className="bg-accent text-primary px-10 py-4 rounded-full font-black uppercase tracking-widest text-sm hover:bg-white transition-all shadow-2xl">
-                                {slide.primaryButtonText || 'Explore'}
-                            </Link>
-                            {slide.secondaryButtonText && (
-                                <Link href={slide.secondaryButtonUrl || '/admission'} className="border-2 border-white/50 backdrop-blur-sm text-white px-10 py-4 rounded-full font-black uppercase tracking-widest text-sm hover:bg-white hover:text-primary transition-all shadow-2xl">
+                            {formatHeroUrl(slide.primaryButtonUrl) && slide.primaryButtonText && (
+                                <Link href={formatHeroUrl(slide.primaryButtonUrl)} className="bg-accent text-primary px-10 py-4 rounded-full font-black uppercase tracking-widest text-sm hover:bg-white transition-all shadow-2xl">
+                                    {slide.primaryButtonText}
+                                </Link>
+                            )}
+                            {formatHeroUrl(slide.secondaryButtonUrl) && slide.secondaryButtonText && (
+                                <Link href={formatHeroUrl(slide.secondaryButtonUrl)} className="border-2 border-white/50 backdrop-blur-sm text-white px-10 py-4 rounded-full font-black uppercase tracking-widest text-sm hover:bg-white hover:text-primary transition-all shadow-2xl">
                                     {slide.secondaryButtonText}
                                 </Link>
                             )}

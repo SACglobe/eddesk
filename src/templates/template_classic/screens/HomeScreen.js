@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { isValidImageUrl } from '@/core/utils/url';
+import { isValidImageUrl, formatHeroUrl } from '@/core/utils/url';
 
 const HomeScreen = ({ data }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -197,11 +197,11 @@ const HomeScreen = ({ data }) => {
                             {heroSlides[currentSlide]?.headline}
                         </h1>
                         <div className="flex gap-4 animate-fade-up-extra">
-                            {heroSlides[currentSlide]?.primaryButtonText && (
-                                <Link href={heroSlides[currentSlide]?.primaryButtonUrl || '#'} className="px-8 py-3 bg-white text-emerald-900 text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-50 transition-all shadow-xl inline-block">{heroSlides[currentSlide].primaryButtonText}</Link>
+                            {formatHeroUrl(heroSlides[currentSlide]?.primaryButtonUrl) && heroSlides[currentSlide]?.primaryButtonText && (
+                                <Link href={formatHeroUrl(heroSlides[currentSlide]?.primaryButtonUrl)} className="px-8 py-3 bg-white text-emerald-900 text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-50 transition-all shadow-xl inline-block">{heroSlides[currentSlide].primaryButtonText}</Link>
                             )}
-                            {heroSlides[currentSlide]?.secondaryButtonText && (
-                                <Link href={heroSlides[currentSlide]?.secondaryButtonUrl || '#'} className="px-8 py-3 bg-transparent border border-white text-white text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all inline-block">{heroSlides[currentSlide].secondaryButtonText}</Link>
+                            {formatHeroUrl(heroSlides[currentSlide]?.secondaryButtonUrl) && heroSlides[currentSlide]?.secondaryButtonText && (
+                                <Link href={formatHeroUrl(heroSlides[currentSlide]?.secondaryButtonUrl)} className="px-8 py-3 bg-transparent border border-white text-white text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all inline-block">{heroSlides[currentSlide].secondaryButtonText}</Link>
                             )}
                         </div>
                     </div>
