@@ -1097,6 +1097,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             key: str(r[COL_INFRASTRUCTURE_ID] || r['key']),
             title: str(r[COL_INFRASTRUCTURE_TITLE]),
             tag: str(r[COL_INFRASTRUCTURE_TAG]),
+            categoryName: str(r[COL_INFRASTRUCTURE_TAG]), // Alias for templates
             description: str(r[COL_INFRASTRUCTURE_DESCRIPTION]),
             imageUrl: resolveImageUrl(str(r[COL_INFRASTRUCTURE_IMAGE_URL])),
             icon: str(r[COL_INFRASTRUCTURE_ICON]),
@@ -1104,7 +1105,12 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             displayOrder: num(r[COL_INFRASTRUCTURE_DISPLAY_ORDER]),
             highlightTitle: str(r['highlighttitle']),
             highlightDescription: str(r['highlightdescription']),
-            bulletinPoints: (Array.isArray(r['bulletintextlist']) ? [...r['bulletintextlist']].sort((a: any, b: any) => (a.displayorder || 0) - (b.displayorder || 0)).map((b: any) => b.text ?? b) : []) as string[],
+            bulletinPoints: (Array.isArray(r['bulletintextlist']) 
+                ? [...r['bulletintextlist']]
+                    .sort((a: any, b: any) => (a.displayorder || 0) - (b.displayorder || 0))
+                    .map((b: any) => typeof b === 'string' ? b : (b.text || ''))
+                    .filter(Boolean)
+                : []) as string[],
         })),
 
         facilities: infraRows.map(r => ({

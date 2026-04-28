@@ -99,7 +99,12 @@ export function generateTenantMetadata(
 
     const resolvedLogo = resolveImageUrl(school.logoUrl);
     const logoUrlValid = isValidImageUrl(resolvedLogo);
-    const faviconUrl = logoUrlValid ? resolvedLogo : '/assets/images/icon.png';
+    
+    // Ensure faviconUrl is absolute for metadataBase to behave correctly
+    let faviconUrl = logoUrlValid ? resolvedLogo : '/assets/images/icon.png';
+    if (faviconUrl && !faviconUrl.startsWith('http') && !faviconUrl.startsWith('/')) {
+        faviconUrl = `/${faviconUrl}`;
+    }
 
     return {
         metadataBase: new URL(`https://${domain}`),
@@ -148,11 +153,12 @@ export function generateTenantMetadata(
         },
         icons: {
             icon: [
+                { url: faviconUrl, sizes: '32x32', type: 'image/png' },
+                { url: faviconUrl, sizes: '16x16', type: 'image/png' },
                 { url: faviconUrl },
             ],
-            shortcut: faviconUrl,
             apple: [
-                { url: faviconUrl, sizes: '180x180' },
+                { url: faviconUrl, sizes: '180x180', type: 'image/png' },
             ],
         },
     };

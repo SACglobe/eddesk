@@ -201,7 +201,7 @@ const HomeScreen = ({ data }) => {
                                 <Link href={formatHeroUrl(heroSlides[currentSlide]?.primaryButtonUrl)} className="px-8 py-3 bg-white text-emerald-900 text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-50 transition-all shadow-xl inline-block">{heroSlides[currentSlide].primaryButtonText}</Link>
                             )}
                             {formatHeroUrl(heroSlides[currentSlide]?.secondaryButtonUrl) && heroSlides[currentSlide]?.secondaryButtonText && (
-                                <Link href={formatHeroUrl(heroSlides[currentSlide]?.secondaryButtonUrl)} className="px-8 py-3 bg-transparent border border-white text-white text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all inline-block">{heroSlides[currentSlide].secondaryButtonText}</Link>
+                                <Link href={formatHeroUrl(heroSlides[currentSlide]?.secondaryButtonUrl)} className="px-8 py-3 bg-transparent border border-white text-white text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:!text-emerald-900 transition-all inline-block">{heroSlides[currentSlide].secondaryButtonText}</Link>
                             )}
                         </div>
                     </div>
@@ -490,29 +490,35 @@ const HomeScreen = ({ data }) => {
                             </div>
                             <p className="text-slate-500 text-sm max-w-md mt-4 md:mt-0 italic">Modern facilities at {schoolName} optimized for student growth and performance.</p>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            {Object.entries(groupedFacilities).map(([category, items]) => (
-                                <div key={category} className="bg-white p-10 border border-slate-100 shadow-sm hover:shadow-2xl hover:border-emerald-200 transition-all group relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 w-24 h-24 -mr-12 -mt-12 bg-emerald-50 rounded-full opacity-50 transition-transform group-hover:scale-150"></div>
-                                    <div className="relative z-10">
-                                        <div className="text-emerald-900 mb-6 inline-block p-4 bg-emerald-50 rounded-lg group-hover:bg-emerald-900 group-hover:text-white transition-colors">
-                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            {infrastructure.map((item, i) => (
+                                <div key={item.key || i} className="bg-white p-10 border border-slate-100 shadow-sm hover:shadow-2xl hover:border-emerald-200 transition-all group relative overflow-hidden flex flex-col md:flex-row gap-8">
+                                    <div className="flex-shrink-0 w-24 h-24 bg-emerald-50 rounded-xl overflow-hidden flex items-center justify-center">
+                                        {item.imageUrl && isValidImageUrl(item.imageUrl) ? (
+                                            <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <svg className="w-8 h-8 text-emerald-900/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                             </svg>
-                                        </div>
-                                        <h3 className="text-lg font-bold text-slate-900 serif uppercase tracking-[0.2em] mb-6 border-b border-emerald-50 pb-4 group-hover:border-emerald-900 transition-colors">{category}</h3>
-                                        <ul className="space-y-3">
-                                            {items.map(item => (
-                                                <li key={item} className="text-xs text-slate-600 flex items-start gap-3 group/item uppercase tracking-widest font-bold">
-                                                    <span className="w-1.5 h-1.5 bg-emerald-300 rounded-full mt-1 group-hover/item:bg-emerald-600 transition-colors"></span>
-                                                    <span className="group-hover/item:text-slate-900 transition-colors">{item}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
+                                        )}
+                                    </div>
+                                    <div className="flex-grow">
+                                        <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.2em] block mb-2">{item.tag}</span>
+                                        <h3 className="text-xl font-bold text-slate-900 serif uppercase tracking-tight mb-4 group-hover:text-emerald-900 transition-colors">{item.title}</h3>
+                                        {item.bulletinPoints && item.bulletinPoints.length > 0 ? (
+                                            <ul className="space-y-2">
+                                                {item.bulletinPoints.map((point, idx) => (
+                                                    <li key={idx} className="text-xs text-slate-600 flex items-start gap-2">
+                                                        <span className="w-1 h-1 bg-emerald-300 rounded-full mt-1.5 flex-shrink-0"></span>
+                                                        <span>{point}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <p className="text-xs text-slate-500 leading-relaxed italic">{item.description}</p>
+                                        )}
                                     </div>
                                 </div>
                             ))}
-                        </div>
                     </div>
                 </section>
             )}

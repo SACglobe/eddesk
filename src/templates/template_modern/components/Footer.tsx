@@ -15,7 +15,14 @@ const Footer: React.FC<FooterProps> = ({ school, contactDetails }) => {
             <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                     <div className="space-y-4">
-                        <h3 className="text-white text-xl font-bold">{school?.name}</h3>
+                        <div className="flex items-center gap-4">
+                            {school?.logoUrl && (
+                                <div className="h-10 w-auto flex-shrink-0">
+                                    <img src={school.logoUrl} alt={`${school.name} Logo`} className="h-full w-auto object-contain brightness-0 invert" />
+                                </div>
+                            )}
+                            <h3 className="text-white text-xl font-bold">{school?.name}</h3>
+                        </div>
                         {school?.description && (
                             <p className="text-sm leading-relaxed">
                                 {school.description}
@@ -39,11 +46,8 @@ const Footer: React.FC<FooterProps> = ({ school, contactDetails }) => {
                         </ul>
                     </div>
                 </div>
-                <div className="mt-12 pt-8 border-t border-gray-800 text-center text-xs space-y-4">
-                    <p>© {new Date().getFullYear()} {school.name}. All rights reserved.</p>
-                    <p className="text-gray-500">
-                        Powered by <a href="https://eddesk.in" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-accent transition-colors font-medium">EdDesk</a>
-                    </p>
+                <div className="mt-12 pt-8 border-t border-gray-800 text-center text-sm">
+                    <p>&copy; {new Date().getFullYear()} {school?.name}. All rights reserved.</p>
                 </div>
             </div>
         </footer>

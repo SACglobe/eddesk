@@ -526,8 +526,8 @@ export default function Home({ data }: { data: TenantViewModel }) {
                         {infrastructure.map((item, i) => (
                             <div key={item.key || i} className="group flex flex-col">
                                 <div className="bg-white p-10 md:p-14 rounded-[3rem] border border-gray-100 shadow-xl group-hover:border-primary/10 group-hover:-translate-y-2 transition-all flex-1 flex flex-col text-left">
-                                    <div className="flex items-center gap-6 mb-10">
-                                        <div className="w-20 h-20 bg-primary text-white rounded-[1.75rem] flex items-center justify-center text-4xl shadow-2xl transform group-hover:scale-110 transition-transform duration-500 overflow-hidden flex-shrink-0">
+                                    <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-10">
+                                        <div className="w-24 h-24 bg-primary text-white rounded-[1.75rem] flex items-center justify-center text-4xl shadow-2xl transform group-hover:scale-110 transition-transform duration-500 overflow-hidden flex-shrink-0">
                                             {item.imageUrl && isValidImageUrl(item.imageUrl) ? (
                                                 <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
                                             ) : item.icon ? (

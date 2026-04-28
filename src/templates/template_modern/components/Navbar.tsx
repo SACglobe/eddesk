@@ -64,9 +64,9 @@ const Navbar: React.FC<NavbarProps> = ({ school, activePath }) => {
                     <Link href="/" className="flex items-center gap-3 cursor-pointer">
                         <div className="flex items-center gap-3">
                             {showLogo && (
-                                <div className="flex-shrink-0 w-10 h-10">
+                                <div className="flex-shrink-0 h-10 md:h-12 lg:h-14 w-auto flex items-center">
                                     <img src={school.logoUrl} alt={`${school.name} Logo`}
-                                        className="w-full h-full object-contain" />
+                                        className="h-full w-auto object-contain" />
                                 </div>
                             )}
                             <div>
