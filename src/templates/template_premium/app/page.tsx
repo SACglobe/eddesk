@@ -429,12 +429,18 @@ interface FacilityGroup {
 }
 
 interface CampusFacilitiesProps {
+  infrastructure: any[];
   facilityGroups: FacilityGroup[];
   facilitiesEnabled: boolean;
   facilitiesRequired: boolean;
 }
 
-const CampusFacilities: React.FC<CampusFacilitiesProps> = ({ facilityGroups, facilitiesEnabled, facilitiesRequired }) => {
+const CampusFacilities: React.FC<CampusFacilitiesProps> = ({ 
+  infrastructure, 
+  facilityGroups, 
+  facilitiesEnabled, 
+  facilitiesRequired 
+}) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
 
   if (!facilitiesEnabled || facilityGroups.length === 0) return null;
@@ -750,6 +756,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
 
         <div className="flex flex-col">
           <CampusFacilities
+            infrastructure={infrastructure}
             facilityGroups={facilityGroups}
             facilitiesEnabled={facilitiesEnabled}
             facilitiesRequired={facilitiesRequired}
