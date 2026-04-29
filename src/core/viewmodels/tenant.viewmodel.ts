@@ -655,7 +655,7 @@ const COMPONENT_ALIASES: Record<string, string> = {
 // ─── Helper ───────────────────────────────────────────────────────────────────
 
 function str(val: unknown): string {
-    return typeof val === 'string' ? val : '';
+    return typeof val === 'string' ? val.trim() : '';
 }
 function num(val: unknown): number {
     return typeof val === 'number' ? val : Number(val) || 0;

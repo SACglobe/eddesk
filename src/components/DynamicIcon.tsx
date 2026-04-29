@@ -12,14 +12,19 @@ interface DynamicIconProps {
 const DynamicIcon: React.FC<DynamicIconProps> = ({ icon, className }) => {
     if (!icon) return null;
 
-    // Normalize icon name
-    let iconName = icon;
+    // Normalize icon name and trim whitespace
+    let iconName = icon.trim();
 
     // Check if it's an Iconify icon (usually has a colon)
     if (iconName.includes(':')) {
-        // Fix common missing suffixes for Fluent icons (e.g. "fluent:school" -> "fluent:school-24-regular")
+        // Fix common missing suffixes for Fluent icons
         if (iconName.startsWith('fluent:') && !iconName.includes('-')) {
-            iconName = `${iconName}-24-regular`;
+            // "fluent:school" is a common incomplete name, map it to building-school for better reliability
+            if (iconName === 'fluent:school') {
+                iconName = 'fluent:building-school-24-filled';
+            } else {
+                iconName = `${iconName}-24-regular`;
+            }
         }
         return <Icon icon={iconName} className={className} width="1em" height="1em" />;
     }
