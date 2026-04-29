@@ -12,24 +12,28 @@ interface DynamicIconProps {
 const DynamicIcon: React.FC<DynamicIconProps> = ({ icon, className }) => {
     if (!icon) return null;
 
-    // Check if it's an Iconify icon (usually has a colon like 'fluent:school-24-filled')
-    if (icon.includes(':')) {
-        return <Icon icon={icon} className={className} />;
+    // Normalize icon name
+    let iconName = icon;
+
+    // Check if it's an Iconify icon (usually has a colon)
+    if (iconName.includes(':')) {
+        // Fix common missing suffixes for Fluent icons (e.g. "fluent:school" -> "fluent:school-24-regular")
+        if (iconName.startsWith('fluent:') && !iconName.includes('-')) {
+            iconName = `${iconName}-24-regular`;
+        }
+        return <Icon icon={iconName} className={className} width="1em" height="1em" />;
     }
 
     // Try to find a Lucide icon (e.g. 'School', 'Book', etc.)
-    // Note: Lucide icons are often PascalCase, while DB might store them in different formats.
-    // We try a few common formats.
-    const lucideName = icon.charAt(0).toUpperCase() + icon.slice(1);
-    const LucideIcon = (LucideIcons as any)[lucideName] || (LucideIcons as any)[icon];
+    const lucideName = iconName.charAt(0).toUpperCase() + iconName.slice(1);
+    const LucideIcon = (LucideIcons as any)[lucideName] || (LucideIcons as any)[iconName];
 
     if (LucideIcon) {
         return <LucideIcon className={className} />;
     }
 
-    // Fallback: If it's a raw string that might be an Iconify icon without colon (unlikely but possible)
-    // or if we just want to try rendering it as Iconify anyway.
-    return <Icon icon={icon} className={className} />;
+    // Fallback: If it's a raw string, try rendering it as Iconify anyway
+    return <Icon icon={iconName} className={className} width="1em" height="1em" />;
 };
 
 export default DynamicIcon;
