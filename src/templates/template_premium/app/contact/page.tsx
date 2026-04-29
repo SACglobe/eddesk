@@ -251,7 +251,7 @@ export default function Contact({ data }: { data: TenantViewModel }) {
                                 style={{ border: 0 }} 
                                 allowFullScreen={true} 
                                 loading="lazy"
-                                className="grayscale hover:grayscale-0 transition-all duration-1000"
+                                className="transition-all duration-1000"
                             ></iframe>
                           </div>
 

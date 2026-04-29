@@ -67,7 +67,7 @@ const FacultyPage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                                 
                                 {/* Floating Card: Designation */}
                                 <div className="absolute top-12 -right-6 bg-white px-8 py-4 rounded-full shadow-2xl border-t-4 border-accent">
-                                    <span className="text-[10px] md:text-xs font-black text-primary uppercase tracking-[0.3em]">
+                                    <span className="text-[10px] md:text-xs font-black text-primary  tracking-[0.3em]">
                                         {member.designation || 'Faculty Member'}
                                     </span>
                                 </div>
@@ -76,7 +76,7 @@ const FacultyPage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                             {/* Right Side: Typography and Details */}
                             <div className="lg:w-1/2 space-y-8 lg:pl-12">
                                 <div className="space-y-4">
-                                    <h2 className="text-6xl md:text-8xl font-bold text-primary tracking-tighter leading-none font-playfair">
+                                    <h2 className="text-6xl md:text-8xl font-bold text-primary tracking-tighter leading-none font-serif">
                                         {member.name}
                                     </h2>
                                     <p className="text-accent text-xl font-black italic tracking-wide">
@@ -92,11 +92,11 @@ const FacultyPage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                                 <div className="space-y-4 pt-10 border-t border-gray-100">
                                     <div className="flex items-center gap-6 group">
                                         <div className="h-0.5 w-8 bg-accent group-hover:w-12 transition-all duration-300"></div>
-                                        <p className="text-lg font-bold text-primary uppercase tracking-tight">Visionary Educator</p>
+                                        <p className="text-lg font-bold text-primary  tracking-tight">Visionary Educator</p>
                                     </div>
                                     <div className="flex items-center gap-6 group">
                                         <div className="h-0.5 w-8 bg-accent group-hover:w-12 transition-all duration-300"></div>
-                                        <p className="text-lg font-bold text-primary uppercase tracking-tight">Innovative Leadership</p>
+                                        <p className="text-lg font-bold text-primary  tracking-tight">Innovative Leadership</p>
                                     </div>
                                 </div>
 
@@ -106,7 +106,7 @@ const FacultyPage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
 
                     {facultyMembers.length === 0 && (
                         <div className="py-24 text-center border-t border-gray-100">
-                             <p className="text-gray-400 font-playfair italic text-xl">Information about our faculty is being updated.</p>
+                             <p className="text-gray-400 font-serif italic text-xl">Information about our faculty is being updated.</p>
                         </div>
                     )}
                 </div>
@@ -117,22 +117,22 @@ const FacultyPage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                 <section className="bg-gray-50 py-24">
                     <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
                         <div className="space-y-4">
-                            <span className="text-[10px] font-black text-accent uppercase tracking-widest">Connect</span>
-                            <h3 className="text-2xl font-bold text-primary font-playfair">Visit Our Campus</h3>
+                            <span className="text-[10px] font-black text-accent  tracking-widest">Connect</span>
+                            <h3 className="text-2xl font-bold text-primary font-serif">Visit Our Campus</h3>
                             <p className="text-gray-500 font-medium leading-relaxed">{contactData.address}</p>
                         </div>
                         <div className="space-y-4">
-                            <span className="text-[10px] font-black text-accent uppercase tracking-widest">Inquire</span>
-                            <h3 className="text-2xl font-bold text-primary font-playfair">Direct Contact</h3>
+                            <span className="text-[10px] font-black text-accent  tracking-widest">Inquire</span>
+                            <h3 className="text-2xl font-bold text-primary font-serif">Direct Contact</h3>
                             <div className="space-y-1">
                                 <p className="text-gray-500 font-medium">{contactData.email}</p>
                                 <p className="text-gray-500 font-medium">{contactData.phone}</p>
                             </div>
                         </div>
                         <div className="space-y-4">
-                            <span className="text-[10px] font-black text-accent uppercase tracking-widest">Navigate</span>
-                            <h3 className="text-2xl font-bold text-primary font-playfair">Our Location</h3>
-                            <a href={contactData.mapEmbedUrl} target="_blank" rel="noopener noreferrer" className="inline-block text-primary font-black uppercase tracking-[0.2em] text-[10px] border-b border-accent pb-1">
+                            <span className="text-[10px] font-black text-accent  tracking-widest">Navigate</span>
+                            <h3 className="text-2xl font-bold text-primary font-serif">Our Location</h3>
+                            <a href={contactData.mapEmbedUrl} target="_blank" rel="noopener noreferrer" className="inline-block text-primary font-black  tracking-[0.2em] text-[10px] border-b border-accent pb-1">
                                 View on Map →
                             </a>
                         </div>

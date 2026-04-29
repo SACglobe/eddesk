@@ -34,10 +34,10 @@ const Academics: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                     {highlighted.map((item, idx) => (
                         <div key={item.key} className={`flex flex-col ${idx % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-16 items-center mb-24 last:mb-0`}>
                             <div className="flex-1 space-y-8">
-                                <span className="bg-accent/10 text-accent px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest leading-none inline-block">
+                                <span className="bg-accent/10 text-accent px-6 py-2 rounded-full text-xs font-black  tracking-widest leading-none inline-block">
                                     Special Program
                                 </span>
-                                <h2 className="text-4xl md:text-5xl font-bold font-playfair text-primary leading-tight">
+                                <h2 className="text-4xl md:text-5xl font-bold font-serif text-primary leading-tight">
                                     {item.title}
                                 </h2>
                                 <p className="text-gray-600 text-lg leading-relaxed italic border-l-4 border-accent pl-6">
@@ -73,7 +73,7 @@ const Academics: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
             {academicList.length > 0 && (
                 <section className="max-w-7xl mx-auto px-4 py-24">
                     <div className="text-center mb-20 space-y-4">
-                        <h2 className="text-4xl md:text-5xl font-bold font-playfair text-primary">Academic Levels</h2>
+                        <h2 className="text-4xl md:text-5xl font-bold font-serif text-primary">Academic Levels</h2>
                         <div className="w-24 h-1 bg-accent mx-auto rounded-full" />
                     </div>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -83,9 +83,9 @@ const Academics: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                                     {icons[i % icons.length]}
                                 </div>
                                 <div className="space-y-4">
-                                    <h3 className="text-3xl font-bold text-primary font-playfair">{level.title}</h3>
+                                    <h3 className="text-3xl font-bold text-primary font-serif">{level.title}</h3>
                                     {level.subtitle && (
-                                        <p className="text-accent-hover font-black uppercase tracking-widest text-[10px]">{level.subtitle}</p>
+                                        <p className="text-accent-hover font-black  tracking-widest text-[10px]">{level.subtitle}</p>
                                     )}
                                 </div>
                                 <p className="text-gray-600 leading-relaxed font-medium">{level.description}</p>
@@ -100,14 +100,14 @@ const Academics: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                 <section className="max-w-7xl mx-auto px-4 py-12">
                     <div className="bg-primary p-12 md:p-20 rounded-[4rem] text-white">
                         <div className="text-center mb-16 space-y-4">
-                            <h2 className="text-4xl md:text-6xl font-bold font-playfair">Academic Achievements</h2>
+                            <h2 className="text-4xl md:text-6xl font-bold font-serif">Academic Achievements</h2>
                             <p className="text-blue-100 opacity-60">Consistently setting higher standards every year.</p>
                         </div>
                         <div className="grid md:grid-cols-3 gap-12">
                             {results.map((result, idx) => (
                                 <div key={idx} className="text-center space-y-4 border-r border-white/10 last:border-0">
                                     <h4 className="text-5xl font-black text-accent">{result.passPercentage}%</h4>
-                                    <p className="text-xs uppercase tracking-[0.3em] font-black text-blue-200">Class of {result.year} Pass Rate</p>
+                                    <p className="text-xs  tracking-[0.3em] font-black text-blue-200">Class of {result.year} Pass Rate</p>
                                     <div className="pt-4 space-y-2">
                                         <p className="text-sm opacity-80">{result.distinctions} Distinctions</p>
                                         <p className="text-sm opacity-80">{result.firstClass} First Classes</p>

@@ -22,8 +22,16 @@ export function proxy(request: NextRequest) {
 
     console.log(`[EdDesk Proxy DEBUG] Request: ${url.pathname}, Host: ${host}, Method: ${request.method}`);
 
-    // 0. IMMEDIATE BYPASS for internal/static
-    if (url.pathname.startsWith('/_next') || url.pathname.startsWith('/api') || url.pathname.includes('.')) {
+    // 0. IMMEDIATE BYPASS for internal/static (but allow .xml, .txt for rewrites)
+    if (url.pathname.startsWith('/_next') || url.pathname.startsWith('/api')) {
+        return NextResponse.next();
+    }
+    
+    // Bypass files with extensions (images, assets) BUT allow robots.txt, sitemap.xml, llms.txt to proceed to rewrites
+    if (url.pathname.includes('.') && 
+        !url.pathname.endsWith('robots.txt') && 
+        !url.pathname.endsWith('sitemap.xml') && 
+        !url.pathname.endsWith('llms.txt')) {
         return NextResponse.next();
     }
 
@@ -47,7 +55,12 @@ export function proxy(request: NextRequest) {
 
     // 4. Handle Tenant Domains
     if (!url.pathname.startsWith('/tenant')) {
-        url.pathname = `/tenant${url.pathname}`;
+        // Special handling for robots.xml and sitemap.xml to match our new routes
+        let targetPath = url.pathname;
+        if (targetPath === '/robots.txt') targetPath = '/robots';
+        if (targetPath === '/sitemap.xml') targetPath = '/sitemap';
+        
+        url.pathname = `/tenant/${hostname}${targetPath}`;
         console.log(`[EdDesk Proxy DEBUG] REWRITING to: ${url.pathname}`);
         return NextResponse.rewrite(url);
     }

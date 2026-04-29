@@ -78,7 +78,24 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
         });
     };
 
-    const featuredEvent = events.find((e: any) => e.isFeatured) || events[0];
+    const nowForBanner = new Date();
+    nowForBanner.setHours(0, 0, 0, 0);
+
+    const { upcoming, past } = events.reduce((acc, e) => {
+        const eDate = new Date(e.eventDate + 'T00:00:00');
+        if (eDate >= nowForBanner) acc.upcoming.push(e);
+        else acc.past.push(e);
+        return acc;
+    }, { upcoming: [] as any[], past: [] as any[] });
+
+    upcoming.sort((a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime());
+    past.sort((a, b) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime());
+
+    const bannerEvent = upcoming.length > 0 
+        ? (upcoming.find((e: any) => e.isFeatured) || upcoming[0])
+        : (past.length > 0 ? (past.find((e: any) => e.isFeatured) || past[0]) : null);
+    
+    const bannerLabel = upcoming.length > 0 ? "Upcoming Event" : "Recent Event";
 
     // Calendar Grid Logic
     const daysInMonth = new Date(year, month, 0).getDate();
@@ -94,7 +111,7 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                 <HeroSlider slides={heroMedia} heightClass="h-[60vh]" />
             ) : (
                 <div className="bg-primary py-24 text-center">
-                    <h1 className="text-5xl md:text-7xl font-bold text-white font-playfair lowercase tracking-tighter">
+                    <h1 className="text-5xl md:text-7xl font-bold text-white font-serif tracking-tighter">
                         School Events & <span className="text-accent italic">Calendar</span>
                     </h1>
                 </div>
@@ -111,8 +128,8 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/></svg>
                         </button>
                         <div className="text-center min-w-[200px]">
-                            <h2 className="text-3xl font-bold text-slate-800 font-serif lowercase tracking-tight">
-                                {monthName} <span className="text-blue-500 font-sans italic font-normal text-2xl">{year}</span>
+                            <h2 className="text-3xl font-bold text-slate-800 font-serif tracking-tight">
+                                {monthName} <span className="text-blue-500 italic font-normal text-2xl ml-2">{year}</span>
                             </h2>
                         </div>
                         <button 
@@ -126,13 +143,13 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                     <div className="flex items-center gap-4 bg-slate-50 p-2 rounded-2xl border border-slate-100">
                         <button 
                             onClick={() => setView('list')}
-                            className={`px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${view === 'list' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
+                            className={`px-6 py-3 rounded-xl text-xs font-bold  tracking-widest transition-all ${view === 'list' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
                         >
                             List View
                         </button>
                         <button 
                             onClick={() => setView('calendar')}
-                            className={`px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${view === 'calendar' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
+                            className={`px-6 py-3 rounded-xl text-xs font-bold  tracking-widest transition-all ${view === 'calendar' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
                         >
                             Calendar View
                         </button>
@@ -152,7 +169,7 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                             className="text-center py-40"
                         >
                             <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-                            <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Fetching school events...</p>
+                            <p className="text-slate-400 font-bold  tracking-widest text-xs">Fetching school events...</p>
                         </motion.div>
                     ) : view === 'list' ? (
                         events.length > 0 ? (
@@ -177,20 +194,20 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                                         >
                                             <div className="flex flex-col items-center justify-center bg-blue-50 rounded-3xl px-6 py-8 min-w-[100px] h-fit group-hover:bg-blue-600 transition-colors duration-500">
                                                 <span className="text-4xl font-black text-blue-600 group-hover:text-white transition-colors">{day}</span>
-                                                <span className="text-xs font-black uppercase tracking-widest text-blue-400 group-hover:text-blue-100 transition-colors mt-2">{monthShort}</span>
+                                                <span className="text-xs font-black  tracking-widest text-blue-400 group-hover:text-blue-100 transition-colors mt-2">{monthShort}</span>
                                             </div>
                                             
                                             <div className="flex-1 space-y-4">
                                                 <div className="flex items-center gap-3">
-                                                    <span className="px-3 py-1 bg-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest rounded-lg">
+                                                    <span className="px-3 py-1 bg-slate-100 text-[10px] font-black text-slate-400  tracking-widest rounded-lg">
                                                         {event.category || 'General'}
                                                     </span>
                                                     <span className="text-[10px] text-slate-300 font-bold">•</span>
-                                                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                                                    <span className="text-[10px] text-slate-400 font-bold  tracking-widest">
                                                         {event.startTime && `${event.startTime} Onwards`}
                                                     </span>
                                                 </div>
-                                                <h3 className="text-2xl font-bold text-slate-800 group-hover:text-blue-600 transition-colors font-serif lowercase leading-tight">
+                                                <h3 className="text-2xl font-bold text-slate-800 group-hover:text-blue-600 transition-colors font-serif leading-tight">
                                                     {event.title}
                                                 </h3>
                                                 <p className="text-slate-500 text-sm leading-relaxed line-clamp-2">
@@ -209,7 +226,7 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                                 className="text-center py-40 bg-white rounded-[3rem] border-2 border-dashed border-slate-100"
                             >
                                 <div className="text-6xl mb-6 grayscale opacity-20">📅</div>
-                                <h3 className="text-2xl font-bold text-slate-400 font-serif mb-2">No events this month</h3>
+                                <h3 className="text-2xl font-bold text-slate-400 font-serif mb-2">No Events This Month</h3>
                                 <p className="text-slate-300">Check surrounding months for school activities.</p>
                             </motion.div>
                         )
@@ -222,7 +239,7 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                         >
                             <div className="grid grid-cols-7 mb-8">
                                 {weekDays.map(day => (
-                                    <div key={day} className="text-center py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                                    <div key={day} className="text-center py-4 text-[10px] font-black  tracking-[0.2em] text-slate-400">
                                         {day}
                                     </div>
                                 ))}
@@ -247,7 +264,7 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                                                 {dayEvents.map(e => (
                                                     <div 
                                                         key={e.key}
-                                                        className="text-[9px] font-black uppercase tracking-tighter p-2 bg-blue-50 text-blue-600 rounded-lg truncate border border-blue-100 hover:bg-blue-600 hover:text-white transition-all cursor-default"
+                                                        className="text-[9px] font-black  tracking-tighter p-2 bg-blue-50 text-blue-600 rounded-lg truncate border border-blue-100 hover:bg-blue-600 hover:text-white transition-all cursor-default"
                                                         title={e.title}
                                                     >
                                                         {e.title}
@@ -264,12 +281,12 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
             </div>
 
             {/* 4. Highlight Carousel / Banner */}
-            {featuredEvent && (
+            {bannerEvent && (
                 <section className="max-w-7xl mx-auto px-6 pb-32">
                     <div className="bg-blue-900 rounded-[4rem] overflow-hidden relative shadow-3xl">
-                        {featuredEvent.imageUrl ? (
+                        {bannerEvent.imageUrl ? (
                             <img 
-                                src={featuredEvent.imageUrl} 
+                                src={bannerEvent.imageUrl} 
                                 className="absolute inset-0 w-full h-full object-cover opacity-20 blur-sm"
                                 alt="Featured"
                             />
@@ -278,28 +295,28 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                         )}
                         <div className="relative z-10 grid lg:grid-cols-2 gap-20 items-center p-16 md:p-24">
                             <div className="space-y-10 order-2 lg:order-1 text-center lg:text-left">
-                                <span className="bg-blue-400/20 text-blue-400 px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-400/10">Feature Highlight</span>
-                                <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight font-serif lowercase">Upcoming event: <br/><span className="text-blue-400">{featuredEvent.title}</span></h2>
+                                <span className="bg-blue-400/20 text-blue-400 px-6 py-2 rounded-full text-[10px] font-black  tracking-widest border border-blue-400/10">Feature Highlight</span>
+                                <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight font-serif">{bannerLabel}: <br/><span className="text-blue-400">{bannerEvent.title}</span></h2>
                                 <p className="text-blue-100/60 text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">
-                                    {featuredEvent.description}
+                                    {bannerEvent.description}
                                 </p>
                                 <div className="flex gap-10 justify-center lg:justify-start pt-6">
                                     <div>
-                                        <p className="text-white font-black text-2xl lowercase">{new Date(featuredEvent.eventDate).toLocaleDateString()}</p>
-                                        <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mt-1">Calendar Date</p>
+                                        <p className="text-white font-black text-2xl">{new Date(bannerEvent.eventDate + 'T00:00:00').toLocaleDateString()}</p>
+                                        <p className="text-[10px] font-black text-blue-400  tracking-widest mt-1">Calendar Date</p>
                                     </div>
                                     <div className="w-px h-12 bg-white/10"></div>
                                     <div>
-                                        <p className="text-white font-black text-2xl lowercase">{featuredEvent.location || 'Campus Center'}</p>
-                                        <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mt-1">Venue</p>
+                                        <p className="text-white font-black text-2xl">{bannerEvent.location || 'Campus Center'}</p>
+                                        <p className="text-[10px] font-black text-blue-400  tracking-widest mt-1">Venue</p>
                                     </div>
                                 </div>
                             </div>
                             <div className="order-1 lg:order-2 group">
-                                {featuredEvent.imageUrl ? (
+                                {bannerEvent.imageUrl ? (
                                     <motion.img 
                                         whileHover={{ scale: 1.02 }}
-                                        src={featuredEvent.imageUrl} 
+                                        src={bannerEvent.imageUrl} 
                                         className="rounded-[3rem] shadow-4xl w-full aspect-square md:aspect-video object-cover"
                                         alt="Featured Event"
                                     />

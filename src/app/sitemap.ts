@@ -1,56 +1,14 @@
 import { MetadataRoute } from 'next'
-import { headers } from 'next/headers'
 import { createPublicSupabaseClient } from '@/lib/supabase'
 import { normalizeDomain, isOwnerDomain, OWNER_BASE_URL } from '@/lib/domain'
+
+export const revalidate = 3600; // Cache sitemap for 1 hour
 
 const TEMPLATE_SLUGS = ['template_classic', 'template_modern', 'template_premium']
 const SCREEN_SLUGS = ['about', 'gallery', 'events', 'admission', 'contact', 'academics', 'activities', 'infrastructure', 'faculty']
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const headersList = await headers()
-    const host = headersList.get('host') || 'www.eddesk.in'
-    const domain = normalizeDomain(host)
-    const isOwner = isOwnerDomain(domain)
-
-    if (isOwner) {
-        return buildOwnerSitemap()
-    }
-
-    try {
-        const supabase = await createPublicSupabaseClient()
-        
-        // Find school by domain
-        let { data: school } = await supabase
-            .from('schools')
-            .select('key, customdomain')
-            .eq('customdomain', domain)
-            .eq('isactive', true)
-            .maybeSingle()
-
-        if (!school && host !== domain) {
-            const { data: fallbackSchool } = await supabase
-                .from('schools')
-                .select('key, customdomain')
-                .eq('customdomain', host)
-                .eq('isactive', true)
-                .maybeSingle()
-            school = fallbackSchool
-        }
-
-        if (!school) {
-            return []
-        }
-
-        const { data: screens } = await supabase
-            .from('templatescreens')
-            .select('slug, updatedat')
-            .eq('isactive', true)
-
-        return buildTenantSitemap(domain, screens || [])
-    } catch (err) {
-        console.error('[sitemap.ts] Error:', err)
-        return []
-    }
+    return buildOwnerSitemap()
 }
 
 function buildOwnerSitemap(): MetadataRoute.Sitemap {

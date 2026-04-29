@@ -76,11 +76,11 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ slides: rawSlides, headingLevel
                     <div className="absolute inset-0 bg-black/40" />
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
                         {index === 0 ? (
-                            <HeadingTag className="text-white text-4xl md:text-8xl font-bold mb-6 drop-shadow-lg transform transition-all duration-1000 translate-y-0 opacity-100 font-playfair">
+                            <HeadingTag className="text-white text-4xl md:text-8xl font-bold mb-6 drop-shadow-lg transform transition-all duration-1000 translate-y-0 opacity-100 font-serif">
                                 {slide.headline}
                             </HeadingTag>
                         ) : (
-                            <h2 className="text-white text-4xl md:text-8xl font-bold mb-6 drop-shadow-lg transform transition-all duration-1000 translate-y-0 opacity-100 font-playfair">
+                            <h2 className="text-white text-4xl md:text-8xl font-bold mb-6 drop-shadow-lg transform transition-all duration-1000 translate-y-0 opacity-100 font-serif">
                                 {slide.headline}
                             </h2>
                         )}
@@ -89,12 +89,12 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ slides: rawSlides, headingLevel
                         </p>
                         <div className="flex flex-col sm:flex-row gap-6">
                             {formatHeroUrl(slide.primaryButtonUrl) && slide.primaryButtonText && (
-                                <Link href={formatHeroUrl(slide.primaryButtonUrl)} className="bg-accent text-primary px-10 py-4 rounded-full font-black uppercase tracking-widest text-sm hover:bg-white transition-all shadow-2xl">
+                                <Link href={formatHeroUrl(slide.primaryButtonUrl)} className="bg-accent text-primary px-10 py-4 rounded-full font-black  tracking-widest text-sm hover:bg-white transition-all shadow-2xl">
                                     {slide.primaryButtonText}
                                 </Link>
                             )}
                             {formatHeroUrl(slide.secondaryButtonUrl) && slide.secondaryButtonText && (
-                                <Link href={formatHeroUrl(slide.secondaryButtonUrl)} className="border-2 border-white/50 backdrop-blur-sm text-white px-10 py-4 rounded-full font-black uppercase tracking-widest text-sm hover:bg-white hover:!text-slate-900 transition-all shadow-2xl">
+                                <Link href={formatHeroUrl(slide.secondaryButtonUrl)} className="border-2 border-white/50 backdrop-blur-sm text-white px-10 py-4 rounded-full font-black  tracking-widest text-sm hover:bg-white hover:!text-slate-900 transition-all shadow-2xl">
                                     {slide.secondaryButtonText}
                                 </Link>
                             )}

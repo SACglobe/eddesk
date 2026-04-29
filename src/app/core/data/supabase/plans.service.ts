@@ -1,4 +1,4 @@
-import { createServerSupabaseClient } from '@/lib/supabase';
+import { createPublicSupabaseClient } from '@/lib/supabase';
 
 export interface Plan {
     key: string;
@@ -18,7 +18,7 @@ export interface Plan {
  */
 export async function getActivePlans(): Promise<Plan[]> {
     try {
-        const supabase = await createServerSupabaseClient();
+        const supabase = await createPublicSupabaseClient();
         const { data, error } = await supabase
             .from('plans')
             .select('*')

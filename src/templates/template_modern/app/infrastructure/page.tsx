@@ -5,6 +5,7 @@ import HeroSlider from '../../components/HeroSlider';
 import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import { validateRequiredSections } from '@/core/utils/sectionValidator';
 import { isValidImageUrl } from '@/core/utils/url';
+import DynamicIcon from '@/components/DynamicIcon';
 
 const InfrastructurePage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
     const schoolName = data?.school?.name ?? 'Our School';
@@ -67,12 +68,12 @@ const InfrastructurePage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                                             {item.imageUrl && isValidImageUrl(item.imageUrl) ? (
                                                 <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
                                             ) : item.icon ? (
-                                                <span className="iconify" data-icon={item.icon}></span>
+                                                <DynamicIcon icon={item.icon} />
                                             ) : (
                                                 <span>🏫</span>
                                             )}
                                         </div>
-                                        <h3 className="text-3xl font-bold text-primary font-playfair">{item.title}</h3>
+                                        <h3 className="text-3xl font-bold text-primary font-serif">{item.title}</h3>
                                     </div>
                                     
                                     {item.description && (
@@ -129,7 +130,7 @@ const InfrastructurePage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                                         >
                                             <div className="space-y-2 md:space-y-4">
                                                 {labelText && (
-                                                    <p className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-[0.3em]">
+                                                    <p className="text-[10px] md:text-xs font-black text-gray-400  tracking-[0.3em]">
                                                         {labelText}
                                                     </p>
                                                 )}
@@ -196,7 +197,7 @@ const InfrastructurePage: React.FC<{ data: TenantViewModel }> = ({ data }) => {
 
                     {listItems.length === 0 && (
                         <div className="py-24 text-center border-t border-gray-100">
-                             <p className="text-gray-400 font-playfair italic text-xl">Information about campus infrastructure is being updated.</p>
+                             <p className="text-gray-400 font-serif italic text-xl">Information about campus infrastructure is being updated.</p>
                         </div>
                     )}
                 </div>

@@ -5,6 +5,7 @@ import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import ContactForm from '@/components/contact/ContactForm';
 import CallbackForm from '@/components/contact/CallbackForm';
 import HeroSlider from '../../components/HeroSlider';
+import DynamicIcon from '@/components/DynamicIcon';
 
 const Contact: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
     const schoolName = data?.school?.name ?? '';
@@ -77,22 +78,26 @@ const Contact: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                         {isContactActive && (
                             <>
                                 <div className="space-y-6">
-                                    <span className="text-[#fbbf24] font-black uppercase tracking-[0.3em] text-xs">Reach Out</span>
-                                    <h2 className="text-4xl md:text-5xl font-bold text-[#1e3a8a] font-serif uppercase italic">Direct Channels</h2>
+                                    <span className="text-accent font-black  tracking-[0.3em] text-xs">Reach Out</span>
+                                    <h2 className="text-4xl md:text-5xl font-bold text-primary font-serif  italic">Direct Channels</h2>
                                 </div>
 
                                 <div className="grid sm:grid-cols-2 gap-12">
                                     {address && (
                                         <div className="space-y-4 group">
-                                            <div className="w-14 h-14 bg-[#1e3a8a] text-[#fbbf24] rounded-2xl flex items-center justify-center text-2xl shadow-xl transition-transform group-hover:scale-110">📍</div>
-                                            <h4 className="font-bold text-[#1e3a8a] text-xl font-serif">Main Campus</h4>
+                                            <div className="w-14 h-14 bg-primary text-accent rounded-2xl flex items-center justify-center text-2xl shadow-xl transition-transform group-hover:scale-110">
+                                                <DynamicIcon icon="lucide:map-pin" />
+                                            </div>
+                                            <h4 className="font-bold text-primary text-xl font-serif">Main Campus</h4>
                                             <p className="text-gray-500 leading-relaxed text-sm">{address}</p>
                                         </div>
                                     )}
                                     {(phone || email) && (
                                         <div className="space-y-4 group">
-                                            <div className="w-14 h-14 bg-[#fbbf24] text-[#1e3a8a] rounded-2xl flex items-center justify-center text-2xl shadow-xl transition-transform group-hover:scale-110">📞</div>
-                                            <h4 className="font-bold text-[#1e3a8a] text-xl font-serif">Contact</h4>
+                                            <div className="w-14 h-14 bg-accent text-primary rounded-2xl flex items-center justify-center text-2xl shadow-xl transition-transform group-hover:scale-110">
+                                                <DynamicIcon icon="lucide:phone" />
+                                            </div>
+                                            <h4 className="font-bold text-primary text-xl font-serif">Contact</h4>
                                             <p className="text-gray-500 leading-relaxed text-sm">
                                                 {phone && <>{phone}<br /></>}
                                                 {email && <span className="break-all">{email}</span>}
@@ -101,15 +106,19 @@ const Contact: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                                     )}
                                     {officeHours && (
                                         <div className="space-y-4 group">
-                                            <div className="w-14 h-14 bg-white shadow-xl rounded-2xl flex items-center justify-center text-2xl text-[#1e3a8a] transition-transform group-hover:scale-110">⏰</div>
-                                            <h4 className="font-bold text-[#1e3a8a] text-xl font-serif">Visiting Hours</h4>
+                                            <div className="w-14 h-14 bg-white shadow-xl rounded-2xl flex items-center justify-center text-2xl text-primary transition-transform group-hover:scale-110">
+                                                <DynamicIcon icon="lucide:clock" />
+                                            </div>
+                                            <h4 className="font-bold text-primary text-xl font-serif">Visiting Hours</h4>
                                             <p className="text-gray-500 leading-relaxed text-sm">{officeHours}</p>
                                         </div>
                                     )}
                                     {hasSocial && (
                                         <div className="space-y-4 group">
-                                            <div className="w-14 h-14 bg-blue-50 text-blue-900 rounded-2xl flex items-center justify-center text-2xl shadow-sm transition-transform group-hover:scale-110">✉️</div>
-                                            <h4 className="font-bold text-primary text-xl font-playfair">Connect Socially</h4>
+                                            <div className="w-14 h-14 bg-blue-50 text-blue-900 rounded-2xl flex items-center justify-center text-2xl shadow-sm transition-transform group-hover:scale-110">
+                                                <DynamicIcon icon="lucide:mail" />
+                                            </div>
+                                            <h4 className="font-bold text-primary text-xl font-serif">Connect Socially</h4>
                                             <p className="text-gray-500 leading-relaxed text-sm italic">{socialText}</p>
                                         </div>
                                     )}
@@ -126,29 +135,29 @@ const Contact: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                                                 style={{ border: 0 }} 
                                                 allowFullScreen={true} 
                                                 loading="lazy" 
-                                                className="grayscale hover:grayscale-0 transition-all duration-700"
+                                                className="transition-all duration-700"
                                             ></iframe>
                                         </div>
                                     ) : (
                                         <div className="h-96 bg-blue-100 rounded-[3rem] overflow-hidden shadow-inner flex items-center justify-center relative group">
                                             {/* Final fallback if no map at all */}
-                                            <div className="relative z-10 bg-white/90 backdrop-blur-md px-10 py-5 rounded-[2rem] font-black uppercase tracking-widest text-primary shadow-2xl border border-white/50">
+                                            <div className="relative z-10 bg-white/90 backdrop-blur-md px-10 py-5 rounded-[2rem] font-black  tracking-widest text-primary shadow-2xl border border-white/50">
                                                 Location Map
                                             </div>
                                         </div>
                                     )}
 
-                                    {isMappable && (
                                         <a 
                                             href={mapEmbedUrl} 
                                             target="_blank" 
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-2 text-[#1e3a8a] font-bold hover:text-[#fbbf24] transition-colors group"
+                                            className="inline-flex items-center gap-2 text-primary font-bold hover:text-accent transition-colors group"
                                         >
-                                            <span className="bg-[#1e3a8a] text-white p-2 rounded-lg group-hover:bg-[#fbbf24] transition-colors">🗺️</span>
+                                            <span className="bg-primary text-white p-2 rounded-lg group-hover:bg-accent transition-colors">
+                                                <DynamicIcon icon="lucide:map" className="w-5 h-5" />
+                                            </span>
                                             Open in Google Maps
                                         </a>
-                                    )}
                                 </div>
                             </>
                         )}
@@ -156,7 +165,7 @@ const Contact: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
 
                     <div className="bg-white p-10 md:p-16 rounded-[4rem] shadow-2xl border border-gray-100 relative overflow-hidden lg:sticky lg:top-32 h-fit">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
-                        <h3 className="text-3xl font-bold text-[#1e3a8a] mb-10 font-serif uppercase italic">Send a Message</h3>
+                        <h3 className="text-3xl font-bold text-primary mb-10 font-serif  italic">Send a Message</h3>
                         
                         <ContactForm schoolkey={schoolKey} schoolname={schoolName} />
 

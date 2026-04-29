@@ -7,6 +7,7 @@ import Link from 'next/link';
 import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import { isValidImageUrl } from '@/core/utils/url';
 import { evaluateFilters } from '@/core/utils/filterEngine';
+import DynamicIcon from '@/components/DynamicIcon';
 
 const AnimatedNumber: React.FC<{ value: number; suffix?: string; duration?: number }> = ({ value, suffix = "", duration = 1500 }) => {
     const [count, setCount] = useState(0);
@@ -128,14 +129,19 @@ export default function Home({ data }: { data: TenantViewModel }) {
     };
 
     const ICON_MAP: Record<string, string> = {
-        users: '👥',
-        graduation: '🎓',
-        calendar: '📅',
-        map: '🏢',
-        trophy: '🏆',
-        network: '🌐',
+        users: 'lucide:users',
+        graduation: 'lucide:graduation-cap',
+        calendar: 'lucide:calendar',
+        map: 'lucide:map-pin',
+        trophy: 'lucide:trophy',
+        network: 'lucide:globe',
     };
-    const getIcon = (name: string) => ICON_MAP[name] ?? '📊';
+    const getIcon = (name: string) => {
+        const mapped = ICON_MAP[name];
+        if (mapped) return <DynamicIcon icon={mapped} />;
+        if (name && (name.includes(':') || name.length > 0)) return <DynamicIcon icon={name} />;
+        return <span>📊</span>;
+    };
 
     // 7. Faculty
     const facultyComp = getComponent('faculty');
@@ -162,21 +168,25 @@ export default function Home({ data }: { data: TenantViewModel }) {
     const eventsEnabled = eventsComp?.isActive ?? true;
     const eventsRequired = eventsComp?.isRequired ?? false;
 
-    const eventsToShow = (data?.events ?? [])
-        .filter((e: any) => {
-            const eventDateTime = new Date(`${e.eventDate}T${e.startTime || '00:00:00'}Z`);
-            return eventDateTime > now;
-        })
-        .sort((a: any, b: any) =>
-            new Date(`${a.eventDate}T${a.startTime || '00:00:00'}Z`).getTime() -
-            new Date(`${b.eventDate}T${b.startTime || '00:00:00'}Z`).getTime()
-        )
-        .slice(0, 3);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const allEvents = data?.events ?? [];
+    const upcomingEvents = allEvents
+        .filter((e: any) => new Date(`${e.eventDate}T00:00:00`) >= today)
+        .sort((a: any, b: any) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime());
+    
+    const pastEvents = allEvents
+        .filter((e: any) => new Date(`${e.eventDate}T00:00:00`) < today)
+        .sort((a: any, b: any) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime());
+
+    const eventsToShow = upcomingEvents.length > 0 ? upcomingEvents.slice(0, 3) : pastEvents.slice(0, 3);
+    const eventSectionTitle = upcomingEvents.length > 0 ? "Upcoming Events" : "Recent Events";
 
     const formatEventDate = (dateStr: string) => {
         const d = new Date(dateStr + 'T00:00:00');
         return {
-            month: d.toLocaleString('en-US', { month: 'short' }).toUpperCase(),
+            month: d.toLocaleString('en-US', { month: 'short' }),
             day: d.getDate().toString()
         };
     };
@@ -197,7 +207,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-40"></span>
                                 <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 border border-red-400 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span>
                             </span>
-                            <span className="font-black uppercase tracking-widest text-[11px] antialiased">Broadcast</span>
+                            <span className="font-black  tracking-widest text-[11px] antialiased">Broadcast</span>
                         </div>
                     </div>
 
@@ -224,20 +234,20 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                 <div className="space-y-6">
                                     <div className="flex items-center gap-4">
                                         <div className="h-px w-8 bg-yellow-500"></div>
-                                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-primary/40">Institutional Merit</span>
+                                        <span className="text-[10px] font-black  tracking-[0.5em] text-primary/40">Institutional Merit</span>
                                     </div>
                                     <h2 className="text-4xl md:text-5xl font-bold text-blue-950 leading-tight">Honors & Academic Results</h2>
                                     {latestAcademicResult.year && (
                                         <div className="space-y-1">
                                             <h3 className="text-xl font-medium text-primary">Board Results {latestAcademicResult.year}</h3>
-                                            <p className="text-xs text-gray-400 font-medium uppercase tracking-widest">Academic Merit Summary</p>
+                                            <p className="text-xs text-gray-400 font-medium  tracking-widest">Academic Merit Summary</p>
                                         </div>
                                     )}
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-6 py-8 border-y border-gray-100">
                                     <div className="flex items-center justify-between group">
-                                        <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">Pass Percentage</p>
+                                        <p className="text-sm font-bold text-gray-500  tracking-widest">Pass Percentage</p>
                                         <div className="flex items-center gap-6">
                                             <div className="h-px w-12 bg-gray-100 group-hover:w-24 transition-all duration-500"></div>
                                             <p className="text-4xl font-light text-primary">
@@ -246,7 +256,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                         </div>
                                     </div>
                                     <div className="flex items-center justify-between group">
-                                        <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">Distinctions</p>
+                                        <p className="text-sm font-bold text-gray-500  tracking-widest">Distinctions</p>
                                         <div className="flex items-center gap-6">
                                             <div className="h-px w-12 bg-gray-100 group-hover:w-24 transition-all duration-500"></div>
                                             <p className="text-4xl font-light text-yellow-600">
@@ -255,7 +265,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                         </div>
                                     </div>
                                     <div className="flex items-center justify-between group">
-                                        <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">First Class</p>
+                                        <p className="text-sm font-bold text-gray-500  tracking-widest">First Class</p>
                                         <div className="flex items-center gap-6">
                                             <div className="h-px w-12 bg-gray-100 group-hover:w-24 transition-all duration-500"></div>
                                             <p className="text-4xl font-light text-gray-950">
@@ -281,7 +291,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                 <div className="space-y-6">
                                     <div className="flex items-center gap-4">
                                         <div className="h-px w-8 bg-primary"></div>
-                                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-primary/40">Institutional Recognition</span>
+                                        <span className="text-[10px] font-black  tracking-[0.5em] text-primary/40">Institutional Recognition</span>
                                     </div>
                                     <h2 className="text-4xl md:text-5xl font-bold text-blue-950 leading-tight">Achievements & Glories</h2>
                                 </div>
@@ -290,13 +300,13 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                     {academicAchievements.slice(0, 2).map((item, i) => (
                                         <div key={i} className="group relative grid grid-cols-[80px_1fr] gap-8 p-8 hover:bg-white rounded-[2rem] transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 border border-transparent hover:border-gray-50">
                                             <div className="flex flex-col items-center justify-center border-r border-gray-100 group-hover:border-accent-hover transition-colors">
-                                                <span className="text-[10px] font-black text-yellow-600 mb-1 tracking-widest uppercase">Year</span>
+                                                <span className="text-[10px] font-black text-yellow-600 mb-1 tracking-widest ">Year</span>
                                                 <span className="text-3xl font-black text-primary tracking-tighter">
                                                     <AnimatedNumber value={item.year} duration={1000} />
                                                 </span>
                                             </div>
                                             <div className="space-y-3">
-                                                <div className="inline-block px-3 py-1 bg-yellow-50 text-yellow-700 rounded-lg text-[9px] font-black uppercase tracking-widest">
+                                                <div className="inline-block px-3 py-1 bg-yellow-50 text-yellow-700 rounded-lg text-[9px] font-black  tracking-widest">
                                                     {item.category || "Merit"}
                                                 </div>
                                                 <h4 className="text-2xl font-bold text-blue-950">{item.title}</h4>
@@ -310,7 +320,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                             <span className="bg-blue-950 text-white w-12 h-12 flex items-center justify-center rounded-full group-hover:bg-accent group-hover:text-blue-950 transition-all duration-500 shadow-lg">
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                                             </span>
-                                            <span className="text-primary font-bold uppercase tracking-[0.4em] text-[10px] border-b border-transparent group-hover:border-accent transition-all pb-1">Know more about our heritage</span>
+                                            <span className="text-primary font-bold  tracking-[0.4em] text-[10px] border-b border-transparent group-hover:border-accent transition-all pb-1">Know more about our heritage</span>
                                         </Link>
                                     </div>
                                 </div>
@@ -336,9 +346,9 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                 )}
                             </div>
                             <div className={`space-y-8 ${idx % 2 !== 0 ? 'order-1' : 'order-1 lg:order-2'}`}>
-                                <div className="inline-flex items-center gap-2 bg-blue-50 text-primary px-6 py-2 rounded-full font-bold uppercase tracking-widest text-xs">
+                                <div className="inline-flex items-center gap-2 bg-blue-50 text-primary px-6 py-2 rounded-full font-bold  tracking-widest text-xs">
                                     <span className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></span>
-                                    {member.role?.toUpperCase() || 'LEADERSHIP'}
+                                    {member.role || 'Leadership'}
                                 </div>
                                  <h2 className="text-4xl md:text-6xl font-bold text-primary leading-[1.1]">{schoolName} Leadership</h2>
                                 {member.message && (
@@ -348,7 +358,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                 )}
                                 <div className="pt-4 border-t-2 border-gray-100">
                                     <p className="font-bold text-primary text-2xl mb-1">{member.name ?? ''}</p>
-                                    <p className="text-yellow-600 font-bold uppercase tracking-widest text-sm">{member.designation ?? member.role ?? 'Leader'}</p>
+                                    <p className="text-yellow-600 font-bold  tracking-widest text-sm">{member.designation ?? member.role ?? 'Leader'}</p>
                                     <Link href="/about" className="mt-8 bg-primary text-white px-8 py-4 rounded-2xl font-bold hover:bg-accent hover:text-primary transition-all flex items-center gap-3 group">
                                         Read More
                                         <span className="group-hover:translate-x-2 transition-transform">→</span>
@@ -391,7 +401,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                                     <AnimatedNumber value={num} suffix={suffix} />
                                                 </h3>
                                                 <div className="w-8 h-1 bg-accent rounded-full group-hover:w-16 transition-all duration-500"></div>
-                                                <p className="text-gray-400 font-bold uppercase text-[10px] md:text-xs tracking-[0.3em] pt-2">
+                                                <p className="text-gray-400 font-bold  text-[10px] md:text-xs tracking-[0.3em] pt-2">
                                                     {stat.label}
                                                 </p>
                                             </div>
@@ -408,7 +418,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
             {facultyEnabled && faculty.length > 0 && (
                 <section className="max-w-7xl mx-auto px-4 py-24">
                     <div className="text-center mb-16 space-y-4">
-                        <div className="inline-block px-4 py-1.5 bg-blue-50 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.3em] mb-4">
+                        <div className="inline-block px-4 py-1.5 bg-blue-50 text-primary rounded-full text-[10px] font-black  tracking-[0.3em] mb-4">
                             Intellectual Capital
                         </div>
                         <h2 className="text-4xl md:text-5xl font-bold text-primary">Our Distinguished Educators</h2>
@@ -428,7 +438,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                     )}
                                 </div>
                                 <h3 className="text-2xl font-bold text-primary group-hover:text-blue-600 transition-colors">{member.name ?? ''}</h3>
-                                <p className="text-yellow-600 font-bold uppercase tracking-widest text-xs mb-4">{member.designation ?? ''}</p>
+                                <p className="text-yellow-600 font-bold  tracking-widest text-xs mb-4">{member.designation ?? ''}</p>
                                 <p className="text-gray-500 leading-relaxed px-4">{member.description ?? ''}</p>
                             </div>
                         ))}
@@ -441,7 +451,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                 <section className="max-w-[100vw] overflow-hidden py-24 bg-gray-50/50 border-y border-gray-100">
                     <div className="max-w-7xl mx-auto px-4 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
                         <div className="space-y-4">
-                            <div className="inline-block px-4 py-1.5 bg-yellow-100 text-yellow-700 rounded-full text-[10px] font-black uppercase tracking-[0.3em]">
+                            <div className="inline-block px-4 py-1.5 bg-yellow-100 text-yellow-700 rounded-full text-[10px] font-black  tracking-[0.3em]">
                                 Athletic Excellence
                             </div>
                             <h2 className="text-4xl md:text-5xl font-bold text-primary">Sports & Physical Achievements</h2>
@@ -478,14 +488,14 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                     <div className="absolute inset-0 bg-gradient-to-t from-blue-950 via-blue-950/20 to-transparent opacity-80"></div>
 
                                     <div className="absolute top-8 left-8 flex flex-col items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
-                                        <span className="text-[10px] font-black text-accent uppercase tracking-tighter">YEAR</span>
+                                        <span className="text-[10px] font-black text-accent  tracking-tighter">YEAR</span>
                                         <span className="text-xl font-black text-white leading-none">
                                             <AnimatedNumber value={achievement.year} duration={1000} />
                                         </span>
                                     </div>
 
                                     <div className="absolute bottom-10 left-10 right-10 space-y-2">
-                                        <span className="text-[10px] font-black text-accent uppercase tracking-[0.3em] mb-2 inline-block">
+                                        <span className="text-[10px] font-black text-accent  tracking-[0.3em] mb-2 inline-block">
                                             {achievement.category}
                                         </span>
                                         <h4 className="text-2xl md:text-3xl font-bold text-white leading-tight mb-2 group-hover:text-accent transition-colors">
@@ -502,7 +512,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                             <div className="h-1 w-12 bg-primary/10 rounded-full overflow-hidden">
                                 <div className="h-full bg-primary w-1/3 rounded-full"></div>
                             </div>
-                            <span className="text-[10px] font-black text-primary/30 uppercase tracking-widest">Swipe to explore</span>
+                            <span className="text-[10px] font-black text-primary/30  tracking-widest">Swipe to explore</span>
                         </div>
                     </div>
                 </section>
@@ -513,7 +523,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                 <section className="max-w-7xl mx-auto px-4 py-24">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
                         <div className="space-y-4">
-                            <div className="inline-block px-4 py-1.5 bg-blue-50 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.3em]">
+                            <div className="inline-block px-4 py-1.5 bg-blue-50 text-primary rounded-full text-[10px] font-black  tracking-[0.3em]">
                                 Campus highlights
                             </div>
                             <h2 className="text-4xl md:text-5xl font-bold text-blue-950 leading-tight max-w-2xl">
@@ -531,7 +541,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                             {item.imageUrl && isValidImageUrl(item.imageUrl) ? (
                                                 <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
                                             ) : item.icon ? (
-                                                <span className="iconify" data-icon={item.icon}></span>
+                                                <DynamicIcon icon={item.icon} />
                                             ) : (
                                                 <span>🏢</span>
                                             )}
@@ -611,7 +621,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                             ) : null}
                                             <div className="absolute inset-0 bg-gradient-to-t from-blue-900 via-transparent to-transparent opacity-90"></div>
                                             <div className="absolute bottom-0 p-8 text-left">
-                                                <span className="bg-accent text-primary px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-3 inline-block">Campus Life</span>
+                                                <span className="bg-accent text-primary px-3 py-1 rounded-full text-[10px] font-black  tracking-widest mb-3 inline-block">Campus Life</span>
                                                 <h4 className="text-white font-bold text-xl leading-snug">
                                                     {item.caption || `${schoolName} Campus Life`}
                                                 </h4>
@@ -625,7 +635,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
 
                     {eventsEnabled && eventsToShow.length > 0 ? (
                         <div className="space-y-12 text-left">
-                            <h2 className="text-4xl font-bold text-primary">Upcoming Events</h2>
+                            <h2 className="text-4xl font-bold text-primary">{eventSectionTitle}</h2>
                             <div className="space-y-6">
                                 {eventsToShow.map((event: any) => {
                                     const { month, day } = formatEventDate(event.eventDate);
@@ -633,10 +643,10 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                         <div key={event.id} className="bg-white p-8 rounded-[2rem] shadow-xl hover:shadow-2xl transition-all border border-gray-100 group">
                                             <div className="flex items-start justify-between mb-4">
                                                 <div className="bg-primary text-white p-3 rounded-2xl text-center min-w-[60px] group-hover:bg-accent group-hover:text-primary transition-colors">
-                                                    <p className="text-xs font-bold uppercase tracking-tighter">{month}</p>
+                                                    <p className="text-xs font-bold  tracking-tighter">{month}</p>
                                                     <p className="text-xl font-black">{day}</p>
                                                 </div>
-                                                <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-widest">
+                                                <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full  tracking-widest">
                                                     {event.category}
                                                 </span>
                                             </div>

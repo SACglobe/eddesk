@@ -5,6 +5,7 @@
 //
 // Returns a minimal SchoolTenant object if found, or null if the domain is not registered.
 
+import { unstable_cache } from 'next/cache';
 import { createPublicSupabaseClient } from '@/lib/supabase';
 
 export interface SchoolTenant {
@@ -20,27 +21,33 @@ export interface SchoolTenant {
 export async function getSchoolByDomain(
     domain: string
 ): Promise<SchoolTenant | null> {
-    try {
-        const supabase = await createPublicSupabaseClient();
+    return unstable_cache(
+        async () => {
+            try {
+                const supabase = await createPublicSupabaseClient();
 
-        const { data, error } = await supabase
-            .from('schools')
-            .select('key, customdomain, templateslug')
-            .eq('customdomain', domain)
-            .maybeSingle();
+                const { data, error } = await supabase
+                    .from('schools')
+                    .select('key, customdomain, templateslug')
+                    .eq('customdomain', domain)
+                    .maybeSingle();
 
-        if (error || !data) {
-            console.warn('[school.service] getSchoolByDomain: not found for domain:', domain, error?.message ?? '');
-            return null;
-        }
+                if (error || !data) {
+                    console.warn('[school.service] getSchoolByDomain: not found for domain:', domain, error?.message ?? '');
+                    return null;
+                }
 
-        return {
-            id: data.key,
-            domain: data.customdomain,
-            templateId: data.templateslug as SchoolTenant['templateId'],
-        };
-    } catch (err) {
-        console.error('[school.service] getSchoolByDomain: unexpected error', err);
-        return null;
-    }
+                return {
+                    id: data.key,
+                    domain: data.customdomain,
+                    templateId: data.templateslug as SchoolTenant['templateId'],
+                };
+            } catch (err) {
+                console.error('[school.service] getSchoolByDomain: unexpected error', err);
+                return null;
+            }
+        },
+        [`school-domain-${domain}`],
+        { revalidate: 3600 } // Cache domain lookup for 1 hour
+    )();
 }
