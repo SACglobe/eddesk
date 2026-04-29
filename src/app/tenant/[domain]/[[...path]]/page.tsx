@@ -1,6 +1,6 @@
-// src/app/tenant/[[...path]]/page.tsx
+// src/app/tenant/[domain]/[[...path]]/page.tsx
 //
-// SSR-only Server Component for all tenant (customer) domains.
+// SSR/ISR Server Component for all tenant (customer) domains.
 //
 // Flow:
 //   1. getSchoolByDomain(hostname)     → domain guard (not-configured gate)
@@ -14,9 +14,10 @@
 //   - templateSlug comes from viewModel.school.templateId (RPC response), never from URL
 //   - Subscription checks run AFTER RPC — grace period + mode come from RPC
 //   - config.service is deleted — grace period lives in plan.gracePeriod
+//   - ISR (Incremental Static Regeneration) is enabled via revalidate export.
+//
 
 import React from 'react'
-import { headers } from 'next/headers';
 import { Metadata } from 'next';
 import { getSchoolByDomain } from '@/core/services/school.service';
 import { fetchTenantScreen, pathToScreenName, normalizeDomain } from '@/core/services/screenData.service';
@@ -48,22 +49,22 @@ import {
     generateLocalBusinessJsonLd,
 } from '@/core/utils/seo';
 import { templateRegistry } from '@/lib/template/registry';
-import TemplateRenderer from '../../demo/[templateSlug]/[[...path]]/TemplateRenderer';
+import TemplateRenderer from '@/app/demo/[templateSlug]/[[...path]]/TemplateRenderer';
 import { TenantState } from '@/core/context/TenantContext';
 import SystemPopupProvider from '@/components/system/SystemPopupProvider';
 import SystemPopup from '@/components/system/SystemPopup';
 
+export const revalidate = 60;
+
 export async function generateMetadata({
     params,
 }: {
-    params: Promise<{ path?: string[] }>
+    params: Promise<{ domain: string; path?: string[] }>
 }): Promise<Metadata> {
-    const { path: pathSegments } = await params;
+    const { domain, path: pathSegments } = await params;
     const path = '/' + (pathSegments?.join('/') ?? '');
-
-    const headersList = await headers();
-    const host = headersList.get('host') || '';
-    const hostname = normalizeDomain(host);
+    
+    const hostname = normalizeDomain(decodeURIComponent(domain));
     const screenName = pathSegments?.[0] || 'home';
 
     const result = await fetchTenantScreen(hostname, screenName);
@@ -89,14 +90,12 @@ export async function generateMetadata({
 export default async function TenantPage({
     params,
 }: {
-    params: Promise<{ path?: string[] }>
+    params: Promise<{ domain: string; path?: string[] }>
 }) {
-    const { path: pathSegments } = await params;
+    const { domain, path: pathSegments } = await params;
     const path = '/' + (pathSegments?.join('/') ?? '');
-
-    const headersList = await headers();
-    const host = headersList.get('host') || '';
-    const hostname = normalizeDomain(host);
+    
+    const hostname = normalizeDomain(decodeURIComponent(domain));
 
     // Step 1: Domain guard — check if this domain is registered at all
     const schoolConfig = await getSchoolByDomain(hostname);

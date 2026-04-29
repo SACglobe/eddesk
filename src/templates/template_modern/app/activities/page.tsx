@@ -59,8 +59,8 @@ const Activities: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                     {highlightedItems.map((item, index) => (
                         <div key={item.key} className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-16 items-center`}>
                             <div className="flex-1 space-y-8">
-                                <span className="text-accent font-black uppercase tracking-[0.4em] text-[10px]">Featured Activity</span>
-                                <h2 className="text-4xl md:text-6xl font-bold text-primary font-playfair leading-[1.1]">{item.title}</h2>
+                                <span className="text-accent font-black  tracking-[0.4em] text-[10px]">Featured Activity</span>
+                                <h2 className="text-4xl md:text-6xl font-bold text-primary font-serif leading-[1.1]">{item.title}</h2>
                                 <p className="text-gray-500 text-xl leading-relaxed font-medium">
                                     {item.description}
                                 </p>
@@ -94,10 +94,10 @@ const Activities: React.FC<{ data: TenantViewModel }> = ({ data }) => {
             {activitiesEnabled && (
                 <div className="max-w-7xl mx-auto px-4 py-24 space-y-16">
                     <div className="text-center space-y-4">
-                        <h2 className="text-4xl md:text-6xl font-bold text-primary font-playfair">Extracurricular Registry</h2>
+                        <h2 className="text-4xl md:text-6xl font-bold text-primary font-serif">Extracurricular Registry</h2>
                         <div className="flex items-center justify-center gap-4">
                             <div className="h-px w-12 bg-accent"></div>
-                            <p className="text-gray-500 font-black uppercase tracking-[0.3em] text-[10px]">A Legacy of Participation</p>
+                            <p className="text-gray-500 font-black  tracking-[0.3em] text-[10px]">A Legacy of Participation</p>
                             <div className="h-px w-12 bg-accent"></div>
                         </div>
                     </div>
@@ -124,13 +124,13 @@ const Activities: React.FC<{ data: TenantViewModel }> = ({ data }) => {
 
                                     {/* Tag Badge */}
                                     <div className="absolute top-8 left-8 bg-white/90 backdrop-blur-md px-5 py-2 rounded-full shadow-lg z-10">
-                                        <span className="text-[10px] font-black text-primary uppercase tracking-widest">{item.tag || 'Activity'}</span>
+                                        <span className="text-[10px] font-black text-primary  tracking-widest">{item.tag || 'Activity'}</span>
                                     </div>
 
                                     {/* Highlight Stat Overlay */}
                                     {item.highlightStat && (
                                         <div className="absolute top-8 right-8 bg-accent text-primary px-4 py-2 rounded-full shadow-lg z-10 scale-90 group-hover:scale-100 transition-transform">
-                                            <span className="text-[10px] font-bold uppercase tracking-tight">{item.highlightStat}</span>
+                                            <span className="text-[10px] font-bold  tracking-tight">{item.highlightStat}</span>
                                         </div>
                                     )}
 
@@ -139,7 +139,7 @@ const Activities: React.FC<{ data: TenantViewModel }> = ({ data }) => {
 
                                 <div className="p-10 space-y-6">
                                     <div className="space-y-2">
-                                        <h3 className="text-2xl font-bold text-primary leading-tight group-hover:text-blue-700 transition-colors font-playfair">
+                                        <h3 className="text-2xl font-bold text-primary leading-tight group-hover:text-blue-700 transition-colors font-serif">
                                             {item.title}
                                         </h3>
                                         <p className="text-gray-500 line-clamp-2 leading-relaxed">
@@ -150,12 +150,12 @@ const Activities: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                                     {item.highlightTag && (
                                         <div className="flex items-center gap-3">
                                             <div className="w-6 h-6 bg-blue-50 rounded-lg flex items-center justify-center text-xs">✨</div>
-                                            <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">{item.highlightTag}</span>
+                                            <span className="text-[10px] font-black text-blue-600  tracking-widest">{item.highlightTag}</span>
                                         </div>
                                     )}
                                     
                                     <div className="pt-4 flex items-center justify-between">
-                                        <span className="text-[9px] font-black text-primary/30 uppercase tracking-[0.3em]">Institutional Credit</span>
+                                        <span className="text-[9px] font-black text-primary/30  tracking-[0.3em]">Institutional Credit</span>
                                         <div className="w-10 h-10 border border-gray-100 rounded-full flex items-center justify-center group-hover:bg-primary group-hover:text-accent transition-all">
                                             →
                                         </div>
@@ -167,7 +167,7 @@ const Activities: React.FC<{ data: TenantViewModel }> = ({ data }) => {
 
                     {activityItems.length === 0 && (
                         <div className="py-24 text-center border-t border-gray-100">
-                             <p className="text-gray-400 font-playfair italic text-xl">No active activities found in the registry.</p>
+                             <p className="text-gray-400 font-serif italic text-xl">No active activities found in the registry.</p>
                         </div>
                     )}
                 </div>
@@ -199,10 +199,10 @@ const Activities: React.FC<{ data: TenantViewModel }> = ({ data }) => {
 
                         <div className="md:w-1/2 p-12 md:p-20 flex flex-col justify-center space-y-10">
                             <div className="space-y-4">
-                                <span className="text-accent bg-primary px-5 py-1.5 rounded-full font-black uppercase tracking-widest text-[9px]">
+                                <span className="text-accent bg-primary px-5 py-1.5 rounded-full font-black  tracking-widest text-[9px]">
                                     {selectedActivity.tag}
                                 </span>
-                                <h3 className="text-4xl md:text-6xl font-bold text-primary leading-tight font-playfair">
+                                <h3 className="text-4xl md:text-6xl font-bold text-primary leading-tight font-serif">
                                     {selectedActivity.title}
                                 </h3>
                             </div>
@@ -214,20 +214,20 @@ const Activities: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                             <div className="grid grid-cols-2 gap-8 pt-6 border-t border-gray-100">
                                 {selectedActivity.highlightTag && (
                                     <div className="space-y-1">
-                                        <p className="text-[10px] uppercase tracking-widest font-black text-gray-300">Achievement</p>
-                                        <p className="font-bold text-blue-600 font-playfair">{selectedActivity.highlightTag}</p>
+                                        <p className="text-[10px]  tracking-widest font-black text-gray-300">Achievement</p>
+                                        <p className="font-bold text-blue-600 font-serif">{selectedActivity.highlightTag}</p>
                                     </div>
                                 )}
                                 {selectedActivity.highlightStat && (
                                     <div className="space-y-1">
-                                        <p className="text-[10px] uppercase tracking-widest font-black text-gray-300">Statistic</p>
-                                        <p className="font-bold text-primary font-playfair">{selectedActivity.highlightStat}</p>
+                                        <p className="text-[10px]  tracking-widest font-black text-gray-300">Statistic</p>
+                                        <p className="font-bold text-primary font-serif">{selectedActivity.highlightStat}</p>
                                     </div>
                                 )}
                             </div>
 
                             <div className="pt-8">
-                                <button className="w-full py-5 bg-primary text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-accent hover:text-primary transition-all shadow-xl">
+                                <button className="w-full py-5 bg-primary text-white font-black  tracking-widest text-xs rounded-2xl hover:bg-accent hover:text-primary transition-all shadow-xl">
                                     Register for Season
                                 </button>
                             </div>

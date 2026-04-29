@@ -81,7 +81,7 @@ const Admissions: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                                     </span>
                                 </a>
 
-                                <button className="w-full mt-4 bg-[#fbbf24] hover:bg-white text-[#1e3a8a] py-4 rounded-2xl font-bold uppercase tracking-widest text-xs transition-all shadow-lg shadow-yellow-500/20">
+                                <button className="w-full mt-4 bg-[#fbbf24] hover:bg-white text-[#1e3a8a] py-4 rounded-2xl font-bold  tracking-widest text-xs transition-all shadow-lg shadow-yellow-500/20">
                                     Schedule a Call
                                 </button>
                             </div>

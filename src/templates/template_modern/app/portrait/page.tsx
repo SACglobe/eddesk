@@ -121,7 +121,7 @@ const Portrait: React.FC = () => {
     return (
         <div className="max-w-7xl mx-auto px-4 py-24 space-y-16">
             <div className="text-center space-y-6">
-                <h1 className="text-5xl md:text-7xl font-bold text-primary font-playfair">Campus Portrait</h1>
+                <h1 className="text-5xl md:text-7xl font-bold text-primary font-serif">Campus Portrait</h1>
                 <p className="text-gray-500 text-xl max-w-2xl mx-auto">Visual stories of growth, laughter, and achievement at {SCHOOL_NAME}.</p>
             </div>
 
@@ -134,7 +134,7 @@ const Portrait: React.FC = () => {
                             setFilter(cat);
                             setSelectedIndex(null);
                         }}
-                        className={`px-10 py-3 rounded-full font-black text-xs uppercase tracking-widest transition-all shadow-lg ${filter === cat ? 'bg-primary text-accent' : 'bg-white text-gray-600 hover:bg-gray-100'
+                        className={`px-10 py-3 rounded-full font-black text-xs  tracking-widest transition-all shadow-lg ${filter === cat ? 'bg-primary text-accent' : 'bg-white text-gray-600 hover:bg-gray-100'
                             }`}
                     >
                         {cat}
@@ -168,10 +168,10 @@ const Portrait: React.FC = () => {
 
                         {/* Caption */}
                         <div className="px-2 space-y-2 transform transition-transform duration-500 group-hover:translate-x-1">
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 bg-blue-50 px-3 py-1 rounded-full inline-block group-hover:bg-yellow-100 group-hover:text-yellow-700 transition-colors">
+                            <span className="text-[10px] font-black  tracking-[0.2em] text-blue-600 bg-blue-50 px-3 py-1 rounded-full inline-block group-hover:bg-yellow-100 group-hover:text-yellow-700 transition-colors">
                                 {img.category}
                             </span>
-                            <h3 className="text-xl font-bold text-primary leading-tight group-hover:text-blue-700 transition-colors font-playfair">
+                            <h3 className="text-xl font-bold text-primary leading-tight group-hover:text-blue-700 transition-colors font-serif">
                                 {img.title}
                             </h3>
                         </div>
@@ -184,7 +184,7 @@ const Portrait: React.FC = () => {
                 {isLoading && (
                     <>
                         <div className="w-12 h-12 border-4 border-primary/10 border-t-accent rounded-full animate-spin"></div>
-                        <p className="text-primary/40 font-black uppercase tracking-[0.3em] text-[10px]">Loading more stories...</p>
+                        <p className="text-primary/40 font-black  tracking-[0.3em] text-[10px]">Loading more stories...</p>
                     </>
                 )}
             </div>
@@ -241,11 +241,11 @@ const Portrait: React.FC = () => {
 
                         <div className="mt-8 text-center space-y-3 bg-black/20 backdrop-blur-sm p-6 rounded-[2rem] border border-white/10 w-full md:w-auto">
                             <div className="flex items-center justify-center gap-4 text-accent mb-2">
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em]">{filteredImages[selectedIndex].category}</span>
+                                <span className="text-[10px] font-black  tracking-[0.4em]">{filteredImages[selectedIndex].category}</span>
                                 <span className="w-1 h-1 bg-white/30 rounded-full"></span>
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">{selectedIndex + 1} / {filteredImages.length}</span>
+                                <span className="text-[10px] font-black  tracking-[0.2em] text-white/60">{selectedIndex + 1} / {filteredImages.length}</span>
                             </div>
-                            <h3 className="text-white text-2xl md:text-3xl font-bold leading-tight font-playfair">{filteredImages[selectedIndex].title}</h3>
+                            <h3 className="text-white text-2xl md:text-3xl font-bold leading-tight font-serif">{filteredImages[selectedIndex].title}</h3>
                         </div>
                     </div>
                 </div>

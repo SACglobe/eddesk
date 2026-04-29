@@ -54,8 +54,8 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                     <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a8a] via-[#1e3a8a]/90 to-[#0f172a] backdrop-blur-2xl"></div>
                     <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                     <div className="relative z-10 text-center space-y-8 max-w-4xl px-4">
-                        <span className="text-accent font-black uppercase tracking-[0.5em] text-sm animate-pulse">Established Legacy</span>
-                        <h1 className="text-5xl md:text-8xl font-bold text-white leading-tight font-playfair">{aboutTitle || `About ${schoolName}`}</h1>
+                        <span className="text-accent font-black tracking-[0.5em] text-sm animate-pulse">Established Legacy</span>
+                        <h1 className="text-5xl md:text-8xl font-bold text-white leading-tight font-serif">{aboutTitle || `About ${schoolName}`}</h1>
                         {aboutDescription && (
                             <p className="text-blue-100 text-xl md:text-2xl font-medium max-w-2xl mx-auto opacity-80">
                                 {aboutDescription}
@@ -71,7 +71,7 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                     {vision && (
                         <div className="bg-white p-12 rounded-[3rem] shadow-xl border-t-8 border-accent space-y-6">
                             <div className="w-16 h-16 bg-yellow-50 rounded-2xl flex items-center justify-center text-4xl shadow-inner">👁️</div>
-                            <h3 className="text-3xl font-bold text-primary uppercase tracking-tighter">Vision</h3>
+                            <h3 className="text-3xl font-bold text-primary tracking-tighter">Vision</h3>
                             <p className="text-gray-500 text-lg leading-relaxed">
                                 {vision}
                             </p>
@@ -80,7 +80,7 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                     {mission && (
                         <div className="bg-primary p-12 rounded-[3rem] shadow-xl space-y-6 transform lg:-translate-y-8 transition-transform">
                             <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-4xl shadow-inner">🚀</div>
-                            <h3 className="text-3xl font-bold text-white uppercase tracking-tighter">Mission</h3>
+                            <h3 className="text-3xl font-bold text-white tracking-tighter">Mission</h3>
                             <p className="text-blue-100 text-lg leading-relaxed opacity-90">
                                 {mission}
                             </p>
@@ -89,7 +89,7 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                     {motto && (
                         <div className="bg-white p-12 rounded-[3rem] shadow-xl border-t-8 border-yellow-600 space-y-6">
                             <div className="w-16 h-16 bg-yellow-50 rounded-2xl flex items-center justify-center text-4xl shadow-inner">🛡️</div>
-                            <h3 className="text-3xl font-bold text-primary uppercase tracking-tighter">Motto</h3>
+                            <h3 className="text-3xl font-bold text-primary tracking-tighter">Motto</h3>
                             <p className="text-2xl font-serif italic text-primary leading-relaxed">
                                 "{motto}"
                             </p>
@@ -113,7 +113,7 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                                     />
                                 ) : (
                                     <div className="w-full h-full bg-primary/10 flex items-center justify-center">
-                                        <span className="text-8xl text-primary/30 font-bold uppercase">
+                                        <span className="text-8xl text-primary/30 font-bold ">
                                             {principal?.name?.charAt(0) || 'P'}
                                         </span>
                                     </div>
@@ -124,7 +124,7 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
 
                         <div className="space-y-10">
                             <div className="space-y-4">
-                                <span className="text-blue-600 font-black uppercase tracking-[0.4em] text-xs">Direct Correspondence</span>
+                                <span className="text-blue-600 font-black tracking-[0.4em] text-xs">Direct Correspondence</span>
                                 <h2 className="text-5xl md:text-7xl font-bold text-primary leading-tight">Principal's Message Board</h2>
                             </div>
 
@@ -141,8 +141,8 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
 
                             <div className="pt-8 flex items-center gap-8">
                                 <div className="space-y-1">
-                                    <p className="font-serif italic text-3xl text-primary font-playfair uppercase">{principal?.name || "School Principal"}</p>
-                                    <p className="text-yellow-600 font-black uppercase tracking-widest text-xs">{principal?.designation || "Principal"}</p>
+                                    <p className="font-serif italic text-3xl text-primary font-serif ">{principal?.name || "School Principal"}</p>
+                                    <p className="text-yellow-600 font-black  tracking-widest text-xs">{principal?.designation || "Principal"}</p>
                                 </div>
                             </div>
                         </div>
@@ -157,8 +157,8 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                     <div className="max-w-5xl mx-auto px-4 relative z-10">
                         <div className="space-y-12 text-center lg:text-left">
                              <div className="space-y-4">
-                                <span className="text-accent font-black uppercase tracking-[0.4em] text-xs">Message from the Board</span>
-                                <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight font-playfair uppercase">A Message from the Board</h2>
+                                <span className="text-accent font-black tracking-[0.4em] text-xs">Message from the Board</span>
+                                <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight font-serif ">A Message from the Board</h2>
                             </div>
                             { (chairman?.message || data?.identity?.boardMessage) && (
                                 <p className="text-blue-100 text-xl md:text-2xl font-light leading-relaxed italic border-l-4 border-accent pl-8 text-left">
@@ -174,7 +174,7 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
             {getComponent('boardmembers')?.isActive && hasBoardData && (
                 <section className="max-w-[100vw] overflow-hidden py-32 bg-gray-50/50 relative">
                     <div className="max-w-7xl mx-auto px-4 mb-20 space-y-4 text-center">
-                        <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-xs">Governance</span>
+                        <span className="text-blue-600 font-black  tracking-[0.3em] text-xs">Governance</span>
                         <h2 className="text-4xl md:text-6xl font-bold text-primary">Academic Leadership & Management</h2>
                         <p className="text-gray-500 max-w-2xl mx-auto text-lg">The visionary team steering our institution towards new horizons of academic brilliance.</p>
                     </div>
@@ -198,22 +198,22 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                                                 />
                                             ) : (
                                                 <div className="w-full h-full bg-primary/10 flex items-center justify-center">
-                                                    <span className="text-6xl text-primary/30 font-bold uppercase">
+                                                    <span className="text-6xl text-primary/30 font-bold ">
                                                         {member.name?.charAt(0) || 'L'}
                                                     </span>
                                                 </div>
                                             )}
                                             <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                                             <div className="absolute bottom-10 left-10 right-10 translate-y-6 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-100">
-                                                <p className="text-accent font-black uppercase tracking-[0.3em] text-[10px] mb-2">Executive Profile</p>
+                                                <p className="text-accent font-black  tracking-[0.3em] text-[10px] mb-2">Executive Profile</p>
                                                 <p className="text-white text-sm leading-relaxed line-clamp-4 font-medium italic">
                                                     {member.message}
                                                 </p>
                                             </div>
                                         </div>
                                         <div className="text-center px-4">
-                                            <h3 className="text-3xl font-bold text-primary mb-1 group-hover:text-blue-600 transition-colors font-playfair uppercase">{member.name}</h3>
-                                            <p className="text-yellow-600 font-black uppercase tracking-[0.2em] text-xs">{role}</p>
+                                            <h3 className="text-3xl font-bold text-primary mb-1 group-hover:text-blue-600 transition-colors font-serif ">{member.name}</h3>
+                                            <p className="text-yellow-600 font-black  tracking-[0.2em] text-xs">{role}</p>
                                         </div>
                                     </div>
                                 );
@@ -236,7 +236,7 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                         <div className="h-1 w-24 bg-primary/10 rounded-full overflow-hidden">
                             <div className="h-full bg-primary w-1/3 rounded-full animate-pulse"></div>
                         </div>
-                        <span className="text-[10px] font-black text-primary uppercase tracking-widest">Swipe to view our team</span>
+                        <span className="text-[10px] font-black text-primary  tracking-widest">Swipe to view our team</span>
                     </div>
                 </section>
             )}
@@ -246,8 +246,8 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                 <section className="bg-gray-50 py-32">
                     <div className="max-w-7xl mx-auto px-4">
                         <div className="text-center space-y-4 mb-20">
-                            <span className="text-blue-600 font-black uppercase tracking-[0.4em] text-xs">Excellence Simplified</span>
-                            <h2 className="text-4xl md:text-6xl font-bold text-primary leading-tight font-playfair uppercase">Why Choose Us</h2>
+                            <span className="text-blue-600 font-black tracking-[0.4em] text-xs">Excellence Simplified</span>
+                            <h2 className="text-4xl md:text-6xl font-bold text-primary leading-tight font-serif ">Why Choose Us</h2>
                         </div>
                         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                             {whyChooseUs.map((item, i) => (
@@ -255,8 +255,8 @@ const About: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                                     <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-3xl shadow-sm mb-8 group-hover:bg-accent group-hover:text-white transition-colors">
                                         {(item.icon && item.icon.length < 4) ? item.icon : (['✨', '🌍', '🛡️', '⭐', '🎓', '🏆', '🚀', '🔬'][i] || '⭐')}
                                     </div>
-                                    <h4 className="text-xl font-bold text-primary font-playfair uppercase mb-4">{item.title}</h4>
-                                    <p className="text-gray-500 leading-relaxed uppercase text-sm">{item.description}</p>
+                                    <h4 className="text-xl font-bold text-primary font-serif  mb-4">{item.title}</h4>
+                                    <p className="text-gray-500 leading-relaxed  text-sm">{item.description}</p>
                                 </div>
                             ))}
                         </div>

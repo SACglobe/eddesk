@@ -74,7 +74,7 @@ const Navbar: React.FC<NavbarProps> = ({ school, activePath }) => {
                                         {school.name}
                                     </span>
                                     {school.slogan && (
-                                        <p className="text-xs text-accent font-medium hidden sm:block uppercase">{school.slogan}</p>
+                                        <p className="text-xs text-accent font-medium hidden sm:block ">{school.slogan}</p>
                                     )}
                                 </div>
                             )}
@@ -89,7 +89,7 @@ const Navbar: React.FC<NavbarProps> = ({ school, activePath }) => {
                                 className={`${isActive(item.href)
                                     ? 'bg-yellow-400 text-blue-950 shadow-md transform scale-105'
                                     : 'hover:bg-primary-light transition-colors'
-                                    } px-4 py-2 rounded-md text-sm font-bold uppercase tracking-wider transition-all duration-300`}
+                                    } px-4 py-2 rounded-md text-sm font-bold  tracking-wider transition-all duration-300`}
                             >
                                 {item.name}
                             </Link>
@@ -102,7 +102,7 @@ const Navbar: React.FC<NavbarProps> = ({ school, activePath }) => {
                             onMouseLeave={handleMouseLeave}
                         >
                             <button
-                                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-bold uppercase tracking-wider transition-all duration-300 ${moreItems.some(i => isActive(i.href)) ? 'bg-yellow-400 text-blue-950 shadow-md scale-105' : 'hover:bg-primary-light'
+                                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-bold  tracking-wider transition-all duration-300 ${moreItems.some(i => isActive(i.href)) ? 'bg-yellow-400 text-blue-950 shadow-md scale-105' : 'hover:bg-primary-light'
                                     }`}
                             >
                                 More
@@ -119,7 +119,7 @@ const Navbar: React.FC<NavbarProps> = ({ school, activePath }) => {
                                                 key={item.href}
                                                 href={item.href}
                                                 onClick={() => setIsMoreOpen(false)}
-                                                className={`block w-full text-left px-6 py-3 text-sm font-bold uppercase tracking-widest transition-colors ${isActive(item.href) ? 'text-blue-950 bg-yellow-400 font-black' : 'text-gray-600 hover:bg-blue-50 hover:text-primary'
+                                                className={`block w-full text-left px-6 py-3 text-sm font-bold  tracking-widest transition-colors ${isActive(item.href) ? 'text-blue-950 bg-yellow-400 font-black' : 'text-gray-600 hover:bg-blue-50 hover:text-primary'
                                                     }`}
                                             >
                                                 {item.name}
@@ -166,7 +166,7 @@ const Navbar: React.FC<NavbarProps> = ({ school, activePath }) => {
                         ))}
 
                         <div className="border-t border-blue-700 mt-2 pt-2">
-                            <p className="px-4 py-2 text-[10px] font-black uppercase tracking-[0.3em] text-blue-300">Explore More</p>
+                            <p className="px-4 py-2 text-[10px] font-black  tracking-[0.3em] text-blue-300">Explore More</p>
                             {moreItems.map((item) => (
                                 <Link
                                     key={item.href}

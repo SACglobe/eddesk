@@ -2,9 +2,10 @@ import { MetadataRoute } from 'next'
 import { headers } from 'next/headers'
 import { getBaseUrl } from '@/lib/domain'
 
+export const revalidate = 86400; // Cache robots.txt for 24 hours
+
 export default async function robots(): Promise<MetadataRoute.Robots> {
-  const headersList = await headers()
-  const host = headersList.get('host') || 'www.eddesk.in'
+  const host = 'www.eddesk.in'
   const baseUrl = getBaseUrl(host)
 
   return {

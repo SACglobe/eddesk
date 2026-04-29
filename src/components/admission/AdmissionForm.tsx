@@ -410,6 +410,14 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
                       className={inputClass()}
                     />
                   </FormGroup>
+                  <FormGroup label="Qualification">
+                    <input
+                      type="text"
+                      value={formData.motherinfo.qualification}
+                      onChange={(e) => handleChange('motherinfo', 'qualification', e.target.value)}
+                      className={inputClass()}
+                    />
+                  </FormGroup>
                 </div>
               </div>
             </motion.div>

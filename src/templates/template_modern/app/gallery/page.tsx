@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import { validateRequiredSections } from '@/core/utils/sectionValidator';
 import { isValidImageUrl } from '@/core/utils/url';
+import DynamicIcon from '@/components/DynamicIcon';
 
 const Gallery: React.FC<{ data: TenantViewModel }> = ({ data }) => {
     const schoolName = data?.school?.name ?? 'Our School';
@@ -62,7 +63,7 @@ const Gallery: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                 <div className="max-w-7xl mx-auto px-4 py-24 space-y-16">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-8 border-b border-gray-100 pb-12">
                         <div className="space-y-2 text-center md:text-left">
-                            <h2 className="text-3xl font-bold text-primary font-playfair">Media Library</h2>
+                            <h2 className="text-3xl font-bold text-primary font-serif">Media Library</h2>
                             <p className="text-gray-500 font-medium">Browse our collection of photos and highlights.</p>
                         </div>
                         <div className="flex bg-gray-100 p-1.5 rounded-2xl">
@@ -70,7 +71,7 @@ const Gallery: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                                 <button
                                     key={type}
                                     onClick={() => setFilter(type)}
-                                    className={`px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${filter === type
+                                    className={`px-8 py-3 rounded-xl font-black text-[10px]  tracking-widest transition-all ${filter === type
                                         ? 'bg-primary text-accent shadow-xl'
                                         : 'text-gray-500 hover:text-primary'
                                         }`}
@@ -114,7 +115,7 @@ const Gallery: React.FC<{ data: TenantViewModel }> = ({ data }) => {
 
                                     <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full flex items-center gap-2 shadow-lg">
                                         <span className="text-lg">{item.mediaType?.toLowerCase() === 'video' ? '▶️' : '📷'}</span>
-                                        <span className="text-[9px] font-black text-primary uppercase tracking-widest">{item.mediaType}</span>
+                                        <span className="text-[9px] font-black text-primary  tracking-widest">{item.mediaType}</span>
                                     </div>
 
                                     {item.mediaType?.toLowerCase() === 'video' && (
@@ -129,9 +130,9 @@ const Gallery: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                                 <div className="p-8 space-y-3">
                                     <div className="flex items-center gap-3">
                                         <span className="w-8 h-[2px] bg-accent"></span>
-                                        <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">{item.category}</span>
+                                        <span className="text-[10px] font-black text-blue-600  tracking-widest">{item.category}</span>
                                     </div>
-                                    <h3 className="text-xl font-bold text-primary leading-tight group-hover:text-blue-700 transition-colors font-playfair">
+                                    <h3 className="text-xl font-bold text-primary leading-tight group-hover:text-blue-700 transition-colors font-serif">
                                         {item.caption}
                                     </h3>
                                 </div>
@@ -147,18 +148,24 @@ const Gallery: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                 <section className="bg-gray-50 py-24">
                     <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 lg:grid-cols-3 gap-12 text-left">
                         <div className="space-y-4 group">
-                            <div className="w-14 h-14 bg-primary text-accent rounded-2xl flex items-center justify-center text-2xl shadow-xl transition-transform group-hover:scale-110">📍</div>
-                            <h4 className="font-bold text-primary text-xl font-playfair">Visit Us</h4>
+                            <div className="w-14 h-14 bg-primary text-accent rounded-2xl flex items-center justify-center text-2xl shadow-xl transition-transform group-hover:scale-110">
+                                <DynamicIcon icon="lucide:map-pin" />
+                            </div>
+                            <h4 className="font-bold text-primary text-xl font-serif">Visit Us</h4>
                             <p className="text-gray-500 leading-relaxed text-sm">{address}</p>
                         </div>
                         <div className="space-y-4 group">
-                            <div className="w-14 h-14 bg-accent text-primary rounded-2xl flex items-center justify-center text-2xl shadow-xl transition-transform group-hover:scale-110">📞</div>
-                            <h4 className="font-bold text-primary text-xl font-playfair">Call or Email</h4>
+                            <div className="w-14 h-14 bg-accent text-primary rounded-2xl flex items-center justify-center text-2xl shadow-xl transition-transform group-hover:scale-110">
+                                <DynamicIcon icon="lucide:phone" />
+                            </div>
+                            <h4 className="font-bold text-primary text-xl font-serif">Call or Email</h4>
                             <p className="text-gray-500 leading-relaxed text-sm">Phone: {phone}<br />Email: {email}</p>
                         </div>
                         <div className="space-y-4 group">
-                            <div className="w-14 h-14 bg-white shadow-xl rounded-2xl flex items-center justify-center text-2xl text-primary transition-transform group-hover:scale-110">⏰</div>
-                            <h4 className="font-bold text-primary text-xl font-playfair">Office Hours</h4>
+                            <div className="w-14 h-14 bg-white shadow-xl rounded-2xl flex items-center justify-center text-2xl text-primary transition-transform group-hover:scale-110">
+                                <DynamicIcon icon="lucide:clock" />
+                            </div>
+                            <h4 className="font-bold text-primary text-xl font-serif">Office Hours</h4>
                             <p className="text-gray-500 leading-relaxed text-sm">Mon - Fri: 8 AM - 4 PM<br />Sat: 9 AM - 12 PM</p>
                         </div>
                     </div>
@@ -191,11 +198,11 @@ const Gallery: React.FC<{ data: TenantViewModel }> = ({ data }) => {
 
                         <div className="text-center space-y-4 max-w-2xl">
                             <div className="flex items-center justify-center gap-4">
-                                <span className="text-accent font-black uppercase tracking-[0.3em] text-xs">{selectedMedia.mediaType}</span>
+                                <span className="text-accent font-black  tracking-[0.3em] text-xs">{selectedMedia.mediaType}</span>
                                 <span className="w-1.5 h-1.5 bg-white/20 rounded-full"></span>
-                                <span className="text-blue-100/60 font-black uppercase tracking-[0.3em] text-xs">{selectedMedia.category}</span>
+                                <span className="text-blue-100/60 font-black  tracking-[0.3em] text-xs">{selectedMedia.category}</span>
                             </div>
-                            <h3 className="text-3xl md:text-5xl font-bold text-white leading-tight font-playfair">
+                            <h3 className="text-3xl md:text-5xl font-bold text-white leading-tight font-serif">
                                 {selectedMedia.caption}
                             </h3>
                             <p className="text-blue-100/40 text-sm leading-relaxed">
