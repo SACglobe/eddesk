@@ -19,9 +19,9 @@ const DynamicIcon: React.FC<DynamicIconProps> = ({ icon, className }) => {
     if (iconName.includes(':')) {
         // Fix common missing suffixes for Fluent icons
         if (iconName.startsWith('fluent:') && !iconName.includes('-')) {
-            // "fluent:school" is a common incomplete name, map it to building-school for better reliability
+            // Map specifically problematic icons to confirmed-working sets
             if (iconName === 'fluent:school') {
-                iconName = 'fluent:building-school-24-filled';
+                iconName = 'material-symbols:school';
             } else {
                 iconName = `${iconName}-24-regular`;
             }
