@@ -171,7 +171,7 @@ const EventsScreen = ({ data }) => {
                         </button>
                         <div className="text-center">
                             <h2 className="text-2xl font-bold text-slate-900 serif tracking-tight uppercase">
-                                {monthName} <span className="text-emerald-700 font-sans font-normal">{year}</span>
+                                {monthName} <span className="ml-2">{year}</span>
                             </h2>
                         </div>
                         <button
