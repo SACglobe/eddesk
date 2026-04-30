@@ -129,7 +129,7 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                         </button>
                         <div className="text-center min-w-[200px]">
                             <h2 className="text-3xl font-bold text-slate-800 font-serif tracking-tight">
-                                {monthName} <span className="text-blue-500 italic font-normal text-2xl ml-2">{year}</span>
+                                {monthName} <span className="ml-2">{year}</span>
                             </h2>
                         </div>
                         <button 
