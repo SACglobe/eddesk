@@ -91,7 +91,7 @@ export default function ContactPage() {
             "image": "https://www.eddesk.in/assets/images/icon.png",
             "@id": "https://www.eddesk.in/#organization",
             "url": "https://www.eddesk.in",
-            "telephone": "+91 7010779096",
+            "telephone": "+91 8122333929",
             "address": {
               "@type": "PostalAddress",
               "streetAddress": "49/3, Nadar Street, Keela Eral",
@@ -202,7 +202,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-sm font-black text-purple-400 uppercase tracking-widest mb-1">Call Us</h3>
-                    <div className="text-xl font-bold text-white mb-2">+91 70107 79096</div>
+                    <div className="text-xl font-bold text-white mb-2">+91 81223 33929</div>
                     <p className="text-slate-500 text-sm">Mon-Sat, 9 AM to 6 PM IST</p>
                   </div>
                 </div>

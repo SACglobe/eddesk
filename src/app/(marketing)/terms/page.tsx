@@ -2,7 +2,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { mContainer, mSection, mLabel, mDisplay, marketingTheme, mCard } from '@/lib/marketing/theme';
-import { FileText, Shield, Scale, AlertCircle } from 'lucide-react';
+import { FileText, Shield, Scale, AlertCircle, Mail } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Terms of Service | Platform Usage & Agreement',
@@ -13,24 +13,43 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   const sections = [
     {
-      title: "1. Service Description",
-      icon: <FileText className="w-5 h-5" />,
-      content: "EdDesk provides a multi-tenant Software-as-a-Service (SaaS) platform for educational institutions to create, host, and manage their websites. This includes hosting infrastructure, application templates, and an administrative dashboard."
-    },
-    {
-      title: "2. Ownership & Intellectual Property",
+      title: "1. Acceptance",
       icon: <Shield className="w-5 h-5" />,
-      content: "All platform infrastructure, codebases, templates, designs, and the administrative portal remain the exclusive, proprietary property of EdDesk. Schools utilizing the platform do not retain any ownership rights over the software. Schools retain exclusive ownership of their user-generated content (text, photos, logos) and their custom domain names."
+      content: "By accessing or using EdDesk, you agree to be bound by these Terms and Conditions. Our platform provides school websites and admin panels for content management."
     },
     {
-      title: "3. Subscription & Payments",
+      title: "2. Ownership",
+      icon: <FileText className="w-5 h-5" />,
+      content: "The EdDesk platform, including software and design, is the property of SAC Globe Tech. Clients retain exclusive ownership of their uploaded content."
+    },
+    {
+      title: "3. Plans & Pricing",
       icon: <Scale className="w-5 h-5" />,
-      content: "Services are billed strictly on a subscription basis (Monthly/Annual). Access to the platform is contingent upon timely payment. Failure to maintain an active subscription may result in immediate suspension of the public-facing website and admin panel access."
+      content: "Monthly Plan: ₹1100/month. Yearly Plan: ₹12,100/year. All prices are exclusive of applicable taxes (GST)."
     },
     {
-      title: "4. Termination & Export",
+      title: "4. Payment Policy",
       icon: <AlertCircle className="w-5 h-5" />,
-      content: "Either party may terminate the agreement at any time. Upon termination, EdDesk will provide an export of user data (text, images, and documents). The hosted website design, domain routing capabilities, and software platform access will be immediately revoked."
+      content: "Billing cycle is the 5th of every month. If payment is not received by the 5th, admin access will be suspended from the 6th. Website services suspended after the 12th."
+    }
+  ];
+
+  const legalDetails = [
+    {
+        title: "5. Late Payment & Pro-Rata",
+        content: "Service restoration after the 12th is not guaranteed. If allowed, charges will be calculated on a pro-rata basis: ₹1100 ÷ 30 × remaining days until next billing cycle."
+    },
+    {
+        title: "6. Refund Policy",
+        content: "All payments are strictly non-refundable. No refunds for partial usage, service suspension, or termination due to non-payment."
+    },
+    {
+        title: "7. Suspension & Termination",
+        content: "We reserve the right to suspend services for non-payment or terminate accounts for repeated violations or illegal use."
+    },
+    {
+        title: "8. Client Responsibilities",
+        content: "Clients agree to provide accurate information, use the platform lawfully, ensure timely payments, and maintain proper backups of critical data."
     }
   ];
 
@@ -44,7 +63,7 @@ export default function TermsPage() {
             
             <div className="space-y-12">
               <p className={marketingTheme.type.bodyLg}>
-                Last Updated: April 2026. These terms govern the use of the EdDesk platform by educational institutions. By accessing or using our services, you agree to be bound by these Terms of Service under the jurisdiction of Tamil Nadu, India.
+                Last Updated: 23/04/2026. These terms govern the use of the EdDesk platform. By using our services, you agree to be bound by these Terms of Service under the jurisdiction of Tamil Nadu, India.
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -59,38 +78,58 @@ export default function TermsPage() {
                 ))}
               </div>
 
-              <div className="bg-slate-900/30 border border-white/5 p-10 rounded-[32px] space-y-6">
-                <div>
-                    <h2 className="text-2xl font-black text-white mb-4">5. Account Usage & Responsibility</h2>
-                    <p className={marketingTheme.type.body}>
-                    You agree to provide accurate and complete information when registering your school. You are responsible for maintaining the confidentiality of your admin credentials and are solely responsible for all activities that occur under your account. EdDesk strictly prohibits the uploading of offensive, illegal, or inappropriate materials.
-                    </p>
+              <div className="bg-slate-900/30 border border-white/5 p-10 rounded-[32px] space-y-10">
+                {legalDetails.map((d, i) => (
+                    <div key={i}>
+                        <h2 className="text-2xl font-black text-white mb-4">{d.title}</h2>
+                        <p className={marketingTheme.type.body}>{d.content}</p>
+                    </div>
+                ))}
+
+                <div className="grid md:grid-cols-2 gap-10 pt-8 border-t border-white/10">
+                    <div>
+                        <h2 className="text-2xl font-black text-white mb-4">9. Intellectual Property</h2>
+                        <p className={marketingTheme.type.body}>
+                        Software, design, and infrastructure are exclusive property of SAC Globe Tech. Clients own their uploaded content.
+                        </p>
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-black text-white mb-4">10. Availability</h2>
+                        <p className={marketingTheme.type.body}>
+                        We strive for high uptime but do not guarantee uninterrupted service. Downtime may occur for maintenance or technical issues.
+                        </p>
+                    </div>
                 </div>
-                <div>
-                    <h2 className="text-2xl font-black text-white mb-4">6. Limitation of Liability</h2>
+
+                <div className="pt-8 border-t border-white/10">
+                    <h2 className="text-2xl font-black text-white mb-4">11. Limitation of Liability</h2>
                     <p className={marketingTheme.type.body}>
-                    EdDesk provides its platform 'as-is' and shall not be liable for any indirect, incidental, or consequential damages resulting from the use or inability to use the service. We strive for maximum uptime but do not guarantee uninterrupted service. Liability is limited strictly to the subscription amount paid in the preceding 30 days.
-                    </p>
-                </div>
-                <div>
-                    <h2 className="text-2xl font-black text-white mb-4">7. Governing Law</h2>
-                    <p className={marketingTheme.type.body}>
-                    These Terms of Service shall be governed by and construed in accordance with the laws of India. Any disputes arising out of these terms shall be subject to the exclusive jurisdiction of the courts located in Tuticorin, Tamil Nadu.
+                    SAC Globe Tech shall not be liable for data loss due to user negligence, downtime by external providers, or incidental damages.
                     </p>
                 </div>
 
-                <div className="mt-8 pt-8 border-t border-white/10">
-                    <h2 className="text-xl font-black text-white mb-4">Contact Information</h2>
+                <div className="pt-8 border-t border-white/10">
+                    <h2 className="text-2xl font-black text-white mb-4">12. Governing Law</h2>
                     <p className={marketingTheme.type.body}>
-                    For any legal inquiries regarding these Terms & Conditions, please contact us at:
-                    <br/><br/>
-                    <strong>EdDesk</strong><br/>
-                    49/3, Nadar Street<br/>
-                    Keela Eral, Tuticorin<br/>
-                    Tamil Nadu – 628908<br/>
-                    Email: support@eddesk.in<br/>
-                    Phone: +91 81223 33929
+                    Governed by the laws of India. Any disputes shall be subject to the jurisdiction of courts in Tamil Nadu.
                     </p>
+                </div>
+
+                <div className="mt-8 pt-8 border-t border-white/10 bg-indigo-500/5 p-8 rounded-2xl">
+                    <h2 className="text-xl font-black text-white mb-6">13. Contact Information</h2>
+                    <div className={marketingTheme.type.body}>
+                        <p className="font-bold text-white mb-4">SAC Globe Tech – EdDesk</p>
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-3">
+                                <Mail className="w-4 h-4 text-indigo-400" />
+                                <a href="mailto:support@eddesk.in" className="hover:text-indigo-400 transition-colors">support@eddesk.in</a>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <span className="text-lg">📞</span>
+                                <a href="tel:+918122333929" className="hover:text-indigo-400 transition-colors">+91 81223 33929</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
               </div>
             </div>

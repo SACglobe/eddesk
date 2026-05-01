@@ -26,6 +26,10 @@ const Header = ({ school, activePath }) => {
         { name: 'Contact', path: '/contact' },
     ];
 
+    if (school?.paymentGatewayUrl) {
+        mainLinks.push({ name: 'Pay Fees', path: school.paymentGatewayUrl });
+    }
+
     const moreLinks = [
         { name: 'Academics', path: '/academics' },
         { name: 'Activities', path: '/activities' },
@@ -79,19 +83,24 @@ const Header = ({ school, activePath }) => {
                     </Link>
 
                     <nav className="hidden lg:flex items-center space-x-2">
-                        {mainLinks.map((link) => (
-                            <Link
-                                key={link.path}
-                                href={link.path}
-                                className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 ${
-                                    isActive(link.path)
-                                        ? 'bg-emerald-900 text-white shadow-lg scale-105'
-                                        : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50'
-                                }`}
-                            >
-                                {link.name}
-                            </Link>
-                        ))}
+                        {mainLinks.map((link) => {
+                            const isExternal = link.path.startsWith('http');
+                            return (
+                                <Link
+                                    key={link.path}
+                                    href={link.path}
+                                    target={isExternal ? "_blank" : undefined}
+                                    rel={isExternal ? "noopener noreferrer" : undefined}
+                                    className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 ${
+                                        isActive(link.path)
+                                            ? 'bg-emerald-900 text-white shadow-lg scale-105'
+                                            : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50'
+                                    }`}
+                                >
+                                    {link.name}
+                                </Link>
+                            );
+                        })}
 
                         {/* More Dropdown Wrapper */}
                         <div
@@ -170,20 +179,25 @@ const Header = ({ school, activePath }) => {
                 <div className="lg:hidden bg-white border-b border-slate-200 animate-slide-down">
                     <div className="px-4 pt-2 pb-6 space-y-1">
                         {/* Standard Links */}
-                        {mainLinks.map((link) => (
-                            <Link
-                                key={link.path}
-                                href={link.path}
-                                onClick={() => setIsMenuOpen(false)}
-                                className={`block px-3 py-3 text-sm font-bold border-b border-slate-50 uppercase tracking-widest transition-colors ${
-                                    isActive(link.path)
-                                        ? 'text-emerald-900 bg-emerald-50'
-                                        : 'text-slate-600 hover:text-emerald-700'
-                                }`}
-                            >
-                                {link.name}
-                            </Link>
-                        ))}
+                        {mainLinks.map((link) => {
+                            const isExternal = link.path.startsWith('http');
+                            return (
+                                <Link
+                                    key={link.path}
+                                    href={link.path}
+                                    target={isExternal ? "_blank" : undefined}
+                                    rel={isExternal ? "noopener noreferrer" : undefined}
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className={`block px-3 py-3 text-sm font-bold border-b border-slate-50 uppercase tracking-widest transition-colors ${
+                                        isActive(link.path)
+                                            ? 'text-emerald-900 bg-emerald-50'
+                                            : 'text-slate-600 hover:text-emerald-700'
+                                    }`}
+                                >
+                                    {link.name}
+                                </Link>
+                            );
+                        })}
 
                         {/* "More" items as standard links on mobile */}
                         <div className="pt-4 bg-slate-50 px-3 pb-4 rounded-xl mt-2">

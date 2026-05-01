@@ -31,6 +31,10 @@ const Navbar: React.FC<NavbarProps> = ({ school, activePath }) => {
         { name: 'Contact', href: '/contact' },
     ];
 
+    if (school?.paymentGatewayUrl) {
+        mainNavItems.push({ name: 'Pay Fees', href: school.paymentGatewayUrl });
+    }
+
     const moreItems = [
         { name: 'Academics', href: '/academics' },
         { name: 'Activities', href: '/activities' },
@@ -82,18 +86,23 @@ const Navbar: React.FC<NavbarProps> = ({ school, activePath }) => {
                     </Link>
 
                     <div className="hidden md:flex items-center space-x-1">
-                        {mainNavItems.map((item) => (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                className={`${isActive(item.href)
-                                    ? 'bg-yellow-400 text-blue-950 shadow-md transform scale-105'
-                                    : 'hover:bg-primary-light transition-colors'
-                                    } px-4 py-2 rounded-md text-sm font-bold  tracking-wider transition-all duration-300`}
-                            >
-                                {item.name}
-                            </Link>
-                        ))}
+                        {mainNavItems.map((item) => {
+                            const isExternal = item.href.startsWith('http');
+                            return (
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    target={isExternal ? "_blank" : undefined}
+                                    rel={isExternal ? "noopener noreferrer" : undefined}
+                                    className={`${isActive(item.href)
+                                        ? 'bg-yellow-400 text-blue-950 shadow-md transform scale-105'
+                                        : 'hover:bg-primary-light transition-colors'
+                                        } px-4 py-2 rounded-md text-sm font-bold  tracking-wider transition-all duration-300`}
+                                >
+                                    {item.name}
+                                </Link>
+                            );
+                        })}
 
                         {/* More Dropdown */}
                         <div
@@ -151,19 +160,24 @@ const Navbar: React.FC<NavbarProps> = ({ school, activePath }) => {
             {isOpen && (
                 <div className="md:hidden bg-blue-800 border-t border-blue-700">
                     <div className="px-2 pt-2 pb-3 space-y-1">
-                        {mainNavItems.map((item) => (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                onClick={() => setIsOpen(false)}
-                                className={`${isActive(item.href)
-                                    ? 'bg-accent text-primary font-bold'
-                                    : 'text-gray-300 hover:bg-blue-700'
-                                    } block px-4 py-3 rounded-md text-base font-medium w-full text-left transition-colors`}
-                            >
-                                {item.name}
-                            </Link>
-                        ))}
+                        {mainNavItems.map((item) => {
+                            const isExternal = item.href.startsWith('http');
+                            return (
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    target={isExternal ? "_blank" : undefined}
+                                    rel={isExternal ? "noopener noreferrer" : undefined}
+                                    onClick={() => setIsOpen(false)}
+                                    className={`${isActive(item.href)
+                                        ? 'bg-accent text-primary font-bold'
+                                        : 'text-gray-300 hover:bg-blue-700'
+                                        } block px-4 py-3 rounded-md text-base font-medium w-full text-left transition-colors`}
+                                >
+                                    {item.name}
+                                </Link>
+                            );
+                        })}
 
                         <div className="border-t border-blue-700 mt-2 pt-2">
                             <p className="px-4 py-2 text-[10px] font-black  tracking-[0.3em] text-blue-300">Explore More</p>

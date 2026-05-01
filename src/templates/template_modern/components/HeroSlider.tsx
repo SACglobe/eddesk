@@ -87,7 +87,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ slides: rawSlides, headingLevel
                         <p className="text-accent text-xl md:text-3xl font-medium mb-12 max-w-2xl drop-shadow-md opacity-90">
                             {slide.subheadline}
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-6">
+                        <div className="flex flex-col sm:flex-row gap-6 absolute bottom-24 left-1/2 -translate-x-1/2 z-20 w-full justify-center">
                             {formatHeroUrl(slide.primaryButtonUrl) && slide.primaryButtonText && (
                                 <Link href={formatHeroUrl(slide.primaryButtonUrl)} className="bg-accent text-primary px-10 py-4 rounded-full font-black  tracking-widest text-sm hover:bg-white transition-all shadow-2xl">
                                     {slide.primaryButtonText}
@@ -115,12 +115,6 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ slides: rawSlides, headingLevel
                 ))}
             </div>
 
-            {/* Scroll Down Indicator */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 animate-bounce">
-                <svg className="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7-7-7" />
-                </svg>
-            </div>
         </div>
     );
 };

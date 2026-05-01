@@ -51,7 +51,6 @@ export const Footer: React.FC = () => {
               <li><FooterLink href="/contact">Contact Us</FooterLink></li>
               <li><FooterLink href="/terms">Terms</FooterLink></li>
               <li><FooterLink href="/privacy">Privacy</FooterLink></li>
-              <li><FooterLink href="/refund-cancellation">Refund Policy</FooterLink></li>
             </ul>
           </div>
         </div>

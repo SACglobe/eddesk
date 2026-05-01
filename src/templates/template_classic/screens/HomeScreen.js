@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import DynamicIcon from '@/components/DynamicIcon';
 import { isValidImageUrl, formatHeroUrl } from '@/core/utils/url';
 
 const HomeScreen = ({ data }) => {
@@ -167,7 +169,7 @@ const HomeScreen = ({ data }) => {
     return (
         <div className="fade-in">
             <div className="flex flex-col">
-            {heroEnabled && heroSlides.length > 0 ? (
+            {heroEnabled && heroSlides.length > 0 && (
                 <section className="h-[70vh] md:h-[85vh] relative overflow-hidden bg-slate-900">
                     {heroSlides.map((slide, idx) => (
                         <div
@@ -196,7 +198,7 @@ const HomeScreen = ({ data }) => {
                         <h1 className="text-4xl md:text-7xl font-bold text-white mb-8 serif tracking-tight leading-tight max-w-5xl animate-fade-up-delayed">
                             {heroSlides[currentSlide]?.headline}
                         </h1>
-                        <div className="flex gap-4 animate-fade-up-extra">
+                        <div className="flex gap-4 animate-fade-up-extra absolute bottom-24 left-1/2 -translate-x-1/2 z-30">
                             {formatHeroUrl(heroSlides[currentSlide]?.primaryButtonUrl) && heroSlides[currentSlide]?.primaryButtonText && (
                                 <Link href={formatHeroUrl(heroSlides[currentSlide]?.primaryButtonUrl)} className="px-8 py-3 bg-white text-emerald-900 text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-50 transition-all shadow-xl inline-block">{heroSlides[currentSlide].primaryButtonText}</Link>
                             )}
@@ -216,8 +218,31 @@ const HomeScreen = ({ data }) => {
                         ))}
                     </div>
                 </section>
-            ) : (
-                <h1 className="sr-only">{schoolName} | Official Website ({data.school?.city})</h1>
+            )}
+
+            {/* Pay Fees Online Button */}
+            {data.school?.paymentGatewayUrl && (
+                <section className="max-w-[1600px] mx-auto px-2 md:px-6 -mt-12 relative z-50">
+                    <a 
+                        href={data.school.paymentGatewayUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex flex-col md:flex-row items-center justify-between bg-white p-8 md:p-12 shadow-2xl border border-slate-100 group hover:border-emerald-600 transition-all duration-500"
+                    >
+                        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12 text-center md:text-left">
+                            <div className="w-20 h-20 bg-slate-50 text-emerald-900 flex items-center justify-center group-hover:bg-emerald-900 group-hover:text-white transition-colors duration-500 shadow-inner">
+                                <span className="text-3xl md:text-4xl">💳</span>
+                            </div>
+                            <div>
+                                <h3 className="text-2xl md:text-4xl font-bold text-slate-900 serif uppercase tracking-widest mb-2">Pay Fees Online</h3>
+                                <p className="text-emerald-600 text-[10px] md:text-xs font-bold uppercase tracking-[0.3em]">Quick & Secure digital fee remittance portal</p>
+                            </div>
+                        </div>
+                        <div className="mt-8 md:mt-0 px-10 py-4 bg-emerald-900 text-white text-[10px] font-bold uppercase tracking-[0.3em] group-hover:bg-emerald-700 transition-all">
+                            Access Portal →
+                        </div>
+                    </a>
+                </section>
             )}
 
             {/* 2. School Achievements & Academic Results Section */}
@@ -362,6 +387,9 @@ const HomeScreen = ({ data }) => {
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
                             {statisticsList.map((stat, idx) => (
                                 <div key={idx} className="text-center group">
+                                    <div className="flex justify-center mb-6">
+                                        <DynamicIcon icon={stat.icon} className="w-10 h-10 text-emerald-300/50 group-hover:text-emerald-300 transition-colors" />
+                                    </div>
                                     <div className="text-4xl md:text-6xl font-bold mb-2 serif text-emerald-50 group-hover:scale-110 transition-transform inline-block">
                                         {stat.value}
                                     </div>
@@ -493,13 +521,10 @@ const HomeScreen = ({ data }) => {
                             {infrastructure.map((item, i) => (
                                 <div key={item.key || i} className="bg-white p-10 border border-slate-100 shadow-sm hover:shadow-2xl hover:border-emerald-200 transition-all group relative overflow-hidden flex flex-col md:flex-row gap-8">
                                     <div className="flex-shrink-0 w-24 h-24 bg-emerald-50 rounded-xl overflow-hidden flex items-center justify-center">
-                                        {item.imageUrl && isValidImageUrl(item.imageUrl) ? (
-                                            <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
-                                        ) : (
-                                            <svg className="w-8 h-8 text-emerald-900/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                            </svg>
-                                        )}
+                                        <DynamicIcon 
+                                            icon={item.icon || 'school'} 
+                                            className="w-10 h-10 text-emerald-900/40" 
+                                        />
                                     </div>
                                     <div className="flex-grow">
                                         <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.2em] block mb-2">{item.tag}</span>

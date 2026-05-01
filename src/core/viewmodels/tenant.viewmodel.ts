@@ -219,6 +219,7 @@ export interface TenantViewModel {
         componentVariants: Record<string, Record<string, string>>; // Nested by screen
         paymentGatewayUrl: string;  // kept for compat — may be empty string
         gracePeriodDays: number;
+        faviconUrl: string;
     };
 
     // ── Subscription ──────────────────────────────────────────────────────────
@@ -555,6 +556,7 @@ export interface TenantViewModel {
     } | null;
     admissionInstructions: Array<{
         key: string;
+        title: string;
         description: string;
         contactEmail: string;
         contactPhone: string;
@@ -967,6 +969,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
             componentVariants: (school['componentvariants'] ?? {}) as Record<string, Record<string, string>>,
             paymentGatewayUrl: str(school[COL_SCHOOLS_PAYMENTGATEWAY_URL]),
             gracePeriodDays: num(plan[COL_PLAN_GRACE_PERIOD]),
+            faviconUrl: resolveImageUrl(str(school['faviconurl'] || (school[COL_SCHOOLS_THEME_CONFIG] as any)?.favicon || '')),
         },
 
         subscription: {
@@ -1135,6 +1138,7 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
         } : null,
         admissionInstructions: ((d.admissioninstructions || d.admissionsteps || []) as Record<string, unknown>[]).map(r => ({
             key: str(r['key']),
+            title: str(r['title']),
             description: str(r['description']),
             contactEmail: str(r['contactemail'] || r['contactEmail']),
             contactPhone: str(r['contactphone'] || r['contactPhone']),
