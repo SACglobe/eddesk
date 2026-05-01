@@ -1,6 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { fetchTenantScreen } from '@/core/services/screenData.service';
 import { resolveImageUrl } from '@/core/utils/url';
+import React from 'react';
 
 export const runtime = 'nodejs';
 
@@ -15,6 +16,7 @@ export async function GET(
   const result = await fetchTenantScreen(domain, 'home');
   
   if (result.status !== 'success') {
+    console.error(`[Icon Route DEBUG] Failed to fetch school data for ${domain}`);
     return new Response('Not Found', { status: 404 });
   }
 
@@ -30,19 +32,39 @@ export async function GET(
 
   // Fetch the image and convert to base64 to ensure Satori can render it
   let base64Image = '';
-  let contentType = 'image/png';
   try {
     const response = await fetch(logoUrl);
     if (response.ok) {
       const buffer = await response.arrayBuffer();
-      contentType = response.headers.get('content-type') || 'image/png';
+      const contentType = response.headers.get('content-type') || 'image/png';
       base64Image = `data:${contentType};base64,${Buffer.from(buffer).toString('base64')}`;
+    } else {
+      console.warn(`[Icon Route DEBUG] Failed to fetch logo at ${logoUrl}: ${response.statusText}`);
     }
   } catch (error) {
-    console.error('[Icon Generation] Failed to fetch logo:', logoUrl, error);
-    // Fallback to a very simple colored square if everything fails
+    console.error('[Icon Route DEBUG] Error fetching logo:', logoUrl, error);
+  }
+
+  // If we couldn't get a base64 image, fallback to a simple text-based icon or colored square
+  if (!base64Image) {
     return new ImageResponse(
-      <div style={{ background: '#4f46e5', width: '100%', height: '100%' }} />,
+      (
+        <div
+          style={{
+            background: '#4f46e5',
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            fontSize: '60px',
+            fontWeight: 'bold',
+          }}
+        >
+          {school.name?.[0]?.toUpperCase() || 'E'}
+        </div>
+      ),
       { width: 96, height: 96 }
     );
   }
