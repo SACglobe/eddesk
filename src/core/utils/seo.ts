@@ -104,7 +104,7 @@ export function generateTenantMetadata(
     // use our dynamic square icon generator to avoid squashing.
     const isUsingLogoAsFavicon = !school.faviconUrl || school.faviconUrl === school.logoUrl;
     if (!isDemo && isUsingLogoAsFavicon) {
-        faviconUrl = '/icon';
+        faviconUrl = `https://${domain}/icon`;
     }
 
     const isInternalPath = faviconUrl.startsWith('/');
@@ -117,7 +117,6 @@ export function generateTenantMetadata(
     }
 
     return {
-        metadataBase: new URL(`https://${domain}`),
         title,
         description,
         keywords,
@@ -125,6 +124,7 @@ export function generateTenantMetadata(
         category: 'education',
         applicationName: school.name,
         generator: 'EdDesk',
+        metadataBase: new URL(`https://${domain}`),
         alternates: {
             canonical: '/',
         },

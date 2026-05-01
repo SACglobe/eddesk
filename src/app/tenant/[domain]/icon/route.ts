@@ -2,21 +2,14 @@ import { ImageResponse } from 'next/og';
 import { fetchTenantScreen } from '@/core/services/screenData.service';
 import { resolveImageUrl } from '@/core/utils/url';
 
-// Route segment config
-// Defaulting to nodejs as unstable_cache is used in fetchTenantScreen
 export const runtime = 'nodejs';
 
-// Image metadata
-export const alt = 'School Icon';
-export const size = {
-  width: 96,
-  height: 96,
-};
-export const contentType = 'image/png';
-
-// Image generation
-export default async function Icon({ params }: { params: { domain: string } }) {
-  const { domain } = params;
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ domain: string }> }
+) {
+  const { domain } = await params;
+  console.log(`[Icon Route DEBUG] Generating icon for domain: ${domain}`);
   
   // We fetch the home screen data to get the school branding
   const result = await fetchTenantScreen(domain, 'home');
@@ -31,17 +24,18 @@ export default async function Icon({ params }: { params: { domain: string } }) {
 
   // Ensure absolute URL for fetch
   if (!logoUrl.startsWith('http')) {
-    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
-    logoUrl = `${protocol}://${domain}${logoUrl.startsWith('/') ? '' : '/'}${logoUrl}`;
+    // We use eddesk.in as the base for internal assets
+    logoUrl = `https://www.eddesk.in${logoUrl.startsWith('/') ? '' : '/'}${logoUrl}`;
   }
 
   // Fetch the image and convert to base64 to ensure Satori can render it
   let base64Image = '';
+  let contentType = 'image/png';
   try {
     const response = await fetch(logoUrl);
     if (response.ok) {
       const buffer = await response.arrayBuffer();
-      const contentType = response.headers.get('content-type') || 'image/png';
+      contentType = response.headers.get('content-type') || 'image/png';
       base64Image = `data:${contentType};base64,${Buffer.from(buffer).toString('base64')}`;
     }
   } catch (error) {
@@ -49,7 +43,7 @@ export default async function Icon({ params }: { params: { domain: string } }) {
     // Fallback to a very simple colored square if everything fails
     return new ImageResponse(
       <div style={{ background: '#4f46e5', width: '100%', height: '100%' }} />,
-      { ...size }
+      { width: 96, height: 96 }
     );
   }
 
@@ -77,7 +71,8 @@ export default async function Icon({ params }: { params: { domain: string } }) {
       </div>
     ),
     {
-      ...size,
+      width: 96,
+      height: 96,
     }
   );
 }
