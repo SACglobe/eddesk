@@ -114,7 +114,7 @@ export default function RootLayout({
                             },
                             "contactPoint": {
                                 "@type": "ContactPoint",
-                                "telephone": "+91 70107 79096",
+                                "telephone": "+91 81223 33929",
                                 "contactType": "customer service",
                                 "areaServed": "IN",
                                 "availableLanguage": "en"

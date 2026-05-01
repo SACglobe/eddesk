@@ -97,11 +97,13 @@ export function generateTenantMetadata(
         ]
         : [];
 
-    const resolvedLogo = resolveImageUrl(school.logoUrl);
-    const logoUrlValid = isValidImageUrl(resolvedLogo);
-    
     // Ensure faviconUrl is absolute for metadataBase to behave correctly
-    let faviconUrl = logoUrlValid ? resolvedLogo : '/assets/images/icon.png';
+    let faviconUrl = school.faviconUrl || school.logoUrl || '/assets/images/icon.png';
+    const isInternalPath = faviconUrl.startsWith('/');
+    if (!isInternalPath && !isValidImageUrl(faviconUrl)) {
+        faviconUrl = '/assets/images/icon.png';
+    }
+    
     if (faviconUrl && !faviconUrl.startsWith('http') && !faviconUrl.startsWith('/')) {
         faviconUrl = `/${faviconUrl}`;
     }

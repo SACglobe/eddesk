@@ -8,6 +8,7 @@ import { isValidImageUrl, formatHeroUrl } from '@/core/utils/url';
 import LayoutWrapper from '../components/LayoutWrapper';
 import type { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import { evaluateFilters } from '@/core/utils/filterEngine';
+import DynamicIcon from '@/components/DynamicIcon';
 
 interface HeroSlide {
   mediaType: string;
@@ -82,7 +83,7 @@ const Hero: React.FC<{ heroSlide: HeroSlide | null; schoolName: string }> = ({ h
             )}
           </h1>
 
-          <div className="flex flex-col sm:flex-row gap-12 justify-center items-center mt-12 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-500">
+          <div className="flex flex-col sm:flex-row gap-12 justify-center items-center absolute bottom-24 left-1/2 -translate-x-1/2 z-20 w-full animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-500">
             {formatHeroUrl(heroSlide?.primaryButtonUrl) && (heroSlide?.primaryButtonText || schoolName) && (
               <Link href={formatHeroUrl(heroSlide?.primaryButtonUrl)}>
                 <Button variant="gold">{heroSlide?.primaryButtonText || `Join ${schoolName}`}</Button>
@@ -116,10 +117,6 @@ const Hero: React.FC<{ heroSlide: HeroSlide | null; schoolName: string }> = ({ h
         </div>
       )}
 
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-4">
-        <div className="w-px h-12 bg-gradient-to-b from-signature-gold/50 to-transparent"></div>
-        <span className="text-white/20 text-[9px] uppercase tracking-[0.5em] font-bold">Scroll to Explore</span>
-      </div>
     </section>
   );
 };
@@ -228,48 +225,7 @@ interface DashboardProps {
 const SchoolDashboard: React.FC<DashboardProps> = ({ statistics, statsEnabled, statsRequired }) => {
   const { containerRef, isVisible } = useIntersectionObserver({ threshold: 0.1 });
 
-  const SVG_ICON_MAP: Record<string, React.ReactNode> = {
-    users: (
-      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 14l9-5-9-5-9 5 9 5z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-      </svg>
-    ),
-    graduation: (
-      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 14l9-5-9-5-9 5 9 5z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-      </svg>
-    ),
-    calendar: (
-      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
-    ),
-    map: (
-      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-      </svg>
-    ),
-    trophy: (
-      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138" />
-      </svg>
-    ),
-    network: (
-      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-      </svg>
-    ),
-  };
-
-  const DEFAULT_SVG = (
-    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-    </svg>
-  );
-
-  const getSvgIcon = (name: string) => SVG_ICON_MAP[name] ?? DEFAULT_SVG;
+  // DynamicIcon component handles mapping and fallbacks
 
   if (!statsEnabled || statistics.length === 0) return null;
 
@@ -280,7 +236,7 @@ const SchoolDashboard: React.FC<DashboardProps> = ({ statistics, statsEnabled, s
           {statistics.map((stat, i) => (
             <div key={i} className={`flex flex-col items-center text-center px-12 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'} delay-${i * 150} lg:border-r last:border-0 border-signature-navy/10`}>
               <div className="text-signature-gold mb-6 opacity-60 group-hover:opacity-100 transition-opacity">
-                {getSvgIcon(stat.icon)}
+                <DynamicIcon icon={stat.icon} className="w-12 h-12" />
               </div>
               <div className="text-5xl md:text-6xl font-serif text-signature-navy mb-4 tracking-tighter">
                 {stat.value}
@@ -680,6 +636,34 @@ export default function Home({ data }: { data: TenantViewModel }) {
                 <span className="italic text-signature-gold block mt-4">Legacy.</span>
               </h1>
             </div>
+          </section>
+        )}
+
+        {/* Pay Fees Online Button */}
+        {data.school?.paymentGatewayUrl && (
+          <section className="max-w-[1400px] mx-auto px-8 -mt-24 relative z-50">
+            <a 
+              href={data.school.paymentGatewayUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex flex-col md:flex-row items-center justify-between bg-white p-12 md:p-16 shadow-[0_50px_100px_rgba(0,0,0,0.1)] border border-signature-navy/5 group hover:border-signature-gold transition-all duration-700"
+            >
+              <div className="flex flex-col md:flex-row items-center gap-12 text-center md:text-left">
+                <div className="w-24 h-24 bg-signature-ivory text-signature-navy flex items-center justify-center group-hover:bg-signature-navy group-hover:text-white transition-all duration-700 shadow-inner rounded-2xl">
+                  <span className="text-4xl md:text-5xl">💳</span>
+                </div>
+                <div>
+                  <h3 className="text-3xl md:text-5xl font-serif text-signature-navy mb-4 tracking-tight">Pay Fees Online</h3>
+                  <p className="text-signature-gold text-[11px] md:text-xs font-bold uppercase tracking-[0.5em]">Secure & Efficient digital institutional remittance</p>
+                </div>
+              </div>
+              <div className="mt-12 md:mt-0 flex items-center gap-6 group/btn">
+                <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-signature-navy group-hover:text-signature-gold transition-colors">Access Secure Portal</span>
+                <div className="w-16 h-16 rounded-full border border-signature-navy/10 flex items-center justify-center group-hover:bg-signature-gold group-hover:border-signature-gold transition-all duration-700">
+                  <span className="text-2xl text-signature-navy group-hover:text-white transition-colors group-hover:translate-x-1 duration-500">→</span>
+                </div>
+              </div>
+            </a>
           </section>
         )}
 

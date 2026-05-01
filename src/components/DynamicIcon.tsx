@@ -1,22 +1,24 @@
 'use client';
 
 import React from 'react';
-import { Icon } from '@iconify/react';
+import { Icon as IconifyIcon } from '@iconify/react';
 import * as LucideIcons from 'lucide-react';
+import { LucideProps } from 'lucide-react';
+import FluentIcon from './FluentIcon';
 
-interface DynamicIconProps {
+interface DynamicIconProps extends LucideProps {
     icon: string;
     className?: string;
+    size?: string | number;
 }
 
-const DynamicIcon: React.FC<DynamicIconProps> = ({ icon, className }) => {
-    if (!icon) return null;
+const DynamicIcon: React.FC<DynamicIconProps> = ({ icon: name, className, size, ...props }) => {
+    if (!name) return <LucideIcons.HelpCircle className={className} {...(props as any)} />;
 
     // Normalize and trim
-    let iconName = icon.trim();
+    let iconName = name.trim();
 
-    // 1. Safe Mapping for common school keywords and problematic shorthand
-    // This ensures that even if a user types "school" or "student", we show a high-quality icon.
+    // Support common educational keywords with safe mappings (Fallback/Enhancement)
     const safeMappings: Record<string, string> = {
         'school': 'material-symbols:school',
         'student': 'material-symbols:person',
@@ -26,38 +28,41 @@ const DynamicIcon: React.FC<DynamicIconProps> = ({ icon, className }) => {
         'book': 'material-symbols:book',
         'sports': 'material-symbols:sports-soccer',
         'soccer': 'material-symbols:sports-soccer',
-        'fluent:school': 'material-symbols:school',
-        'fluent:student': 'material-symbols:person',
-        'fluent:teacher': 'material-symbols:school',
     };
 
     const lowerName = iconName.toLowerCase();
     if (safeMappings[lowerName]) {
         iconName = safeMappings[lowerName];
-    } else if (iconName.startsWith('fluent:') && !iconName.includes('-')) {
-        // Broad fix for other Fluent icons: append standard suffix if missing
-        iconName = `${iconName}-24-regular`;
     }
 
-    // 2. Lucide Direct Check (Case-insensitive)
+    // 1. Support Fluent 3D icons
+    if (iconName.startsWith("fluent:")) {
+        return <FluentIcon name={iconName} size={+(size || props.size || 24)} className={className} style={props.style} />;
+    }
+
+    // 2. Support generic Iconify icons (e.g. "streamline-plump-color:...")
+    if (iconName.includes(':')) {
+        return (
+            <IconifyIcon 
+                icon={iconName} 
+                width={size || props.size || "1.1em"} 
+                height={size || props.size || "1.1em"} 
+                className={className}
+                style={{ ...props.style, display: 'inline-block', verticalAlign: 'middle' }}
+            />
+        );
+    }
+
+    // 3. Try to find the icon by name in Lucide (Case-insensitive)
     const lucideName = iconName.charAt(0).toUpperCase() + iconName.slice(1);
-    const LucideIcon = (LucideIcons as any)[lucideName] || (LucideIcons as any)[iconName];
+    const IconComponent = (LucideIcons as any)[lucideName] || (LucideIcons as any)[iconName];
 
-    if (LucideIcon) {
-        return <LucideIcon className={className} />;
+    if (!IconComponent) {
+        // Fallback to a default
+        return <LucideIcons.HelpCircle className={className} size={size || props.size} {...(props as any)} />;
     }
 
-    // 3. Iconify / General Render
-    // We use 1.1em to give it slightly more presence while remaining parent-controlled
-    return (
-        <Icon 
-            icon={iconName} 
-            className={className} 
-            width="1.1em" 
-            height="1.1em" 
-            style={{ display: 'inline-block', verticalAlign: 'middle' }}
-        />
-    );
+    return <IconComponent className={className} size={size || props.size} {...(props as any)} />;
 };
 
 export default DynamicIcon;

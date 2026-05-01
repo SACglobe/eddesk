@@ -128,21 +128,6 @@ export default function Home({ data }: { data: TenantViewModel }) {
         return { num, suffix };
     };
 
-    const ICON_MAP: Record<string, string> = {
-        users: 'lucide:users',
-        graduation: 'lucide:graduation-cap',
-        calendar: 'lucide:calendar',
-        map: 'lucide:map-pin',
-        trophy: 'lucide:trophy',
-        network: 'lucide:globe',
-    };
-    const getIcon = (name: string) => {
-        const mapped = ICON_MAP[name];
-        if (mapped) return <DynamicIcon icon={mapped} />;
-        if (name && (name.includes(':') || name.length > 0)) return <DynamicIcon icon={name} />;
-        return <span>📊</span>;
-    };
-
     // 7. Faculty
     const facultyComp = getComponent('faculty');
     const facultyEnabled = facultyComp?.isActive ?? true;
@@ -213,16 +198,52 @@ export default function Home({ data }: { data: TenantViewModel }) {
 
                     <div className="flex-1 flex items-center overflow-hidden h-full">
                         <div className="animate-marquee flex items-center">
-                            {[...activeAnnouncements, ...activeAnnouncements, ...activeAnnouncements, ...activeAnnouncements, ...activeAnnouncements, ...activeAnnouncements].map((news, idx) => (
-                                <div key={`news-${idx}`} className="flex items-center px-8 whitespace-nowrap group">
-                                    <span className="text-[#1e293b] text-sm md:text-base antialiased">
-                                        <span className="font-bold">{news.title}:</span> <span className="font-medium opacity-90">{news.message}</span>
-                                    </span>
-                                    <div className="mx-10 w-2.5 h-2.5 rounded-full bg-blue-700 shadow-[0_0_10px_rgba(29,78,216,0.4)] border border-blue-600"></div>
-                                </div>
-                            ))}
+                            {[...activeAnnouncements, ...activeAnnouncements, ...activeAnnouncements, ...activeAnnouncements, ...activeAnnouncements, ...activeAnnouncements].map((news, idx) => {
+                                const getPriorityStyles = (priority: number) => {
+                                    switch (priority) {
+                                        case 3: return "bg-red-600 shadow-[0_0_10px_rgba(220,38,38,0.4)] border-red-500";
+                                        case 2: return "bg-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.4)] border-yellow-400";
+                                        case 1: 
+                                        default: return "bg-emerald-600 shadow-[0_0_10px_rgba(5,150,105,0.4)] border-emerald-500";
+                                    }
+                                };
+                                
+                                return (
+                                    <div key={`news-${idx}`} className="flex items-center px-8 whitespace-nowrap group">
+                                        <span className="text-[#1e293b] text-sm md:text-base antialiased">
+                                            <span className="font-bold">{news.title}:</span> <span className="font-medium opacity-90">{news.message}</span>
+                                        </span>
+                                        <div className={`mx-10 w-2.5 h-2.5 rounded-full border ${getPriorityStyles(news.priority)}`}></div>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
+                </section>
+            )}
+            
+            {/* Pay Fees Online Button */}
+            {data.school?.paymentGatewayUrl && (
+                <section className="max-w-7xl mx-auto px-6 -mt-12 relative z-50">
+                    <a 
+                        href={data.school.paymentGatewayUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between bg-white p-6 md:p-10 rounded-[3rem] shadow-2xl border border-slate-100 group hover:border-[#fbbf24] transition-all duration-500"
+                    >
+                        <div className="flex items-center gap-6 md:gap-10">
+                            <div className="w-16 h-16 md:w-20 md:h-20 bg-slate-50 text-primary rounded-3xl flex items-center justify-center group-hover:bg-[#fbbf24] group-hover:text-blue-950 transition-colors duration-500 shadow-inner">
+                                <span className="text-2xl md:text-3xl">💳</span>
+                            </div>
+                            <div className="text-left">
+                                <h3 className="text-xl md:text-3xl font-bold text-primary mb-1">Pay Fees Online</h3>
+                                <p className="text-slate-400 text-sm md:text-base font-medium">Quick & Secure digital fee remittance portal</p>
+                            </div>
+                        </div>
+                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-slate-100 flex items-center justify-center group-hover:border-[#fbbf24] group-hover:bg-[#fbbf24] group-hover:text-blue-950 transition-all duration-500">
+                            <span className="text-xl md:text-2xl font-bold">→</span>
+                        </div>
+                    </a>
                 </section>
             )}
 
@@ -387,13 +408,13 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                             ${i % 2 !== 0 ? 'lg:translate-y-12' : ''}
                                         `}
                                     >
-                                        <div className="absolute -right-4 -bottom-4 text-9xl opacity-[0.03] grayscale group-hover:opacity-[0.08] transition-opacity duration-500 pointer-events-none transform rotate-12">
-                                            {getIcon(stat.icon)}
+                                        <div className="absolute -right-4 -bottom-4 opacity-[0.03] grayscale group-hover:opacity-[0.08] transition-opacity duration-500 pointer-events-none transform rotate-12">
+                                            <DynamicIcon icon={stat.icon} size={120} />
                                         </div>
 
                                         <div className="relative z-10 flex flex-col items-center lg:items-start space-y-4">
-                                            <div className="w-16 h-16 bg-blue-50 text-primary rounded-3xl flex items-center justify-center text-4xl shadow-inner group-hover:bg-accent group-hover:text-blue-950 transition-colors duration-500">
-                                                {getIcon(stat.icon)}
+                                            <div className="w-16 h-16 bg-blue-50 text-primary rounded-3xl flex items-center justify-center shadow-inner group-hover:bg-accent group-hover:text-blue-950 transition-colors duration-500">
+                                                <DynamicIcon icon={stat.icon} size={32} />
                                             </div>
 
                                             <div className="space-y-1 text-center lg:text-left">

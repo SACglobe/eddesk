@@ -151,8 +151,14 @@ const AdmissionScreen = ({ data }) => {
 
             {/* 3. Instructions Section */}
             {admissionInstructions.length > 0 && (
-                <div className="border-y border-slate-100 bg-slate-50/50">
-                    <AdmissionInstructions steps={admissionInstructions} schoolName={schoolName} />
+                <div className="border-y border-slate-100 bg-slate-50/50 py-24">
+                    <div className="max-w-4xl mx-auto px-6">
+                        <div className="mb-12">
+                            <h2 className="text-3xl font-bold text-slate-900 uppercase tracking-tight serif mb-2">Admission Instructions</h2>
+                            <div className="w-16 h-1 bg-emerald-900"></div>
+                        </div>
+                        <AdmissionInstructions steps={admissionInstructions} schoolName={schoolName} />
+                    </div>
                 </div>
             )}
             <style jsx>{`

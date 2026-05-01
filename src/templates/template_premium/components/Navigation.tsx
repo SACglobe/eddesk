@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { schoolData } from '../data';
 
-interface BroadcastBarProps { announcements: Array<{ title: string; message: string }> }
+interface BroadcastBarProps { announcements: Array<{ title: string; message: string; priority: number }> }
 const BroadcastBar: React.FC<BroadcastBarProps> = ({ announcements: items }) => {
     if (items.length === 0) return null;
     const announcements = [...items, ...items, ...items, ...items, ...items, ...items];
@@ -17,18 +17,29 @@ const BroadcastBar: React.FC<BroadcastBarProps> = ({ announcements: items }) => 
                 <div className="absolute inset-0 ticker-mask pointer-events-none z-10"></div>
 
                 <div className="h-full flex items-center animate-marquee whitespace-nowrap">
-                    {announcements.map((item, i) => (
-                        <div key={i} className="inline-flex items-center px-12">
-                            <span className="text-signature-gold mx-8 text-[8px] select-none opacity-40 group-hover:opacity-80 transition-opacity">✦</span>
-                            <span className="mr-4 px-2.5 py-0.5 text-[8px] font-bold tracking-[0.25em] uppercase rounded-full bg-signature-gold/20 text-signature-gold border border-signature-gold/30">
-                                Notice
-                            </span>
-                            <span className="text-white/90 font-sans text-[11px] tracking-[0.12em] font-medium flex items-center gap-2">
-                                <span className="text-signature-gold font-bold uppercase text-[9px] tracking-[0.2em]">{item.title}</span>
-                                <span className="opacity-70 group-hover:opacity-100 transition-opacity duration-500">{item.message}</span>
-                            </span>
-                        </div>
-                    ))}
+                    {announcements.map((item, i) => {
+                        const getPriorityStyles = (priority: number) => {
+                            switch (priority) {
+                                case 3: return "text-red-600 opacity-100";
+                                case 2: return "text-yellow-500 opacity-80";
+                                case 1:
+                                default: return "text-emerald-600 opacity-60";
+                            }
+                        };
+                        
+                        return (
+                            <div key={i} className="inline-flex items-center px-12">
+                                <span className={`mx-8 text-[8px] select-none transition-opacity ${getPriorityStyles(item.priority)}`}>✦</span>
+                                <span className="mr-4 px-2.5 py-0.5 text-[8px] font-bold tracking-[0.25em] uppercase rounded-full bg-signature-gold/20 text-signature-gold border border-signature-gold/30">
+                                    Notice
+                                </span>
+                                <span className="text-white/90 font-sans text-[11px] tracking-[0.12em] font-medium flex items-center gap-2">
+                                    <span className="text-signature-gold font-bold uppercase text-[9px] tracking-[0.2em]">{item.title}</span>
+                                    <span className="opacity-70 group-hover:opacity-100 transition-opacity duration-500">{item.message}</span>
+                                </span>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>
@@ -36,7 +47,7 @@ const BroadcastBar: React.FC<BroadcastBarProps> = ({ announcements: items }) => 
 };
 
 interface HeaderProps {
-    announcements: Array<{ title: string; message: string; isActive: boolean; expiresAt: string | null }>;
+    announcements: Array<{ title: string; message: string; priority: number; isActive: boolean; expiresAt: string | null }>;
     school: any;
     activePath?: string;
 }
@@ -79,6 +90,10 @@ const Header: React.FC<HeaderProps> = ({ announcements, school, activePath }) =>
         { label: 'Contact', path: '/contact' },
     ];
 
+    if (school?.paymentGatewayUrl) {
+        navItems.push({ label: 'Pay Fees', path: school.paymentGatewayUrl });
+    }
+
     const moreItems = [
         { label: 'Academics', path: '/academics' },
         { label: 'Activities', path: '/activities' },
@@ -117,20 +132,25 @@ const Header: React.FC<HeaderProps> = ({ announcements, school, activePath }) =>
                         </Link>
 
                         <nav className="hidden lg:flex space-x-12 items-center">
-                            {navItems.map((item) => (
-                                <Link
-                                    key={item.path}
-                                    href={item.path}
-                                    className={`text-[10px] uppercase tracking-[0.4em] transition-all duration-700 relative group py-2.5 px-4 rounded-full ${
-                                        isActive(item.path) 
-                                            ? 'text-white bg-signature-gold/20 shadow-[0_0_20px_rgba(212,175,55,0.2)]' 
-                                            : 'text-white/70 hover:text-white'
-                                    }`}
-                                >
-                                    {item.label}
-                                    <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-signature-gold transition-all duration-700 ${isActive(item.path) ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}></span>
-                                </Link>
-                            ))}
+                            {navItems.map((item) => {
+                                const isExternal = item.path.startsWith('http');
+                                return (
+                                    <Link
+                                        key={item.path}
+                                        href={item.path}
+                                        target={isExternal ? "_blank" : undefined}
+                                        rel={isExternal ? "noopener noreferrer" : undefined}
+                                        className={`text-[10px] uppercase tracking-[0.4em] transition-all duration-700 relative group py-2.5 px-4 rounded-full ${
+                                            isActive(item.path) 
+                                                ? 'text-white bg-signature-gold/20 shadow-[0_0_20px_rgba(212,175,55,0.2)]' 
+                                                : 'text-white/70 hover:text-white'
+                                        }`}
+                                    >
+                                        {item.label}
+                                        <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-signature-gold transition-all duration-700 ${isActive(item.path) ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}></span>
+                                    </Link>
+                                );
+                            })}
 
                             <div className="relative" ref={dropdownRef}>
                                 <button
@@ -185,11 +205,21 @@ const Header: React.FC<HeaderProps> = ({ announcements, school, activePath }) =>
 
                 <div className={`lg:hidden fixed inset-0 bg-signature-navy transition-all duration-1000 z-40 flex items-center justify-center ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
                     <div className="flex flex-col items-center space-y-8 overflow-y-auto py-20 px-8 w-full text-center">
-                        {navItems.map((item) => (
-                            <Link key={item.path} href={item.path} onClick={() => setIsMenuOpen(false)} className="text-white text-3xl font-serif hover:text-signature-gold transition-colors">
-                                {item.label}
-                            </Link>
-                        ))}
+                        {navItems.map((item) => {
+                            const isExternal = item.path.startsWith('http');
+                            return (
+                                <Link 
+                                    key={item.path} 
+                                    href={item.path} 
+                                    onClick={() => setIsMenuOpen(false)} 
+                                    target={isExternal ? "_blank" : undefined}
+                                    rel={isExternal ? "noopener noreferrer" : undefined}
+                                    className="text-white text-3xl font-serif hover:text-signature-gold transition-colors"
+                                >
+                                    {item.label}
+                                </Link>
+                            );
+                        })}
                         <div className="w-12 h-px bg-signature-gold/20 my-4"></div>
                         {moreItems.map((item) => (
                             <Link key={item.path} href={item.path} onClick={() => setIsMenuOpen(false)} className="text-white/60 text-xl font-serif hover:text-signature-gold transition-colors">

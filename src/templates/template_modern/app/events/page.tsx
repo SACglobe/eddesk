@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
 import { getMonthEventsAction } from '@/app/actions/events';
 import HeroSlider from '../../components/HeroSlider';
@@ -49,16 +49,18 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
         }
     }, [schoolKey]);
 
+    const isInitialMount = useRef(true);
+
     useEffect(() => {
-        // Fetch events on mount if empty, or if date changes
-        const initialDate = new Date();
-        const isDifferentMonth = currentDate.getMonth() !== initialDate.getMonth() || 
-                               currentDate.getFullYear() !== initialDate.getFullYear();
-        
-        if (events.length === 0 || isDifferentMonth) {
-            fetchEvents(month, year);
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            const today = new Date();
+            if (month === today.getMonth() + 1 && year === today.getFullYear()) {
+                return;
+            }
         }
-    }, [currentDate, month, year, fetchEvents, events.length]);
+        fetchEvents(month, year);
+    }, [month, year, fetchEvents]);
 
     const [view, setView] = useState<'list' | 'calendar'>('list');
 
@@ -129,7 +131,7 @@ const EventsScreen: React.FC<{ data: TenantViewModel }> = ({ data }) => {
                         </button>
                         <div className="text-center min-w-[200px]">
                             <h2 className="text-3xl font-bold text-slate-800 font-serif tracking-tight">
-                                {monthName} <span className="ml-2">{year}</span>
+                                {monthName} {year}
                             </h2>
                         </div>
                         <button 

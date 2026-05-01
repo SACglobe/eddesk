@@ -43,9 +43,9 @@ const Admissions: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
 
                     {/* Right Column: Sidebar */}
                     <div className="space-y-8 sticky top-32">
-                        {/* Enrollment Pathway (Instructions) */}
+                        {/* Admission Instruction (Instructions) */}
                         <div className="bg-white rounded-[3rem] p-8 md:p-12 shadow-xl shadow-slate-200/50 border border-slate-100">
-                            <h3 className="text-2xl font-serif text-[#1e3a8a] mb-8">Enrollment Pathway</h3>
+                            <h3 className="text-2xl font-serif text-[#1e3a8a] mb-8">Admission Instructions</h3>
                             <AdmissionInstructions steps={admissionInstructions} schoolName={schoolName} />
                         </div>
 

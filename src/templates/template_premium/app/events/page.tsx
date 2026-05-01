@@ -208,12 +208,18 @@ export default function Events({ data }: { data: TenantViewModel }) {
         }
     }, [schoolKey]);
 
+    const isInitialMount = useRef(true);
+
     useEffect(() => {
-        const initialDate = new Date();
-        if (currentDate.getMonth() !== initialDate.getMonth() || currentDate.getFullYear() !== initialDate.getFullYear()) {
-            fetchEvents(month, year);
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            const today = new Date();
+            if (month === today.getMonth() + 1 && year === today.getFullYear()) {
+                return;
+            }
         }
-    }, [currentDate, month, year, fetchEvents]);
+        fetchEvents(month, year);
+    }, [month, year, fetchEvents]);
 
     const handlePrevMonth = () => {
         setCurrentDate(prev => {

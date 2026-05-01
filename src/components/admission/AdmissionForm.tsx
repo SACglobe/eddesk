@@ -17,7 +17,9 @@ import {
   ChevronLeft,
   Loader2,
   ShieldCheck,
-  Info
+  Info,
+  ChevronDown,
+  Calendar
 } from 'lucide-react';
 import { submitAdmissionAction, AdmissionFormData } from '@/core/actions/admission.action';
 import { checkAdmissionLimit, incrementAdmissionLimit } from '@/core/utils/admissionRateLimit';
@@ -203,27 +205,27 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
   return (
     <div ref={containerRef} className="max-w-4xl mx-auto scroll-mt-32">
       {/* Progress Stepper */}
-      <div className="mb-16 flex justify-between items-center relative px-4">
+      <div className="mb-10 md:mb-16 flex justify-between items-center relative px-4">
         <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -translate-y-1/2 z-0" />
         {steps.map((s) => (
           <div key={s.id} className="relative z-10 flex flex-col items-center">
-            <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-500 border-4 ${
+            <div className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all duration-500 border-4 ${
               currentStep === s.id 
                 ? 'bg-[#1e3a8a] border-white text-[#fbbf24] shadow-xl shadow-blue-900/20 scale-110' 
                 : currentStep > s.id 
                   ? 'bg-blue-50 border-white text-[#1e3a8a]' 
                   : 'bg-white border-slate-100 text-slate-300'
             }`}>
-              {currentStep > s.id ? <CheckCircle2 className="w-6 h-6" /> : <s.icon className="w-6 h-6" />}
+              {currentStep > s.id ? <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6" /> : <s.icon className="w-5 h-5 md:w-6 md:h-6" />}
             </div>
-            <span className={`text-[10px] uppercase tracking-[0.2em] mt-3 font-black ${currentStep >= s.id ? 'text-[#1e3a8a]' : 'text-slate-300'}`}>
+            <span className={`text-[8px] md:text-[10px] uppercase tracking-[0.2em] mt-3 font-black ${currentStep >= s.id ? 'text-[#1e3a8a]' : 'text-slate-300'}`}>
               {s.title}
             </span>
           </div>
         ))}
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white/80 backdrop-blur-xl p-8 md:p-12 rounded-[2.5rem] shadow-2xl border border-white/50 relative overflow-hidden">
+      <form onSubmit={handleSubmit} className="bg-white/80 backdrop-blur-xl p-6 md:p-12 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl border border-white/50 relative overflow-hidden">
         {state === 'submitting' && (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-50 flex flex-col items-center justify-center animate-in fade-in duration-300">
             <Loader2 className="w-12 h-12 text-[#1e3a8a] animate-spin mb-4" />
@@ -258,28 +260,38 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
                 </FormGroup>
 
                 <FormGroup label="Date of Birth" error={fieldErrors['studentinfo.dateofbirth']}>
-                  <input
-                    type="date"
-                    required
-                    value={formData.studentinfo.dateofbirth}
-                    onChange={(e) => handleChange('studentinfo', 'dateofbirth', e.target.value)}
-                    onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
-                    className={inputClass(!!fieldErrors['studentinfo.dateofbirth'])}
-                  />
+                  <div className="relative group">
+                    <input
+                      type="date"
+                      required
+                      value={formData.studentinfo.dateofbirth}
+                      onChange={(e) => handleChange('studentinfo', 'dateofbirth', e.target.value)}
+                      onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
+                      className={`${inputClass(!!fieldErrors['studentinfo.dateofbirth'])} pr-12`}
+                    />
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-[#fbbf24] transition-colors">
+                      <Calendar className="w-5 h-5" />
+                    </div>
+                  </div>
                 </FormGroup>
 
                 <FormGroup label="Seeking Class">
-                  <select
-                    required
-                    value={formData.studentinfo.seekingclass}
-                    onChange={(e) => handleChange('studentinfo', 'seekingclass', e.target.value)}
-                    className={inputClass()}
-                  >
-                    <option value="">Select Class</option>
-                    {['LKG', 'UKG', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th'].map(c => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
+                  <div className="relative group">
+                    <select
+                      required
+                      value={formData.studentinfo.seekingclass}
+                      onChange={(e) => handleChange('studentinfo', 'seekingclass', e.target.value)}
+                      className={`${inputClass()} pr-12 appearance-none cursor-pointer`}
+                    >
+                      <option value="">Select Class</option>
+                      {['LKG', 'UKG', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th'].map(c => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300 group-focus-within:text-[#fbbf24] group-hover:text-slate-400 transition-colors">
+                      <ChevronDown className="w-5 h-5 md:w-6 md:h-6" />
+                    </div>
+                  </div>
                 </FormGroup>
 
                 <FormGroup label="Aadhar Number">
@@ -294,16 +306,21 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ schoolkey, schoolname }) 
                 </FormGroup>
 
                 <FormGroup label="Blood Group">
-                  <select
-                    value={formData.studentinfo.bloodgroup}
-                    onChange={(e) => handleChange('studentinfo', 'bloodgroup', e.target.value)}
-                    className={inputClass()}
-                  >
-                    <option value="">Select</option>
-                    {['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'].map(bg => (
-                      <option key={bg} value={bg}>{bg}</option>
-                    ))}
-                  </select>
+                  <div className="relative group">
+                    <select
+                      value={formData.studentinfo.bloodgroup}
+                      onChange={(e) => handleChange('studentinfo', 'bloodgroup', e.target.value)}
+                      className={`${inputClass()} pr-12 appearance-none cursor-pointer`}
+                    >
+                      <option value="">Select</option>
+                      {['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'].map(bg => (
+                        <option key={bg} value={bg}>{bg}</option>
+                      ))}
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300 group-focus-within:text-[#fbbf24] group-hover:text-slate-400 transition-colors">
+                      <ChevronDown className="w-5 h-5 md:w-6 md:h-6" />
+                    </div>
+                  </div>
                 </FormGroup>
 
                 <FormGroup label="Religion">
@@ -623,10 +640,10 @@ const FormCheckbox: React.FC<{ label: string; checked: boolean; onChange: (val: 
 );
 
 const inputClass = (hasError: boolean = false) => `
-  w-full px-5 py-4 rounded-xl bg-gray-50 shadow-inner border transition-all duration-300 outline-none font-medium text-slate-900
+  w-full px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl bg-gray-50/50 shadow-inner border transition-all duration-300 outline-none font-medium text-slate-900 text-sm md:text-base
   ${hasError 
       ? 'border-rose-400 ring-4 ring-rose-50 bg-rose-50/20' 
-      : 'border-transparent hover:border-slate-200 focus:border-[#fbbf24] focus:ring-4 focus:ring-[#fbbf24]/20 focus:bg-white'
+      : 'border-slate-100 hover:border-slate-200 focus:border-[#fbbf24] focus:ring-4 focus:ring-[#fbbf24]/10 focus:bg-white focus:shadow-xl'
   }
 `;
 

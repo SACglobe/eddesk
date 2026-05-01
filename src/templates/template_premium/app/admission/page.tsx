@@ -124,8 +124,14 @@ export default function Admissions({ data }: { data?: TenantViewModel }) {
 
                 {/* 3. Instructions Section */}
                 {admissionInstructions.length > 0 && (
-                    <div className="bg-white/50 border-t border-signature-gold/10">
-                        <AdmissionInstructions steps={admissionInstructions} schoolName={schoolName} />
+                    <div className="bg-white/50 border-t border-signature-gold/10 py-32">
+                        <div className="max-w-4xl mx-auto px-8">
+                            <div className="text-center mb-16">
+                                <h2 className="text-4xl font-serif mb-4">Admission Instructions</h2>
+                                <div className="w-12 h-0.5 bg-signature-gold mx-auto"></div>
+                            </div>
+                            <AdmissionInstructions steps={admissionInstructions} schoolName={schoolName} />
+                        </div>
                     </div>
                 )}
 

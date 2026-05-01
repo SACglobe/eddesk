@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { getMonthEventsAction } from '@/app/actions/events';
 import { isValidImageUrl, formatHeroUrl } from '@/core/utils/url';
 import Link from 'next/link';
@@ -64,12 +64,18 @@ const EventsScreen = ({ data }) => {
         }
     }, [schoolKey]);
 
+    const isInitialMount = useRef(true);
+
     useEffect(() => {
-        const initialDate = new Date();
-        if (currentDate.getMonth() !== initialDate.getMonth() || currentDate.getFullYear() !== initialDate.getFullYear()) {
-            fetchEvents(month, year);
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            const today = new Date();
+            if (month === today.getMonth() + 1 && year === today.getFullYear()) {
+                return;
+            }
         }
-    }, [currentDate, month, year, fetchEvents]);
+        fetchEvents(month, year);
+    }, [month, year, fetchEvents]);
 
     useEffect(() => {
         if (heroSlides.length <= 1) return;
@@ -171,7 +177,7 @@ const EventsScreen = ({ data }) => {
                         </button>
                         <div className="text-center">
                             <h2 className="text-2xl font-bold text-slate-900 serif tracking-tight uppercase">
-                                {monthName} <span className="ml-2">{year}</span>
+                                {monthName} {year}
                             </h2>
                         </div>
                         <button
