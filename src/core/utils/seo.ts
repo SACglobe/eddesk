@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { TenantViewModel } from '@/core/viewmodels/tenant.viewmodel';
-import { isValidImageUrl, resolveImageUrl } from '@/core/utils/url';
+import { isValidImageUrl, resolveImageUrl, getSquareIconUrl } from '@/core/utils/url';
 
 /**
  * Generates dynamic Next.js Metadata for EdDesk tenants.
@@ -155,12 +155,12 @@ export function generateTenantMetadata(
         },
         icons: {
             icon: [
-                { url: faviconUrl, sizes: '32x32', type: 'image/png' },
-                { url: faviconUrl, sizes: '16x16', type: 'image/png' },
-                { url: faviconUrl },
+                { url: getSquareIconUrl(faviconUrl, 32), sizes: '32x32', type: 'image/png' },
+                { url: getSquareIconUrl(faviconUrl, 16), sizes: '16x16', type: 'image/png' },
+                { url: getSquareIconUrl(faviconUrl, 48) },
             ],
             apple: [
-                { url: faviconUrl, sizes: '180x180', type: 'image/png' },
+                { url: getSquareIconUrl(faviconUrl, 180), sizes: '180x180', type: 'image/png' },
             ],
         },
     };
