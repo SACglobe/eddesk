@@ -80,3 +80,26 @@ export const formatHeroUrl = (url: string | null | undefined): string => {
   // Otherwise, assume it's an internal path and prepend /
   return `/${trimmed}`;
 };
+
+/**
+ * Generates a square icon URL for favicons.
+ * If the URL is from Supabase storage, it uses the transformation API
+ * with 'resize=contain' to avoid squashing rectangular logos.
+ */
+export const getSquareIconUrl = (url: string | null | undefined, size: number = 48): string => {
+  if (!url || typeof url !== 'string') return url || '';
+  
+  const trimmed = url.trim();
+  
+  // Check if it's a Supabase storage URL
+  if (trimmed.includes('.supabase.co/storage/v1/object/public/')) {
+    // Convert to transformation URL
+    // Standard: .../storage/v1/object/public/[bucket]/[path]
+    // Transform: .../storage/v1/render/image/public/[bucket]/[path]?width=[w]&height=[h]&resize=contain
+    return trimmed
+      .replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')
+      .concat(`?width=${size}&height=${size}&resize=contain`);
+  }
+  
+  return trimmed;
+};
