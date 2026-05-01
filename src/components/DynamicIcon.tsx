@@ -37,7 +37,7 @@ const DynamicIcon: React.FC<DynamicIconProps> = ({ icon: name, className, size, 
 
     // 1. Support Fluent 3D icons
     if (iconName.startsWith("fluent:")) {
-        return <FluentIcon name={iconName} size={+(size || props.size || 24)} className={className} style={props.style} />;
+        return <FluentIcon name={iconName} size={+(size || 24)} className={className} style={props.style} />;
     }
 
     // 2. Support generic Iconify icons (e.g. "streamline-plump-color:...")
@@ -45,8 +45,8 @@ const DynamicIcon: React.FC<DynamicIconProps> = ({ icon: name, className, size, 
         return (
             <IconifyIcon 
                 icon={iconName} 
-                width={size || props.size || "1.1em"} 
-                height={size || props.size || "1.1em"} 
+                width={size || "1.1em"} 
+                height={size || "1.1em"} 
                 className={className}
                 style={{ ...props.style, display: 'inline-block', verticalAlign: 'middle' }}
             />
@@ -59,10 +59,10 @@ const DynamicIcon: React.FC<DynamicIconProps> = ({ icon: name, className, size, 
 
     if (!IconComponent) {
         // Fallback to a default
-        return <LucideIcons.HelpCircle className={className} size={size || props.size} {...(props as any)} />;
+        return <LucideIcons.HelpCircle className={className} size={size} {...(props as any)} />;
     }
 
-    return <IconComponent className={className} size={size || props.size} {...(props as any)} />;
+    return <IconComponent className={className} size={size} {...(props as any)} />;
 };
 
 export default DynamicIcon;
