@@ -99,6 +99,14 @@ export function generateTenantMetadata(
 
     // Ensure faviconUrl is absolute for metadataBase to behave correctly
     let faviconUrl = school.faviconUrl || school.logoUrl || '/assets/images/icon.png';
+    
+    // If it's a tenant site (not demo) and we're using the logo as a favicon,
+    // use our dynamic square icon generator to avoid squashing.
+    const isUsingLogoAsFavicon = !school.faviconUrl || school.faviconUrl === school.logoUrl;
+    if (!isDemo && isUsingLogoAsFavicon) {
+        faviconUrl = '/icon';
+    }
+
     const isInternalPath = faviconUrl.startsWith('/');
     if (!isInternalPath && !isValidImageUrl(faviconUrl)) {
         faviconUrl = '/assets/images/icon.png';
