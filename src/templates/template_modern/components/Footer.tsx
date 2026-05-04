@@ -53,6 +53,9 @@ const Footer: React.FC<FooterProps> = ({ school, contactDetails }) => {
                 </div>
                 <div className="mt-12 pt-8 border-t border-gray-800 text-center text-sm">
                     <p>&copy; {new Date().getFullYear()} {school?.name}. All rights reserved.</p>
+                    <p className="mt-2 text-gray-500">
+                        Powered by <a href="https://www.eddesk.in" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors underline underline-offset-4 decoration-gray-800">EdDesk</a>
+                    </p>
                 </div>
             </div>
         </footer>

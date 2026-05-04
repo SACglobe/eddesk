@@ -302,7 +302,7 @@ const Footer: React.FC<FooterProps> = ({ school, contactDetails }) => {
                     <div className="flex flex-col md:flex-row items-center gap-4 text-[10px] uppercase tracking-[0.5em] text-white/20">
                         <span>© {new Date().getFullYear()} {school.name}.</span>
                         <span className="hidden md:block w-px h-3 bg-white/10"></span>
-                        <a href="https://eddesk.in" target="_blank" rel="noopener noreferrer" className="hover:text-gold-500 transition-colors">Powered by EdDesk</a>
+                        <a href="https://www.eddesk.in" target="_blank" rel="noopener noreferrer" className="hover:text-gold-500 transition-colors">Powered by EdDesk</a>
                     </div>
                     <div className="flex gap-12 text-[9px] uppercase tracking-[0.3em] text-white/30 font-bold">
                         <a href="#" className="hover:text-signature-gold transition-colors">Legal Archive</a>
