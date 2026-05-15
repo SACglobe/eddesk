@@ -7,6 +7,7 @@ import { mContainer, mSection, mLabel, mDisplay, mCard, marketingTheme } from '@
 import { JsonLd } from '@/components/JsonLd';
 import Link from 'next/link';
 import { Plan } from '@/app/core/data/supabase/plans.service';
+import { getDiscountedPrice, formatPrice } from '@/lib/discount';
 
 interface PricingClientProps {
   dynamicPlans: Plan[];
@@ -17,7 +18,6 @@ const PLAN_FEATURES = {
   monthly: [
     "Professional School Website",
     "Dynamic Admin Control Panel",
-    "7-Day Free Trial",
     "5-Day Grace Period",
     "Hosting & Maintenance included",
     "Standard SSL Security",
@@ -26,11 +26,9 @@ const PLAN_FEATURES = {
   ],
   yearly: [
     "Everything in Monthly Plan",
-    "1 Month Free (Pay for 11)",
     "Dedicated Onboarding Support",
     "Custom Domain Integration",
     "Priority Feature Updates",
-    "7-Day Free Trial",
     "Enhanced Performance Hosting",
     "Strategic Digital Roadmap"
   ]
@@ -38,42 +36,37 @@ const PLAN_FEATURES = {
 
 const PLAN_UI_CONFIG = {
   monthly: {
-    label: "Standard Monthly",
-    description: "Perfect for schools starting their digital journey with flexible monthly payments.",
-    buttonText: "Start 7-Day Trial",
-    highlight: false,
     icon: <Zap size={28} />,
-    trial: "7-Day Free Trial"
+    buttonText: "Get Started"
   },
   yearly: {
-    label: "Annual Professional",
-    description: "Best value for established institutions. Everything in monthly, but with one month free.",
-    buttonText: "Get Annual Access",
-    highlight: true,
     icon: <Star size={28} />,
-    trial: "7-Day Free Trial",
-    savings: "Save BIG with Annual"
+    highlight: true,
+    buttonText: "Get Annual Access"
   }
 };
 
 export default function PricingClient({ dynamicPlans }: PricingClientProps) {
   
-  // Map dynamic plans to UI structure
+  const monthlyPlan = dynamicPlans.find(p => p.billingcycle === 'monthly');
+  const monthlyPrice = monthlyPlan ? Number(monthlyPlan.price) : 0;
+
   const plans = dynamicPlans.map(dp => {
     const config = PLAN_UI_CONFIG[dp.code as keyof typeof PLAN_UI_CONFIG] || PLAN_UI_CONFIG.monthly;
     const features = PLAN_FEATURES[dp.code as keyof typeof PLAN_FEATURES] || PLAN_FEATURES.monthly;
     
+    const discount = getDiscountedPrice(dp);
+    
     return {
-      name: config.label,
-      description: config.description,
+      name: dp.name,
+      description: dp.description,
       price: dp.price,
       billingCycle: dp.billingcycle === 'yearly' ? '/ year' : '/ month',
       features: features,
       buttonText: config.buttonText,
-      highlight: config.highlight,
-      trial: config.trial,
+      highlight: config.highlight || false,
       icon: config.icon,
-      savings: dp.code === 'yearly' ? `₹${(dynamicPlans.find(p => p.code === 'monthly')?.price || 0) * 12 - dp.price} Annual Savings` : null
+      discount: discount
     };
   });
 
@@ -170,11 +163,10 @@ export default function PricingClient({ dynamicPlans }: PricingClientProps) {
                         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${plan.highlight ? 'bg-indigo-600/20 text-indigo-400' : 'bg-slate-800 text-slate-400'}`}>
                           {plan.icon}
                         </div>
-                        <div className="flex flex-col items-end">
-                          <span className="text-xs font-black uppercase tracking-widest text-indigo-400 mb-2">{plan.trial}</span>
-                          {plan.savings && (
-                            <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase rounded-full tracking-widest animate-pulse">
-                              {plan.savings}
+                        <div className="flex flex-col items-end gap-2">
+                          {plan.discount.hasDiscount && plan.discount.discountLabel && (
+                            <span className="px-3 py-1 bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[10px] font-black uppercase rounded-full tracking-widest animate-pulse">
+                              {plan.discount.discountLabel}
                             </span>
                           )}
                         </div>
@@ -183,13 +175,43 @@ export default function PricingClient({ dynamicPlans }: PricingClientProps) {
                       <h3 className="text-3xl font-black text-white mb-4 tracking-tight">{plan.name}</h3>
                       <p className={marketingTheme.type.body + " mb-8"}>{plan.description}</p>
                       
-                      <div className="flex items-baseline space-x-2">
-                        <span className="text-6xl font-black text-white tracking-tighter">
-                          ₹{plan.price.toLocaleString('en-IN')}
-                        </span>
-                        <span className="text-slate-500 font-bold uppercase tracking-widest text-sm">
-                          {plan.billingCycle}
-                        </span>
+                      <div className="flex flex-col">
+                        {plan.discount.showStrikethrough && (
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-slate-500 text-base line-through decoration-indigo-500/50 decoration-2">
+                              {formatPrice(plan.discount.originalPrice)}
+                            </span>
+                            <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold rounded-md uppercase tracking-wider border border-indigo-500/20">
+                              Offer Active
+                            </span>
+                          </div>
+                        )}
+                        <div className="flex items-baseline space-x-1">
+                          <span className="text-2xl font-black text-white/50 self-start mt-2">₹</span>
+                          <span className="text-6xl font-black text-white tracking-tighter">
+                            {formatPrice(plan.discount.finalPrice).replace('₹', '').trim()}
+                          </span>
+                          <span className="text-slate-500 font-bold uppercase tracking-widest text-sm ml-2">
+                            {plan.billingCycle}
+                          </span>
+                        </div>
+
+                        {plan.discount.savingsLabel && (
+                          <motion.div 
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.8 }}
+                            className="mt-4 p-3 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 flex items-center gap-3"
+                          >
+                            <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                              <Zap size={16} fill="currentColor" />
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-emerald-400 text-[10px] font-black uppercase tracking-widest">Instant Savings</span>
+                              <span className="text-white text-sm font-bold">{plan.discount.savingsLabel}</span>
+                            </div>
+                          </motion.div>
+                        )}
                       </div>
                     </div>
 
@@ -239,14 +261,14 @@ export default function PricingClient({ dynamicPlans }: PricingClientProps) {
                   <div className="w-12 h-12 rounded-full bg-slate-900 border border-white/5 flex items-center justify-center mx-auto mb-6 text-indigo-400">
                     <Clock size={20} />
                   </div>
-                  <h4 className="text-white font-black mb-2 uppercase tracking-widest text-xs">Zero Risk Trial</h4>
-                  <p className="text-slate-500 text-sm">Cancel anytime during your 7-day trial. No questions asked.</p>
+                  <h4 className="text-white font-black mb-2 uppercase tracking-widest text-xs">Easy Setup</h4>
+                  <p className="text-slate-500 text-sm">Launch your school website in minutes with our ready-to-use templates.</p>
                </div>
                <div>
                   <div className="w-12 h-12 rounded-full bg-slate-900 border border-white/5 flex items-center justify-center mx-auto mb-6 text-indigo-400">
                     <Zap size={20} />
                   </div>
-                  <h4 className="text-white font-black mb-2 uppercase tracking-widest text-xs">Pro-rated Data</h4>
+                  <h4 className="text-white font-black mb-2 uppercase tracking-widest text-xs">Data Portability</h4>
                   <p className="text-slate-500 text-sm">We provide your school data handover if you decide to cancel.</p>
                </div>
              </div>

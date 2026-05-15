@@ -19,8 +19,9 @@ export function proxy(request: NextRequest) {
     const host = request.headers.get('host') || '';
     // A3 FIX: preserve port so 'localhost:3000' matches domain_data entries
     const hostname = host.toLowerCase().replace(/^www\./, '');
+    const isOwner = isOwnerDomain(hostname);
 
-    console.log(`[EdDesk Proxy DEBUG] Request: ${url.pathname}, Host: ${host}, Method: ${request.method}`);
+    console.log(`[EdDesk Proxy] 📥 INCOMING | Path: ${url.pathname} | Host: ${host} | isOwner: ${isOwner}`);
 
     // 0. IMMEDIATE BYPASS for internal/static (but allow .xml, .txt for rewrites)
     if (url.pathname.startsWith('/_next') || url.pathname.startsWith('/api')) {
@@ -32,25 +33,30 @@ export function proxy(request: NextRequest) {
         !url.pathname.endsWith('robots.txt') && 
         !url.pathname.endsWith('sitemap.xml') && 
         !url.pathname.endsWith('llms.txt')) {
-        return NextResponse.next();
+        const res = NextResponse.next();
+        res.headers.set('x-eddesk-proxy-bypass', 'static-asset');
+        return res;
     }
 
     // 0.1 EXPLICIT BYPASS for demo routes on local/owner
     if (url.pathname.startsWith('/demo')) {
-        const isOwner = isOwnerDomain(hostname);
         if (isOwner) {
-            console.log(`[EdDesk Proxy DEBUG] Owner detected for demo route. BYPASSING proxy for: ${url.pathname}`);
-            return NextResponse.next();
+            console.log(`[EdDesk Proxy] 🎨 Owner detected for demo route | Path: ${url.pathname} | Host: ${host}`);
+            const res = NextResponse.next();
+            res.headers.set('x-eddesk-proxy-mode', 'demo-bypass');
+            return res;
         } else {
-            console.warn(`[EdDesk Proxy DEBUG] Non-owner blocked for demo route: ${host}`);
+            console.warn(`[EdDesk Proxy] 🛑 Non-owner blocked for demo route | Host: ${host} attempted access to ${url.pathname}`);
             return new NextResponse('Not Found', { status: 404 });
         }
     }
 
     // 2. Handle Owner Domains (Root Marketing)
-    if (isOwnerDomain(hostname)) {
-        console.log(`[EdDesk Proxy DEBUG] Owner detected. BYPASSING proxy.`);
-        return NextResponse.next();
+    if (isOwner) {
+        console.log(`[EdDesk Proxy] 🏠 OWNER DIRECT | Host: ${host}`);
+        const res = NextResponse.next();
+        res.headers.set('x-eddesk-proxy-mode', 'owner-direct');
+        return res;
     }
 
     // 4. Handle Tenant Domains
@@ -60,9 +66,14 @@ export function proxy(request: NextRequest) {
         if (targetPath === '/robots.txt') targetPath = '/robots';
         if (targetPath === '/sitemap.xml') targetPath = '/sitemap';
         
-        url.pathname = `/tenant/${hostname}${targetPath}`;
-        console.log(`[EdDesk Proxy DEBUG] REWRITING to: ${url.pathname}`);
-        return NextResponse.rewrite(url);
+        const rewritePath = `/tenant/${hostname}${targetPath}`;
+        console.log(`[EdDesk Proxy] 🔀 TENANT REWRITE | ${host}${url.pathname} -> ${rewritePath}`);
+        
+        url.pathname = rewritePath;
+        const res = NextResponse.rewrite(url);
+        res.headers.set('x-eddesk-proxy-mode', 'tenant-rewrite');
+        res.headers.set('x-eddesk-tenant', hostname);
+        return res;
     }
 
     return NextResponse.next();
