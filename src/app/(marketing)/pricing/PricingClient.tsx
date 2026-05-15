@@ -37,6 +37,7 @@ const PLAN_FEATURES = {
 const PLAN_UI_CONFIG = {
   monthly: {
     icon: <Zap size={28} />,
+    highlight: false,
     buttonText: "Get Started"
   },
   yearly: {
