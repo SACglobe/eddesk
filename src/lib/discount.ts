@@ -44,34 +44,37 @@ export function getDiscountedPrice(plan: any): DiscountResult {
 
   if (isActive && type !== 'none') {
     switch (type) {
-      case 'flat':
+      case 'flat': {
         const flatDiscount = parseFloat(plan.discount_flat) || 0;
         finalPrice = price - flatDiscount;
         discountAmount = flatDiscount;
-        showStrikethrough = true;
-        savingsLabel = `You save ${formatPrice(flatDiscount)}`;
+        showStrikethrough = discountAmount > 0;
+        savingsLabel = discountAmount > 0 ? `🔥 Save ${formatPrice(flatDiscount)} instantly` : '';
         break;
+      }
 
-      case 'percentage':
+      case 'percentage': {
         const percentage = plan.discount_percentage || 0;
         const pDiscount = (price * percentage) / 100;
         finalPrice = price - pDiscount;
         discountAmount = pDiscount;
-        showStrikethrough = true;
-        savingsLabel = `You save ${percentage}%`;
+        showStrikethrough = discountAmount > 0;
+        savingsLabel = discountAmount > 0 ? `🔥 Save ${percentage}% on your plan` : '';
         break;
+      }
 
-
-
-      case 'free_months':
+      case 'free_months': {
         const months = plan.discount_free_months || 0;
-        if (plan.billingcycle === 'yearly') {
+        if (plan.billingcycle === 'yearly' && months > 0) {
           finalPrice = price - ((price / 12) * months);
+          discountAmount = price - finalPrice;
+          showStrikethrough = true;
+          savingsLabel = `🔥 Save ${formatPrice(discountAmount)} with Annual Billing`; 
         }
-        // Monthly default is 0 according to request
-        discountAmount = price - finalPrice;
-        showStrikethrough = true;
-        savingsLabel = `You save ${formatPrice(discountAmount)}`;
+        break;
+      }
+      
+      default:
         break;
     }
   }

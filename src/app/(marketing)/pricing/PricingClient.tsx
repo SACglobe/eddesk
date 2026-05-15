@@ -82,8 +82,8 @@ export default function PricingClient({ dynamicPlans }: PricingClientProps) {
           "applicationCategory": "EducationalApplication",
           "offers": {
             "@type": "AggregateOffer",
-            "lowPrice": dynamicPlans.find(p => p.code === 'monthly')?.price?.toString() || "999",
-            "highPrice": dynamicPlans.find(p => p.code === 'yearly')?.price?.toString() || "9999",
+            "lowPrice": Math.min(...plans.map(p => p.discount.finalPrice)).toString(),
+            "highPrice": Math.max(...plans.map(p => p.discount.finalPrice)).toString(),
             "priceCurrency": "INR",
             "offerCount": dynamicPlans.length.toString()
           },
@@ -165,8 +165,13 @@ export default function PricingClient({ dynamicPlans }: PricingClientProps) {
                           {plan.icon}
                         </div>
                         <div className="flex flex-col items-end gap-2">
+                          {plan.highlight && (
+                            <span className="px-3 py-1 bg-indigo-500 text-white text-[10px] font-black uppercase rounded-full tracking-widest shadow-lg shadow-indigo-500/30">
+                              Best Value
+                            </span>
+                          )}
                           {plan.discount.hasDiscount && plan.discount.discountLabel && (
-                            <span className="px-3 py-1 bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[10px] font-black uppercase rounded-full tracking-widest animate-pulse">
+                            <span className="px-3 py-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-[10px] font-black uppercase rounded-full tracking-widest shadow-lg shadow-emerald-500/20 animate-bounce">
                               {plan.discount.discountLabel}
                             </span>
                           )}
@@ -178,13 +183,14 @@ export default function PricingClient({ dynamicPlans }: PricingClientProps) {
                       
                       <div className="flex flex-col">
                         {plan.discount.showStrikethrough && (
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-slate-500 text-base line-through decoration-indigo-500/50 decoration-2">
+                          <div className="flex items-center gap-3 mb-3">
+                            <span className="text-slate-500 text-xl line-through decoration-red-500/50 decoration-2">
                               {formatPrice(plan.discount.originalPrice)}
                             </span>
-                            <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold rounded-md uppercase tracking-wider border border-indigo-500/20">
+                            <div className="px-2.5 py-1 bg-indigo-500 text-white text-[10px] font-black rounded-lg uppercase tracking-tight flex items-center gap-1 shadow-md">
+                              <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
                               Offer Active
-                            </span>
+                            </div>
                           </div>
                         )}
                         <div className="flex items-baseline space-x-1">
@@ -199,17 +205,17 @@ export default function PricingClient({ dynamicPlans }: PricingClientProps) {
 
                         {plan.discount.savingsLabel && (
                           <motion.div 
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.8 }}
-                            className="mt-4 p-3 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 flex items-center gap-3"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            whileHover={{ scale: 1.02 }}
+                            className="mt-6 p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/20 flex items-center gap-4 shadow-xl shadow-emerald-500/5"
                           >
-                            <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
-                              <Zap size={16} fill="currentColor" />
+                            <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/40">
+                              <Zap size={20} fill="currentColor" />
                             </div>
                             <div className="flex flex-col">
-                              <span className="text-emerald-400 text-[10px] font-black uppercase tracking-widest">Instant Savings</span>
-                              <span className="text-white text-sm font-bold">{plan.discount.savingsLabel}</span>
+                              <span className="text-emerald-400 text-[10px] font-black uppercase tracking-widest leading-none mb-1">Guaranteed Savings</span>
+                              <span className="text-white text-sm font-black tracking-tight">{plan.discount.savingsLabel}</span>
                             </div>
                           </motion.div>
                         )}

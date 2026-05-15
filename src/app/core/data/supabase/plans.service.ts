@@ -42,7 +42,7 @@ export async function getActivePlans(): Promise<Plan[]> {
                 discount_expires_at
             `)
             .eq('isactive', true)
-            .order('price', { ascending: true });
+            .order('idx', { ascending: true });
 
         if (error) {
             console.error('[plans.service] Error fetching plans:', error.message);
