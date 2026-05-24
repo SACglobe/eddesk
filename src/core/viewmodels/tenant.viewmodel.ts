@@ -126,8 +126,8 @@ import {
     COL_ACADEMIC_RESULTS_ID,
     COL_ACADEMIC_RESULTS_YEAR,
     COL_ACADEMIC_RESULTS_PASS_PERCENTAGE,
-    COL_ACADEMIC_RESULTS_DISTINCTIONS,
-    COL_ACADEMIC_RESULTS_FIRST_CLASS,
+    COL_ACADEMIC_RESULTS_TENTH_PASS_PERCENTAGE,
+    COL_ACADEMIC_RESULTS_PLUS_TWO_PASS_PERCENTAGE,
     COL_ACADEMIC_RESULTS_LEGACY_QUOTE,
 
     COL_INFRASTRUCTURE_ID,
@@ -491,8 +491,8 @@ export interface TenantViewModel {
         key: string;
         year: number;
         passPercentage: number;
-        distinctions: number;
-        firstClass: number;
+        tenthPassPercentage: number;
+        plusTwoPassPercentage: number;
         legacyQuote: string;
     } | null;
 
@@ -501,8 +501,8 @@ export interface TenantViewModel {
     academicResults: Array<{
         year: number;
         passPercentage: number;
-        distinctions: number;
-        firstClass: number;
+        tenthPassPercentage: number;
+        plusTwoPassPercentage: number;
         legacyQuote: string;
     }>;
 
@@ -903,8 +903,8 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
         key: str(academicResultRow[COL_ACADEMIC_RESULTS_ID]),
         year: num(academicResultRow[COL_ACADEMIC_RESULTS_YEAR]),
         passPercentage: num(academicResultRow[COL_ACADEMIC_RESULTS_PASS_PERCENTAGE]),
-        distinctions: num(academicResultRow[COL_ACADEMIC_RESULTS_DISTINCTIONS]),
-        firstClass: num(academicResultRow[COL_ACADEMIC_RESULTS_FIRST_CLASS]),
+        tenthPassPercentage: num(academicResultRow[COL_ACADEMIC_RESULTS_TENTH_PASS_PERCENTAGE]),
+        plusTwoPassPercentage: num(academicResultRow[COL_ACADEMIC_RESULTS_PLUS_TWO_PASS_PERCENTAGE]),
         legacyQuote: str(academicResultRow[COL_ACADEMIC_RESULTS_LEGACY_QUOTE]),
     } : null;
 
@@ -1079,8 +1079,8 @@ export function buildTenantViewModel(payload: ScreenDataPayload): TenantViewMode
         academicResults: academicResult ? [{
             year: academicResult.year,
             passPercentage: academicResult.passPercentage,
-            distinctions: academicResult.distinctions,
-            firstClass: academicResult.firstClass,
+            tenthPassPercentage: academicResult.tenthPassPercentage,
+            plusTwoPassPercentage: academicResult.plusTwoPassPercentage,
             legacyQuote: academicResult.legacyQuote,
         }] : [],
 

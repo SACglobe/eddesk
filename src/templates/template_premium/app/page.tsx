@@ -151,16 +151,16 @@ const InstitutionalStats: React.FC<{
 
             <div className="space-y-8">
               <div className="flex justify-between items-end border-b border-signature-navy/5 pb-4">
-                <span className="text-[11px] uppercase tracking-widest font-bold text-signature-navy/60">Pass Percentage</span>
+                <span className="text-[11px] uppercase tracking-widest font-bold text-signature-navy/60">Over All Pass Percentage</span>
                 <span className="text-5xl font-serif text-signature-navy">{latestAcademicResult.passPercentage ?? 0}%</span>
               </div>
               <div className="flex justify-between items-end border-b border-signature-navy/5 pb-4">
-                <span className="text-[11px] uppercase tracking-widest font-bold text-signature-navy/60">Distinctions</span>
-                <span className="text-5xl font-serif text-signature-gold">{latestAcademicResult.distinctions ?? 0}%</span>
+                <span className="text-[11px] uppercase tracking-widest font-bold text-signature-navy/60">10th Pass Percentage</span>
+                <span className="text-5xl font-serif text-signature-gold">{latestAcademicResult.tenthPassPercentage ?? 0}%</span>
               </div>
               <div className="flex justify-between items-end border-b border-signature-navy/5 pb-4">
-                <span className="text-[11px] uppercase tracking-widest font-bold text-signature-navy/60">First Class</span>
-                <span className="text-5xl font-serif text-signature-navy">{latestAcademicResult.firstClass ?? 0}%</span>
+                <span className="text-[11px] uppercase tracking-widest font-bold text-signature-navy/60">+2 Pass Percentage</span>
+                <span className="text-5xl font-serif text-signature-navy">{latestAcademicResult.plusTwoPassPercentage ?? 0}%</span>
               </div>
             </div>
 

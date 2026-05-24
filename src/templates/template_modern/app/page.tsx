@@ -224,7 +224,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
             
             {/* Pay Fees Online Button */}
             {data.school?.paymentGatewayUrl && (
-                <section className="max-w-7xl mx-auto px-6 -mt-12 relative z-50">
+                <section className="max-w-7xl mx-auto px-6">
                     <a 
                         href={data.school.paymentGatewayUrl} 
                         target="_blank" 
@@ -268,7 +268,7 @@ export default function Home({ data }: { data: TenantViewModel }) {
 
                                 <div className="grid grid-cols-1 gap-6 py-8 border-y border-gray-100">
                                     <div className="flex items-center justify-between group">
-                                        <p className="text-sm font-bold text-gray-500  tracking-widest">Pass Percentage</p>
+                                        <p className="text-sm font-bold text-gray-500  tracking-widest">Over All Pass Percentage</p>
                                         <div className="flex items-center gap-6">
                                             <div className="h-px w-12 bg-gray-100 group-hover:w-24 transition-all duration-500"></div>
                                             <p className="text-4xl font-light text-primary">
@@ -277,20 +277,20 @@ export default function Home({ data }: { data: TenantViewModel }) {
                                         </div>
                                     </div>
                                     <div className="flex items-center justify-between group">
-                                        <p className="text-sm font-bold text-gray-500  tracking-widest">Distinctions</p>
+                                        <p className="text-sm font-bold text-gray-500  tracking-widest">10th Pass Percentage</p>
                                         <div className="flex items-center gap-6">
                                             <div className="h-px w-12 bg-gray-100 group-hover:w-24 transition-all duration-500"></div>
                                             <p className="text-4xl font-light text-yellow-600">
-                                                <AnimatedNumber value={latestAcademicResult.distinctions} suffix="%" />
+                                                <AnimatedNumber value={latestAcademicResult.tenthPassPercentage} suffix="%" />
                                             </p>
                                         </div>
                                     </div>
                                     <div className="flex items-center justify-between group">
-                                        <p className="text-sm font-bold text-gray-500  tracking-widest">First Class</p>
+                                        <p className="text-sm font-bold text-gray-500  tracking-widest">+2 Pass Percentage</p>
                                         <div className="flex items-center gap-6">
                                             <div className="h-px w-12 bg-gray-100 group-hover:w-24 transition-all duration-500"></div>
                                             <p className="text-4xl font-light text-gray-950">
-                                                <AnimatedNumber value={latestAcademicResult.firstClass} suffix="%" />
+                                                <AnimatedNumber value={latestAcademicResult.plusTwoPassPercentage} suffix="%" />
                                             </p>
                                         </div>
                                     </div>

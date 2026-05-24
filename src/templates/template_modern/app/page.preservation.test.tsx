@@ -163,8 +163,8 @@ describe('Property 2: Preservation - Non-Broadcast Section Behavior', () => {
           {
             year: 2024,
             passPercentage: 98.5,
-            distinctions: 45,
-            firstClass: 75,
+            tenthPassPercentage: 45,
+            plusTwoPassPercentage: 75,
             legacyQuote: 'Excellence is our tradition'
           }
         ]
@@ -526,8 +526,8 @@ describe('Property 2: Preservation - Non-Broadcast Section Behavior', () => {
                 {
                   year: 2024,
                   passPercentage: 95,
-                  distinctions: 40,
-                  firstClass: 70,
+                  tenthPassPercentage: 40,
+                  plusTwoPassPercentage: 70,
                   legacyQuote: 'Test Quote'
                 }
               ];

@@ -104,8 +104,8 @@ export const COL_ACADEMIC_RESULTS_ID = "key";
 export const COL_ACADEMIC_RESULTS_SCHOOL_ID = "schoolkey";
 export const COL_ACADEMIC_RESULTS_YEAR = "year";
 export const COL_ACADEMIC_RESULTS_PASS_PERCENTAGE = "passpercentage";
-export const COL_ACADEMIC_RESULTS_DISTINCTIONS = "distinctions";
-export const COL_ACADEMIC_RESULTS_FIRST_CLASS = "firstclass";
+export const COL_ACADEMIC_RESULTS_TENTH_PASS_PERCENTAGE = "tenthpasspercentage";
+export const COL_ACADEMIC_RESULTS_PLUS_TWO_PASS_PERCENTAGE = "plustwopasspercentage";
 export const COL_ACADEMIC_RESULTS_LEGACY_QUOTE = "legacyquote";
 
 // --- Columns: achievements ---

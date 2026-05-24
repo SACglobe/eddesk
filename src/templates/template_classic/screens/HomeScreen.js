@@ -266,16 +266,16 @@ const HomeScreen = ({ data }) => {
                                             <h3 className="text-2xl font-bold serif mb-6">Academic Merit Summary</h3>
                                             <div className="space-y-6">
                                                 <div className="flex justify-between items-end border-b border-emerald-800 pb-2">
-                                                    <span className="text-xs uppercase text-emerald-300 font-bold">Pass Percentage</span>
+                                                    <span className="text-xs uppercase text-emerald-300 font-bold">Over All Pass Percentage</span>
                                                     <span className="text-xl font-bold serif text-white">{latestResult ? `${latestResult.passPercentage}%` : '—'}</span>
                                                 </div>
                                                 <div className="flex justify-between items-end border-b border-emerald-800 pb-2">
-                                                    <span className="text-xs uppercase text-emerald-300 font-bold">Distinctions</span>
-                                                    <span className="text-xl font-bold serif text-white">{latestResult ? `${latestResult.distinctions}%` : '—'}</span>
+                                                    <span className="text-xs uppercase text-emerald-300 font-bold">10th Pass Percentage</span>
+                                                    <span className="text-xl font-bold serif text-white">{latestResult ? `${latestResult.tenthPassPercentage}%` : '—'}</span>
                                                 </div>
                                                 <div className="flex justify-between items-end border-b border-emerald-800 pb-2">
-                                                    <span className="text-xs uppercase text-emerald-300 font-bold">First Class</span>
-                                                    <span className="text-xl font-bold serif text-white">{latestResult ? `${latestResult.firstClass}%` : '—'}</span>
+                                                    <span className="text-xs uppercase text-emerald-300 font-bold">+2 Pass Percentage</span>
+                                                    <span className="text-xl font-bold serif text-white">{latestResult ? `${latestResult.plusTwoPassPercentage}%` : '—'}</span>
                                                 </div>
                                             </div>
                                         </div>

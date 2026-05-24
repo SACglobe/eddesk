@@ -109,8 +109,8 @@ const Academics: React.FC<{ data?: TenantViewModel }> = ({ data }) => {
                                     <h4 className="text-5xl font-black text-accent">{result.passPercentage}%</h4>
                                     <p className="text-xs  tracking-[0.3em] font-black text-blue-200">Class of {result.year} Pass Rate</p>
                                     <div className="pt-4 space-y-2">
-                                        <p className="text-sm opacity-80">{result.distinctions} Distinctions</p>
-                                        <p className="text-sm opacity-80">{result.firstClass} First Classes</p>
+                                        <p className="text-sm opacity-80">{result.tenthPassPercentage}% 10th Pass Percentage</p>
+                                        <p className="text-sm opacity-80">{result.plusTwoPassPercentage}% +2 Pass Percentage</p>
                                     </div>
                                 </div>
                             ))}
