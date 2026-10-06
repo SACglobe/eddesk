@@ -2,7 +2,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { mContainer, mSection, mLabel, mDisplay, marketingTheme, mCard } from '@/lib/marketing/theme';
-import { FileText, Shield, Scale, AlertCircle, Mail } from 'lucide-react';
+import { FileText, Shield, Scale, AlertCircle, Mail, MessageSquare } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Terms of Service | Platform Usage & Agreement',
@@ -63,7 +63,7 @@ export default function TermsPage() {
             
             <div className="space-y-12">
               <p className={marketingTheme.type.bodyLg}>
-                Last Updated: 23/04/2026. These terms govern the use of the EdDesk platform. By using our services, you agree to be bound by these Terms of Service under the jurisdiction of Tamil Nadu, India.
+                Last Updated: 06/10/2026. These terms govern the use of the EdDesk platform. By using our services, you agree to be bound by these Terms of Service under the jurisdiction of Tamil Nadu, India.
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -128,6 +128,45 @@ export default function TermsPage() {
                                 <span className="text-lg">📞</span>
                                 <a href="tel:+918122333929" className="hover:text-indigo-400 transition-colors">+91 81223 33929</a>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="pt-8 border-t border-white/10">
+                    <h2 className="text-2xl font-black text-white mb-6 flex items-center gap-3">
+                        <MessageSquare className="w-5 h-5 text-indigo-400" />
+                        14. Transactional SMS &amp; Identity Verification Terms
+                    </h2>
+                    <div className="space-y-6">
+                        <div>
+                            <h3 className="text-lg font-bold text-white mb-2">14.1 User Consent &amp; Opt-In</h3>
+                            <p className={marketingTheme.type.body}>
+                                By entering your registered mobile number on the EdDesk login or password setup interface and selecting &quot;Continue&quot; or &quot;Send Verification Code&quot;, you explicitly request and consent to receive a single-use transactional SMS containing a 6-digit verification code from approved header EDDOTP.
+                            </p>
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-bold text-white mb-2">14.2 Message Frequency</h3>
+                            <p className={marketingTheme.type.body}>
+                                Verification SMS messages are delivered strictly on-demand. One SMS is dispatched per authentication or password reset attempt. You will not receive recurring or unrequested automated messages.
+                            </p>
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-bold text-white mb-2">14.3 Carrier Rates &amp; Fees</h3>
+                            <p className={marketingTheme.type.body}>
+                                Standard carrier messaging and data rates may apply according to your individual mobile tariff plan. EdDesk does not assess additional charges for SMS delivery.
+                            </p>
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-bold text-white mb-2">14.4 Delivery &amp; Expiration</h3>
+                            <p className={marketingTheme.type.body}>
+                                Verification codes are valid for 10 minutes from the moment of dispatch. EdDesk is not liable for carrier-side delivery delays caused by network congestion or out-of-coverage mobile devices.
+                            </p>
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-bold text-white mb-2">14.5 Customer Support &amp; Assistance</h3>
+                            <p className={marketingTheme.type.body}>
+                                For technical assistance, delivery issues, or help accessing your school portal, users may contact EdDesk support via email at <a href="mailto:support@eddesk.in" className="text-indigo-400 hover:underline">support@eddesk.in</a> or phone at <a href="tel:+918122333929" className="text-indigo-400 hover:underline">+91 81223 33929</a>.
+                            </p>
                         </div>
                     </div>
                 </div>

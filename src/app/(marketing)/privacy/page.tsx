@@ -2,7 +2,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { mContainer, mSection, mLabel, mDisplay, marketingTheme, mCard } from '@/lib/marketing/theme';
-import { Lock, Eye, Database, Share2, ShieldCheck, Mail } from 'lucide-react';
+import { Lock, Eye, Database, Share2, ShieldCheck, Mail, Smartphone } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy | Data Protection for Schools',
@@ -62,7 +62,7 @@ export default function PrivacyPage() {
             
             <div className="space-y-12">
               <p className={marketingTheme.type.bodyLg}>
-                Last Updated: 23/04/2026. EdDesk is committed to protecting the privacy of educational institutions. This policy explains our commitment to transparency and security.
+                Last Updated: 06/10/2026. EdDesk is committed to protecting the privacy of educational institutions. This policy explains our commitment to transparency and security.
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -127,6 +127,39 @@ export default function PrivacyPage() {
                                 <span className="text-lg">📞</span>
                                 <a href="tel:+918122333929" className="hover:text-purple-400 transition-colors">+91 81223 33929</a>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="pt-8 border-t border-white/10">
+                    <h2 className="text-2xl font-black text-white mb-6 flex items-center gap-3">
+                        <Smartphone className="w-5 h-5 text-purple-400" />
+                        12. Mobile Numbers &amp; SMS Authentication Policy
+                    </h2>
+                    <div className="space-y-6">
+                        <div>
+                            <h3 className="text-lg font-bold text-white mb-2">12.1 Purpose of Collection</h3>
+                            <p className={marketingTheme.type.body}>
+                                EdDesk (operated by SAC Globe Tech) collects user mobile telephone numbers strictly for providing secure identity verification, two-factor authentication (2FA), and authorized account administration for enrolled school administrators, faculty members, and parents.
+                            </p>
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-bold text-white mb-2">12.2 Transactional Messaging Only</h3>
+                            <p className={marketingTheme.type.body}>
+                                We utilize mobile numbers exclusively for user-initiated, transactional one-time password (OTP) delivery. EdDesk does not send unsolicited promotional marketing, advertising blasts, or mass broadcast campaigns via SMS.
+                            </p>
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-bold text-white mb-2">12.3 Telecom Delivery &amp; Regulatory Compliance</h3>
+                            <p className={marketingTheme.type.body}>
+                                All SMS communications dispatched by EdDesk are routed through government-approved telecom gateways registered under the Telecom Regulatory Authority of India (TRAI) Distributed Ledger Technology (DLT) regulations under Principal Entity SAC GLOBE TECH (Entity ID: 1401474120000080432) utilizing the approved sender header EDDOTP.
+                            </p>
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-bold text-white mb-2">12.4 Data Protection &amp; Non-Disclosure</h3>
+                            <p className={marketingTheme.type.body}>
+                                Mobile numbers registered on EdDesk are stored using encrypted AWS infrastructure located in Mumbai, India. We do not sell, rent, monetize, or distribute mobile phone numbers or user contact information to any third-party advertisers or external data brokers. Numbers are transmitted solely to licensed telecom network operators (Airtel, Jio, Vodafone-Idea, BSNL) for the explicit technical purpose of SMS message delivery.
+                            </p>
                         </div>
                     </div>
                 </div>
